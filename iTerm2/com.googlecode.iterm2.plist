@@ -124,7 +124,7 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1275 43 610 1007 0 0 1920 1080 </string>
+	<string>30 43 1122 1007 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>30 43 1858 1007 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
@@ -781,7 +781,11 @@
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>382</integer>
+	<integer>383</integer>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
+	<true/>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
+	<integer>0</integer>
 	<key>NoSyncNextAnnoyanceTime</key>
 	<real>597240225.512043</real>
 	<key>NoSyncOnboardingWindowHasBeenShown</key>
@@ -1534,6 +1538,8 @@
 	<key>PrefsCustomFolder</key>
 	<string>/Users/noibe/.config/iTerm2</string>
 	<key>PromptOnQuit</key>
+	<false/>
+	<key>QuitWhenAllWindowsClosed</key>
 	<false/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
