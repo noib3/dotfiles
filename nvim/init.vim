@@ -24,6 +24,9 @@ inoremap ( ()<esc>i
 inoremap [ []<esc>i
 inoremap { {}<esc>i
 
+nnoremap p P
+nnoremap P p
+
 nnoremap S :%s//g<Left><Left>
 
 " Colorscheme
