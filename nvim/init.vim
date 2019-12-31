@@ -20,6 +20,9 @@ inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
 inoremap <C-w> <esc>:q<cr>
 
+nnoremap <C-e> i
+inoremap <C-e> <esc>
+
 inoremap ( ()<esc>i
 inoremap [ []<esc>i
 inoremap { {}<esc>i
@@ -27,7 +30,7 @@ inoremap { {}<esc>i
 nnoremap p P
 nnoremap P p
 
-nnoremap S :%s//g<Left><Left>
+nnoremap S :%s//g<left><left>
 
 " Colorscheme
 set background=dark
@@ -39,9 +42,10 @@ let g:airline_theme='gruvbox'
 let g:airline_section_z='Col: %02v/%02{col("$")-1}   Ln: %3l/%L'
 
 " VimTeX
+let g:vimtex_compiler_method='arara'
 let g:vimtex_view_method='skim'
-nnoremap <C-t> <Leader>ll
-inoremap <C-t> <Leader>ll
+nnoremap <C-t> :VimtexCompile<cr>
+inoremap <C-t> <esc>:VimtexCompile<cr>a
 
 " Disable auto-comments on new line
  autocmd Filetype * setlocal formatoptions-=c formatoptions-=r formatoptions-=o

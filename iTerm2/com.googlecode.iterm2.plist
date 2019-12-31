@@ -16,8 +16,17 @@
 	<integer>1</integer>
 	<key>Default Bookmark Guid</key>
 	<string>844AC10E-154B-444A-AAA3-C1256B87C5BE</string>
+	<key>DisableWindowSizeSnap</key>
+	<true/>
 	<key>GlobalKeyMap</key>
 	<dict>
+		<key>0x65-0x100000</key>
+		<dict>
+			<key>Action</key>
+			<integer>11</integer>
+			<key>Text</key>
+			<string>0x05</string>
+		</dict>
 		<key>0x73-0x100000</key>
 		<dict>
 			<key>Action</key>
@@ -131,9 +140,9 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>972 31 922 1024 0 0 1920 1080 </string>
+	<string>882 25 1012 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>972 31 922 1024 0 0 1920 1080 </string>
+	<string>732 25 682 412 0 0 1440 900 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>970 36 930 1024 0 0 1920 1080 </string>
 	<key>NeverWarnAboutOverrides</key>
@@ -302,11 +311,11 @@
 				<key>Alpha Component</key>
 				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.069075829815119505</real>
+				<real>0.06751615064786165</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.069503485261321885</real>
+				<real>0.066666666666666666</real>
 				<key>Red Component</key>
 				<real>0.0727081298828125</real>
 			</dict>
@@ -1431,7 +1440,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>407</integer>
+	<integer>429</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2200,7 +2209,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-12-29T11:52:06Z</date>
+	<date>2019-12-30T11:52:08Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SoundForEsc</key>
