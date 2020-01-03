@@ -20,17 +20,23 @@ inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
 inoremap <C-w> <esc>:q<cr>
 
-nnoremap <C-e> i
-inoremap <C-e> <esc>
+nnoremap <C-a> ^i
+inoremap <C-a> <esc>^i
 
-inoremap ( ()<esc>i
-inoremap [ []<esc>i
-inoremap { {}<esc>i
+nnoremap <C-e> A
+inoremap <C-e> <esc>A
+
+nnoremap <C-u> 0D
+inoremap <C-u> <esc>0Di
+
+inoremap ( ()<left>
+inoremap [ []<left>
+inoremap { {}<left>
 
 nnoremap p P
 nnoremap P p
 
-nnoremap S :%s//g<left><left>
+nnoremap ss :%s//g<left><left>
 
 " Colorscheme
 set background=dark
@@ -49,3 +55,6 @@ inoremap <C-t> <esc>:VimtexCompile<cr>a
 
 " Disable auto-comments on new line
  autocmd Filetype * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+" 
+autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF
