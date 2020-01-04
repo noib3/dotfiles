@@ -37,24 +37,28 @@ nnoremap p P
 nnoremap P p
 
 nnoremap ss :%s//g<left><left>
+nnoremap kk :let @/=""<cr>
 
 " Colorscheme
 set background=dark
 colorscheme gruvbox
-hi Normal ctermbg=none
+highlight Normal ctermbg=NONE
 
 " Airline
 let g:airline_theme='gruvbox'
 let g:airline_section_z='Col: %02v/%02{col("$")-1}   Ln: %3l/%L'
 
+" Highlight colors
+highlight ErrorMsg cterm=bold ctermfg=224 ctermbg=NONE
+
 " VimTeX
 let g:vimtex_compiler_method='arara'
 let g:vimtex_view_method='skim'
-nnoremap <C-t> :VimtexCompile<cr>
-inoremap <C-t> <esc>:VimtexCompile<cr>a
+autocmd FileType tex nnoremap <buffer> <C-t> :VimtexCompile<cr>
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:VimtexCompile<cr>a
 
 " Disable auto-comments on new line
- autocmd Filetype * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-" 
-autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF
+"
+autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF ctermbg=0
