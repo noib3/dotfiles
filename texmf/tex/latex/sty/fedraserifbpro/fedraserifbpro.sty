@@ -1,0 +1,29 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{fedraserifbpro}[15/06/2019, v1.0]
+\RequirePackage{amsmath, microtype, fdsymbol}
+%
+\pdfmapfile{+typotheque.map}
+\renewcommand{\rmdefault}{FedraSerifBPro}
+%
+\DeclareSymbolFont{letters}{OML}{FedraSerifBPro}{m}{it}
+\DeclareSymbolFont{operators}{OT1}{FedraSerifBPro}{m}{n}
+%
+\SetSymbolFont{letters}{bold}{OML}{FedraSerifBPro}{bx}{it}
+%
+\DeclareMathAlphabet{\mathbf}{OT1}{FedraSerifBPro}{bx}{n}
+\DeclareMathAlphabet{\mathit}{OT1}{FedraSerifBPro}{m}{it}
+%
+\let\oldtheta\theta
+\let\oldvartheta\vartheta
+\renewcommand{\theta}{\oldvartheta}
+\renewcommand{\vartheta}{\oldtheta}
+%
+\let\skinnybigcup\bigcup
+\let\skinnybigcap\bigcap
+\renewcommand{\bigcup}{\boldsymbol{\skinnybigcup}}
+\renewcommand{\bigcap}{\boldsymbol{\skinnybigcap}}
+% ----------------------------------------------------------------------------
+\linespread{1.5}
+\AtBeginDocument{\fontdimen2\font=0.435ex} % the spacing that most resembles Ummels's dissertation is approx. 0.45ex
+%
+\endinput

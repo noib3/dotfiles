@@ -1,0 +1,52 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cscommand}[2019/11/02, v1.1]
+
+% Packages
+
+\RequirePackage{xparse}
+
+% my code
+
+%\ExplSyntaxOn
+%
+%\newcommand{\cstostr}[1]{\cs_to_str:N #1}
+%
+%\NewDocumentCommand{\newcscommand}{ mO{0}m }{
+%  \NewDocumentCommand{ #1 }{ >{\SplitArgument{#2 - 1}{,}}m }{
+%    \csname aux\cstostr{#1}\endcsname##1
+%  }
+%  \expandafter\newcommand\csname aux\cstostr{#1}\endcsname[#2]{#3}
+%}
+%
+%\NewDocumentCommand{\renewcscommand}{ mO{0}m }{
+%  \RenewDocumentCommand{ #1 }{ >{\SplitArgument{#2 - 1}{,}}m }{
+%    \csname aux\cstostr{#1}\endcsname##1
+%  }
+%  \expandafter\renewcommand\csname aux\cstostr{#1}\endcsname[#2]{#3}
+%}
+%
+%\ExplSyntaxOff
+
+% egreg's code
+
+\ExplSyntaxOn
+ 
+\exp_args_generate:n { nne }
+
+\NewDocumentCommand{\newcscommand}{ mO{0}m }{
+  \exp_args:Nnne \NewDocumentCommand{ #1 }{ >{\SplitArgument{#2 - 1}{,}}m }{
+    \exp_not:c { \cs_to_str:N #1:\prg_replicate:nn{#2}{n} } ##1
+  }
+  \cs_new:cn { \cs_to_str:N #1:\prg_replicate:nn{#2}{n} } { #3 }
+}
+
+\NewDocumentCommand{\renewcscommand}{ mO{0}m }{
+  \exp_args:Nnne \RenewDocumentCommand{ #1 }{ >{\SplitArgument{#2 - 1}{,}}m }{
+    \exp_not:c { \cs_to_str:N #1:\prg_replicate:nn{#2}{n} } ##1
+  }
+  \cs_set:cn { \cs_to_str:N #1:\prg_replicate:nn{#2}{n} } { #3 }
+}
+
+\ExplSyntaxOff
+
+\endinput

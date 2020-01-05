@@ -1,0 +1,8 @@
+import os
+import readline
+
+readline_history_file = os.path.join(os.path.expanduser('~'), '.hystories/.python_history')
+try:
+    readline.read_history_file(readline_history_file)
+except IOError:
+    pass

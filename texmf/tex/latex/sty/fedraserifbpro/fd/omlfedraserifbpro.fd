@@ -1,0 +1,7 @@
+\ProvidesFile{omlfedraserifbpro.fd}[15/06/2019 scalable font definition for OML/FedraSerifBPro]
+%
+\DeclareFontFamily{OML}{FedraSerifBPro}{}
+\DeclareFontShape{OML}{FedraSerifBPro}{m}{it}{ <-> OML--FedraSerifBPro-BookItalic}{}
+\DeclareFontShape{OML}{FedraSerifBPro}{bx}{it}{ <-> OML--FedraSerifBPro-MediumItalic}{}
+%
+\endinput

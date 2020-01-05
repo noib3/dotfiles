@@ -1,0 +1,9 @@
+\ProvidesFile{ot1raleway.fd}[15/09/2019 scalable font definition for OT1/Raleway]
+%
+\DeclareFontFamily{OT1}{Raleway}{}
+%
+\DeclareFontShape{OT1}{Raleway}{m}{n}{ <-> OT1--Raleway-Regular }{}
+\DeclareFontShape{OT1}{Raleway}{m}{it}{ <-> OT1--Raleway-Italic }{}
+\DeclareFontShape{OT1}{Raleway}{bx}{n}{ <-> OT1--Raleway-SemiBold }{}
+%
+\endinput

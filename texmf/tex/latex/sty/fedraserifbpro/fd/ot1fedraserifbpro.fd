@@ -1,0 +1,9 @@
+\ProvidesFile{ot1fedraserifbpro.fd}[13/06/2019 scalable font definition for OT1/FedraSerifBPro]
+%
+\DeclareFontFamily{OT1}{FedraSerifBPro}{}
+%
+\DeclareFontShape{OT1}{FedraSerifBPro}{m}{n}{ <-> OT1--FedraSerifBPro-Book}{}
+\DeclareFontShape{OT1}{FedraSerifBPro}{m}{it}{ <-> OT1--FedraSerifBPro-BookItalic}{}
+\DeclareFontShape{OT1}{FedraSerifBPro}{bx}{n}{ <-> OT1--FedraSerifBPro-Medium}{}
+%
+\endinput

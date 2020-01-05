@@ -1,0 +1,20 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{raleway}[15/09/2019]
+\RequirePackage{microtype}
+%
+\pdfmapfile{+pyrs.map}
+\renewcommand{\rmdefault}{Raleway}
+%
+\DeclareSymbolFont{letters}{OML}{Raleway}{m}{it}
+\DeclareSymbolFont{operators}{OT1}{Raleway}{m}{n}
+%
+\SetSymbolFont{letters}{bold}{OML}{Raleway}{bx}{it}
+%
+\DeclareMathAlphabet{\mathbf}{OT1}{Raleway}{bx}{n}
+\DeclareMathAlphabet{\mathit}{OT1}{Raleway}{m}{it}
+%
+% the following commands adjust the vertical spacing between two lines
+% and the horizontal space between two words. The values given are just an example.
+% \linespread{1.5}
+% \AtBeginDocument{\fontdimen2\font=0.435ex}
+\endinput

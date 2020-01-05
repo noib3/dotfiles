@@ -1,0 +1,15 @@
+\ProvidesFile{t1raleway.fd}[15/09/2019 scalable font definition for T1/Raleway]
+%
+\DeclareFontFamily{T1}{Raleway}{}
+%
+\DeclareFontShape{T1}{Raleway}{m}{n}{ <-> T1--Raleway-Regular }{}
+\DeclareFontShape{T1}{Raleway}{m}{it}{ <-> T1--Raleway-Italic }{}
+\DeclareFontShape{T1}{Raleway}{m}{sc}{ <-> T1--Raleway-Regular-SC }{}
+\DeclareFontShape{T1}{Raleway}{m}{sl}{ <-> T1--Raleway-Regular-SL }{}
+%
+\DeclareFontShape{T1}{Raleway}{bx}{n}{ <-> T1--Raleway-SemiBold }{}
+\DeclareFontShape{T1}{Raleway}{bx}{it}{ <-> T1--Raleway-SemiBoldItalic }{}
+\DeclareFontShape{T1}{Raleway}{bx}{sc}{ <-> T1--Raleway-SemiBold-SC }{}
+\DeclareFontShape{T1}{Raleway}{bx}{sl}{ <-> T1--Raleway-SemiBold-SL }{}
+%
+\endinput

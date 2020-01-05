@@ -119,11 +119,11 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>972 25 922 1030 0 0 1920 1080 </string>
+	<string>25 25 922 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>972 25 922 502 0 0 1920 1080 </string>
+	<string>972 1 1036 526 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
-	<string>1341 25 554 502 0 0 1920 1080 </string>
+	<string>25 25 1870 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
 	<string>25 25 1870 1030 0 0 1920 1080 </string>
 	<key>NeverWarnAboutOverrides</key>
@@ -307,7 +307,7 @@
 			<key>Blur</key>
 			<true/>
 			<key>Blur Radius</key>
-			<real>6.0625694003807098</real>
+			<real>8.3801276967005069</real>
 			<key>Bold Color</key>
 			<dict>
 				<key>Blue Component</key>
@@ -655,7 +655,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Inconsolata-Regular 16</string>
+			<string>AndaleMono 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -699,7 +699,9 @@
 			<key>Terminal Type</key>
 			<string>xterm-256color</string>
 			<key>Transparency</key>
-			<real>0.037458359771573607</real>
+			<real>0.058088118654822329</real>
+			<key>Unicode Version</key>
+			<integer>8</integer>
 			<key>Unlimited Scrollback</key>
 			<false/>
 			<key>Use Bold Font</key>
@@ -1369,8 +1371,10 @@
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
-		<string>Inconsolata</string>
-		<string>Monaco</string>
+		<string>Apple Braille</string>
+		<string>Andale Mono</string>
+		<string>Menlo</string>
+		<string>Fira Code</string>
 	</array>
 	<key>NoSyncConfirmRunOpenFile</key>
 	<true/>
@@ -1388,12 +1392,12 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {1920, 1080}}</string>
 		<key>topLeft</key>
-		<string>{581, 741}</string>
+		<string>{450, 850}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>479</integer>
+	<integer>566</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2162,7 +2166,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-01T12:43:41Z</date>
+	<date>2020-01-04T12:43:45Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SoundForEsc</key>

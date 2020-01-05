@@ -21,12 +21,16 @@ setopt AUTO_CD
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
+export PYTHONSTARTUP=$CONFIGDIR/python/pythonrc
+export TEXMFHOME=$CONFIGDIR/texmf
 
 export LS_COLORS='di=1;36:ex=32'
-PROMPT='%F{250}%1~ %F{137}> %F{245}'
+PROMPT='%F{255}%1~ %F{137}> %F{255}'
 
-HISTFILE=$ZDOTDIR/.zsh_history
+HISTFILE=$HOME/.hystories/.zsh_history
 PLUGDIR=$ZDOTDIR/plugins
+
+export NNN_USE_EDITOR=1
 
 # PLUGINS ----------------
 source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -36,29 +40,25 @@ alias -g stop='brew services stop'
 alias -g restart='brew services restart'
 
 alias -g ndiet='~/programs/ndiet/ndiet.py'
-alias -g 2d2small='~/programs/2d2small/2d2small.sh'
 
 alias -g peek='~/scripts/peek/peek.py'
 alias -g Omega='~/scripts/Omega/Omega.py'
-alias -g lebowski='~/scripts/lebowski/lebowski.py'
+alias -g 2d2small='~/scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/scripts/otfinstall/otfinstall.sh'
 
-alias -g ls='ls -A --color'
+alias -g ls='ls -A --color --quoting-style=literal'
 alias -g c='clear && printf "\e[3J"'
 alias -g dlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias -g tag='mid3v2' # installed with 'pip3 install mutagen'
 alias -g skim='/Applications/Skim.app/Contents/MacOS/Skim'
+alias -g ffmpeg='ffmpeg-bar'
 
 # EDIT CONFIG FILES ----
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias -g yabairc='nvim ~/.yabairc && ~/.yabairc'
-alias -g skhdrc='nvim ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
+alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
 alias -g nvimrc='nvim ~/.config/nvim/init.vim'
-alias -g firefoxrc='nvim ~/Library/Application\ Support/Firefox/profiles/egbtbydd.default-release/chrome/userChrome.css'
-alias -g rangerrc='nvim ~/.config/ranger/rc.conf'
-alias -g riflerc='nvim ~/.config/ranger/rifle.conf'
-alias -g mpdrc='nvim ~/.mpd/mpd.conf'
-alias -g ncmpcpprc='nvim ~/.ncmpcpp/config'
+alias -g firefoxrc='cd ~/Library/Application\ Support/Firefox/profiles/egbtbydd.default-release/chrome'
 
 # TRANSMISSION -----------
 # function tsm() {
@@ -111,19 +111,23 @@ alias -g hidehidden='defaults write com.apple.Finder AppleShowAllFiles false'
 # m dock prune
 
 # Show all file extensions
-# m finder showextensions YES
+#  m finder showextensions YES
 
 # Hide Dock
-#   defaults write com.apple.dock autohide-delay -float 1000
+#  defaults write com.apple.dock autohide-delay -float 1000
 
 # If Dock gets stuck and won't launch anymore
-#   launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   launchctl   load -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   launchctl start com.apple.Dock.agent
-#   launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   /System/Library/CoreServices/Dock.app/Contents/MacOS/Dock
-#   rm -rf ~/Library/Application\ Support/Dock
-#   sudo reboot
+#  launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
+#  launchctl   load -F /System/Library/LaunchAgents/com.apple.Dock.plist
+#  launchctl start com.apple.Dock.agent
+#  launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
+#  /System/Library/CoreServices/Dock.app/Contents/MacOS/Dock
+#  rm -rf ~/Library/Application\ Support/Dock
+#  sudo reboot
+
+# Write to /System
+#  sudo mount -uw /
+#  killall Finder
 
 # python3 -m site --user-site
 # kpsewhich -var-value=TEXMFHOME
