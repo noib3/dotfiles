@@ -48,6 +48,20 @@
 			<key>Text</key>
 			<string>0x15</string>
 		</dict>
+		<key>0xf700-0x300000</key>
+		<dict>
+			<key>Action</key>
+			<integer>11</integer>
+			<key>Text</key>
+			<string>0x05</string>
+		</dict>
+		<key>0xf701-0x300000</key>
+		<dict>
+			<key>Action</key>
+			<integer>11</integer>
+			<key>Text</key>
+			<string>0x04</string>
+		</dict>
 		<key>0xf702-0x300000</key>
 		<dict>
 			<key>Action</key>
@@ -119,9 +133,9 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>25 25 922 1030 0 0 1920 1080 </string>
+	<string>972 25 922 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>972 1 1036 526 0 0 1920 1080 </string>
+	<string>972 25 922 502 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>25 25 1870 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
@@ -129,6 +143,10 @@
 	<key>NeverWarnAboutOverrides</key>
 	<true/>
 	<key>NeverWarnAboutOverrides_selection</key>
+	<integer>0</integer>
+	<key>NeverWarnAboutPossibleOverrides</key>
+	<true/>
+	<key>NeverWarnAboutPossibleOverrides_selection</key>
 	<integer>0</integer>
 	<key>NeverWarnAboutShortLivedSessions_844AC10E-154B-444A-AAA3-C1256B87C5BE</key>
 	<true/>
@@ -1392,12 +1410,12 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {1920, 1080}}</string>
 		<key>topLeft</key>
-		<string>{450, 850}</string>
+		<string>{625, 793}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>566</integer>
+	<integer>576</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2166,7 +2184,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-04T12:43:45Z</date>
+	<date>2020-01-05T13:58:13Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SoundForEsc</key>

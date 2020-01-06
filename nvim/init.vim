@@ -3,6 +3,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'terryma/vim-smooth-scroll'
 Plug 'lervag/vimtex'
 call plug#end()
 
@@ -12,6 +13,7 @@ set shiftwidth=4
 set expandtab
 set number
 set relativenumber
+set noshowmode
 
 " Aliases
 nnoremap <C-s> :w<cr>
@@ -38,6 +40,11 @@ nnoremap P p
 
 nnoremap ss :%s//g<left><left>
 nnoremap kk :let @/=""<cr>
+
+noremap <silent> <C-e> :call smooth_scroll#up(&scroll, 10, 2)<CR>
+noremap <silent> <C-d> :call smooth_scroll#down(&scroll, 10, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 10, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 10, 4)<CR>
 
 " Colorscheme
 set background=dark

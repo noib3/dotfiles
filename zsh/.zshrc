@@ -16,8 +16,8 @@ PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
 
 # SHELL ------------------
-unsetopt BEEP
 setopt AUTO_CD
+unsetopt BEEP
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
@@ -36,28 +36,23 @@ export NNN_USE_EDITOR=1
 source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ALIASES ----------------
-alias -g stop='brew services stop'
-alias -g restart='brew services restart'
+alias -g ndiet='~/Programs/ndiet/ndiet.py'
 
-alias -g ndiet='~/programs/ndiet/ndiet.py'
-
-alias -g peek='~/scripts/peek/peek.py'
-alias -g Omega='~/scripts/Omega/Omega.py'
-alias -g 2d2small='~/scripts/2d2small/2d2small.sh'
-alias -g otfinstall='~/scripts/otfinstall/otfinstall.sh'
+alias -g peek='~/Scripts/peek/peek.py'
+alias -g Omega='~/Scripts/Omega/Omega.py'
+alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
+alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -A --color --quoting-style=literal'
 alias -g c='clear && printf "\e[3J"'
-alias -g dlmp3='youtube-dl --extract-audio --audio-format mp3'
-alias -g tag='mid3v2' # installed with 'pip3 install mutagen'
-alias -g skim='/Applications/Skim.app/Contents/MacOS/Skim'
-alias -g ffmpeg='ffmpeg-bar'
+alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+alias -g ufetch='$CONFIGDIR/ufetch/ufetch'
 
 # EDIT CONFIG FILES ----
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias -g yabairc='nvim ~/.yabairc && ~/.yabairc'
+alias -g yabairc='nvim $CONFIGDIR/yabai/yabairc && $CONFIGDIR/yabai/yabairc'
 alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
-alias -g nvimrc='nvim ~/.config/nvim/init.vim'
+alias -g nvimrc='nvim $CONFIGDIR/nvim/init.vim'
 alias -g firefoxrc='cd ~/Library/Application\ Support/Firefox/profiles/egbtbydd.default-release/chrome'
 
 # TRANSMISSION -----------
@@ -79,10 +74,10 @@ alias -g firefoxrc='cd ~/Library/Application\ Support/Firefox/profiles/egbtbydd.
 # }
 
 function tsmlist() {
-    transmission-remote -l
+    transmission-remote --list
 }
 function tsmadd() {
-    transmission-remote -a "$1"
+    transmission-remote --add "$1"
 }
 
 function tsmstop() {
@@ -95,17 +90,13 @@ function tsmstart() {
 
 # does not delete data
 function tsmremove() {
-    transmission-remote -t "$1" -r
+    transmission-remote -t "$1" --remove
 }
 
 # does delete data
 function tsmpurge() {
     transmission-remote -t "$1" --remove-and-delete
 }
-
-# Mac OS
-alias -g showhidden='defaults write com.apple.Finder AppleShowAllFiles true'
-alias -g hidehidden='defaults write com.apple.Finder AppleShowAllFiles false'
 
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
@@ -128,6 +119,3 @@ alias -g hidehidden='defaults write com.apple.Finder AppleShowAllFiles false'
 # Write to /System
 #  sudo mount -uw /
 #  killall Finder
-
-# python3 -m site --user-site
-# kpsewhich -var-value=TEXMFHOME
