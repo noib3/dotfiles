@@ -1,0 +1,111 @@
+/* Set background color */
+#navigator-toolbox {
+    background-color: #222222 !important;
+}
+
+/* Set toolbar color */
+:root {
+    --toolbar-bgcolor: #393939 !important;
+}
+
+/* Set url bar colors */
+#urlbar {
+    background-color: #222222 !important;
+    border-color: #222222 !important;
+    border-width: 1px !important;
+    padding-left: 8px !important;
+}
+
+/* Set tab highlight color */
+.tab-line[selected="true"] {
+    background-color: #1e4f93 !important;
+}
+
+/* Set popup menus colors */
+.panel-subview-body, #appMenu-zoomReset-button {
+  color: #ffffff !important; /* text */
+  background: #222222 !important; /* background */
+}
+
+/* Set global UI font */
+* {
+    font-family: "Roboto Condensed" !important;
+    font-size: 15px !important;
+}
+
+/* Remove zoom level in urlbar */
+#urlbar-zoom-button {
+    display: none !important;
+}
+
+/* Remove close, minimize, maximize buttons in the top left corner */
+.titlebar-buttonbox-container {
+    display: none !important;
+}
+
+/* Remove space between the left side of the window and the right side of the first tab*/
+.titlebar-spacer[type="pre-tabs"]{
+    display: none !important;
+}
+
+/* Set padding for the navigation bar */
+#nav-bar {
+    padding-left:8px !important;
+    padding-right:8px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+/* Remove site information icon in urlbar */
+#identity-box[pageproxystate="valid"] {
+    display: none !important;
+}
+
+/* Remove page actions button in urlbar */
+#pageActionButton {
+    display: none !important;
+}
+
+/* Remove show history button in urlbar */
+.urlbar-history-dropmarker, #urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
+    display: none !important;
+}
+
+/* Change bookmarks toolbar's height (current 5px, default 2px) and width (current 4px, default 4px) */
+toolbarbutton.bookmark-item:not(.subviewbutton) {
+    padding: 5px 4px !important;
+}
+
+/* Remove bottom left url preview when hovering over a link */
+#statuspanel[type="overLink"] {
+    display: none !important;
+}
+
+/* Remove bottom left loading indicator when loading a page */
+#statuspanel[type="status"] {
+    display: none !important;
+}
+
+/* Remove the private browsing icon */
+#TabsToolbar .private-browsing-indicator {
+    display: none !important;
+}
+
+/* Hide the tab bar */
+/* #titlebar {
+  visibility: collapse;
+} */
+
+/* Remove tab close button */
+/* #tabbrowser-tabs .tabbrowser-tab .tab-close-button { display:none !important; } */
+
+/* Remove back and forward buttons */
+/* #back-button, #forward-button { display: none !important; } */
+
+/* Remove shield icon in urlbar */
+#tracking-protection-icon-container {
+    display: none !important;
+}
+
+/* Remove the magnifying glass icon when searching */
+#identity-box { visibility: collapse !important; }

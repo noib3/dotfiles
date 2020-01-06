@@ -1,0 +1,4 @@
+/* about:blank */
+@-moz-document url-prefix(about:blank) {
+    * { background-color: #2A2A2E !important; }
+}
