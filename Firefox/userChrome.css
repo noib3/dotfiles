@@ -1,3 +1,5 @@
+@import url("/Users/noibe/.config/Firefox/hacks/urlbar_and_popup_equal_width.css");
+
 /* Set background color */
 #navigator-toolbox {
     background-color: #222222 !important;
@@ -90,11 +92,6 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
 #TabsToolbar .private-browsing-indicator {
     display: none !important;
 }
-
-/* Hide the tab bar */
-/* #titlebar {
-  visibility: collapse;
-} */
 
 /* Remove tab close button */
 /* #tabbrowser-tabs .tabbrowser-tab .tab-close-button { display:none !important; } */
