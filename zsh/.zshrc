@@ -47,6 +47,7 @@ alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -A --color --quoting-style=literal'
+alias -g ssh='ssh -F $CONFIGDIR/ssh/config'
 alias -g c='clear && printf "\e[3J"'
 alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias -g ufetch='$CONFIGDIR/ufetch/ufetch'
