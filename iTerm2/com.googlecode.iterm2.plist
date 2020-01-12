@@ -53,7 +53,7 @@
 			<key>Action</key>
 			<integer>11</integer>
 			<key>Text</key>
-			<string>0x05</string>
+			<string>0x19</string>
 		</dict>
 		<key>0xf701-0x300000</key>
 		<dict>
@@ -137,9 +137,9 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>972 25 922 1030 0 0 1920 1080 </string>
+	<string>732 25 683 850 0 0 1440 900 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>972 25 922 502 0 0 1920 1080 </string>
+	<string>972 24 922 503 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>25 25 1870 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
@@ -692,21 +692,29 @@
 			<integer>1000</integer>
 			<key>Selected Text Color</key>
 			<dict>
+				<key>Alpha Component</key>
+				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.0</real>
+				<real>0.7803921568627451</real>
+				<key>Color Space</key>
+				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.0</real>
+				<real>0.7803921568627451</real>
 				<key>Red Component</key>
-				<real>0.0</real>
+				<real>0.7803921568627451</real>
 			</dict>
 			<key>Selection Color</key>
 			<dict>
-				<key>Blue Component</key>
+				<key>Alpha Component</key>
 				<real>1</real>
+				<key>Blue Component</key>
+				<real>0.55686274509803924</real>
+				<key>Color Space</key>
+				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.8353000283241272</real>
+				<real>0.41176470588235292</real>
 				<key>Red Component</key>
-				<real>0.70980000495910645</real>
+				<real>0.2627450980392157</real>
 			</dict>
 			<key>Send Code When Idle</key>
 			<false/>
@@ -1414,12 +1422,12 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {1920, 1080}}</string>
 		<key>topLeft</key>
-		<string>{592, 830}</string>
+		<string>{558, 687}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>594</integer>
+	<integer>689</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2190,7 +2198,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-06T13:58:14Z</date>
+	<date>2020-01-11T22:18:39Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SeparateStatusBarsPerPane</key>

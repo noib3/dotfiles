@@ -21,19 +21,22 @@ unsetopt BEEP
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
-export PYTHONSTARTUP=$CONFIGDIR/python/pythonrc
+export PYTHONSTARTUP=$CONFIGDIR/python/python-startup.py
 export TEXMFHOME=$CONFIGDIR/texmf
 
-export LS_COLORS='di=1;36:ex=32'
+export LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
 
-HISTFILE=$HOME/.hystories/.zsh_history
+HISTFILE=$HOME/.cache/zsh/.zsh_history
 PLUGDIR=$ZDOTDIR/plugins
 
-export NNN_USE_EDITOR=1
-
-# PLUGINS ----------------
-source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# TAB AUTOCOMPLETION -----
+autoload -U compinit
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+compinit
+_comp_options+=(globdots)
 
 # ALIASES ----------------
 alias -g ndiet='~/Programs/ndiet/ndiet.py'
@@ -53,7 +56,7 @@ alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias -g yabairc='nvim $CONFIGDIR/yabai/yabairc && $CONFIGDIR/yabai/yabairc'
 alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
 alias -g nvimrc='nvim $CONFIGDIR/nvim/init.vim'
-alias -g firefoxrc='cd ~/Library/Application\ Support/Firefox/profiles/egbtbydd.default-release/chrome'
+alias -g redshiftrc='nvim $CONFIGDIR/redshift/redshift.conf && brew services restart redshift'
 
 # TRANSMISSION -----------
 # function tsm() {
@@ -97,6 +100,9 @@ function tsmremove() {
 function tsmpurge() {
     transmission-remote -t "$1" --remove-and-delete
 }
+
+# PLUGINS ----------------
+source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
