@@ -22,7 +22,7 @@ unsetopt BEEP
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 export PYTHONSTARTUP=$CONFIGDIR/python/python-startup.py
-export TEXMFHOME=$CONFIGDIR/texmf
+# export TEXMFHOME=$CONFIGDIR/texmf
 
 export LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
@@ -37,6 +37,10 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 _comp_options+=(globdots)
+
+# LOCALE SETTINGS --------
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # ALIASES ----------------
 alias -g ndiet='~/Programs/ndiet/ndiet.py'

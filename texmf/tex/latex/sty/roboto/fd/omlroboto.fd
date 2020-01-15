@@ -1,7 +1,0 @@
-\ProvidesFile{omlroboto.fd}[23/06/2019 scalable font definition for OML/Roboto]
-%
-\DeclareFontFamily{OML}{Roboto}{}
-\DeclareFontShape{OML}{Roboto}{m}{it}{ <-> OML--Roboto-Italic }{}
-\DeclareFontShape{OML}{Roboto}{bx}{it}{ <-> OML--Roboto-MediumItalic }{}
-%
-\endinput

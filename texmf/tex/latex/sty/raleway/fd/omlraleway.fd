@@ -1,7 +1,0 @@
-\ProvidesFile{omlraleway.fd}[15/09/2019 scalable font definition for OML/Raleway]
-%
-\DeclareFontFamily{OML}{Raleway}{}
-\DeclareFontShape{OML}{Raleway}{m}{it}{ <-> OML--Raleway-Italic }{}
-\DeclareFontShape{OML}{Raleway}{bx}{it}{ <-> OML--Raleway-SemiBoldItalic }{}
-%
-\endinput

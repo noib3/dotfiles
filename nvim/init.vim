@@ -1,11 +1,15 @@
 " Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
-Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
-Plug 'deoplete-plugins/deoplete-jedi'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+Plug 'SirVer/ultisnips'
+Plug 'farmergreg/vim-lastplace'
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+Plug 'vim-pandoc/vim-rmarkdown'
 Plug 'terryma/vim-smooth-scroll'
+Plug 'tpope/vim-surround'
 Plug 'lervag/vimtex'
 call plug#end()
 
@@ -21,9 +25,6 @@ set number
 set relativenumber
 
 set noshowmode
-
-let &colorcolumn=join(range(81,999),",")
-let &colorcolumn="80,".join(range(400,999),",")
 
 " Aliases
 nnoremap <C-s> :w<cr>
@@ -45,7 +46,6 @@ nnoremap p P
 nnoremap P p
 
 nnoremap ss :%s//g<left><left>
-nnoremap kk :let @/=""<cr>
 
 nnoremap <silent> <C-y> :call smooth_scroll#up(20, 10, 2)<cr>
 inoremap <silent> <C-y> <esc>:call smooth_scroll#up(20, 10, 2)<cr>a
@@ -58,6 +58,10 @@ set background=dark
 colorscheme gruvbox
 highlight Normal ctermbg=NONE
 
+" Highlight colors
+highlight ErrorMsg cterm=bold ctermfg=224 ctermbg=NONE
+autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF ctermbg=0
+
 " Airline
 " let g:airline_theme='gruvbox'
 " let g:airline_section_z='Col: %02v/%02{col("$")-1}   Ln: %3l/%L'
@@ -67,20 +71,38 @@ let g:lightline = {
     \ 'colorscheme': 'jellybeans',
     \ }
 
-" Highlight colors
-highlight ErrorMsg cterm=bold ctermfg=224 ctermbg=NONE
-
-" Deoplete
-let g:deoplete#enable_at_startup = 1
-
 " (La)TeX
 let g:vimtex_compiler_method='arara'
 let g:vimtex_view_method='skim'
 autocmd FileType tex nnoremap <buffer> <C-t> :VimtexCompile<cr>
 autocmd FileType tex inoremap <buffer> <C-t> <esc>:VimtexCompile<cr>a
 
+" Markdown
+let g:pandoc#folding#fdc = 0
+autocmd FileType rmd nnoremap <buffer> <C-t> :RMarkdown pdf<cr>
+autocmd FileType rmd inoremap <buffer> <C-t> <esc>:RMarkdown pdf<cr>a
+autocmd FileType rmd setlocal nospell
+autocmd FileType rmd setlocal shiftwidth=2
+
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-"
-autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF ctermbg=0
+" Grey column at 80 chars
+" let &colorcolumn=join(range(81,999),",")
+" let &colorcolumn="80,".join(range(400,999),",")
+
+" Remove trailing whitespace when saving
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+
+autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" Snippets
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<cr>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
