@@ -1,0 +1,34 @@
+window:
+    decorations: buttonless
+    padding:
+      x: 5
+      y: 2
+
+background_opacity: 0.93
+draw_bold_text_with_bright_colors: true
+
+font:
+  normal:
+    family: Andale Mono
+    style: Regular
+  size:
+    14.0
+
+colors:
+  primary:
+    background: '0x121111'
+    foreground: '0xc7c7c7'
+  cursor:
+    text: '0xfeffff'
+    cursor: '0xc7c7c7'
+
+key_bindings:
+  - { key: LBracket, mods: Alt, chars: "\x5B" }
+  - { key: RBracket, mods: Alt, chars: "\x5D" }
+  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" }
+  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" }
+  - { key: S, mods: Command, chars: "\x13" }
+  - { key: W, mods: Command, chars: "\x17" }
+  - { key: Up, mods: Command, chars: "\x15" }
+  - { key: Down, mods: Command, chars: "\x04" }
+  - { key: Key5, mods: Command, chars: "\x7E" }

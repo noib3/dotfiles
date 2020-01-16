@@ -32,7 +32,7 @@
 
 /* Set tab highlight color */
 .tab-line[selected="true"] {
-    background-color: var(--tab-highlight-color) !important;
+    display: none !important;
 }
 
 .tabbrowser-tab[selected="true"] .tab-label {

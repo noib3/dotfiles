@@ -22,7 +22,6 @@ unsetopt BEEP
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 export PYTHONSTARTUP=$CONFIGDIR/python/python-startup.py
-# export TEXMFHOME=$CONFIGDIR/texmf
 
 export LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
@@ -51,13 +50,16 @@ alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -A --color --quoting-style=literal'
-alias -g ssh='ssh -F $CONFIGDIR/ssh/config'
+alias -g ssh='ssh -F $HOME/.config/ssh/config'
+alias -g calcurse='calcurse -D $HOME/.config/calcurse'
 alias -g c='clear && printf "\e[3J"'
 alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
-alias -g ufetch='$CONFIGDIR/ufetch/ufetch'
+alias -g ufetch='sh $HOME/.config/ufetch/ufetch'
+alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 
 # EDIT CONFIG FILES ----
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
+alias -g alacrittyrc='nvim $CONFIGDIR/alacritty/alacritty.yml'
 alias -g yabairc='nvim $CONFIGDIR/yabai/yabairc && $CONFIGDIR/yabai/yabairc'
 alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
 alias -g nvimrc='nvim $CONFIGDIR/nvim/init.vim'
@@ -130,3 +132,5 @@ source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Write to /System
 #  sudo mount -uw /
 #  killall Finder
+# defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
+# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)

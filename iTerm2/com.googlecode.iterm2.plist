@@ -53,7 +53,7 @@
 			<key>Action</key>
 			<integer>11</integer>
 			<key>Text</key>
-			<string>0x19</string>
+			<string>0x15</string>
 		</dict>
 		<key>0xf701-0x300000</key>
 		<dict>
@@ -137,9 +137,9 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>732 25 683 850 0 0 1440 900 </string>
+	<string>25 25 938 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>972 24 922 503 0 0 1920 1080 </string>
+	<string>972 25 923 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>25 25 1870 1030 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
@@ -1427,7 +1427,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>689</integer>
+	<integer>724</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2198,7 +2198,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-11T22:18:39Z</date>
+	<date>2020-01-14T23:59:01Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SeparateStatusBarsPerPane</key>
