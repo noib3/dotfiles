@@ -1,6 +1,6 @@
 # OPEN PROGRAMS
 cmd - b: open -a /Applications/Firefox.app
-cmd - return: open -a /Applications/iTerm.app
+cmd - return: open -a /Applications/Alacritty.app
 
 # MANAGE WINDOWS AND SCREENS
 alt - h: yabai -m window --resize left:-15:0
@@ -22,7 +22,6 @@ alt - x: yabai -m space --mirror x-axis
 alt - y: yabai -m space --mirror y-axis
 alt - r: yabai -m space --rotate 90
 alt - b: yabai -m space --balance
-alt - d: yabai -m space --balance
 
 alt - w: yabai -m space --destroy && yabai -m space --focus prev
 alt - n: yabai -m space --create && yabai -m space --focus last

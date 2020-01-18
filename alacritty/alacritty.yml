@@ -32,7 +32,7 @@ key_bindings:
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" }
   - { key: Semicolon, mods: Super, chars: "\x40" } # change command to alt
   - { key: Apostrophe, mods: Super, chars: "\x23" } # change command to alt
-  - { key: Backslash, mods: Shift, chars: "\x60"} # change command to alt
+  - { key: Backslash, mods: Super, chars: "\x60"} # change command to alt
   - { key: N, mods: Super, action: SpawnNewInstance }
   - { key: S, mods: Super, chars: "\x13" }
   - { key: W, mods: Super, chars: "\x17" }

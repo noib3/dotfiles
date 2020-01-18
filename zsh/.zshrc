@@ -5,6 +5,9 @@
 #  _ / /\__ \ | | | | | (__
 # (_)___|___/_| |_|_|  \___|
 
+# Add 'export ZDOTDIR=$HOME/.config/zsh' to '/private/etc/zprofile'
+# to source this file in this custom location
+
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/python@3.8/bin
 PATH=$PATH:/usr/local/bin
@@ -47,7 +50,7 @@ alias -g Omega='~/Scripts/Omega/Omega.py'
 alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
-alias -g ls='ls -A --color --quoting-style=literal'
+alias -g ls='ls -Ah --color --quoting-style=literal'
 alias -g ssh='ssh -F $HOME/.config/ssh/config'
 alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias -g cal='calcurse -D $HOME/.config/calcurse'
@@ -59,7 +62,7 @@ alias -g c='clear && printf "\e[3J"'
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias -g alacrittyrc='nvim ~/.config/alacritty/alacritty.yml'
 alias -g yabairc='nvim ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
+alias -g skhdrc='nvim ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
 alias -g nvimrc='nvim ~/.config/nvim/init.vim'
 alias -g redshiftrc='nvim ~/.config/redshift/redshift.conf && brew services restart redshift'
 

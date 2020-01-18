@@ -88,8 +88,8 @@ autocmd FileType yaml setlocal shiftwidth=2
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " Grey column at 80 chars
-let &colorcolumn=join(range(81,999),",")
-let &colorcolumn="80,".join(range(400,999),",")
+" let &colorcolumn=join(range(81,999),",")
+" let &colorcolumn="80,".join(range(400,999),",")
 
 " Remove trailing whitespace when saving
 fun! <SID>StripTrailingWhitespaces()
