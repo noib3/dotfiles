@@ -1,15 +1,12 @@
-@import url("/Users/noibe/.config/Firefox/colorscheme.css");
-@import url("/Users/noibe/.config/Firefox/removed_stuff.css");
-@import url("/Users/noibe/.config/Firefox/hacks/urlbar_and_popup_equal_width.css");
+/*  ------------------------ GENERAL ------------------------ */
+*{
+    font-family: "Roboto Condensed" !important;
+    font-size: 15px !important;
+}
 
 #urlbar{
     border-width: 1px !important;
     padding-left: 8px !important;
-}
-
-*{
-    font-family: "Roboto Condensed" !important;
-    font-size: 15px !important;
 }
 
 #nav-bar{
@@ -26,3 +23,175 @@
 toolbarbutton.bookmark-item:not(.subviewbutton){
     padding: 5px 4px !important;
 }
+
+/*  ---------------------- COLORSCHEME ---------------------- */
+/* Variables */
+:root{
+    --main-bg-color: #202124;
+    --toolbar-bg-color: #393939;
+    --main-text-color: #ebebeb;
+    --popup-menu-bg-color: #202124;
+    --popup-menu-text-color: #ebebeb;
+}
+
+/* Set background color */
+#navigator-toolbox {
+    background-color: var(--main-bg-color) !important;
+}
+
+/* Set toolbar color */
+:root {
+    --toolbar-bgcolor: var(--toolbar-bg-color) !important;
+}
+
+/* Set url bar colors */
+#urlbar {
+    color: var(--main-text-color) !important;
+    background-color: var(--main-bg-color) !important;
+    border-color: var(--main-bg-color) !important;
+}
+
+/* Set focused urlbar border color */
+#urlbar[focused="true"]{
+    box-shadow: inset var(--main-bg-color) 0px 0px 0px 2px !important;
+}
+
+/* Set tab highlight color */
+.tab-line[selected="true"] {
+    display: none !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-label {
+    color: var(--main-text-color) !important;
+}
+
+/* Set popup menus colors */
+.panel-subview-body, #appMenu-zoomReset-button {
+  color: var(--popup-menu-text-color) !important; /* text */
+  background: var(--popup-menu-bg-color) !important; /* background */
+}
+
+#back-button{
+    fill: var(--main-text-color) !important;
+}
+
+#forward-button{
+    fill: var(--main-text-color) !important;
+}
+
+#PanelUI-menu-button{
+    fill: var(--main-text-color) !important;
+}
+
+.tab-close-button {
+    color: var(--main-text-color) !important;
+}
+
+#tabs-newtab-button {
+    fill: var(--main-text-color) !important;
+}
+
+#urlbar-results{
+    color: var(--main-text-color) !important;
+    background: var(--main-bg-color) !important;
+}
+
+toolbarbutton.bookmark-item {
+    color: var(--main-text-color) !important;
+}
+
+/*  ---------------------- REMOVE BLOAT --------------------- */
+/* Remove zoom level in urlbar */
+#urlbar-zoom-button {
+    display: none !important;
+}
+
+/* Remove close, minimize, maximize buttons in the top left corner */
+.titlebar-buttonbox-container {
+    display: none !important;
+}
+
+/* Remove space between the left side of the window and the right side
+of the first tab */
+.titlebar-spacer[type="pre-tabs"]{
+    display: none !important;
+}
+
+/* Remove site information icon in urlbar */
+#identity-box[pageproxystate="valid"] {
+    display: none !important;
+}
+
+/* Remove page actions button in urlbar */
+#pageActionButton {
+    display: none !important;
+}
+
+/* Remove show history button in urlbar */
+.urlbar-history-dropmarker,
+#urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
+    display: none !important;
+}
+
+/* Remove bottom left url preview when hovering over a link */
+#statuspanel[type="overLink"] {
+    display: none !important;
+}
+
+/* Remove bottom left loading indicator when loading a page */
+#statuspanel[type="status"] {
+    display: none !important;
+}
+
+/* Remove the private browsing icon */
+#TabsToolbar .private-browsing-indicator {
+    display: none !important;
+}
+
+/* Remove tab close button */
+#tabbrowser-tabs .tabbrowser-tab .tab-close-button {
+    display:none !important;
+}
+
+/* Remove shield icon in urlbar */
+#tracking-protection-icon-container {
+    display: none !important;
+}
+
+/* Remove the magnifying glass icon when searching */
+#identity-box {
+    visibility: collapse !important;
+}
+
+/* Remove white line at the end of urlbar */
+#pageActionSeparator{
+    display: none !important;
+}
+
+/*  -------- EQUAL WIDTH FOR URLBAR AND POPUP WINDOW -------- */
+/* Copied from 'https://github.com/MrOtherGuy/firefox-csshacks/blob/master/chrome/urlbar_and_popup_equal_width.css' */
+
+/* Constrains urlbar popup to urlbar width */
+/* Firefox 70+ */
+
+#urlbar-container{
+	transform: translateY(0);
+	position: relative;
+	z-index: 10;
+	padding-block: 3px !important;
+  padding-inline: 0px !important;
+  margin-inline: 5px !important;
+}
+#nav-bar-customization-target{ overflow: visible !important }
+#urlbar-results{ max-width: 100% !important; }
+.urlbarView{
+  top: calc(100% - 5px) !important;
+  width: 100%;
+  border-width: 0 1px 1px 1px !important;;
+  border-style: solid;
+  border-color: inherit !important;
+}
+:root[uidensity="compact"] .urlbarView { margin-top: 2px }
+:root[uidensity="touch"] .urlbarView { margin-top: 1px }
+#urlbar[open]{ border-bottom-right-radius: 0px !important; border-bottom-left-radius: 0px !important; }
+.urlbarView-row{ padding: 6px 0px !important; }

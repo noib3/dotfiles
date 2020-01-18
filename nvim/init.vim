@@ -13,10 +13,6 @@ Plug 'lervag/vimtex'
 call plug#end()
 
 " Basics
-filetype on
-filetype plugin indent on
-syntax enable
-
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -25,12 +21,18 @@ set number
 set relativenumber
 
 set noshowmode
+set noshowcmd
 
-" Aliases
+" Mappings
 nnoremap <C-s> :w<cr>
 inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
 inoremap <C-w> <esc>:q<cr>
+
+nnoremap <C-i> ^
+inoremap <C-i> <esc>^i
+nnoremap <C-a> g_
+inoremap <C-a> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
 
@@ -42,27 +44,28 @@ set background=dark
 colorscheme gruvbox
 
 " Highlight colors
+highlight Comment cterm=italic
 highlight Normal ctermbg=NONE
-highlight ErrorMsg cterm=bold ctermfg=224 ctermbg=NONE
-autocmd ColorScheme * highlight ExtraWhitespace guibg=#FFFFFF ctermbg=0
+highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
 " Lightline
 let g:lightline = {
       \ 'colorscheme': 'jellybeans',
       \ 'active': {
-      \   'right': [ [ 'total_lines' ],
-      \              [ 'lineinfo' ],
-      \              [ 'filetype', 'fileencoding'] ]
+      \   'right': [ ['lines'],
+      \              ['fileencoding'],
+      \              ['filetype'] ]
       \ },
       \ 'component': {
-      \   'total_lines': '%L'
+      \   'lines': '%LL',
       \ },
       \ 'component_function': {
       \   'filename': 'LightlineFilename'
-      \ },
       \ }
+      \ }
+
 function! LightlineFilename()
-  return expand('%')
+  return expand('%:t')
 endfunction
 
 " LaTeX
@@ -79,14 +82,14 @@ autocmd FileType rmd setlocal nospell
 autocmd FileType rmd setlocal shiftwidth=2
 
 " Yaml
-autocmd FileType yml setlocal shiftwidth=2
+autocmd FileType yaml setlocal shiftwidth=2
 
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " Grey column at 80 chars
-" let &colorcolumn=join(range(81,999),",")
-" let &colorcolumn="80,".join(range(400,999),",")
+let &colorcolumn=join(range(81,999),",")
+let &colorcolumn="80,".join(range(400,999),",")
 
 " Remove trailing whitespace when saving
 fun! <SID>StripTrailingWhitespaces()
@@ -95,4 +98,5 @@ fun! <SID>StripTrailingWhitespaces()
     %s/\s\+$//e
     call cursor(l, c)
 endfun
+
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()

@@ -9,8 +9,7 @@ draw_bold_text_with_bright_colors: true
 
 font:
   normal:
-    family: Andale Mono
-    style: Regular
+    family: Menlo
   size:
     14.0
 
@@ -21,14 +20,24 @@ colors:
   cursor:
     text: '0xfeffff'
     cursor: '0xc7c7c7'
+  selection:
+    text: '0xc7c7c7'
+    background: '0x43698e'
 
 key_bindings:
+  - { key: Key5, mods: Super, chars: "\x7E" } # change command to alt
   - { key: LBracket, mods: Alt, chars: "\x5B" }
   - { key: RBracket, mods: Alt, chars: "\x5D" }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" }
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" }
-  - { key: S, mods: Command, chars: "\x13" }
-  - { key: W, mods: Command, chars: "\x17" }
-  - { key: Up, mods: Command, chars: "\x15" }
-  - { key: Down, mods: Command, chars: "\x04" }
-  - { key: Key5, mods: Command, chars: "\x7E" }
+  - { key: Semicolon, mods: Super, chars: "\x40" } # change command to alt
+  - { key: Apostrophe, mods: Super, chars: "\x23" } # change command to alt
+  - { key: Backslash, mods: Shift, chars: "\x60"} # change command to alt
+  - { key: N, mods: Super, action: SpawnNewInstance }
+  - { key: S, mods: Super, chars: "\x13" }
+  - { key: W, mods: Super, chars: "\x17" }
+  - { key: Up, mods: Super, chars: "\x15" }
+  - { key: Down, mods: Super, chars: "\x04" }
+  - { key: Left, mods: Super, chars: "\x09" }
+  - { key: Right, mods: Super, chars: "\x01" }
+  - { key: Back, mods: Super, chars: "\x15" }

@@ -5,9 +5,9 @@
 #  _ / /\__ \ | | | | | (__
 # (_)___|___/_| |_|_|  \___|
 
-
-PATH=/usr/local/bin
-PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
+PATH=/usr/local/opt/coreutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/python@3.8/bin
+PATH=$PATH:/usr/local/bin
 PATH=$PATH:/usr/bin
 PATH=$PATH:/usr/sbin
 PATH=$PATH:/bin
@@ -19,15 +19,13 @@ PATH=$PATH:/opt/X11/bin
 setopt AUTO_CD
 unsetopt BEEP
 
-export VISUAL=nvim
-export EDITOR="$VISUAL"
-export PYTHONSTARTUP=$CONFIGDIR/python/python-startup.py
-
-export LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
+HISTFILE=$HOME/.cache/zsh/.zsh_history
+LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
 
-HISTFILE=$HOME/.cache/zsh/.zsh_history
-PLUGDIR=$ZDOTDIR/plugins
+export VISUAL=nvim
+export EDITOR="$VISUAL"
+export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
 
 # TAB AUTOCOMPLETION -----
 autoload -U compinit
@@ -51,38 +49,21 @@ alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -A --color --quoting-style=literal'
 alias -g ssh='ssh -F $HOME/.config/ssh/config'
-alias -g calcurse='calcurse -D $HOME/.config/calcurse'
-alias -g c='clear && printf "\e[3J"'
-alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
-alias -g ufetch='sh $HOME/.config/ufetch/ufetch'
 alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+alias -g cal='calcurse -D $HOME/.config/calcurse'
+alias -g ufetch='sh $HOME/.config/ufetch/ufetch'
+alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+alias -g c='clear && printf "\e[3J"'
 
 # EDIT CONFIG FILES ----
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias -g alacrittyrc='nvim $CONFIGDIR/alacritty/alacritty.yml'
-alias -g yabairc='nvim $CONFIGDIR/yabai/yabairc && $CONFIGDIR/yabai/yabairc'
+alias -g alacrittyrc='nvim ~/.config/alacritty/alacritty.yml'
+alias -g yabairc='nvim ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
 alias -g skhdrc='nvim ~/.skhdrc && ~/.skhdrc'
-alias -g nvimrc='nvim $CONFIGDIR/nvim/init.vim'
-alias -g redshiftrc='nvim $CONFIGDIR/redshift/redshift.conf && brew services restart redshift'
+alias -g nvimrc='nvim ~/.config/nvim/init.vim'
+alias -g redshiftrc='nvim ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # TRANSMISSION -----------
-# function tsm() {
-# 	transmission-remote -l | sed '$ d;s/ MB/MB/g;s/ GB/GB/g;s/ days/days/g;s/ hrs/hrs/g;s/ min/min/g;s/ \& /\&/g' |
-# 		awk '{
-# 			for(i=1;i<=NF;++i)
-# 				if (i != 3 && i != 7)
-# 					if (i == 4)
-# 						printf("%s\t   ", $i);
-# 					else if (i == 5)
-# 						printf("%s\t      ", $i);
-# 					else if (i == 8)
-# 						printf("%s\t\t", $i);
-# 					else
-# 						printf("%s\t", $i);
-# 				printf("\n");
-# 		}' | sed 's/days/ days/g;s/hrs/ hrs/g;s/min/ min/g;s/Up\&Down	/Downloading/g;s/Uploading	/Uploading/g';
-# }
-
 function tsmlist() {
     transmission-remote --list
 }
@@ -109,7 +90,7 @@ function tsmpurge() {
 }
 
 # PLUGINS ----------------
-source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
