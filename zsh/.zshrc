@@ -29,6 +29,7 @@ PROMPT='%F{255}%1~ %F{137}> %F{255}'
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
+export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/ignore'
 
 # TAB AUTOCOMPLETION -----
 autoload -U compinit
@@ -39,7 +40,7 @@ compinit
 _comp_options+=(globdots)
 
 # LOCALE SETTINGS --------
-export LC_ALL=en_US.UTF-8
+export LC_LL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 # ALIASES ----------------
@@ -50,7 +51,7 @@ alias -g Omega='~/Scripts/Omega/Omega.py'
 alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
-alias -g ls='ls -Ah --color --quoting-style=literal'
+alias -g ls='ls -Ah --color --quoting-style=literal --group-directories-first'
 alias -g ssh='ssh -F $HOME/.config/ssh/config'
 alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias -g cal='calcurse -D $HOME/.config/calcurse'
@@ -117,4 +118,4 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #  sudo mount -uw /
 #  killall Finder
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
-# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
+# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A

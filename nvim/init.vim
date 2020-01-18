@@ -3,6 +3,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -23,21 +24,25 @@ set relativenumber
 set noshowmode
 set noshowcmd
 
+let mapleader = ","
+
 " Mappings
 nnoremap <C-s> :w<cr>
 inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
 inoremap <C-w> <esc>:q<cr>
 
-nnoremap <C-i> ^
-inoremap <C-i> <esc>^i
-nnoremap <C-a> g_
-inoremap <C-a> <esc>g_a
+nnoremap <C-a> ^
+inoremap <C-a> <esc>^i
+nnoremap <C-e> g_
+inoremap <C-e> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
 
 nnoremap <silent> <C-u> :call smooth_scroll#up(20, 10, 2)<cr>
 nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
+
+nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
 " Colorscheme
 set background=dark
@@ -50,7 +55,7 @@ highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
 " Lightline
 let g:lightline = {
-      \ 'colorscheme': 'jellybeans',
+      \ 'colorscheme': 'srcery_drk',
       \ 'active': {
       \   'right': [ ['lines'],
       \              ['fileencoding'],
@@ -86,10 +91,6 @@ autocmd FileType yaml setlocal shiftwidth=2
 
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-" Grey column at 80 chars
-" let &colorcolumn=join(range(81,999),",")
-" let &colorcolumn="80,".join(range(400,999),",")
 
 " Remove trailing whitespace when saving
 fun! <SID>StripTrailingWhitespaces()

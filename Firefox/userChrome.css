@@ -148,11 +148,6 @@ of the first tab */
     display: none !important;
 }
 
-/* Remove tab close button */
-#tabbrowser-tabs .tabbrowser-tab .tab-close-button {
-    display:none !important;
-}
-
 /* Remove shield icon in urlbar */
 #tracking-protection-icon-container {
     display: none !important;

@@ -36,8 +36,9 @@ key_bindings:
   - { key: N, mods: Super, action: SpawnNewInstance }
   - { key: S, mods: Super, chars: "\x13" }
   - { key: W, mods: Super, chars: "\x17" }
+  - { key: T, mods: Super, chars: "\x14" }
   - { key: Up, mods: Super, chars: "\x15" }
   - { key: Down, mods: Super, chars: "\x04" }
-  - { key: Left, mods: Super, chars: "\x09" }
-  - { key: Right, mods: Super, chars: "\x01" }
+  - { key: Left, mods: Super, chars: "\x01" }
+  - { key: Right, mods: Super, chars: "\x05" }
   - { key: Back, mods: Super, chars: "\x15" }
