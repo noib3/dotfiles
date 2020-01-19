@@ -5,7 +5,7 @@
 #  _ / /\__ \ | | | | | (__
 # (_)___|___/_| |_|_|  \___|
 
-# Add 'export ZDOTDIR=/.config/zsh' to '/private/etc/zprofile'
+# Add 'export ZDOTDIR=~/.config/zsh' to '/private/etc/zprofile'
 # to source this file in this custom location
 
 PATH=/usr/local/opt/coreutils/libexec/gnubin
@@ -22,8 +22,8 @@ PATH=$PATH:/opt/X11/bin
 setopt AUTO_CD
 unsetopt BEEP
 
-LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
+LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
@@ -50,12 +50,17 @@ function alacritty(){nvim ~/.config/alacritty/alacritty.yml}
 zle -N alacritty
 bindkey '^b' alacritty
 
+function ciao(){open ~/Desktop}
+zle -N ciao
+bindkey '^p' ciao
+
 # LOCALE SETTINGS --------
 export LC_LL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 # ALIASES ----------------
 alias -g alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
+alias -g firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
 alias -g ndiet='~/Programs/ndiet/ndiet.py'
 alias -g peek='~/Scripts/peek/peek.py'
@@ -64,10 +69,10 @@ alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias -g ssh='ssh -F /.config/ssh/config'
+alias -g ssh='ssh -F ~/.config/ssh/config'
 alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias -g cal='calcurse -D /.config/calcurse'
-alias -g ufetch='sh /.config/ufetch/ufetch'
+alias -g cal='calcurse -D ~/.config/calcurse'
+alias -g ufetch='sh ~/.config/ufetch/ufetch'
 alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias -g c='clear && printf "\e[3J"'
 
@@ -79,36 +84,12 @@ alias -g nvimrc='nvim ~/.config/nvim/init.vim'
 alias -g redshiftrc='nvim ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # TRANSMISSION -----------
-function tsmlist() {
-    transmission-remote --list
-}
-function tsmadd() {
-    transmission-remote --add "$1"
-}
+function tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
 
-function tsmstop() {
-    transmission-remote -t "$1" --stop
-}
-
-function tsmstart() {
-    transmission-remote -t "$1" --start
-}
-
-# does not delete data
-function tsmremove() {
-    transmission-remote -t "$1" --remove
-}
-
-# does delete data
-function tsmpurge() {
-    transmission-remote -t "$1" --remove-and-delete
-}
-
-# FZF
-# fd - cd to selected directory
+# FZF --------------------
 fd() {
   local dir
-  dir=$(find ${1:-.} -path '*/\.*' -prune \
+  dir=$(fd ${1:-.} -path '*/\.*' -prune \
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
