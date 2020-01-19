@@ -39,7 +39,7 @@ inoremap <C-e> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
 
-nnoremap <silent> <C-u> :call smooth_scroll#up(20, 10, 2)<cr>
+nnoremap <silent> <C-o> :call smooth_scroll#up(20, 10, 2)<cr>
 nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
@@ -70,7 +70,7 @@ let g:lightline = {
       \ }
 
 function! LightlineFilename()
-  return expand('%:t')
+  return expand('%')
 endfunction
 
 " LaTeX

@@ -25,20 +25,21 @@ colors:
     background: '0x43698e'
 
 key_bindings:
-  - { key: Key5, mods: Super, chars: "\x7E" } # change command to alt
-  - { key: LBracket, mods: Alt, chars: "\x5B" }
-  - { key: RBracket, mods: Alt, chars: "\x5D" }
-  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" }
-  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" }
-  - { key: Semicolon, mods: Super, chars: "\x40" } # change command to alt
-  - { key: Apostrophe, mods: Super, chars: "\x23" } # change command to alt
-  - { key: Backslash, mods: Super, chars: "\x60"} # change command to alt
+  - { key: Comma, mods: Super, chars: "\x02" } # ctrl-b
+  - { key: 23, mods: Alt, chars: "\x7E" } # ~
+  - { key: 41, mods: Alt, chars: "\x40" } # @
+  - { key: 39, mods: Alt, chars: "\x23" } # #
+  - { key: 10, mods: Alt, chars: "\x60"} # `
+  - { key: LBracket, mods: Alt, chars: "\x5B" } # [
+  - { key: RBracket, mods: Alt, chars: "\x5D" } # ]
+  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
+  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
   - { key: N, mods: Super, action: SpawnNewInstance }
-  - { key: S, mods: Super, chars: "\x13" }
-  - { key: W, mods: Super, chars: "\x17" }
-  - { key: T, mods: Super, chars: "\x14" }
-  - { key: Up, mods: Super, chars: "\x15" }
-  - { key: Down, mods: Super, chars: "\x04" }
-  - { key: Left, mods: Super, chars: "\x01" }
-  - { key: Right, mods: Super, chars: "\x05" }
-  - { key: Back, mods: Super, chars: "\x15" }
+  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
+  - { key: W, mods: Super, chars: "\x17" } # ctrl-w
+  - { key: T, mods: Super, chars: "\x14" } # ctrl-t
+  - { key: Up, mods: Super, chars: "\x0f" } # ctrl-o
+  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
+  - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
+  - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
+  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u

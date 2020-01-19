@@ -28,8 +28,11 @@ PROMPT='%F{255}%1~ %F{137}> %F{255}'
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
-export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
+
 export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/ignore'
+
+export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
+export MPLCONFIGDIR=$HOME/.cache/matplotlib
 
 # TAB AUTOCOMPLETION -----
 autoload -U compinit
@@ -39,13 +42,20 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots)
 
+# KEY BINDINGS -----------
+# Open alacritty config file with cmd + ,
+function alacritty(){nvim ~/.config/alacritty/alacritty.yml}
+zle -N alacritty
+bindkey '^b' alacritty
+
 # LOCALE SETTINGS --------
 export LC_LL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 # ALIASES ----------------
-alias -g ndiet='~/Programs/ndiet/ndiet.py'
+alias -g alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 
+alias -g ndiet='~/Programs/ndiet/ndiet.py'
 alias -g peek='~/Scripts/peek/peek.py'
 alias -g Omega='~/Scripts/Omega/Omega.py'
 alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
@@ -93,8 +103,19 @@ function tsmpurge() {
     transmission-remote -t "$1" --remove-and-delete
 }
 
+# FZF
+# fd - cd to selected directory
+fd() {
+  local dir
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
+  cd "$dir"
+}
+
 # PLUGINS ----------------
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
+source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
@@ -117,5 +138,6 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Write to /System
 #  sudo mount -uw /
 #  killall Finder
+
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A
