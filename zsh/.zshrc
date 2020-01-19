@@ -5,7 +5,7 @@
 #  _ / /\__ \ | | | | | (__
 # (_)___|___/_| |_|_|  \___|
 
-# Add 'export ZDOTDIR=$HOME/.config/zsh' to '/private/etc/zprofile'
+# Add 'export ZDOTDIR=/.config/zsh' to '/private/etc/zprofile'
 # to source this file in this custom location
 
 PATH=/usr/local/opt/coreutils/libexec/gnubin
@@ -22,7 +22,6 @@ PATH=$PATH:/opt/X11/bin
 setopt AUTO_CD
 unsetopt BEEP
 
-HISTFILE=$HOME/.cache/zsh/.zsh_history
 LS_COLORS='di=1;36:ex=32:ln=35:mh=31'
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
 
@@ -39,8 +38,11 @@ autoload -U compinit
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zmodload zsh/complist
-compinit
 _comp_options+=(globdots)
+
+# CACHE FILES ------------
+compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
+HISTFILE=$HOME/.cache/zsh/zsh_history
 
 # KEY BINDINGS -----------
 # Open alacritty config file with cmd + ,
@@ -62,16 +64,15 @@ alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
 alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
 
 alias -g ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias -g ssh='ssh -F $HOME/.config/ssh/config'
+alias -g ssh='ssh -F /.config/ssh/config'
 alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias -g cal='calcurse -D $HOME/.config/calcurse'
-alias -g ufetch='sh $HOME/.config/ufetch/ufetch'
+alias -g cal='calcurse -D /.config/calcurse'
+alias -g ufetch='sh /.config/ufetch/ufetch'
 alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias -g c='clear && printf "\e[3J"'
 
 # EDIT CONFIG FILES ----
 alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias -g alacrittyrc='nvim ~/.config/alacritty/alacritty.yml'
 alias -g yabairc='nvim ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
 alias -g skhdrc='nvim ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
 alias -g nvimrc='nvim ~/.config/nvim/init.vim'
