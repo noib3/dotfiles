@@ -19,7 +19,9 @@ PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
 
 # SHELL ------------------
+setopt MENU_COMPLETE
 setopt AUTO_CD
+unsetopt CASE_GLOB
 unsetopt BEEP
 
 PROMPT='%F{255}%1~ %F{137}> %F{255}'
@@ -35,8 +37,9 @@ export MPLCONFIGDIR=$HOME/.cache/matplotlib
 
 # TAB AUTOCOMPLETION -----
 autoload -U compinit
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zmodload zsh/complist
 _comp_options+=(globdots)
 
