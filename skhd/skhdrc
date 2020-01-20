@@ -22,6 +22,7 @@ alt - x: yabai -m space --mirror x-axis
 alt - y: yabai -m space --mirror y-axis
 alt - r: yabai -m space --rotate 90
 alt - b: yabai -m space --balance
+alt - m: yabai -m window --swap largest
 
 alt - w: yabai -m space --destroy && yabai -m space --focus prev
 alt - n: yabai -m space --create && yabai -m space --focus last

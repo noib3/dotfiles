@@ -1,8 +1,8 @@
 set aaa_mode=all
-set altformat_current= %F 
-set altformat_playlist= %f%= %d 
+set altformat_current= %F
+set altformat_playlist= %f%= %d
 set altformat_title=%f
-set altformat_trackwin= %f%= %d 
+set altformat_trackwin= %f%= %d
 set auto_expand_albums_follow=true
 set auto_expand_albums_search=true
 set auto_expand_albums_selcur=true
@@ -53,14 +53,14 @@ set dsp.coreaudio.device=
 set dsp.coreaudio.enable_hog_mode=false
 set dsp.coreaudio.sync_sample_rate=false
 set follow=false
-set format_current= %a - %l -%3n. %t%= %y 
+set format_current= %a - %l -%3n. %t%= %y
 set format_playlist= %-21%a %3n. %t%= %y %d %{?X!=0?%3X ?    }
 set format_playlist_va= %-21%A %3n. %t (%a)%= %y %d %{?X!=0?%3X ?    }
-set format_statusline= %{status} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }}- %{total} %{?bpm>0?at %{bpm} BPM }%{?volume>=0?vol: %{?lvolume!=rvolume?%{lvolume},%{rvolume} ?%{volume} }}%{?stream?buf: %{buffer} }%{?show_current_bitrate & bitrate>=0? %{bitrate} kbps }%=%{?repeat_current?repeat current?%{?play_library?%{playlist_mode} from %{?play_sorted?sorted }library?playlist}} | %1{continue}%1{follow}%1{repeat}%1{shuffle} 
+set format_statusline= %{status} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }}- %{total} %{?bpm>0?at %{bpm} BPM }%{?volume>=0?vol: %{?lvolume!=rvolume?%{lvolume},%{rvolume} ?%{volume} }}%{?stream?buf: %{buffer} }%{?show_current_bitrate & bitrate>=0? %{bitrate} kbps }%=%{?repeat_current?repeat current?%{?play_library?%{playlist_mode} from %{?play_sorted?sorted }library?playlist}} | %1{continue}%1{follow}%1{repeat}%1{shuffle}
 set format_title=%a - %l - %t (%y)
-set format_trackwin=%3n. %t%= %y %d 
-set format_trackwin_album= %l %= %{albumduration} 
-set format_trackwin_va=%3n. %t (%a)%= %y %d 
+set format_trackwin=%3n. %t%= %y %d
+set format_trackwin_album= %l %= %{albumduration}
+set format_trackwin_va=%3n. %t (%a)%= %y %d
 set format_treewin=  %l
 set format_treewin_artist=%a
 set icecast_default_charset=ISO-8859-1
@@ -83,7 +83,7 @@ set passwd=
 set pl_sort=
 set play_library=true
 set play_sorted=false
-set repeat=false
+set repeat=true
 set repeat_current=false
 set replaygain=disabled
 set replaygain_limit=true
@@ -97,7 +97,7 @@ set show_current_bitrate=false
 set show_hidden=false
 set show_playback_position=true
 set show_remaining_time=false
-set shuffle=false
+set shuffle=true
 set skip_track_info=false
 set smart_artist_sort=true
 set softvol=false
@@ -110,7 +110,7 @@ bind browser backspace browser-up
 bind browser i toggle show_hidden
 bind browser space win-activate
 bind browser u win-update
-bind common ! push shell 
+bind common ! push shell
 bind common + vol +10%
 bind common , seek -1m
 bind common - vol -10%
@@ -128,10 +128,10 @@ bind common ? search-b-start
 bind common C toggle continue
 bind common D win-remove
 bind common E win-add-Q
-bind common F push filter 
+bind common F push filter
 bind common G win-bottom
 bind common I echo {}
-bind common L push live-filter 
+bind common L push live-filter
 bind common M toggle play_library
 bind common N search-prev
 bind common P win-mv-before
@@ -139,13 +139,14 @@ bind common U win-update-cache
 bind common [ vol +1% +0
 bind common ] vol +0 +1%
 bind common ^B win-page-up
-bind common ^C echo Type :quit<enter> to exit cmus.
+bind common ^C echo Type :quit<CR> to exit cmus.
 bind common ^D win-half-page-down
 bind common ^E win-scroll-down
 bind common ^F win-page-down
 bind common ^L refresh
 bind common ^R toggle repeat_current
 bind common ^U win-half-page-up
+bind common ^W wq
 bind common ^Y win-scroll-up
 bind common a win-add-l
 bind common b player-next

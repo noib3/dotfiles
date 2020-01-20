@@ -1,1 +1,19 @@
+bind -f common ^W wq
+bind -f common ^W q
+bind -f common ^W echo ciao
+bind -f common ^C echo Type :q<CR> to exit
+bind common <key> echo ciao
+bind
+bind -f common ^C echo ciao
+bind -f common ^Q echo ciao
+bind -f common ^L refresh
+bind -f common ^Q wq
 q
+bind common ^Q wq
+bind -f common } vol -0 -1%
+bind common <key> wq
+bind -f common m toggle aaa_mode
+echo Type :quit<enter> to exit cmus.
+quit -i
+save
+quit

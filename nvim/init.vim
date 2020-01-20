@@ -39,7 +39,7 @@ inoremap <C-e> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
 
-nnoremap <silent> <C-o> :call smooth_scroll#up(20, 10, 2)<cr>
+nnoremap <silent> <C-u> :call smooth_scroll#up(20, 10, 2)<cr>
 nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
@@ -57,21 +57,16 @@ highlight ErrorMsg ctermfg=224 ctermbg=NONE
 let g:lightline = {
       \ 'colorscheme': 'srcery_drk',
       \ 'active': {
+      \   'left': [ ['mode', 'paste'],
+      \             ['readonly', 'absolutepath', 'modified'] ],
       \   'right': [ ['lines'],
       \              ['fileencoding'],
       \              ['filetype'] ]
       \ },
       \ 'component': {
       \   'lines': '%LL',
-      \ },
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename'
       \ }
       \ }
-
-function! LightlineFilename()
-  return expand('%')
-endfunction
 
 " LaTeX
 let g:vimtex_compiler_method='arara'
