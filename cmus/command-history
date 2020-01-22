@@ -1,3 +1,9 @@
+colorscheme themes/gruvbox
+colorscheme default
+coloscheme default
+colorscheme gruvbox
+update-cache
+bind -f common ^R refresh
 bind -f common ^W wq
 bind -f common ^W q
 bind -f common ^W echo ciao

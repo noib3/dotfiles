@@ -137,7 +137,7 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>560 474 799 448 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>972 25 922 502 0 0 1920 1080 </string>
+	<string>1002 -4 890 531 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>25 24 938 503 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
@@ -679,7 +679,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>AndaleMono 14</string>
+			<string>Menlo-Bold 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -1424,12 +1424,12 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {1920, 1080}}</string>
 		<key>topLeft</key>
-		<string>{131, 729}</string>
+		<string>{115, 724}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>45FCD7EF-B5F3-43E9-A3DE-93AEB9510AD5</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>739</integer>
+	<integer>749</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2200,7 +2200,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-16T00:16:58Z</date>
+	<date>2020-01-21T17:57:54Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SeparateStatusBarsPerPane</key>

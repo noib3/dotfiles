@@ -1,0 +1,43 @@
+### gruvbox redux
+### by ghosty
+
+set color_error=lightred
+set color_info=142
+
+### column seperator
+set color_separator=223
+
+### window titlebar
+set color_win_title_bg=246
+set color_win_title_fg=233
+
+### track information bar
+set color_titleline_bg=108
+set color_titleline_fg=235
+
+### status bar
+set color_statusline_bg=235
+set color_statusline_fg=223
+
+### command line
+set color_cmdline_bg=233
+set color_cmdline_fg=223
+
+### inactive currently playing foreground
+set color_win_cur=203
+
+### active currently playing selection
+set color_win_cur_sel_bg=203
+set color_win_cur_sel_fg=235
+
+### inactive currently playing selection
+set color_win_inactive_cur_sel_bg=203
+set color_win_inactive_cur_sel_fg=235
+
+### active selection
+set color_win_sel_bg=223
+set color_win_sel_fg=235
+
+### inactive selection
+set color_win_inactive_sel_bg=233
+set color_win_inactive_sel_fg=223

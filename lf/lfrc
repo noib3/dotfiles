@@ -1,5 +1,14 @@
+# Preview script
+set previewer ~/.config/lf/pv.sh
+map i $~/.config/lf/pv.sh $f | less -R
+
+set icons
+
+# -----------------------------------------------
+# -----------------------------------------------
+
 # interpreter for shell commands (needs to be POSIX compatible)
-set shell sh
+set shell zsh
 
 # set '-eu' options for shell commands
 # These options are used to have safer shell commands. Option '-e' is used to
@@ -51,7 +60,7 @@ cmd open ${{
 
 # move current file or selected files to trash folder
 # (also see 'man mv' for backup/overwrite options)
-cmd trash %set -f; mv $fx ~/.trash
+cmd trash %set -f; mv $fx ~/.Trash
 
 # define a custom 'delete' command
 # cmd delete ${{

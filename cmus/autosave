@@ -9,42 +9,42 @@ set auto_expand_albums_selcur=true
 set auto_reshuffle=true
 set buffer_seconds=10
 set color_cmdline_attr=default
-set color_cmdline_bg=default
-set color_cmdline_fg=default
+set color_cmdline_bg=233
+set color_cmdline_fg=223
 set color_cur_sel_attr=default
 set color_error=lightred
-set color_info=lightyellow
-set color_separator=blue
+set color_info=142
+set color_separator=223
 set color_statusline_attr=default
-set color_statusline_bg=gray
-set color_statusline_fg=black
+set color_statusline_bg=235
+set color_statusline_fg=223
 set color_titleline_attr=default
-set color_titleline_bg=blue
-set color_titleline_fg=white
+set color_titleline_bg=108
+set color_titleline_fg=235
 set color_trackwin_album_attr=bold
 set color_trackwin_album_bg=default
 set color_trackwin_album_fg=default
 set color_win_attr=default
 set color_win_bg=default
-set color_win_cur=lightyellow
+set color_win_cur=203
 set color_win_cur_attr=default
 set color_win_cur_sel_attr=default
-set color_win_cur_sel_bg=blue
-set color_win_cur_sel_fg=lightyellow
+set color_win_cur_sel_bg=203
+set color_win_cur_sel_fg=235
 set color_win_dir=lightblue
 set color_win_fg=default
 set color_win_inactive_cur_sel_attr=default
-set color_win_inactive_cur_sel_bg=gray
-set color_win_inactive_cur_sel_fg=lightyellow
+set color_win_inactive_cur_sel_bg=203
+set color_win_inactive_cur_sel_fg=235
 set color_win_inactive_sel_attr=default
-set color_win_inactive_sel_bg=gray
-set color_win_inactive_sel_fg=black
+set color_win_inactive_sel_bg=233
+set color_win_inactive_sel_fg=223
 set color_win_sel_attr=default
-set color_win_sel_bg=blue
-set color_win_sel_fg=white
+set color_win_sel_bg=223
+set color_win_sel_fg=235
 set color_win_title_attr=default
-set color_win_title_bg=blue
-set color_win_title_fg=white
+set color_win_title_bg=246
+set color_win_title_fg=233
 set confirm_run=true
 set continue=true
 set device=/dev/cdrom
@@ -84,7 +84,7 @@ set pl_sort=
 set play_library=true
 set play_sorted=false
 set repeat=true
-set repeat_current=false
+set repeat_current=true
 set replaygain=disabled
 set replaygain_limit=true
 set replaygain_preamp=0.000000
@@ -144,7 +144,7 @@ bind common ^D win-half-page-down
 bind common ^E win-scroll-down
 bind common ^F win-page-down
 bind common ^L refresh
-bind common ^R toggle repeat_current
+bind common ^R refresh
 bind common ^U win-half-page-up
 bind common ^W wq
 bind common ^Y win-scroll-up
