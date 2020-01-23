@@ -44,3 +44,4 @@ key_bindings:
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: D, mods: Super, chars: "\x06" } # ctrl-f
+  - { key: F, mods: Super, chars: "\x07" } # ctrl-g

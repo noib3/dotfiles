@@ -2,6 +2,7 @@
 set previewer ~/.config/lf/pv.sh
 map i $~/.config/lf/pv.sh $f | less -R
 
+# File icons
 set icons
 
 # -----------------------------------------------
@@ -63,7 +64,7 @@ cmd open ${{
 cmd trash %set -f; mv $fx ~/.Trash
 
 # define a custom 'delete' command
-# cmd delete ${{
+# cmd delete g{{
 #     set -f
 #     printf "$fx\n"
 #     printf "delete?[y/n]"

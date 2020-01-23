@@ -48,6 +48,13 @@ function fdcd() {
 zle -N fdcd
 bindkey '^f' fdcd
 
+# Open lf in Downloads folder with cmd + f
+function olf() {
+  lf ~/Downloads
+}
+zle -N olf
+bindkey '^g' olf
+
 # ALIASES
 alias -g alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias -g firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
@@ -74,8 +81,9 @@ alias -g skhdrc='nvim ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
 alias -g nvimrc='nvim ~/.config/nvim/init.vim'
 alias -g redshiftrc='nvim ~/.config/redshift/redshift.conf && brew services restart redshift'
 
-# TRANSMISSION
+# FUNCTIONS
 function tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
+function jpg2png() { mogrify -format png *.jpg && rm *.jpg }
 
 # PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

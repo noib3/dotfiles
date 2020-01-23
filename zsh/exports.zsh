@@ -1,13 +1,14 @@
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
+export LC_LL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+export LS_COLORS='di=01;34:ex=01;32:ln=35:mh=31:*.mp3=95' # :*.md=38;5;106'
 export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/ignore'
 
 export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
-
-export LC_LL=en_US.UTF-8
-export LANG=en_US.UTF-8
 
 export LF_ICONS="\
 di=:\

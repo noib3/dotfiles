@@ -35,3 +35,12 @@ yabai -m rule --add app="^Activity Monitor" manage=off
 yabai -m rule --add app="^Calculator" manage=off
 yabai -m rule --add app="^Digital Colour Meter" manage=off
 yabai -m rule --add app="^IINA" manage=off
+
+# NIBAR
+# refresh primary display workspaces
+yabai -m signal --add event=space_changed \
+    action="osascript -e 'tell application \"Übersicht\" to refresh widget id \"nibar-spaces-primary-jsx\"'"
+
+# refresh secondary display workspaces
+yabai -m signal --add event=space_changed \
+    action="osascript -e 'tell application \"Übersicht\" to refresh widget id \"nibar-spaces-secondary-jsx\"'"
