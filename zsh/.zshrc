@@ -50,7 +50,7 @@ bindkey '^f' fdcd
 
 # Open lf in Downloads folder with cmd + f
 function olf() {
-  lf ~/Downloads
+  lf ~/Documents
 }
 zle -N olf
 bindkey '^g' olf
@@ -78,13 +78,14 @@ alias -g cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias -g ufetch='sh ~/.config/ufetch/ufetch'
 alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias -g c='clear && printf "\e[3J"'
+alias -g fs='$(fzf)'
 
 # EDIT CONFIG FILES
-alias -g zshrc='nvim $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias -g yabairc='nvim ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias -g skhdrc='nvim ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
-alias -g nvimrc='nvim ~/.config/nvim/init.vim'
-alias -g redshiftrc='nvim ~/.config/redshift/redshift.conf && brew services restart redshift'
+alias -g zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
+alias -g yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
+alias -g skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
+alias -g nvimrc='$EDITOR ~/.config/nvim/init.vim'
+alias -g redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # FUNCTIONS
 function tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }

@@ -1,23 +1,36 @@
 # Basic settings
-set icons
+set previewer ~/.config/lf/pv.sh
 set ifs "\n"
 set scrolloff 10
-set shellopts '-eu'
-set previewer ~/.config/lf/pv.sh
-
-map <enter> shell
-
+set ignorecase true
+set color256 true
 
 # Functions
 cmd open ${{
     case $(file --mime-type $f -b) in
         text/*) $EDITOR $fx;;
-        *) for f in $fx; do setsid $OPENER $f > /dev/null 2> /dev/null & done;;
+        *) for f in $fx; do open $f > /dev/null 2> /dev/null & done;;
     esac
 }}
 
-# Moving around
-map gconf cd ~/.config
-map gdow cd ~/Downloads
-map gdoc cd ~/Documents
-map gmus cd ~/Music
+cmd mkdir ${{
+    printf "Directory Name: "
+    read ans
+    mkdir $ans
+}}
+
+# Mappings
+map m
+map d
+map e
+
+map <c-w> quit
+map <enter> shell
+map d delete
+map x cut
+
+map gconf cd "~/.config"
+map gdow cd "~/Downloads"
+map gdoc cd "~/Documents"
+map gmus cd "~/Music"
+map guni cd "~/Documents/??/III"
