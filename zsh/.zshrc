@@ -56,8 +56,8 @@ zle -N olf
 bindkey '^g' olf
 
 # ALIASES
-alias -g alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
-alias -g firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
+alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
+alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
 alias -g ndiet='~/Programs/ndiet/ndiet.py'
 alias -g peek='~/Scripts/peek/peek.py'

@@ -45,7 +45,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton){
 }
 
 /* Set url bar colors */
-#urlbar {
+#urbar {
     color: var(--main-text-color) !important;
     background-color: var(--main-bg-color) !important;
     border-color: var(--main-bg-color) !important;
