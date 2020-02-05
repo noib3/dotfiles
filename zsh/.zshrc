@@ -55,11 +55,6 @@ function olf() {
 zle -N olf
 bindkey '^g' olf
 
-# fh - repeat history
-function fh() {
-  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
-}
-
 # ALIASES
 alias -g alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias -g firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
