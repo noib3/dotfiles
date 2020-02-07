@@ -42,8 +42,18 @@ zle -N alacritty
 bindkey '^b' alacritty
 
 # Cd into directory with cmd + d
-function fdcd() {
-  cd "$(fd --type d --ignore-file ~/.config/fd/ignore --hidden | fzf)"
+#function fdcd() {
+#  cd && cd "$(fd --type d --ignore-file ~/.config/fd/ignore --hidden | fzf)"
+#  zle reset-prompt
+#}
+fdcd() {
+    local dir
+    dir=$(
+      cd &&
+        fd -0 --type d --ignore-file ~/.config/fd/ignore --hidden |
+        fzf --read0
+    ) && cd ~/$dir
+    zle reset-prompt
 }
 zle -N fdcd
 bindkey '^f' fdcd
@@ -60,31 +70,31 @@ alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
 alias -g ndiet='~/Programs/ndiet/ndiet.py'
-alias -g peek='~/Scripts/peek/peek.py'
-alias -g Omega='~/Scripts/Omega/Omega.py'
-alias -g 2d2small='~/Scripts/2d2small/2d2small.sh'
-alias -g otfinstall='~/Scripts/otfinstall/otfinstall.sh'
+alias -g peek='~/Programs/peek/peek.py'
+alias -g Omega='~/Programs/Omega/Omega.py'
+alias -g 2d2small='~/Programs/2d2small/2d2small.sh'
+alias -g otfinstall='~/Programs/otfinstall/otfinstall.sh'
+alias -g tmd='~/Programs/tmd/tmd.sh'
+alias -g ufetch='~/.config/ufetch/ufetch'
 
-alias -g ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias -g grep='grep --color=auto'
-alias -g ssh='ssh -F ~/.config/ssh/config'
-alias -g brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias -g cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
-alias -g ufetch='sh ~/.config/ufetch/ufetch'
-alias -g ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
-alias -g c='clear && printf "\e[3J"'
-alias -g fs='$(fzf)'
+alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
+alias grep='grep --color=auto'
+alias tree='tree -N'
+alias ssh='ssh -F ~/.config/ssh/config'
+alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
+alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+alias c='clear && printf "\e[3J"'
+alias nfs='nvim $(fzf)'
 
-# EDIT CONFIG FILES
-alias -g zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias -g yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias -g skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
-alias -g nvimrc='$EDITOR ~/.config/nvim/init.vim'
-alias -g redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
+alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
+alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
+alias skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
+alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
+alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # FUNCTIONS
 function tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
-function jpg2png() { mogrify -format png *.jpg && rm *.jpg }
 
 # PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

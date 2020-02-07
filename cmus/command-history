@@ -1,5 +1,8 @@
-colorscheme themes/gruvbox
+update-cache -f
 colorscheme default
+colorscheme themes/tomorrow
+colorscheme themes/gruvbox
+colorscheme tomorrow
 coloscheme default
 colorscheme gruvbox
 update-cache
