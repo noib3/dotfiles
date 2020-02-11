@@ -39,7 +39,7 @@ bindkey '^w' close
 # Open alacritty config file with cmd + ,
 function alacritty() { nvim ~/.config/alacritty/alacritty.yml }
 zle -N alacritty
-bindkey '^b' alacritty
+bindkey '^n' alacritty
 
 # Cd into directory with cmd + d
 #function fdcd() {
@@ -82,6 +82,8 @@ alias grep='grep --color=auto'
 alias tree='tree -N'
 alias ssh='ssh -F ~/.config/ssh/config'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+alias cmus='tmux attach-session -t cmus >/dev/null'
+alias tmux='tmux -f ~/-config/tmux/tmux.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
@@ -91,6 +93,7 @@ alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
 alias skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
 alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
+alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf'
 alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # FUNCTIONS
@@ -101,6 +104,7 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
 source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 
+# find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
 

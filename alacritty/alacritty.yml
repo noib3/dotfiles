@@ -25,7 +25,7 @@ colors:
     background: '0x43698e'
 
 key_bindings:
-  - { key: Comma, mods: Super, chars: "\x02" } # ctrl-b
+  - { key: Comma, mods: Super, chars: "\x0e" } # ctrl-n
   - { key: 23, mods: Alt, chars: "\x7E" } # ~
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
@@ -45,3 +45,4 @@ key_bindings:
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: D, mods: Super, chars: "\x06" } # ctrl-f
   - { key: F, mods: Super, chars: "\x07" } # ctrl-g
+  - { key: A, mods: Super, chars: "\x02" } # ctrl-b
