@@ -31,21 +31,14 @@ compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
 HISTFILE=$HOME/.cache/zsh/zsh_history
 
 # KEY BINDINGS
-# Close focused window with cmd + w
 function close() { exit }
 zle -N close
 bindkey '^w' close
 
-# Open alacritty config file with cmd + ,
 function alacritty() { nvim ~/.config/alacritty/alacritty.yml }
 zle -N alacritty
 bindkey '^n' alacritty
 
-# Cd into directory with cmd + d
-#function fdcd() {
-#  cd && cd "$(fd --type d --ignore-file ~/.config/fd/ignore --hidden | fzf)"
-#  zle reset-prompt
-#}
 fdcd() {
     local dir
     dir=$(
@@ -58,10 +51,7 @@ fdcd() {
 zle -N fdcd
 bindkey '^f' fdcd
 
-# Open lf in Downloads folder with cmd + f
-function olf() {
-  lf ~/Documents
-}
+function olf() { lf ~/Documents }
 zle -N olf
 bindkey '^g' olf
 
@@ -83,7 +73,7 @@ alias tree='tree -N'
 alias ssh='ssh -F ~/.config/ssh/config'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias cmus='tmux attach-session -t cmus >/dev/null'
-alias tmux='tmux -f ~/-config/tmux/tmux.conf'
+alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
@@ -93,7 +83,7 @@ alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
 alias skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
 alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
-alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf'
+alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
 alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # FUNCTIONS
@@ -104,12 +94,17 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
 source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 
-# find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
+# SOURCE FILE WITH ENVIRONMENT VARIABLES
+source $ZDOTDIR/exports.zsh
+
+# List all songs and pipe them into tmd
+#   find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
+
+# Change TeX home tree
+#   sudo tlmgr conf texmf TEXMFHOME "~/TeX/texmf"
+
 # Empty Dock (need to install m with 'brew install m-cli')
 # m dock prune
-
-# Show all file extensions
-#  m finder showextensions YES
 
 # Hide Dock
 #  defaults write com.apple.dock autohide-delay -float 1000
@@ -129,6 +124,3 @@ source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A
-
-# SOURCE FILE WITH ENVIRONMENT VARIABLES
-source $ZDOTDIR/exports.zsh

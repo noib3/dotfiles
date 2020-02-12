@@ -9,7 +9,6 @@ Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'vim-pandoc/vim-rmarkdown'
 Plug 'terryma/vim-smooth-scroll'
-Plug 'connorholyday/vim-snazzy'
 Plug 'tpope/vim-surround'
 Plug 'lervag/vimtex'
 call plug#end()
@@ -48,8 +47,6 @@ nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 " Colorscheme
 set background=dark
 colorscheme gruvbox
-" colorscheme snazzy
-" let g:SnazzyTransparent = 1
 
 " Highlight colors
 highlight Comment cterm=italic
