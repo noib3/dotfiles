@@ -68,6 +68,7 @@ alias -g tmd='~/Programs/tmd/tmd.sh'
 alias -g ufetch='~/.config/ufetch/ufetch'
 
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
+alias colorls='colorls -Ah --sort-files'
 alias grep='grep --color=auto'
 alias tree='tree -N'
 alias ssh='ssh -F ~/.config/ssh/config'
