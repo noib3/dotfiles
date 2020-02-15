@@ -15,7 +15,7 @@ c.colors.tabs.even.bg = "#202124"
 c.colors.tabs.odd.bg = "#202124"
 
 # Fonts
-c.fonts.monospace = "Menlo"
+c.fonts.default_family = ["Menlo"]
 c.fonts.tabs = "14pt Menlo"
 c.fonts.statusbar = "14pt Menlo"
 
@@ -30,3 +30,4 @@ config.unbind("gm")
 config.bind("gyt", "open https://youtube.com")
 config.bind("gre", "open https://reddit.com")
 config.bind("gma", "open https://mail.google.com")
+# config.bind("gdots", "open https://github.com/n0ibe/dotfiles")
