@@ -16,7 +16,8 @@ setopt MENU_COMPLETE
 setopt AUTO_CD
 unsetopt CASE_GLOB
 unsetopt BEEP
-PROMPT='%F{255}%1~ %F{137}> %F{255}'
+#PROMPT='%F{255}%1~ %F{137}> %F{255}'
+PROMPT='%F{252}%1~ %F{blue}> %F{255}'
 
 # TAB AUTOCOMPLETION
 autoload -U compinit
@@ -84,6 +85,8 @@ alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
 alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
 alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
+alias gpom='git push origin master'
+
 # FUNCTIONS
 tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
 
@@ -97,6 +100,9 @@ source $ZDOTDIR/exports.zsh
 
 # List all songs and pipe them into tmd
 #   find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
+
+# List all 8-bit colors
+#   for i in {1..256}; do print -P "%F{$i}Color : $i"; done;
 
 # Change TeX home tree
 #   sudo tlmgr conf texmf TEXMFHOME "~/TeX/texmf"

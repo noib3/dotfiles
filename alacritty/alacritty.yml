@@ -1,8 +1,8 @@
 window:
     decorations: buttonless
     padding:
-      x: 5
-      y: 2
+      x: 15
+      y: 10
 
 background_opacity: 0.93
 draw_bold_text_with_bright_colors: true
