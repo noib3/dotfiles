@@ -16,6 +16,7 @@ font:
 colors:
   primary:
     background: '0x121111'
+    #background: '0x191818'
     foreground: '0xc7c7c7'
   cursor:
     text: '0xfeffff'
