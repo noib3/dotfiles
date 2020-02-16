@@ -29,8 +29,7 @@ map <enter> shell
 map d delete
 map x cut
 
-map gconf cd "~/.config"
-map gdow cd "~/Downloads"
-map gdoc cd "~/Documents"
-map gmus cd "~/Music"
-map guni cd "~/Documents/??/III"
+map gnf cd "~/.config"
+map gdl cd "~/Downloads"
+map ggd cd "~/Google Drive"
+map gun cd "~/Documents/??/III"

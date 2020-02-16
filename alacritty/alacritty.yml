@@ -45,4 +45,9 @@ key_bindings:
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: D, mods: Super, chars: "\x06" } # ctrl-f
   - { key: F, mods: Super, chars: "\x07" } # ctrl-g
-  - { key: A, mods: Super, chars: "\x02" } # ctrl-b
+  # tmux keys
+  - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
+  - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
+  - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3
+  - { key: 21, mods: Super, chars: "\x02\x34" } # ctrl-b 4
+  - { key: 23, mods: Super, chars: "\x02\x35" } # ctrl-b 5

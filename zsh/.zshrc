@@ -27,17 +27,17 @@ zmodload zsh/complist
 _comp_options+=(globdots)
 
 # CACHED FILES
-compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
-HISTFILE=$HOME/.cache/zsh/zsh_history
+compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
+HISTFILE=~/.cache/zsh/zsh_history
 
 # KEY BINDINGS
-function close() { exit }
+close() { exit }
 zle -N close
 bindkey '^w' close
 
-function alacritty() { nvim ~/.config/alacritty/alacritty.yml }
-zle -N alacritty
-bindkey '^n' alacritty
+alacrittyrc() { $EDITOR ~/.config/alacritty/alacritty.yml }
+zle -N alacrittyrc
+bindkey '^n' alacrittyrc
 
 fdcd() {
     local dir
@@ -51,21 +51,17 @@ fdcd() {
 zle -N fdcd
 bindkey '^f' fdcd
 
-function olf() { lf ~/Documents }
-zle -N olf
-bindkey '^g' olf
-
 # ALIASES
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
-alias -g ndiet='~/Programs/ndiet/ndiet.py'
-alias -g peek='~/Programs/peek/peek.py'
-alias -g Omega='~/Programs/Omega/Omega.py'
-alias -g 2d2small='~/Programs/2d2small/2d2small.sh'
-alias -g otfinstall='~/Programs/otfinstall/otfinstall.sh'
-alias -g tmd='~/Programs/tmd/tmd.sh'
-alias -g ufetch='~/.config/ufetch/ufetch'
+SRCDIR=~/Programs
+alias -g ndiet='$SRCDIR/ndiet/ndiet.py'
+alias -g peek='$SRCDIR/peek/peek.py'
+alias -g Omega='$SRCDIR/Omega/Omega.py'
+alias -g 2d2small='$SRCDIR/2d2small/2d2small.sh'
+alias -g otfinstall='$SRCDIR/otfinstall/otfinstall.sh'
+alias -g tmd='$SRCDIR/tmd/tmd.sh'
 
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
 alias colorls='colorls -Ah --sort-files'
@@ -78,17 +74,18 @@ alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
-alias nfs='nvim $(fzf)'
+alias nfs='$EDITOR $(fzf)'
+alias -g ufetch='~/.config/ufetch/ufetch.sh'
 
 alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias skhdrc='$EDITOR ~/.config/skhd/skhdrc && ~/.config/skhd/skhdrc'
+alias skhdrc='$EDITOR ~/.config/skhd/skhdrc'
 alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
 alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
 alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 # FUNCTIONS
-function tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
+tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
 
 # PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -122,6 +119,9 @@ source $ZDOTDIR/exports.zsh
 # Write to /System
 #  sudo mount -uw /
 #  killall Finder
+
+# Link airport
+#   ln -s /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport /usr/bin/airport
 
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A

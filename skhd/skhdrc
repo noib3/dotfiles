@@ -1,6 +1,7 @@
 # OPEN PROGRAMS
 cmd - b: open -na /Applications/Firefox.app
 cmd - return: open -na /Applications/Alacritty.app
+cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
 
 # MANAGE WINDOWS AND SCREENS
 alt - h: yabai -m window --resize left:-15:0
