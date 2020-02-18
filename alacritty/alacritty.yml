@@ -38,7 +38,6 @@ key_bindings:
   - { key: N, mods: Super, action: SpawnNewInstance }
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
-  - { key: T, mods: Super, chars: "\x14" } # ctrl-t
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
@@ -47,6 +46,7 @@ key_bindings:
   - { key: D, mods: Super, chars: "\x06" } # ctrl-f
   - { key: F, mods: Super, chars: "\x07" } # ctrl-g
   # tmux keys
+  - { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c
   - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
   - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
   - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3

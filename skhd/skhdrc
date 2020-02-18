@@ -1,5 +1,6 @@
 # OPEN PROGRAMS
 cmd - b: open -na /Applications/Firefox.app
+#cmd - b: open -na /Applications/qutebrowser.app
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
 

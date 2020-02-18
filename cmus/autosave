@@ -1,4 +1,4 @@
-set aaa_mode=artist
+set aaa_mode=all
 set altformat_current= %F
 set altformat_playlist= %f%= %d
 set altformat_title=%f

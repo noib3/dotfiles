@@ -71,13 +71,13 @@ let g:lightline = {
 " LaTeX
 let g:vimtex_compiler_method='arara'
 let g:vimtex_view_method='skim'
-autocmd FileType tex nnoremap <buffer> <C-t> :VimtexCompile<cr>
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:VimtexCompile<cr>a
+autocmd FileType tex nnoremap <buffer> <C-r> :VimtexCompile<cr>
+autocmd FileType tex inoremap <buffer> <C-r> <esc>:VimtexCompile<cr>a
 
 " Markdown
 let g:pandoc#folding#fdc = 0
-autocmd FileType rmd nnoremap <buffer> <C-t> :RMarkdown pdf<cr>
-autocmd FileType rmd inoremap <buffer> <C-t> <esc>:RMarkdown pdf<cr>a
+autocmd FileType rmd nnoremap <buffer> <C-r> :RMarkdown pdf<cr>
+autocmd FileType rmd inoremap <buffer> <C-r> <esc>:RMarkdown pdf<cr>a
 autocmd FileType rmd setlocal nospell
 autocmd FileType rmd setlocal shiftwidth=2
 
