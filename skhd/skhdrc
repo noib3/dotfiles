@@ -1,8 +1,8 @@
 # OPEN PROGRAMS
 cmd - b: open -na /Applications/Firefox.app
-#cmd - b: open -na /Applications/qutebrowser.app
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
+cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/Programs/ndiet/ndiet.py -c
 
 # MANAGE WINDOWS AND SCREENS
 alt - h: yabai -m window --resize left:-15:0
@@ -14,6 +14,11 @@ ctrl - h: yabai -m window --resize right:-15:0
 ctrl - j: yabai -m window --resize top:-15:0
 ctrl - k: yabai -m window --resize bottom:15:0
 ctrl - l: yabai -m window --resize left:15:0
+
+alt - left: yabai -m window --focus west
+alt - up: yabai -m window --focus north
+alt - down: yabai -m window --focus south
+alt - right: yabai -m window --focus east
 
 alt - 1: yabai -m space --focus 1
 alt - 2: yabai -m space --focus 2

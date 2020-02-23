@@ -44,6 +44,10 @@ nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
+"vnoremap y "*y
+"nnoremap p "*p
+"nnoremap P "*P
+
 " Colorscheme
 set background=dark
 colorscheme gruvbox

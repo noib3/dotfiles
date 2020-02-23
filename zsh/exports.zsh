@@ -1,5 +1,5 @@
 export VISUAL=nvim
-export EDITOR="$VISUAL"
+export EDITOR=$VISUAL
 
 export LC_LL=en_US.UTF-8
 export LANG=en_US.UTF-8

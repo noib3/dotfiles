@@ -1,5 +1,13 @@
+/* Get the name of a CSS Selector
+1. Press shift+option+command+I
+2. At the top right of the new window check 'Disable Poput Auto-Hide'
+3. To select a box press the button in the top left corner (next to the 'Inspector tab')
+4. Click on what you want to select
+5. Right click the highlighted text, then -> Copy -> CSS Selector */
+
 /*  ------------------------ GENERAL ------------------------ */
 *{
+    /* font-family: "Arial Narrow" !important; */
     font-family: "Roboto Condensed" !important;
     font-size: 15px !important;
 }
@@ -24,14 +32,19 @@ toolbarbutton.bookmark-item:not(.subviewbutton){
     padding: 5px 4px !important;
 }
 
+/* #nav-bar { visibility: collapse } */
+
 /*  ---------------------- COLORSCHEME ---------------------- */
 /* Variables */
 :root{
     --main-bg-color: #202124;
+    /* --main-bg-color: #393939; */
     --toolbar-bg-color: #393939;
+    /* --toolbar-bg-color: #626262; */
     --main-text-color: #ebebeb;
     --popup-menu-bg-color: #202124;
     --popup-menu-text-color: #ebebeb;
+    --focused-tab-color: #626262;
 }
 
 /* Set background color */
@@ -101,6 +114,16 @@ toolbarbutton.bookmark-item {
 }
 
 /*  ---------------------- REMOVE BLOAT --------------------- */
+/* Remove new tab button */
+#tabs-newtab-button {
+    display:none !important;
+}
+
+/* Remove close tab button */
+/* .tab-close-button {
+    display:none !important;
+} */
+
 /* Remove zoom level in urlbar */
 #urlbar-zoom-button {
     display: none !important;
@@ -163,6 +186,17 @@ of the first tab */
     display: none !important;
 }
 
+/* Remove 'Open All in Tabs' option when clicking on a bookmarked folder */
+#PlacesToolbarItems .bookmarks-actions-menuseparator,
+.openintabs-menuitem {
+ display: none !important;
+}
+
+/* Remove 'Customize Toolbar' box at the bottom of the overflow menu */
+#overflowMenu-customize-button{
+    display: none !important;
+}
+
 /*  -------- EQUAL WIDTH FOR URLBAR AND POPUP WINDOW -------- */
 /* Copied from 'https://github.com/MrOtherGuy/firefox-csshacks/blob/master/chrome/urlbar_and_popup_equal_width.css' */
 
@@ -189,4 +223,27 @@ of the first tab */
 :root[uidensity="compact"] .urlbarView { margin-top: 2px }
 :root[uidensity="touch"] .urlbarView { margin-top: 1px }
 #urlbar[open]{ border-bottom-right-radius: 0px !important; border-bottom-left-radius: 0px !important; }
-.urlbarView-row{ padding: 6px 0px !important; }
+.urlbarView-row{ padding: 5px 0px !important; }
+
+/*  ------------------ SHOW NUMBERED TABS ------------------- */
+/* Copied from '' and '' */
+
+/* Show a number before tab text*/
+
+.tabbrowser-tab:first-child{ counter-reset: nth-tab 0 } /* Change to -1 for 0-indexing */
+.tab-content::before{ content: counter(nth-tab); counter-increment: nth-tab; display: -moz-box; padding-inline-end: 8px }
+
+/*  -------------------- FULL WIDTH TABS--------------------- */
+/* Copied from '' */
+
+/*full-width tabs*/
+/* #TabsToolbar .tabbrowser-tab[fadein]:not([pinned]) {
+  flex-grow: 1 !important;
+  min-width: 11em !important;
+  max-width: 100% !important;
+}
+*/
+
+/* .titlebar-spacer[type="post-tabs"] {
+   display: none;
+} */

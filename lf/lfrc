@@ -10,9 +10,9 @@ set ratios "1:2:3"
 
 # Commands
 cmd open ${{
-    case $(file --mime-type $f -b) in
-        text/*) $EDITOR $f;;
-        *) for i in $f; do open $i >/dev/null 2>/dev/null & done;;
+    case $(file --mime-type "$f" -b) in
+        text/*) $EDITOR "$f";;
+        *) for i in "$f"; do open "$i" >/dev/null 2>/dev/null & done;;
     esac
 }}
 
@@ -34,5 +34,6 @@ map ej eject
 map gvl cd "/Volumes"
 map gnf cd "~/.config"
 map gdl cd "~/Downloads"
-map ggd cd "~/Google Drive"
+map gdr cd "~/Google Drive"
 map gun cd "~/Documents/??/III"
+map gss cd "~/Pictures/Screenshots"
