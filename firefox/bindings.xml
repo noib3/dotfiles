@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bindings>
+<bindings xmlns="http://www.mozilla.org/xbl">
+    <binding id="urlbar-popup" extends="chrome://browser/content/urlbarBindings.xml#urlbar-rich-result-popup">
+        <implementation>
+            <constructor><![CDATA[
+                this.removeAttribute("flip");
+            ]]></constructor>
+        </implementation>
+    </binding>
+</bindings>

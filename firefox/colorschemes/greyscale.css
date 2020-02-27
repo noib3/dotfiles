@@ -1,0 +1,53 @@
+/* Variables */
+:root{
+    --main-bg-color: #393939;
+    --toolbar-bg-color: #626262;
+    --main-text-color: #ebebeb;
+    --popup-menu-bg-color: #393939;
+    --popup-menu-text-color: #ebebeb;
+}
+
+/* Background color */
+#navigator-toolbox {
+    background-color: var(--main-bg-color) !important;
+}
+
+.tab-content{
+    background-color: var(--ciao-color) !important;
+}
+
+/* Toolbar color */
+:root {
+    --toolbar-bgcolor: var(--toolbar-bg-color) !important;
+}
+
+/* Urlbar colors */
+#urlbar {
+    color: var(--main-text-color) !important;
+    background-color: var(--main-bg-color) !important;
+    border-color: var(--main-bg-color) !important;
+}
+
+/* Focused urlbar border color */
+#urlbar[focused="true"]{
+    box-shadow: inset var(--main-bg-color) 0px 0px 0px 0px !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-label {
+    color: var(--main-text-color) !important;
+}
+
+/* Popup menus colors */
+.panel-subview-body, #appMenu-zoomReset-button {
+  color: var(--popup-menu-text-color) !important; /* text */
+  background: var(--popup-menu-bg-color) !important; /* background */
+}
+
+#urlbar-results{
+    color: var(--main-text-color) !important;
+    background: var(--main-bg-color) !important;
+}
+
+toolbarbutton.bookmark-item {
+    color: var(--main-text-color) !important;
+}

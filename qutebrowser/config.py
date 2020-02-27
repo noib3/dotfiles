@@ -23,7 +23,7 @@ c.colors.tabs.selected.odd.bg = LIGHT_GRAY
 c.colors.tabs.selected.even.bg = c.colors.tabs.selected.odd.bg
 
 # Fonts
-c.fonts.default_family = ["Menlo"]
+c.fonts.default_family = ["Iosevka"]
 c.fonts.default_size = "14pt"
 
 # Search engines

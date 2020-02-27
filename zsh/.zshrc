@@ -11,6 +11,7 @@ PATH=$PATH:/bin
 PATH=$PATH:/sbin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
+PATH=$PATH:$HOME/bin
 
 # SHELL OPTIONS AND PROMPT
 setopt MENU_COMPLETE
@@ -19,7 +20,7 @@ unsetopt CASE_GLOB
 unsetopt BEEP
 #PROMPT='%F{255}%1~ %F{137}> %F{255}'
 #PROMPT='%F{252}%1~ %F{blue}> %F{255}'
-PROMPT='%F{252}%1~ %F{218}> %F{255}'
+PROMPT='%F{252}%1~ %F{224}> %F{255}'
 
 # TAB AUTOCOMPLETION
 autoload -U compinit
@@ -34,17 +35,17 @@ compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 HISTFILE=~/.cache/zsh/zsh_history
 
 # KEY BINDINGS
-close() { yabai -m window --close }
-zle -N close
-bindkey '^w' close
+close_window() { yabai -m window --close }
+zle -N close_window
+bindkey '^w' close_window
 
-quits() { killall alacritty }
-zle -N quits
-bindkey '^y' quits
+quit_terminal() { killall alacritty }
+zle -N quit_terminal
+bindkey '^y' quit_terminal
 
-alacrittyrc() { $EDITOR ~/.config/alacritty/alacritty.yml }
-zle -N alacrittyrc
-bindkey '^n' alacrittyrc
+termrc() { $EDITOR ~/.config/alacritty/alacritty.yml }
+zle -N termrc
+bindkey '^n' termrc
 
 fdcd() {
     local dir
@@ -61,15 +62,16 @@ bindkey '^f' fdcd
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
-SRCDIR=~/Programs
+SRCDIR=~/bin
 alias -g ndiet='$SRCDIR/ndiet/ndiet.py'
-alias -g peek='$SRCDIR/peek/peek.py'
-alias -g Omega='$SRCDIR/Omega/Omega.py'
 alias -g 2d2small='$SRCDIR/2d2small/2d2small.sh'
 alias -g otfinstall='$SRCDIR/otfinstall/otfinstall.sh'
-alias -g tmd='$SRCDIR/tmd/tmd.sh'
-alias -g ffls='$SRCDIR/ffls/ffls.sh'
-alias -g ufetch='$SRCDIR/ufetch/ufetch.sh'
+alias -g peek='peek.py'
+alias -g ufetch='ufetch.sh'
+alias -g colortest='colortest.sh'
+alias -g tmd='tmd.sh'
+alias -g ffls='ffls.sh'
+alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'

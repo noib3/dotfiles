@@ -4,6 +4,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
 Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'arcticicestudio/nord-vim'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -17,14 +18,14 @@ call plug#end()
 set tabstop=4
 set shiftwidth=4
 set expandtab
-
 set number
 set relativenumber
-
 set noshowmode
-set noshowcmd
+"set noshowcmd
+set clipboard+=unnamedplus
 
 let mapleader = ","
+
 
 " Mappings
 nnoremap <C-s> :w<cr>
@@ -33,8 +34,10 @@ nnoremap <C-w> :q<cr>
 inoremap <C-w> <esc>:q<cr>
 
 nnoremap <C-a> ^
+vnoremap <C-a> ^
 inoremap <C-a> <esc>^i
 nnoremap <C-e> g_
+vnoremap <C-e> g_
 inoremap <C-e> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
@@ -44,17 +47,15 @@ nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
-"vnoremap y "*y
-"nnoremap p "*p
-"nnoremap P "*P
-
 " Colorscheme
-set background=dark
+" set background=dark
 colorscheme gruvbox
+"colorscheme nord
 
 " Highlight colors
 highlight Comment cterm=italic
 highlight Normal ctermbg=NONE
+highlight visual ctermbg=white ctermfg=Blue
 highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
 " Lightline

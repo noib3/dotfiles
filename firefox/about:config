@@ -1,11 +1,11 @@
 Turn on loading of userChrome.css and userContent.css
   toolkit.legacyUserProfileCustomizations.stylesheets -> True
 
-Disable audio icon
-  browser.tabs.showAudioPlayingIcon -> False
-
-Allow zooming
-  apz.allow_zooming -> True
+Disable all animations
+  toolkit.cosmeticAnimations.enabled -> False
 
 Disable search engine suggestions when searching
     browser.urlbar.oneOffSearches -> False
+
+Allow zooming
+  apz.allow_zooming -> True

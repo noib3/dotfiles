@@ -5,245 +5,110 @@
 4. Click on what you want to select
 5. Right click the highlighted text, then -> Copy -> CSS Selector */
 
-/*  ------------------------ GENERAL ------------------------ */
-*{
-    /* font-family: "Arial Narrow" !important; */
-    font-family: "Roboto Condensed" !important;
-    font-size: 15px !important;
+@import url("/Users/noibe/.config/firefox/colorschemes/greyscale.css");
+
+@import url("/Users/noibe/.config/firefox/hacks/font.css");
+@import url("/Users/noibe/.config/firefox/hacks/remove_bloat.css");
+@import url("/Users/noibe/.config/firefox/hacks/full_width_tabs.css");
+@import url("/Users/noibe/.config/firefox/hacks/numbered_tabs.css");
+/*@import url("/Users/noibe/.config/firefox/hacks/shorter_tabs.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/widths_margins_and_paddings.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/show_navbar_on_focus_only.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/urlbar_and_popup_equal_width.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/autohide_bookmarks_toolbar.css");*/
+
+/* ----------------------------------------------------------------------------- */
+:root {
+  --tab-toolbar-navbar-overlap: 0px !important; /* fix for full screen mode */
+  --tab-min-height: 19px !important;
+}
+
+:root #tabbrowser-tabs {
+  --tab-min-height: 19px !important;
+}
+
+#TabsToolbar {
+  height: var(--tab-min-height) !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.tab-content{
+  line-height: var(--tab-min-height) !important;
+}
+
+/* Margins for the tab text, the favicon and the tab loading animation */
+.tab-text{
+  margin-top: 0px !important;
+  line-height: 16px !important;
+}
+
+.tab-label-container{
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.tab-icon-image{
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+  height: 14px !important;
+  width: 14px !important;
+}
+
+.tab-throbber{
+  margin-top: 0px !important;
+}
+
+/*
+1. disable bold typeface for tab titles
+*/
+
+/* ----------------------------------------------------------------------------- */
+#urlbar-container{
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
 
 #urlbar{
-    border-width: 1px !important;
-    padding-left: 8px !important;
+  border-width: 0px !important;
+  padding-left: 7px !important;
 }
 
-#nav-bar{
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+#navigator-toolbox{
+  border-width: 0px !important;
 }
 
-.tab-line[selected="true"] {
-    height: 3px !important;
+
+/* -------------------------------------------------------*/
+#nav-bar {
+  max-height: 26px !important;
+  width: 100vw !important; /* ??? */
+  position: fixed !important; /* ??? */
+  bottom: 0; /* ??? */
+  z-index: 1 !important; /* ??? */
+  display: block; /* ??? */
 }
 
-toolbarbutton.bookmark-item:not(.subviewbutton){
-    padding: 5px 4px !important;
+#nav-bar-customization-target {
+  min-width: 100% !important; /* ??? */
+  max-width: 100% !important; /* ??? */
 }
 
-/* #nav-bar { visibility: collapse } */
-
-/*  ---------------------- COLORSCHEME ---------------------- */
-/* Variables */
-:root{
-    --main-bg-color: #202124;
-    /* --main-bg-color: #393939; */
-    --toolbar-bg-color: #393939;
-    /* --toolbar-bg-color: #626262; */
-    --main-text-color: #ebebeb;
-    --popup-menu-bg-color: #202124;
-    --popup-menu-text-color: #ebebeb;
-    --focused-tab-color: #626262;
+:root:not([inFullscreen]) #browser {
+  margin-bottom: 26px;
 }
 
-/* Set background color */
-#navigator-toolbox {
-    background-color: var(--main-bg-color) !important;
+.urlbarView:not(.megabar) {
+  margin-top: -336px !important; /* You may need to adjust this */
 }
 
-/* Set toolbar color */
-:root {
-    --toolbar-bgcolor: var(--toolbar-bg-color) !important;
-}
-
-/* Set url bar colors */
-#urlbar {
-    color: var(--main-text-color) !important;
-    background-color: var(--main-bg-color) !important;
-    border-color: var(--main-bg-color) !important;
-}
-
-/* Set focused urlbar border color */
-#urlbar[focused="true"]{
-    box-shadow: inset var(--main-bg-color) 0px 0px 0px 2px !important;
-}
-
-/* Set tab highlight color */
-.tab-line[selected="true"] {
-    display: none !important;
-}
-
-.tabbrowser-tab[selected="true"] .tab-label {
-    color: var(--main-text-color) !important;
-}
-
-/* Set popup menus colors */
-.panel-subview-body, #appMenu-zoomReset-button {
-  color: var(--popup-menu-text-color) !important; /* text */
-  background: var(--popup-menu-bg-color) !important; /* background */
-}
-
-#back-button{
-    fill: var(--main-text-color) !important;
-}
-
-#forward-button{
-    fill: var(--main-text-color) !important;
-}
-
-#PanelUI-menu-button{
-    fill: var(--main-text-color) !important;
-}
-
-.tab-close-button {
-    color: var(--main-text-color) !important;
-}
-
-#tabs-newtab-button {
-    fill: var(--main-text-color) !important;
-}
-
-#urlbar-results{
-    color: var(--main-text-color) !important;
-    background: var(--main-bg-color) !important;
-}
-
-toolbarbutton.bookmark-item {
-    color: var(--main-text-color) !important;
-}
-
-/*  ---------------------- REMOVE BLOAT --------------------- */
-/* Remove new tab button */
-#tabs-newtab-button {
-    display:none !important;
-}
-
-/* Remove close tab button */
-/* .tab-close-button {
-    display:none !important;
-} */
-
-/* Remove zoom level in urlbar */
-#urlbar-zoom-button {
-    display: none !important;
-}
-
-/* Remove close, minimize, maximize buttons in the top left corner */
-.titlebar-buttonbox-container {
-    display: none !important;
-}
-
-/* Remove space between the left side of the window and the right side
-of the first tab */
-.titlebar-spacer[type="pre-tabs"]{
-    display: none !important;
-}
-
-/* Remove site information icon in urlbar */
-#identity-box[pageproxystate="valid"] {
-    display: none !important;
-}
-
-/* Remove page actions button in urlbar */
-#pageActionButton {
-    display: none !important;
-}
-
-/* Remove show history button in urlbar */
-.urlbar-history-dropmarker,
-#urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
-    display: none !important;
-}
-
-/* Remove bottom left url preview when hovering over a link */
-#statuspanel[type="overLink"] {
-    display: none !important;
-}
-
-/* Remove bottom left loading indicator when loading a page */
-#statuspanel[type="status"] {
-    display: none !important;
-}
-
-/* Remove the private browsing icon */
-#TabsToolbar .private-browsing-indicator {
-    display: none !important;
-}
-
-/* Remove shield icon in urlbar */
-#tracking-protection-icon-container {
-    display: none !important;
-}
-
-/* Remove the magnifying glass icon when searching */
-#identity-box {
-    visibility: collapse !important;
-}
-
-/* Remove white line at the end of urlbar */
-#pageActionSeparator{
-    display: none !important;
-}
-
-/* Remove 'Open All in Tabs' option when clicking on a bookmarked folder */
-#PlacesToolbarItems .bookmarks-actions-menuseparator,
-.openintabs-menuitem {
- display: none !important;
-}
-
-/* Remove 'Customize Toolbar' box at the bottom of the overflow menu */
-#overflowMenu-customize-button{
-    display: none !important;
-}
-
-/*  -------- EQUAL WIDTH FOR URLBAR AND POPUP WINDOW -------- */
-/* Copied from 'https://github.com/MrOtherGuy/firefox-csshacks/blob/master/chrome/urlbar_and_popup_equal_width.css' */
-
-/* Constrains urlbar popup to urlbar width */
-/* Firefox 70+ */
-
-#urlbar-container{
-	transform: translateY(0);
-	position: relative;
-	z-index: 10;
-	padding-block: 3px !important;
-  padding-inline: 0px !important;
-  margin-inline: 5px !important;
-}
-#nav-bar-customization-target{ overflow: visible !important }
-#urlbar-results{ max-width: 100% !important; }
-.urlbarView{
-  top: calc(100% - 5px) !important;
-  width: 100%;
-  border-width: 0 1px 1px 1px !important;;
-  border-style: solid;
-  border-color: inherit !important;
-}
-:root[uidensity="compact"] .urlbarView { margin-top: 2px }
-:root[uidensity="touch"] .urlbarView { margin-top: 1px }
-#urlbar[open]{ border-bottom-right-radius: 0px !important; border-bottom-left-radius: 0px !important; }
-.urlbarView-row{ padding: 5px 0px !important; }
-
-/*  ------------------ SHOW NUMBERED TABS ------------------- */
-/* Copied from '' and '' */
-
-/* Show a number before tab text*/
-
-.tabbrowser-tab:first-child{ counter-reset: nth-tab 0 } /* Change to -1 for 0-indexing */
-.tab-content::before{ content: counter(nth-tab); counter-increment: nth-tab; display: -moz-box; padding-inline-end: 8px }
-
-/*  -------------------- FULL WIDTH TABS--------------------- */
-/* Copied from '' */
-
-/*full-width tabs*/
-/* #TabsToolbar .tabbrowser-tab[fadein]:not([pinned]) {
-  flex-grow: 1 !important;
-  min-width: 11em !important;
-  max-width: 100% !important;
-}
+/*
+1. make urlbar shorter
+2. get the overflow button back in case I want to use it
+3. make the navbar autohide and be visible on hover or on focus
+4. disable rounded corners for urlbar
 */
-
-/* .titlebar-spacer[type="post-tabs"] {
-   display: none;
-} */

@@ -1,3 +1,4 @@
+set repeat_current=false
 colorscheme themes/sick
 colorscheme default
 colorscheme themes/sick.theme

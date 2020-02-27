@@ -1,29 +1,56 @@
-window:
-    decorations: buttonless
-    padding:
-      x: 15
-      y: 10
-
-background_opacity: 0.98
-draw_bold_text_with_bright_colors: true
-
 font:
   normal:
-    family: MesloLGM Nerd Font Mono
+    family: Iosevka
   size:
-    14.0
+    15.0
 
-colors:
-  primary:
-    background: '0x121111'
-    #background: '0x191818'
-    foreground: '0xc7c7c7'
-  cursor:
-    text: '0xfeffff'
-    cursor: '0xc7c7c7'
-  selection:
-    text: '0xc7c7c7'
-    background: '0x43698e'
+schemes:
+  nord: &nord # https://github.com/arcticicestudio/nord-alacritty/blob/develop/src/nord.yml
+    primary:
+      background: '0x121111'
+      foreground: '0xD8DEE9'
+    cursor:
+      text: '0x2E3440'
+      cursor: '0xD8DEE9'
+    normal:
+      black: '0x3B4252'
+      red: '0xBF616A'
+      green: '0xA3BE8C'
+      yellow: '0xEBCB8B'
+      blue: '0x81A1C1'
+      magenta: '0xB48EAD'
+      cyan: '0x88C0D0'
+      white: '0xE5E9F0'
+    bright:
+      black: '0x4C566A'
+      red: '0xBF616A'
+      green: '0xA3BE8C'
+      yellow: '0xEBCB8B'
+      blue: '0x81A1C1'
+      magenta: '0xB48EAD'
+      cyan: '0x8FBCBB'
+      white: '0xeceff4'
+  pers: &pers
+    primary:
+      background: '0x121111'
+      foreground: '0xc7c7c7'
+    cursor:
+      text: '0xfeffff'
+      cursor: '0xc7c7c7'
+    selection:
+      text: '0xffffff'
+      background: '0x7aa6da'
+
+colors: *nord
+
+window:
+  decorations: buttonless
+  padding:
+    x: 15
+    y: 10
+
+background_opacity: 1.00
+draw_bold_text_with_bright_colors: true
 
 key_bindings:
   - { key: Q, mods: Super, chars: "\x19" } # ctrl-y

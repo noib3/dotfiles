@@ -1,7 +1,7 @@
 {
 	"name": "Vimium C",
-	"@time": "2/22/2020, 5:08:59 PM",
-	"time": 1582387739582,
+	"@time": "2/25/2020, 1:38:38 PM",
+	"time": 1582634318546,
 	"environment": {
 		"extension": "1.80.3",
 		"platform": "mac"
@@ -9,6 +9,10 @@
 	"exclusionRules": [],
 	"keyMappings": [
 		"map gh openUrl url=\"https://google.com\" reuse=0",
+		"map nh openUrl url=\"https://google.com\" reuse=1",
+		"",
+		"map gvc openUrl url=\"moz-extension://e78cf277-1a50-df4d-9ec6-848fd2755e05/pages/options.html\" reuse=0",
+		"map nvc openUrl url=\"moz-extension://e78cf277-1a50-df4d-9ec6-848fd2755e05/pages/options.html\" reuse=1",
 		"",
 		"map gkp openUrl url=\"https://keep.google.com\" reuse=0",
 		"map nkp openUrl url=\"https://keep.google.com\" reuse=1",
@@ -25,8 +29,14 @@
 		"map gyt openUrl url=\"https://youtube.com\" reuse=0",
 		"map nyt openUrl url=\"https://youtube.com\" reuse=1",
 		"",
-		"map gdf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=0",
-		"map ndf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=1",
+		"map gnf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=0",
+		"map nnf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=1",
+		"",
+		"map gel openUrl url=\"https://elearning.df.unipi.it/\" reuse=0",
+		"map nel openUrl url=\"https://elearning.df.unipi.it/\" reuse=1",
+		"",
+		"map gng openUrl url=\"https://secure.ing.it/login.aspx\" reuse=0",
+		"map nng openUrl url=\"https://secure.ing.it/login.aspx\" reuse=1",
 		""
 	],
 	"searchEngines": [
