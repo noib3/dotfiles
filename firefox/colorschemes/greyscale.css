@@ -5,15 +5,20 @@
     --main-text-color: #ebebeb;
     --popup-menu-bg-color: #393939;
     --popup-menu-text-color: #ebebeb;
+    --ciao-color: #32a852;
 }
 
 /* Background color */
 #navigator-toolbox {
-    background-color: var(--main-bg-color) !important;
+  background-color: var(--main-bg-color) !important;
 }
 
 .tab-content{
-    background-color: var(--ciao-color) !important;
+    background-color: var(--toolbar-bg-color) !important;
+}
+
+#nav-bar {
+  background-color: var(--ciao-color) !important;
 }
 
 /* Toolbar color */

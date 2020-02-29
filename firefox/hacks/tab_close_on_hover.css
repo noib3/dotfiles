@@ -1,0 +1,17 @@
+.tabbrowser-tab:not([pinned]):not(:hover) .tab-close-button {
+  visibility: collapse !important;
+  height: 17px !important;
+  margin-top: 1px !important;
+  margin-bottom: 1px !important;
+  margin-right: 0px !important;
+}
+
+.tabbrowser-tab:not([pinned]):hover .tab-close-button {
+  visibility: visible !important;
+  display: block !important;
+  height: 17px !important;
+  margin-top: 1px !important;
+  margin-bottom: 1px !important;
+  margin-right: 0px !important;
+}
+

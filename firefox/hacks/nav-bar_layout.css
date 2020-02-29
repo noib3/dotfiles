@@ -1,0 +1,49 @@
+/* Paddings and margins */
+#navigator-toolbox{
+  border-width: 0 !important;
+}
+
+#urlbar-container{
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+#urlbar{
+  border-width: 0 !important;
+  padding-left: 7px !important;
+}
+
+#nav-bar-overflow-button{
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Heights */
+#nav-bar{
+  min-height: 19px !important;
+  max-height: 19px !important;
+}
+
+#urlbar{
+  min-height: 19px !important;
+  max-height: 19px !important;
+}
+
+#urlbar-input-box{
+  min-height: 16px !important;
+  max-height: 16px !important;
+}
+
+/* Straight corners */
+#urlbar{
+  border-radius: 0 !important;
+}
+
+#nav-bar-overflow-button{
+  border-radius: 0 !important;
+}
+

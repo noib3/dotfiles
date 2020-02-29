@@ -21,7 +21,6 @@ set expandtab
 set number
 set relativenumber
 set noshowmode
-"set noshowcmd
 set clipboard+=unnamedplus
 
 let mapleader = ","
@@ -48,7 +47,6 @@ nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
 " Colorscheme
-" set background=dark
 colorscheme gruvbox
 "colorscheme nord
 
@@ -88,6 +86,9 @@ autocmd FileType rmd setlocal shiftwidth=2
 
 " Yaml
 autocmd FileType yaml setlocal shiftwidth=2
+
+" Css
+autocmd FileType css setlocal shiftwidth=2
 
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o

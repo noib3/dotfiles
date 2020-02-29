@@ -1,114 +1,26 @@
-/* Get the name of a CSS Selector
-1. Press shift+option+command+I
-2. At the top right of the new window check 'Disable Poput Auto-Hide'
-3. To select a box press the button in the top left corner (next to the 'Inspector tab')
-4. Click on what you want to select
-5. Right click the highlighted text, then -> Copy -> CSS Selector */
+/*
+Get the name of a CSS Selector
+  1. Press shift+option+command+I (on MacOS, some other key-combo in Linux/Windows)
+  2. Allow incoming connection
+  3. At the top right of the new window check 'Disable Poput Auto-Hide'
+  4. To select a box press the button in the top left corner (next to the 'Inspector tab')
+  5. Click on what you want to select
+  6. Right click the highlighted text, then -> Copy -> CSS Selector
+
+Inspect a box's layout (height, widht, margins, paddings & borders)
+  1. Repeat steps 1-5
+  2. Click the 'Layout' tab (between the 'Rules' and 'Computed' tabs on the right side of the window)
+  3. Scroll down to 'Box Model'
+*/
 
 @import url("/Users/noibe/.config/firefox/colorschemes/greyscale.css");
-
 @import url("/Users/noibe/.config/firefox/hacks/font.css");
+
 @import url("/Users/noibe/.config/firefox/hacks/remove_bloat.css");
 @import url("/Users/noibe/.config/firefox/hacks/full_width_tabs.css");
 @import url("/Users/noibe/.config/firefox/hacks/numbered_tabs.css");
-/*@import url("/Users/noibe/.config/firefox/hacks/shorter_tabs.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/widths_margins_and_paddings.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/show_navbar_on_focus_only.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/urlbar_and_popup_equal_width.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/autohide_bookmarks_toolbar.css");*/
-
-/* ----------------------------------------------------------------------------- */
-:root {
-  --tab-toolbar-navbar-overlap: 0px !important; /* fix for full screen mode */
-  --tab-min-height: 19px !important;
-}
-
-:root #tabbrowser-tabs {
-  --tab-min-height: 19px !important;
-}
-
-#TabsToolbar {
-  height: var(--tab-min-height) !important;
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-}
-
-.tab-content{
-  line-height: var(--tab-min-height) !important;
-}
-
-/* Margins for the tab text, the favicon and the tab loading animation */
-.tab-text{
-  margin-top: 0px !important;
-  line-height: 16px !important;
-}
-
-.tab-label-container{
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-}
-
-.tab-icon-image{
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-  height: 14px !important;
-  width: 14px !important;
-}
-
-.tab-throbber{
-  margin-top: 0px !important;
-}
-
-/*
-1. disable bold typeface for tab titles
-*/
-
-/* ----------------------------------------------------------------------------- */
-#urlbar-container{
-  margin-right: 0px !important;
-  margin-left: 0px !important;
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-}
-
-#urlbar{
-  border-width: 0px !important;
-  padding-left: 7px !important;
-}
-
-#navigator-toolbox{
-  border-width: 0px !important;
-}
-
-
-/* -------------------------------------------------------*/
-#nav-bar {
-  max-height: 26px !important;
-  width: 100vw !important; /* ??? */
-  position: fixed !important; /* ??? */
-  bottom: 0; /* ??? */
-  z-index: 1 !important; /* ??? */
-  display: block; /* ??? */
-}
-
-#nav-bar-customization-target {
-  min-width: 100% !important; /* ??? */
-  max-width: 100% !important; /* ??? */
-}
-
-:root:not([inFullscreen]) #browser {
-  margin-bottom: 26px;
-}
-
-.urlbarView:not(.megabar) {
-  margin-top: -336px !important; /* You may need to adjust this */
-}
-
-/*
-1. make urlbar shorter
-2. get the overflow button back in case I want to use it
-3. make the navbar autohide and be visible on hover or on focus
-4. disable rounded corners for urlbar
-*/
+@import url("/Users/noibe/.config/firefox/hacks/tab-bar_layout.css");
+@import url("/Users/noibe/.config/firefox/hacks/nav-bar_layout.css");
+@import url("/Users/noibe/.config/firefox/hacks/tab_close_on_hover.css");
+@import url("/Users/noibe/.config/firefox/hacks/nav-bar_on_hover.css");
+/*@import url("/Users/noibe/.config/firefox/hacks/nav-bar_on_bottom.css");*/
