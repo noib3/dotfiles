@@ -1,96 +1,111 @@
 /* Back and forward buttons */
 #back-button,
 #forward-button {
-    display: none !important;
+  display: none !important;
 }
 
 /* New tab button */
 #tabs-newtab-button {
-    display:none !important;
+  display:none !important;
 }
-
-/* Close tab button */
-/*.tab-close-button {
-    display:none !important;
-}*/
 
 /* Zoom level in urlbar */
 #urlbar-zoom-button {
-    display: none !important;
+  display: none !important;
 }
 
 /* Close, minimize, maximize buttons in the top left corner */
 .titlebar-buttonbox-container {
-    display: none !important;
+  display: none !important;
 }
 
 /* Spaces before and after the tab bar*/
 .titlebar-spacer[type="pre-tabs"],
 .titlebar-spacer[type="post-tabs"] {
-   display: none;
+ display: none;
 }
 
 /* Tab highlight line */
 .tab-line[selected="true"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Site information icon in urlbar */
 #identity-box[pageproxystate="valid"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Page actions button in urlbar */
 #pageActionButton {
-    display: none !important;
+  display: none !important;
 }
 
 /* Show history button in urlbar */
 .urlbar-history-dropmarker,
 #urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
-    display: none !important;
+  display: none !important;
 }
 
 /* Bottom left url preview when hovering over a link */
 #statuspanel[type="overLink"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Bottom left loading indicator when loading a page */
 #statuspanel[type="status"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Private browsing icon */
 #TabsToolbar .private-browsing-indicator {
-    display: none !important;
+  display: none !important;
 }
 
 /* Shield icon in urlbar */
 #tracking-protection-icon-container {
-    display: none !important;
+  display: none !important;
 }
 
 /* White line at the end of urlbar */
 #pageActionSeparator{
-    display: none !important;
+  display: none !important;
 }
 
 /* 'Open All in Tabs' option when clicking on a bookmarked folder */
 #PlacesToolbarItems .bookmarks-actions-menuseparator,
 .openintabs-menuitem {
-    display: none !important;
+  display: none !important;
 }
 
 /* 'Customize Toolbar' box at the bottom of the overflow menu */
 #overflowMenu-customize-button{
-    display: none !important;
+  display: none !important;
 }
 
 /* Magnifying glass icon when searching */
 #identity-box {
-    visibility: collapse !important;
+  visibility: collapse !important;
 }
 
 /* General menu button */
-#PanelUI-menu-button{ display: none !important; }
+#PanelUI-menu-button{
+  display: none !important;
+}
+
+/* Empty box before urlbar search results */
+#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
+.urlbarView-row .urlbarView-type-icon {
+  display: none !important;
+}
+
+/* Tab overflow icons when a lot of tabs are open */
+.scrollbutton-up,
+.scrollbutton-down{
+  display: none !important;
+}
+
+/* New tab icon when a lot of tabs are open */
+#new-tab-button,
+#alltabs-button{
+  display: none !important;
+}

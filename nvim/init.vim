@@ -47,6 +47,7 @@ nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
 " Colorscheme
+syntax enable
 colorscheme gruvbox
 "colorscheme nord
 
@@ -76,6 +77,7 @@ let g:vimtex_compiler_method='arara'
 let g:vimtex_view_method='skim'
 autocmd FileType tex nnoremap <buffer> <C-r> :VimtexCompile<cr>
 autocmd FileType tex inoremap <buffer> <C-r> <esc>:VimtexCompile<cr>a
+autocmd FileType tex setlocal shiftwidth=2
 
 " Markdown
 let g:pandoc#folding#fdc = 0

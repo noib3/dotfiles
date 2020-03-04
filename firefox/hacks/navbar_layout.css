@@ -1,8 +1,4 @@
 /* Paddings and margins */
-#navigator-toolbox{
-  border-width: 0 !important;
-}
-
 #urlbar-container{
   margin-right: 0 !important;
   margin-left: 0 !important;
@@ -10,10 +6,18 @@
   padding-bottom: 0 !important;
 }
 
+#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
+.urlbarView-row .urlbarView-favicon { /* urlbar search results margin */
+  margin-left: 7px !important;
+}
+
 #urlbar{
-  border-width: 0 !important;
   padding-left: 7px !important;
 }
+
+/*#urlbar-input{
+  padding-bottom: 1px !important;
+}*/
 
 #nav-bar-overflow-button{
   padding-top: 1px !important;
@@ -22,7 +26,7 @@
   padding-left: 0 !important;
 }
 
-/* Heights */
+/* Heights and widths */
 #nav-bar{
   min-height: 19px !important;
   max-height: 19px !important;
@@ -33,13 +37,22 @@
   max-height: 19px !important;
 }
 
-#urlbar-input-box{
-  min-height: 16px !important;
-  max-height: 16px !important;
+#urlbar-input{
+  min-height: 19px !important;
+  max-height: 19px !important;
 }
 
-/* Straight corners */
+/* Borders */
+#navigator-toolbox{
+  border-width: 0 !important;
+}
+
 #urlbar{
+  border-width: 0 !important;
+  border-radius: 0 !important;
+}
+
+#urlbar-input{
   border-radius: 0 !important;
 }
 
@@ -47,3 +60,11 @@
   border-radius: 0 !important;
 }
 
+/* Shadows */
+#urlbar[focused="true"]{
+  box-shadow: none !important;
+}
+
+#nav-bar{
+  box-shadow: none !important;
+}

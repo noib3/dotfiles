@@ -13,14 +13,63 @@ Inspect a box's layout (height, widht, margins, paddings & borders)
   3. Scroll down to 'Box Model'
 */
 
-@import url("/Users/noibe/.config/firefox/colorschemes/greyscale.css");
+/*@import url("/Users/noibe/.config/firefox/colorschemes/greyscale.css");
 @import url("/Users/noibe/.config/firefox/hacks/font.css");
 
 @import url("/Users/noibe/.config/firefox/hacks/remove_bloat.css");
 @import url("/Users/noibe/.config/firefox/hacks/full_width_tabs.css");
 @import url("/Users/noibe/.config/firefox/hacks/numbered_tabs.css");
-@import url("/Users/noibe/.config/firefox/hacks/tab-bar_layout.css");
-@import url("/Users/noibe/.config/firefox/hacks/nav-bar_layout.css");
+@import url("/Users/noibe/.config/firefox/hacks/tabbar_layout.css");
+@import url("/Users/noibe/.config/firefox/hacks/navbar_layout.css");
+@import url("/Users/noibe/.config/firefox/hacks/bookmarks_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/hacks/tab_close_on_hover.css");
-@import url("/Users/noibe/.config/firefox/hacks/nav-bar_on_hover.css");
-/*@import url("/Users/noibe/.config/firefox/hacks/nav-bar_on_bottom.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/navbar_on_hover.css");*/
+/*@import url("/Users/noibe/.config/firefox/hacks/navbar_on_bottom.css");*/
+
+/*#PanelUI-button{ display: none !important; }
+#urlbar{
+  min-height: 15px !important;
+  max-height: 15px !important;
+}*/
+
+/*#nav-bar-overflow-button{
+  width: 20px !important;
+  height: 20px !important;
+  background-size: 100% 100% !important;
+}*/
+
+/* This section is to anchor all the drop down panels at the same height, shift the
+  panel`s top margin according to its positioning and the uidensity of the window. */
+/*#downloadsPanel,
+#widget-overflow,
+#appMenu-popup,
+#customizationui-widget-panel,
+#protections-popup {
+  margin-top: -6px;
+  margin-right: -10px;
+}*/
+
+/*#widget-overflow{
+  margin-right: -20px !important;
+  margin-left: -20px !important;
+}
+
+:-moz-any(panel, menupopup)[side="top"]::part(arrow) {
+  list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg");
+  margin-left: 16px;
+  margin-right: 0;
+  margin-bottom: -1px;
+}*/
+
+/*:-moz-any(panel, menupopup)[side="top"]::part(arrow) {
+    list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg");
+    margin-left: 16px;
+    margin-right: 3px;
+    margin-bottom: -3px;
+}
+
+#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup {
+    margin-top: -6px;
+    margin-right: -12px;
+}*/
+

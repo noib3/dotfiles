@@ -46,8 +46,8 @@ colors: *nord
 window:
   decorations: buttonless
   padding:
-    x: 15
-    y: 10
+    x: 17
+    y: 12
 
 background_opacity: 1.00
 draw_bold_text_with_bright_colors: true

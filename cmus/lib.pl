@@ -45,6 +45,7 @@
 /Users/noibe/Music/Linkin Park/2007 - Minutes To Midnight/08 - No More Sorrow.mp3
 /Users/noibe/Music/Linkin Park/2012 - Living Things/06 - Castle of Glass.mp3
 /Users/noibe/Music/Matt Nathanson/2003 - American Wedding (Music from the Motion Picture)/07 - Laid.mp3
+/Users/noibe/Music/Metallica/1986 - Master of Puppets/02 - Master of Puppets.mp3
 /Users/noibe/Music/P.O.D./2001 - Satellite/04 - Youth of the Nation.mp3
 /Users/noibe/Music/Papa Roach/2000 - Infest/02 - Last Resort.mp3
 /Users/noibe/Music/Red Hot Chili Peppers/1999 - Californication/06 - Californication.mp3

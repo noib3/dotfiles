@@ -35,6 +35,9 @@ compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 HISTFILE=~/.cache/zsh/zsh_history
 
 # KEY BINDINGS
+# Unmap Ctrl-s
+stty -ixon
+
 close_window() { yabai -m window --close }
 zle -N close_window
 bindkey '^w' close_window
@@ -47,7 +50,7 @@ termrc() { $EDITOR ~/.config/alacritty/alacritty.yml }
 zle -N termrc
 bindkey '^n' termrc
 
-fdcd() {
+fuzzycd() {
     local dir
     dir=$(cd &&
            fd -0 --type d --ignore-file ~/.config/fd/ignore --hidden |
@@ -55,8 +58,19 @@ fdcd() {
     && cd ~/$dir
     zle reset-prompt
 }
-zle -N fdcd
-bindkey '^f' fdcd
+zle -N fuzzycd
+bindkey '^f' fuzzycd
+
+fuzzyedit() {
+    dir=$(pwd)
+    file=$(cd &&
+            fd -0 --type f --ignore-file ~/.config/fd/ignore --hidden |
+            fzf --read0 --height=50%) \
+    && cd $dir && $EDITOR ~/$file
+    zle reset-prompt
+}
+zle -N fuzzyedit
+bindkey '^s' fuzzyedit
 
 # ALIASES
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
@@ -70,6 +84,7 @@ alias -g peek='peek.py'
 alias -g ufetch='ufetch.sh'
 alias -g colortest='colortest.sh'
 alias -g tmd='tmd.sh'
+alias -g Omega='Omega.py'
 alias -g ffls='ffls.sh'
 alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 
@@ -84,7 +99,6 @@ alias vnstat='vnstat --config ~/.config/vnstat/vnstat.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
-alias nfs='$EDITOR $(fzf --height=50%)'
 
 alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
