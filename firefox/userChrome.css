@@ -23,53 +23,29 @@ Inspect a box's layout (height, widht, margins, paddings & borders)
 @import url("/Users/noibe/.config/firefox/hacks/navbar_layout.css");
 @import url("/Users/noibe/.config/firefox/hacks/bookmarks_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/hacks/tab_close_on_hover.css");
+@import url("/Users/noibe/.config/firefox/hacks/navbar_on_bottom.css");*/
 /*@import url("/Users/noibe/.config/firefox/hacks/navbar_on_hover.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/navbar_on_bottom.css");*/
 
-/*#PanelUI-button{ display: none !important; }
-#urlbar{
-  min-height: 15px !important;
-  max-height: 15px !important;
-}*/
-
-/*#nav-bar-overflow-button{
-  width: 20px !important;
-  height: 20px !important;
-  background-size: 100% 100% !important;
-}*/
-
-/* This section is to anchor all the drop down panels at the same height, shift the
-  panel`s top margin according to its positioning and the uidensity of the window. */
-/*#downloadsPanel,
-#widget-overflow,
-#appMenu-popup,
-#customizationui-widget-panel,
-#protections-popup {
-  margin-top: -6px;
-  margin-right: -10px;
-}*/
-
-/*#widget-overflow{
-  margin-right: -20px !important;
-  margin-left: -20px !important;
+/*#PanelUI-button{
+  display: none !important;
 }
 
-:-moz-any(panel, menupopup)[side="top"]::part(arrow) {
+:-moz-any(panel, menupopup)[side="top"]::part(arrow){
   list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg");
   margin-left: 16px;
-  margin-right: 0;
-  margin-bottom: -1px;
-}*/
-
-/*:-moz-any(panel, menupopup)[side="top"]::part(arrow) {
-    list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg");
-    margin-left: 16px;
-    margin-right: 3px;
-    margin-bottom: -3px;
+  margin-right: 3px;
+  margin-bottom: -3px;
 }
 
-#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup {
-    margin-top: -6px;
-    margin-right: -12px;
-}*/
+#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup{
+  margin-top: -6px;
+  margin-right: -12px;
+}
 
+#PlacesChevron, #nav-bar-overflow-button{
+  list-style-image: none !important;
+  background-image: url("chrome://browser/skin/chevron.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 25px
+}*/
