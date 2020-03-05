@@ -1,6 +1,6 @@
-set repeat_current=false
 colorscheme themes/sick
 colorscheme default
+set repeat_current=false
 colorscheme themes/sick.theme
 q
 colorscheme themes/solarized-dark

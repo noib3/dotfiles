@@ -13,36 +13,37 @@ Inspect a box's layout (height, widht, margins, paddings & borders)
   3. Scroll down to 'Box Model'
 */
 
-/*@import url("/Users/noibe/.config/firefox/colorschemes/greyscale.css");
-@import url("/Users/noibe/.config/firefox/hacks/font.css");
+/*@import url("/Users/noibe/.config/firefox/fonts/iosevka.css");
 
-@import url("/Users/noibe/.config/firefox/hacks/remove_bloat.css");
-@import url("/Users/noibe/.config/firefox/hacks/full_width_tabs.css");
-@import url("/Users/noibe/.config/firefox/hacks/numbered_tabs.css");
-@import url("/Users/noibe/.config/firefox/hacks/tabbar_layout.css");
-@import url("/Users/noibe/.config/firefox/hacks/navbar_layout.css");
-@import url("/Users/noibe/.config/firefox/hacks/bookmarks_bar_layout.css");
-@import url("/Users/noibe/.config/firefox/hacks/tab_close_on_hover.css");
-@import url("/Users/noibe/.config/firefox/hacks/navbar_on_bottom.css");*/
-/*@import url("/Users/noibe/.config/firefox/hacks/navbar_on_hover.css");*/
+@import url("/Users/noibe/.config/firefox/colors/greyscale.css");
+
+@import url("/Users/noibe/.config/firefox/uitweaks/remove_bloat.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/full_width_tabs.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/numbered_tabs.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/bookmarks_bar_layout.css");*/ /*del*/
 
 /*#PanelUI-button{
   display: none !important;
 }
 
-:-moz-any(panel, menupopup)[side="top"]::part(arrow){
-  list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg");
-  margin-left: 16px;
-  margin-right: 3px;
-  margin-bottom: -3px;
-}
-
 #downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup{
-  margin-top: -6px;
-  margin-right: -12px;
+  margin-top: -6px !important;
+  margin-right: -12px !important;
 }
 
-#PlacesChevron, #nav-bar-overflow-button{
+:-moz-any(panel, menupopup)[side="top"]::part(arrow){
+  list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg") !important;
+  margin-left: 16px !important;
+  margin-right: 3px !important;
+  margin-bottom: -3px !important;
+}*/
+
+/*#PlacesChevron, #nav-bar-overflow-button{
   list-style-image: none !important;
   background-image: url("chrome://browser/skin/chevron.svg");
   background-repeat: no-repeat;

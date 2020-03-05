@@ -1,5 +1,5 @@
 #TabsToolbar .tabbrowser-tab[fadein]:not([pinned]) {
   flex-grow: 1 !important;
-  min-width: 11em !important;
+  min-width: 20px !important;
   max-width: 100% !important;
 }

@@ -1,5 +1,5 @@
 # OPEN PROGRAMS
-cmd - b: open -na /Applications/Firefox.app
+cmd - e: open -na /Applications/Firefox.app
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
 cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/bin/ndiet/ndiet.py -c

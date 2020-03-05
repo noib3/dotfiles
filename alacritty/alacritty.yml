@@ -32,7 +32,8 @@ schemes:
       white: '0xeceff4'
   pers: &pers
     primary:
-      background: '0x121111'
+      #background: '0x121111'
+      background: '0x131520'
       foreground: '0xc7c7c7'
     cursor:
       text: '0xfeffff'
@@ -41,7 +42,7 @@ schemes:
       text: '0xffffff'
       background: '0x7aa6da'
 
-colors: *nord
+colors: *pers
 
 window:
   decorations: buttonless

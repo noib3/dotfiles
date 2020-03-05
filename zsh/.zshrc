@@ -109,9 +109,6 @@ alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services rest
 
 alias gpom='git push origin master'
 
-# FUNCTIONS
-tsm() { firefox -new-tab -url "http://localhost:9091/transmission/web/" }
-
 # PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
