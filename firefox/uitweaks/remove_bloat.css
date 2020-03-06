@@ -116,6 +116,11 @@
   display: none !important;
 }
 
+/* "Go to.." arrow icon in urlbar when searching */
+#urlbar-go-button{
+  display: none !important;
+}
+
 /* White line at the end of urlbar */
 #pageActionSeparator{
   display: none !important;
@@ -158,5 +163,10 @@
 /* New tab icon when a lot of tabs are open */
 #new-tab-button,
 #alltabs-button{
+  display: none !important;
+}
+
+/* Disable Bookmarks Toolbar */
+#PersonalToolbar{
   display: none !important;
 }

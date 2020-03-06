@@ -6,7 +6,6 @@
   --urlbar-color: #393939;
   --urlbar-search-results-color: #393939;
   --popup-menu-color: #393939;
-  --bookmarks-bar-color: #626262;
 }
 
 /* Unfocused tab */
@@ -37,14 +36,4 @@
 /* Overflow popup menu */
 .panel-subview-body{
   background: var(--popup-menu-color) !important;
-}
-
-/* Bookmarks bar */
-#PlacesToolbarItems{
-  background: var(--bookmarks-bar-color) !important;
-}
-
-/* Overflow icon in bookmarks bar */
-#PlacesChevron{
-  background: var(--bookmarks-bar-color) !important;
 }
