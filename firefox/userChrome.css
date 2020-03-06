@@ -1,18 +1,3 @@
-/*
-Get the name of a CSS Selector
-  1. Press shift+option+command+I (on MacOS, some other key-combo in Linux/Windows)
-  2. Allow incoming connection
-  3. At the top right of the new window check 'Disable Poput Auto-Hide'
-  4. To select a box press the button in the top left corner (next to the 'Inspector tab')
-  5. Click on what you want to select
-  6. Right click the highlighted text, then -> Copy -> CSS Selector
-
-Inspect a box's layout (height, widht, margins, paddings & borders)
-  1. Repeat steps 1-5
-  2. Click the 'Layout' tab (between the 'Rules' and 'Computed' tabs on the right side of the window)
-  3. Scroll down to 'Box Model'
-*/
-
 /*@import url("/Users/noibe/.config/firefox/fonts/iosevka.css");
 
 @import url("/Users/noibe/.config/firefox/colors/greyscale.css");
@@ -23,15 +8,13 @@ Inspect a box's layout (height, widht, margins, paddings & borders)
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/bookmarks_bar_layout.css");*/ /*del*/
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");*/
+/*@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");*/
 
-/*#PanelUI-button{
-  display: none !important;
-}
+/*@import url("/Users/noibe/.config/firefox/uitweaks/bookmarks_bar_layout.css");*/
 
-#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup{
+/* ------------- MOVE THE OVERFLOW POPUP WINDOW ------------- */
+/*#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup{
   margin-top: -6px !important;
   margin-right: -12px !important;
 }
@@ -43,10 +26,11 @@ Inspect a box's layout (height, widht, margins, paddings & borders)
   margin-bottom: -3px !important;
 }*/
 
+/* --------------- BIGGER OVERFLOW BUTTON ICON -------------- */
 /*#PlacesChevron, #nav-bar-overflow-button{
   list-style-image: none !important;
   background-image: url("chrome://browser/skin/chevron.svg");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 25px
+  background-size: 10px
 }*/

@@ -1,0 +1,23 @@
+Enable Browser Toolbox
+  1. Press Option+Command+I
+  2. Click on the three dots next to the close button on the top right corner
+  3. Click on 'Settings'
+  4. Scroll to 'Advanced settings'
+  5. Check the settings 'Enable browser chrome and add-on debugging toolboxes'
+     and 'Enable remote debugging'
+
+Get the name of a CSS Selector
+  1. Press Shift+Option+Command+I to open the Browser Toolbox
+  2. Allow incoming connection
+  3. To select a box press the button in the top left corner (next to the
+     'Inspector tab')
+  4. To select popup menus click on the three dots on the top right and check
+     'Disable Poput Auto-Hide'
+  5. Click on what you want to select
+  6. Right click the highlighted text, then -> Copy -> CSS Selector
+
+Inspect a box's layout (height, widht, margins, paddings & borders)
+  1. Repeat previous steps 1-6
+  2. Click the 'Layout' tab (between the 'Rules' and 'Computed' tabs on the
+     right side of the window)
+  3. Scroll down to 'Box Model'

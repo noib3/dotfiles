@@ -9,8 +9,58 @@
   display:none !important;
 }
 
+/* Reload button */
+#reload-button{
+  display: none !important;
+}
+
+/* Home button */
+#home-button{
+  display: none !important;
+}
+
+/* Stop button when loading a page */
+#stop-button{
+  display: none !important;
+}
+
+/* Empty space before the urlbar */
+#customizableui-special-spring1{
+  display: none !important;
+}
+
+/* Save to pocket button in urlbar */
+#pocket-button{
+  display: none !important;
+}
+
+/* Bookmarks this page button in urlbar */
+#star-button{
+  display: none !important;
+}
+
 /* Zoom level in urlbar */
 #urlbar-zoom-button {
+  display: none !important;
+}
+
+/* Empty space after the urlbar */
+#customizableui-special-spring2{
+  display: none !important;
+}
+
+/* Library button */
+#library-button{
+  display: none !important;
+}
+
+/* Show sidebars button */
+#sidebar-button{
+  display: none !important;
+}
+
+/* Firefox account button */
+#fxa-toolbar-menu-button{
   display: none !important;
 }
 
@@ -87,7 +137,8 @@
   visibility: collapse !important;
 }
 
-/* General menu button */
+/* General menu buttons */
+#PanelUI-button,
 #PanelUI-menu-button{
   display: none !important;
 }

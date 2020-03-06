@@ -1,5 +1,5 @@
 # OPEN PROGRAMS
-cmd - e: open -na /Applications/Firefox.app
+alt - b: open -na /Applications/Firefox.app
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
 cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/bin/ndiet/ndiet.py -c
@@ -33,8 +33,7 @@ alt - 4: yabai -m space --focus 4
 alt - x: yabai -m space --mirror x-axis
 alt - y: yabai -m space --mirror y-axis
 alt - r: yabai -m space --rotate 90
-alt - b: yabai -m space --balance
-alt - m: yabai -m window --swap largest
+alt + shift - b: yabai -m space --balance
 
 alt - w: yabai -m space --destroy && yabai -m space --focus prev
 alt - n: yabai -m space --create && yabai -m space --focus last
