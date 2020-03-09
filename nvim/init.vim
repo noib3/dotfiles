@@ -3,8 +3,6 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
-Plug 'shinchu/lightline-gruvbox.vim'
-Plug 'arcticicestudio/nord-vim'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -72,10 +70,6 @@ let g:lightline = {
       \ }
 
 " LaTeX
-"let g:vimtex_compiler_method='arara'
-"let g:vimtex_view_method='skim'
-"autocmd FileType tex nnoremap <buffer> <C-r> :VimtexCompile<cr>
-"autocmd FileType tex inoremap <buffer> <C-r> <esc>:VimtexCompile<cr>a
 autocmd FileType tex setlocal shiftwidth=2
 
 " Markdown

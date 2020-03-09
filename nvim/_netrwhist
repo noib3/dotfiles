@@ -1,9 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =7
-let g:netrw_dirhist_7='/Users/noibe/bin/otfinstall'
-let g:netrw_dirhist_6='/Volumes/LaCie 1'
-let g:netrw_dirhist_5='/Users/noibe/.config/cmus/themes'
-let g:netrw_dirhist_4='/Users/noibe/.config/cmus/playlists'
-let g:netrw_dirhist_3='/Users/noibe/Uni/I'
-let g:netrw_dirhist_2='/Users/noibe/.config/ufetch'
-let g:netrw_dirhist_1='/Users/noibe/Scripts/peek'
