@@ -11,7 +11,6 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'vim-pandoc/vim-rmarkdown'
 Plug 'terryma/vim-smooth-scroll'
 Plug 'tpope/vim-surround'
-Plug 'lervag/vimtex'
 call plug#end()
 
 " Basics
@@ -73,10 +72,10 @@ let g:lightline = {
       \ }
 
 " LaTeX
-let g:vimtex_compiler_method='arara'
-let g:vimtex_view_method='skim'
-autocmd FileType tex nnoremap <buffer> <C-r> :VimtexCompile<cr>
-autocmd FileType tex inoremap <buffer> <C-r> <esc>:VimtexCompile<cr>a
+"let g:vimtex_compiler_method='arara'
+"let g:vimtex_view_method='skim'
+"autocmd FileType tex nnoremap <buffer> <C-r> :VimtexCompile<cr>
+"autocmd FileType tex inoremap <buffer> <C-r> <esc>:VimtexCompile<cr>a
 autocmd FileType tex setlocal shiftwidth=2
 
 " Markdown

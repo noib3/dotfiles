@@ -1,3 +1,13 @@
+/* --------------- BIGGER OVERFLOW BUTTON ICON -------------- */
+#PlacesChevron, #nav-bar-overflow-button{
+  list-style-image: none !important;
+  background-image: url("chrome://browser/skin/chevron.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px !important;
+}
+/* ---------------------------------------------------------- */
+
 /* Paddings and margins */
 #urlbar-container{
   margin-right: 0 !important;
@@ -11,17 +21,13 @@
   margin-left: 7px !important;
 }
 
-#urlbar{
+#urlbar-input{
   padding-left: 7px !important;
 }
 
-/*#urlbar-input{
-  padding-bottom: 1px !important;
-}*/
-
 #nav-bar-overflow-button{
-  padding-top: 1px !important;
-  padding-bottom: 1px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   padding-right: 0 !important;
   padding-left: 0 !important;
 }

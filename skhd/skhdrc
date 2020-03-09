@@ -48,4 +48,4 @@ cmd + alt - n: yabai -m space --create && yabai -m window --space last && yabai 
 
 # TAKE SCREENSHOTS
 cmd + shift - 3: screencapture ~/Pictures/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
-cmd + shift - 4: screencapture -i ~/Pictures/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
+cmd + shift - 4: screencapture -i ~/Pictures/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@_/;s/:/./g;s/-/:/g').png

@@ -11,7 +11,7 @@ PATH=$PATH:/bin
 PATH=$PATH:/sbin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
-PATH=$PATH:$HOME/bin
+PATH=$PATH:$HOME/Scripts
 
 # SHELL OPTIONS AND PROMPT
 setopt MENU_COMPLETE
@@ -95,8 +95,7 @@ alias ssh='ssh -F ~/.config/ssh/config'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias cmus='tmux attach-session -t cmus >/dev/null'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
-alias vnstat='vnstat --config ~/.config/vnstat/vnstat.conf'
-alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
+alias cal='calcurse -C ~/.config/calcurse -D ~/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
 
@@ -122,9 +121,6 @@ source $ZDOTDIR/exports.zsh
 
 # List all songs and pipe them into tmd
 #   find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
-
-# List all 8-bit colors
-#   for i in {1..256}; do print -P "%F{$i}Color : $i"; done;
 
 # Change TeX home tree
 #   sudo tlmgr conf texmf TEXMFHOME "~/TeX/texmf"

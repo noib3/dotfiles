@@ -8,27 +8,13 @@
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");*/
-/*@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");*/
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");*/
 
-/* ------------- MOVE THE OVERFLOW POPUP WINDOW ------------- */
-/*#downloadsPanel, #widget-overflow, #appMenu-popup, #customizationui-widget-panel, #protections-popup{
-  margin-top: -6px !important;
-  margin-right: -12px !important;
+/*:root{
+  --lwt-accent-color: #4bc24d !important;
 }
 
-:-moz-any(panel, menupopup)[side="top"]::part(arrow){
-  list-style-image: url("chrome://global/skin/arrow/panelarrow-vertical.svg") !important;
-  margin-left: 16px !important;
-  margin-right: 3px !important;
-  margin-bottom: -3px !important;
-}*/
-
-/* --------------- BIGGER OVERFLOW BUTTON ICON -------------- */
-/*#PlacesChevron, #nav-bar-overflow-button{
-  list-style-image: none !important;
-  background-image: url("chrome://browser/skin/chevron.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 10px
+#navigator-toolbox{
+  --tabs-border-color: #4bc24d !important;
 }*/

@@ -90,6 +90,11 @@
   display: none !important;
 }
 
+/* 'Toggle reader view' button in urlbar */
+#reader-mode-button{
+  display: none !important;
+}
+
 /* Show history button in urlbar */
 .urlbar-history-dropmarker,
 #urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
