@@ -1,6 +1,0 @@
-* 6-14 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 6300 -g 1.05
-* 15-16 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 4700 -g 1.05
-* 17-19 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 2800 -g 1.05
-* 20-22 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 2500 -g 1.05
-* 23 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 2200 -g 1
-* 0-5 * * * env DISPLAY=:0.0 /usr/local/bin/redshift -PO 2000 -g 0.95

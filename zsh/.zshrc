@@ -95,7 +95,7 @@ alias ssh='ssh -F ~/.config/ssh/config'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias cmus='tmux attach-session -t cmus >/dev/null'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
-alias cal='calcurse -C ~/.config/calcurse -D ~/calcurse'
+alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
 
@@ -103,8 +103,8 @@ alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
 alias skhdrc='$EDITOR ~/.config/skhd/skhdrc'
 alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
+alias lfrc='$EDITOR ~/.config/lf/lfrc'
 alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
-alias redshiftrc='$EDITOR ~/.config/redshift/redshift.conf && brew services restart redshift'
 
 alias gpom='git push origin master'
 

@@ -1,6 +1,7 @@
 # Boolean valued options
 set color256 on
 set ignorecase on
+set hidden on
 
 # String valued options
 set previewer "~/.config/lf/previewer.sh"

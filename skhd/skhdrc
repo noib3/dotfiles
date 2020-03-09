@@ -1,7 +1,7 @@
 # OPEN PROGRAMS
 alt - b: open -na /Applications/Firefox.app
 cmd - return: open -na /Applications/Alacritty.app
-cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Documents
+cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Dropbox
 cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/bin/ndiet/ndiet.py -c
 
 # MANAGE WINDOWS AND SCREENS
