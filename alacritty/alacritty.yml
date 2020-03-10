@@ -1,3 +1,8 @@
+shell:
+  program: /bin/zsh
+  args:
+    - --login
+
 font:
   normal:
     family: Iosevka
@@ -74,10 +79,18 @@ key_bindings:
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: D, mods: Super, chars: "\x06" } # ctrl-f
   - { key: F, mods: Super, chars: "\x07" } # ctrl-g
-  # tmux keys
+  # tmux keys (xxd -psd to get the escape codes)
   - { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c
   - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
   - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
   - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3
   - { key: 21, mods: Super, chars: "\x02\x34" } # ctrl-b 4
   - { key: 23, mods: Super, chars: "\x02\x35" } # ctrl-b 5
+  - { key: Up, mods: Command|Alt, chars: "\x02\x1b\x5b\x41" } # ctrl-b Up
+  - { key: Down, mods: Command|Alt, chars: "\x02\x1b\x5b\x42" } # ctrl-b Down
+  - { key: Right, mods: Command|Alt, chars: "\x02\x1b\x5b\x43" } # ctrl-b Right
+  - { key: Left, mods: Command|Alt, chars: "\x02\x1b\x5b\x44" } # ctrl-b Left
+  - { key: K, mods: Command|Alt, chars: "\x02\x6b" } # ctrl-b k
+  - { key: J, mods: Command|Alt, chars: "\x02\x6a" } # ctrl-b j
+  - { key: L, mods: Command|Alt, chars: "\x02\x6c" } # ctrl-b l
+  - { key: H, mods: Command|Alt, chars: "\x02\x68" } # ctrl-b h

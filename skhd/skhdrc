@@ -2,7 +2,8 @@
 alt - b: open -na /Applications/Firefox.app
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Dropbox
-cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/bin/ndiet/ndiet.py -c
+cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/Bin/ndiet/ndiet.py -c
+cmd + shift - m: /Applications/Alacritty.app/Contents/MacOS/alacritty --command echo "ciao"
 
 # MANAGE WINDOWS AND SCREENS
 alt - h: yabai -m window --resize left:-15:0
@@ -47,5 +48,5 @@ cmd + alt - 4: yabai -m window --space 4 && yabai -m space --focus 4
 cmd + alt - n: yabai -m space --create && yabai -m window --space last && yabai -m space --focus last
 
 # TAKE SCREENSHOTS
-cmd + shift - 3: screencapture ~/Pictures/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
-cmd + shift - 4: screencapture -i ~/Pictures/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@_/;s/:/./g;s/-/:/g').png
+cmd + shift - 3: screencapture ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
+cmd + shift - 4: screencapture -i ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@_/;s/:/./g;s/-/:/g').png

@@ -13,7 +13,7 @@ set ratios "1:2:3"
 cmd open ${{
     case $(file --mime-type "$f" -b) in
         text/*) $EDITOR "$f";;
-        *) for i in "$f"; do open "$i" >/dev/null 2>/dev/null & done;;
+        *) for i in "$f"; do open "$i" >/dev/null 2>&1 & done;;
     esac
 }}
 
@@ -23,18 +23,32 @@ cmd eject ${{
     done
 }}
 
+cmd make_wallpaper ${{
+    for v in "$fx"; do
+        osascript -e 'tell application "Finder" to set desktop picture to POSIX file "${v}"'
+        osascript -e 'quit app "Finder"' > /dev/null 2>&1
+    done
+}}
+
+cmd ciao ${{
+    for v in "$fx"; do
+        echo '"$v"' >> ciao
+    done
+}}
 # Mappings
 map e
+map m
 
 map <c-w> quit
 map <enter> shell
 map d delete
 map x cut
 map ej eject
+map mw make_wallpaper
+map h ciao
 
 map gvl cd "/Volumes"
 map gnf cd "~/.config"
 map gdl cd "~/Downloads"
-map gdr cd "~/Google Drive"
-map gun cd "~/Documents/??"
-map gss cd "~/Pictures/Screenshots"
+map gun cd "~/Dropbox/Uni/III"
+map gss cd "~/Dropbox/Screenshots"

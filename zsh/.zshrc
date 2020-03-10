@@ -18,8 +18,6 @@ setopt MENU_COMPLETE
 setopt AUTO_CD
 unsetopt CASE_GLOB
 unsetopt BEEP
-#PROMPT='%F{255}%1~ %F{137}> %F{255}'
-#PROMPT='%F{252}%1~ %F{blue}> %F{255}'
 PROMPT='%F{252}%1~ %F{224}> %F{255}'
 
 # TAB AUTOCOMPLETION
@@ -79,7 +77,7 @@ alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 SRCDIR=~/bin
 alias -g ndiet='$SRCDIR/ndiet/ndiet.py'
 alias -g 2d2small='$SRCDIR/2d2small/2d2small.sh'
-alias -g otfinstall='$SRCDIR/otfinstall/otfinstall.sh'
+alias -g tfin='~/Scripts/tfin/tfin.sh'
 alias -g peek='peek.py'
 alias -g ufetch='ufetch.sh'
 alias -g colortest='colortest.sh'
@@ -96,8 +94,10 @@ alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias cmus='tmux attach-session -t cmus >/dev/null'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
+
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 alias c='clear && printf "\e[3J"'
+alias gpom='git push origin master'
 
 alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
@@ -106,8 +106,6 @@ alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
 alias lfrc='$EDITOR ~/.config/lf/lfrc'
 alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
 
-alias gpom='git push origin master'
-
 # PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
@@ -115,6 +113,13 @@ source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 
 # SOURCE FILE WITH ENVIRONMENT VARIABLES
 source $ZDOTDIR/exports.zsh
+
+# ciao() { echo '"${1}"' }
+ciao() { osascript -e 'tell application "Finder" to set desktop picture to POSIX file "\"$1\""' }
+
+# Set wallpaper from command line
+#   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'
+#   osascript -e 'quit app "Finder"'
 
 # Disable the "Are you sure you want to open this application?" dialog
 #   defaults write com.apple.LaunchServices LSQuarantine -bool false
@@ -157,7 +162,3 @@ source $ZDOTDIR/exports.zsh
 
 # Remove .DS_Store files from home folder
 #   find ~ -depth -name ".DS_Store" -exec rm {} \;
-
-# Set wallpaper from command line
-#   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'
-#   osascript -e 'quit app "Finder"'
