@@ -116,16 +116,11 @@ source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 # SOURCE FILE WITH ENVIRONMENT VARIABLES
 source $ZDOTDIR/exports.zsh
 
-# ciao() { echo '"${1}"' }
-ciao() {
-    #osascript -e 'tell application "Finder" to set desktop picture to POSIX file "\"$1\""'
-    osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'"$1"\"
-    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$1\""
-}
-
 # Set wallpaper from command line
 #   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'
 #   osascript -e 'quit app "Finder"'
+# Or, to use it inside a shell function,
+#   osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$1\""
 
 # Disable the "Are you sure you want to open this application?" dialog
 #   defaults write com.apple.LaunchServices LSQuarantine -bool false

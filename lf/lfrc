@@ -34,14 +34,6 @@ cmd make_wallpaper ${{
     osascript -e 'quit app "Finder"' > /dev/null 2>&1
 }}
 
-cmd ciao ${{
-    esc=$(echo "$f" | sed 's/ /\\ /g')
-    cma=$(echo "\"$f\"")
-    echo "$f" >> ciao
-    echo "${esc}" >> ciao
-    echo "${cma}" >> ciao
-}}
-
 # Mappings
 map e
 map m
@@ -52,7 +44,6 @@ map d delete
 map x cut
 map ej eject
 map mw make_wallpaper
-map h ciao
 
 map gvl cd "/Volumes"
 map gnf cd "~/.config"
