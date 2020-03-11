@@ -21,7 +21,7 @@ set noshowmode
 set clipboard+=unnamedplus
 
 let mapleader = ","
-
+let g:is_posix = 1
 
 " Mappings
 nnoremap <C-s> :w<cr>
@@ -38,8 +38,8 @@ inoremap <C-e> <esc>g_a
 
 nnoremap ss :%s//g<left><left>
 
-nnoremap <silent> <C-u> :call smooth_scroll#up(20, 10, 2)<cr>
-nnoremap <silent> <C-d> :call smooth_scroll#down(20, 10, 2)<cr>
+nnoremap <silent> <C-u> :call smooth_scroll#up(10, 10, 1)<cr>
+nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 

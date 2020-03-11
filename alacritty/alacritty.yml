@@ -7,7 +7,8 @@ font:
   normal:
     family: Iosevka
   size:
-    15.0
+    16.0
+    #15.0
 
 schemes:
   nord: &nord # https://github.com/arcticicestudio/nord-alacritty/blob/develop/src/nord.yml

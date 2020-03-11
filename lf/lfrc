@@ -2,6 +2,12 @@
 set color256 on
 set ignorecase on
 set hidden on
+# these next two options are needed
+# when defining custom commands to make
+# $f work even when there are spaces in
+# the path of the selected file
+set ifs " "
+set filesep " "
 
 # String valued options
 set previewer "~/.config/lf/previewer.sh"
@@ -24,17 +30,18 @@ cmd eject ${{
 }}
 
 cmd make_wallpaper ${{
-    for v in "$fx"; do
-        osascript -e 'tell application "Finder" to set desktop picture to POSIX file "${v}"'
-        osascript -e 'quit app "Finder"' > /dev/null 2>&1
-    done
+    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
+    osascript -e 'quit app "Finder"' > /dev/null 2>&1
 }}
 
 cmd ciao ${{
-    for v in "$fx"; do
-        echo '"$v"' >> ciao
-    done
+    esc=$(echo "$f" | sed 's/ /\\ /g')
+    cma=$(echo "\"$f\"")
+    echo "$f" >> ciao
+    echo "${esc}" >> ciao
+    echo "${cma}" >> ciao
 }}
+
 # Mappings
 map e
 map m

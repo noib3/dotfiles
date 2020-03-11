@@ -1,8 +1,8 @@
+q
 colorscheme themes/sick
 colorscheme default
 set repeat_current=false
 colorscheme themes/sick.theme
-q
 colorscheme themes/solarized-dark
 bind -f common ^W shell tmux detach-client -s cmus
 bind -f common q shell tmux detach-client -s cmus

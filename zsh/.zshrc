@@ -16,6 +16,7 @@ PATH=$PATH:$HOME/Scripts
 # SHELL OPTIONS AND PROMPT
 setopt MENU_COMPLETE
 setopt AUTO_CD
+setopt histignoredups
 unsetopt CASE_GLOB
 unsetopt BEEP
 PROMPT='%F{252}%1~ %F{224}> %F{255}'
@@ -77,7 +78,7 @@ alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 SRCDIR=~/bin
 alias -g ndiet='$SRCDIR/ndiet/ndiet.py'
 alias -g 2d2small='$SRCDIR/2d2small/2d2small.sh'
-alias -g tfin='~/Scripts/tfin/tfin.sh'
+alias tfin='~/Scripts/tfin/tfin.sh'
 alias -g peek='peek.py'
 alias -g ufetch='ufetch.sh'
 alias -g colortest='colortest.sh'
@@ -85,6 +86,7 @@ alias -g tmd='tmd.sh'
 alias -g Omega='Omega.py'
 alias -g ffls='ffls.sh'
 alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
+alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'
@@ -115,7 +117,11 @@ source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 source $ZDOTDIR/exports.zsh
 
 # ciao() { echo '"${1}"' }
-ciao() { osascript -e 'tell application "Finder" to set desktop picture to POSIX file "\"$1\""' }
+ciao() {
+    #osascript -e 'tell application "Finder" to set desktop picture to POSIX file "\"$1\""'
+    osascript -e 'tell application "Finder" to set desktop picture to POSIX file "'"$1"\"
+    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$1\""
+}
 
 # Set wallpaper from command line
 #   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'
@@ -154,11 +160,5 @@ ciao() { osascript -e 'tell application "Finder" to set desktop picture to POSIX
 #   sudo mount -uw /
 #   killall Finder
 
-# Link airport
-#   ln -s /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport /usr/bin/airport
-
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A
-
-# Remove .DS_Store files from home folder
-#   find ~ -depth -name ".DS_Store" -exec rm {} \;

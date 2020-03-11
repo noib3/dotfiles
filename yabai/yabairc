@@ -26,11 +26,11 @@ yabai -m config mouse_action2                   resize
 
 # GENERAL SPACE SETTINGS
 yabai -m config layout                          bsp
-yabai -m config top_padding                     20
-yabai -m config bottom_padding                  20
-yabai -m config left_padding                    20
-yabai -m config right_padding                   20
-yabai -m config window_gap                      20
+yabai -m config top_padding                     25
+yabai -m config bottom_padding                  25
+yabai -m config left_padding                    25
+yabai -m config right_padding                   25
+yabai -m config window_gap                      25
 
 # RULES
 yabai -m rule --add app="^System Preferences" manage=off

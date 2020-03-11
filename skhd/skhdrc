@@ -1,9 +1,11 @@
 # OPEN PROGRAMS
-alt - b: open -na /Applications/Firefox.app
+cmd - b [
+    "firefox"  ~
+    *          : open -na /Applications/Firefox.app
+]
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Dropbox
 cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command ~/Bin/ndiet/ndiet.py -c
-cmd + shift - m: /Applications/Alacritty.app/Contents/MacOS/alacritty --command echo "ciao"
 
 # MANAGE WINDOWS AND SCREENS
 alt - h: yabai -m window --resize left:-15:0
@@ -34,7 +36,7 @@ alt - 4: yabai -m space --focus 4
 alt - x: yabai -m space --mirror x-axis
 alt - y: yabai -m space --mirror y-axis
 alt - r: yabai -m space --rotate 90
-alt + shift - b: yabai -m space --balance
+alt - b: yabai -m space --balance
 
 alt - w: yabai -m space --destroy && yabai -m space --focus prev
 alt - n: yabai -m space --create && yabai -m space --focus last
