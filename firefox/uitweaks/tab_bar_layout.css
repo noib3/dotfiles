@@ -1,10 +1,6 @@
 :root {
+  --tab-min-height: 1.35em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
-  --tab-min-height: 19px !important;
-}
-
-:root #tabbrowser-tabs {
-  --tab-min-height: 19px !important;
 }
 
 #TabsToolbar {
@@ -14,31 +10,35 @@
 }
 
 .tab-content{
-  line-height: var(--tab-min-height) !important;
+  padding-top: 2px !important;
+  line-height: 1em !important;
 }
 
-/* Margins for the tab text, the favicon and the tab loading animation */
 .tab-text{
   margin-top: 0 !important;
-  line-height: 16px !important;
+  margin-bottom: 0 !important;
+  line-height: 1.35em !important;
 }
 
 .tab-label-container{
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1.35em !important;
 }
 
 .tab-icon-image{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  height: 14px !important;
-  width: 14px !important;
+  padding-bottom: 1px !important;
+  height: 1em !important;
+  width: 1em !important;
 }
 
 .tab-throbber{
   margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /*

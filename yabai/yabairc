@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # BAR SETTINGS
 yabai -m config status_bar                      off
@@ -39,6 +39,4 @@ yabai -m rule --add app="^Disk Utility" manage=off
 yabai -m rule --add app="^Activity Monitor" manage=off
 yabai -m rule --add app="^Calculator" manage=off
 yabai -m rule --add app="^Digital Colour Meter" manage=off
-yabai -m rule --add app="^IINA" manage=off
-#yabai -m rule --add app="^Calendar" manage=off
 yabai -m rule --add app="^Logi Options" manage=off

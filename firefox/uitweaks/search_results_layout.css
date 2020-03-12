@@ -1,0 +1,23 @@
+.urlbarView{
+  border-width: 0 !important;
+}
+
+#urlbar-results{
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+#urlbarView-row-0,
+#urlbarView-row-1,
+#urlbarView-row-2,
+#urlbarView-row-3,
+#urlbarView-row-4,
+#urlbarView-row-5,
+#urlbarView-row-6,
+#urlbarView-row-7,
+#urlbarView-row-8,
+#urlbarView-row-9{
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  line-height: 1.35em !important;
+}

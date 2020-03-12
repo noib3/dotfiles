@@ -1,13 +1,3 @@
-/* --------------- BIGGER OVERFLOW BUTTON ICON -------------- */
-#PlacesChevron, #nav-bar-overflow-button{
-  list-style-image: none !important;
-  background-image: url("chrome://browser/skin/chevron.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 11px !important;
-}
-/* ---------------------------------------------------------- */
-
 /* Paddings and margins */
 #urlbar-container{
   margin-right: 0 !important;
@@ -23,33 +13,43 @@
 
 #urlbar-input{
   padding-left: 7px !important;
+  padding-right: 7px !important;
+  padding-bottom: 1px !important;
 }
 
 #nav-bar-overflow-button{
   padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding-bottom: 1px !important;
   padding-right: 0 !important;
   padding-left: 0 !important;
 }
 
 /* Heights and widths */
 #nav-bar{
-  min-height: 19px !important;
-  max-height: 19px !important;
+  min-height: 1.35em !important;
+  max-height: 1.35em !important;
 }
 
 #urlbar{
-  min-height: 19px !important;
-  max-height: 19px !important;
+  min-height: 1.35em !important;
+  max-height: 1.35em !important;
 }
 
 #urlbar-input{
-  min-height: 19px !important;
-  max-height: 19px !important;
+  min-height: 1.35em !important;
+  max-height: 1.35em !important;
 }
 
 /* Borders */
 #navigator-toolbox{
+  border-width: 0 !important;
+}
+
+#urlbar-background{
+  border-width: 0 !important;
+}
+
+#urlbar-input-container{
   border-width: 0 !important;
 }
 
@@ -73,4 +73,13 @@
 
 #nav-bar{
   box-shadow: none !important;
+}
+
+/* Overflow button custom size icon */
+#PlacesChevron, #nav-bar-overflow-button{
+  list-style-image: none !important;
+  background-image: url("chrome://browser/skin/chevron.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 0.875em !important;
 }

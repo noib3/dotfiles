@@ -1,0 +1,17 @@
+#sidebar-search-container{
+  display: none !important;
+}
+
+#sidebar-close{
+  display: none !important;
+}
+
+#sidebar-header{
+  display: none !important;
+}
+
+.sidebar-placesTreechildren{
+  padding-top: 5px !important;
+  border-width: 1px !important;
+  border-color: #00ff00 !important;
+}

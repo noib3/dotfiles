@@ -4,41 +4,55 @@
   --focused-tab-color: #626262;
   --unfocused-tab-color: #393939;
   --urlbar-color: #393939;
-  --urlbar-search-results-color: #393939;
   --popup-menu-color: #393939;
 }
 
+/*:root{
+  --lwt-accent-color: #4bc24d !important;
+}
+
+#navigator-toolbox{
+  --tabs-border-color: #4bc24d !important;
+}*/
+
 /* Unfocused tab */
 .tab-content{
-  background: var(--unfocused-tab-color) !important;
+  color: var(--text-color) !important;
+  background-color: var(--unfocused-tab-color) !important;
 }
 
 /* Focused tab */
 .tab-content[selected="true"]{
-  background: var(--focused-tab-color) !important;
+  color: var(--text-color) !important;
+  background-color: var(--focused-tab-color) !important;
 }
 
 /* Urlbar */
 #urlbar{
-  background: var(--urlbar-color) !important;
+  color: var(--text-color) !important;
+  background-color: var(--urlbar-color) !important;
 }
 
 /* Urlbar search results */
 .urlbarView:not(.megabar){
-  background: var(--urlbar-search-results-color) !important;
+  color: var(--text-color) !important;
+  background-color: var(--urlbar-color) !important;
 }
 
 /* Overflow button in urlbar */
 #nav-bar-overflow-button{
+  color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
+}
+
+/* Disable overflow button opacity when firefox isn't focused */
+.toolbarbutton-1:not(:hover):-moz-window-inactive,
+:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
+  opacity: 1 !important;
 }
 
 /* Overflow popup menu */
 .panel-subview-body{
-  background: var(--popup-menu-color) !important;
-}
-
-.toolbarbutton-1:not(:hover):-moz-window-inactive,
-:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
-  opacity: 1 !important;
+  color: var(--text-color) !important;
+  background-color: var(--popup-menu-color) !important;
 }

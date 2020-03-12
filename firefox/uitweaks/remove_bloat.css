@@ -80,8 +80,13 @@
   display: none !important;
 }
 
-/* Site information icon in urlbar */
+/* Site information button in urlbar */
 #identity-box[pageproxystate="valid"] {
+  display: none !important;
+}
+
+/* Recommended extensions button in urlbar */
+#cfr-button{
   display: none !important;
 }
 
@@ -111,17 +116,17 @@
   display: none !important;
 }
 
-/* Private browsing icon */
+/* Private browsing button */
 #TabsToolbar .private-browsing-indicator {
   display: none !important;
 }
 
-/* Shield icon in urlbar */
+/* Shield button in urlbar */
 #tracking-protection-icon-container {
   display: none !important;
 }
 
-/* "Go to.." arrow icon in urlbar when searching */
+/* "Go to.." arrow button in urlbar when searching */
 #urlbar-go-button{
   display: none !important;
 }
@@ -142,7 +147,7 @@
   display: none !important;
 }
 
-/* Magnifying glass icon when searching */
+/* Magnifying glass button when searching */
 #identity-box {
   visibility: collapse !important;
 }
@@ -159,13 +164,13 @@
   display: none !important;
 }
 
-/* Tab overflow icons when a lot of tabs are open */
+/* Tab overflow button when a lot of tabs are open */
 .scrollbutton-up,
 .scrollbutton-down{
   display: none !important;
 }
 
-/* New tab icon when a lot of tabs are open */
+/* New tab button when a lot of tabs are open */
 #new-tab-button,
 #alltabs-button{
   display: none !important;
