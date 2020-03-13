@@ -1,7 +1,7 @@
 # OPEN PROGRAMS
 cmd - b [
-    "firefox"  ~
     *          : open -na /Applications/Firefox.app
+    "firefox"  ~
 ]
 cmd - return: open -na /Applications/Alacritty.app
 cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Dropbox
@@ -26,7 +26,11 @@ ctrl - l: yabai -m window --resize left:15:0
 alt - left: yabai -m window --focus west
 alt - up: yabai -m window --focus north
 alt - down: yabai -m window --focus south
-alt - right: yabai -m window --focus east
+alt - right [
+    *           : yabai -m window --focus east
+    #"Alacritty" : skhd --key "ctrl - left"
+    "Alacritty" : skhd --key "cmd + alt - right"
+]
 
 ctrl - left: yabai -m window --swap west
 ctrl - up: yabai -m window --swap north

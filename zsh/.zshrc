@@ -1,5 +1,10 @@
-# Add 'export ZDOTDIR=~/.config/zsh' to '/private/etc/zprofile'
-# to source this file in this custom location
+# ----------------------------- ZSH CONFIG FILE -----------------------------
+
+# 'echo "export ZDOTDIR=~/.config/zsh" >> /private/etc/zprofile"' to source
+# this file in this non-standard location
+
+# ---------------------------------------------------------------------------
+# Set the $PATH environment variable
 
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
@@ -13,7 +18,9 @@ PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
 PATH=$PATH:$HOME/Scripts
 
-# SHELL OPTIONS AND PROMPT
+# ---------------------------------------------------------------------------
+# Set/unset shell options and specify command line promp
+
 setopt MENU_COMPLETE
 setopt AUTO_CD
 setopt histignoredups
@@ -21,7 +28,9 @@ unsetopt CASE_GLOB
 unsetopt BEEP
 PROMPT='%F{252}%1~ %F{224}> %F{255}'
 
-# TAB AUTOCOMPLETION
+# ---------------------------------------------------------------------------
+# Tab Autocompletion
+
 autoload -U compinit
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
@@ -29,27 +38,24 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zmodload zsh/complist
 _comp_options+=(globdots)
 
-# CACHED FILES
+# ---------------------------------------------------------------------------
+# Specify cached files location
+
 compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 HISTFILE=~/.cache/zsh/zsh_history
 
-# KEY BINDINGS
-# Unmap Ctrl-s
-stty -ixon
+# ---------------------------------------------------------------------------
+# Key Bindings
 
-close_window() { yabai -m window --close }
-zle -N close_window
-bindkey '^w' close_window
+# Edit alacritty config file (bound to 'cmd + ,' in alacritty.yml)
+term_config() {
+    $EDITOR ~/.config/alacritty/alacritty.yml
+}
+zle -N term_config
+bindkey '^T^C' term_config
 
-quit_terminal() { killall alacritty }
-zle -N quit_terminal
-bindkey '^y' quit_terminal
-
-termrc() { $EDITOR ~/.config/alacritty/alacritty.yml }
-zle -N termrc
-bindkey '^n' termrc
-
-fuzzycd() {
+# Use fd/fzf combo to change directory...
+fuzzy_cd() {
     local dir
     dir=$(cd &&
            fd -0 --type d --ignore-file ~/.config/fd/ignore --hidden |
@@ -57,10 +63,11 @@ fuzzycd() {
     && cd ~/$dir
     zle reset-prompt
 }
-zle -N fuzzycd
-bindkey '^f' fuzzycd
+zle -N fuzzy_cd
+bindkey '^F^C' fuzzy_cd
 
-fuzzyedit() {
+# ...or edit a file
+fuzzy_edit() {
     dir=$(pwd)
     file=$(cd &&
             fd -0 --type f --ignore-file ~/.config/fd/ignore --hidden |
@@ -68,16 +75,40 @@ fuzzyedit() {
     && cd $dir && $EDITOR ~/$file
     zle reset-prompt
 }
-zle -N fuzzyedit
-bindkey '^s' fuzzyedit
+zle -N fuzzy_edit
+bindkey '^F^E' fuzzy_edit
 
-# ALIASES
+# Unbind 'Ctrl + S' key combination
+stty -ixon
+
+# ---------------------------------------------------------------------------
+# Aliases
+
+# Cli aliases for GUI programs
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
-SRCDIR=~/bin
-alias -g ndiet='$SRCDIR/ndiet/ndiet.py'
-alias -g 2d2small='$SRCDIR/2d2small/2d2small.sh'
+# Specify particular program behaviour
+alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
+alias grep='grep --color=auto'
+alias tree='tree -N'
+alias ssh='ssh -F ~/.config/ssh/config'
+alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+alias cmus='tmux attach-session -t cmus >/dev/null'
+alias tmux='tmux -f ~/.config/tmux/tmux.conf'
+alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
+
+# Edit config files
+alias zshrc='$EDITOR ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc'
+alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
+alias skhdrc='$EDITOR ~/.config/skhd/skhdrc'
+alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
+alias lfrc='$EDITOR ~/.config/lf/lfrc'
+alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
+
+# Custom scripts
+alias -g ndiet='~/Bin/ndiet/ndiet.py'
+alias -g 2d2small='~/Bin/2d2small/2d2small.sh'
 alias tfin='~/Scripts/tfin/tfin.sh'
 alias -g peek='peek.py'
 alias -g ufetch='ufetch.sh'
@@ -88,33 +119,19 @@ alias -g ffls='ffls.sh'
 alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 
-alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias grep='grep --color=auto'
-alias tree='tree -N'
-alias ssh='ssh -F ~/.config/ssh/config'
-alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias cmus='tmux attach-session -t cmus >/dev/null'
-alias tmux='tmux -f ~/.config/tmux/tmux.conf'
-alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
-
-alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+# Misc
 alias c='clear && printf "\e[3J"'
 alias gpom='git push origin master'
+alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 
-alias zshrc='$EDITOR $ZDOTDIR/.zshrc && source $ZDOTDIR/.zshrc'
-alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias skhdrc='$EDITOR ~/.config/skhd/skhdrc'
-alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
-alias lfrc='$EDITOR ~/.config/lf/lfrc'
-alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
+# ---------------------------------------------------------------------------
+# Source additional files
 
-# PLUGINS
 source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
 source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
-
-# SOURCE FILE WITH ENVIRONMENT VARIABLES
 source $ZDOTDIR/exports.zsh
+
 
 # Set wallpaper from command line
 #   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'

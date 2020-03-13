@@ -60,7 +60,7 @@ background_opacity: 1.00
 draw_bold_text_with_bright_colors: true
 
 key_bindings:
-  - { key: Q, mods: Super, chars: "\x19" } # ctrl-y
+  - { key: Q, mods: Super, action: Quit }
   - { key: Comma, mods: Super, chars: "\x0e" } # ctrl-n
   - { key: 23, mods: Alt, chars: "\x7E" } # ~
   - { key: 41, mods: Alt, chars: "\x40" } # @
