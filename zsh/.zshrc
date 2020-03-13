@@ -47,6 +47,9 @@ HISTFILE=~/.cache/zsh/zsh_history
 # ---------------------------------------------------------------------------
 # Key Bindings
 
+# Unbind 'Ctrl + S' key combination
+stty -ixon
+
 # Edit alacritty config file (bound to 'cmd + ,' in alacritty.yml)
 term_config() {
     $EDITOR ~/.config/alacritty/alacritty.yml
@@ -77,9 +80,6 @@ fuzzy_edit() {
 }
 zle -N fuzzy_edit
 bindkey '^F^E' fuzzy_edit
-
-# Unbind 'Ctrl + S' key combination
-stty -ixon
 
 # ---------------------------------------------------------------------------
 # Aliases
@@ -116,6 +116,7 @@ alias -g colortest='colortest.sh'
 alias -g tmd='tmd.sh'
 alias -g Omega='Omega.py'
 alias -g ffls='ffls.sh'
+alias -g committed='committed.sh'
 alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 
