@@ -35,14 +35,14 @@
 #urlbarView-row-9{
   padding-top: 5px !important;
   padding-bottom: 5px !important;
-  line-height: 1.35em !important;
+  line-height: 1.4em !important;
 }
 
 .urlbarView:not(.megabar){
   /*
-  -[#of_urlbarView-row_elements(10) + 1]*urlbarView-row_line_height(1.35em)
+  -[#of_urlbarView-row_elements(10) + 1]*urlbarView-row_line_height(1.4em)
   -2*#of_urlbarView-row_elements(10)*urlbarView-row_padding(5px)
   -2*#urlbar-results_padding(4px) = -14.85em -100px -8px
   */
-  margin-top: calc(-14.85em - 108px) !important;
+  margin-top: calc(-15.4em - 108px) !important;
 }

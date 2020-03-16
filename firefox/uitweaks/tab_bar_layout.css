@@ -1,5 +1,5 @@
 :root {
-  --tab-min-height: 1.35em !important;
+  --tab-min-height: 1.4em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
 }
 
@@ -10,14 +10,15 @@
 }
 
 .tab-content{
-  padding-top: 2px !important;
+  padding-top: 0 !important;
+  margin-bottom: -2px !important;
   line-height: 1em !important;
 }
 
 .tab-text{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  line-height: 1.35em !important;
+  line-height: 1.4em !important;
 }
 
 .tab-label-container{
@@ -25,13 +26,13 @@
   margin-bottom: 0 !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  line-height: 1.35em !important;
+  line-height: 1.4em !important;
 }
 
 .tab-icon-image{
   margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  padding-bottom: 1px !important;
+  margin-bottom: 1px !important;
+  padding-bottom: 0 !important;
   height: 1em !important;
   width: 1em !important;
 }
@@ -40,3 +41,14 @@
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/*
+
+@14px font-size & 1.4em
+.tab-content    margin-bottom: -2px
+.tab-icon-image margin-bottom: 1px
+
+@17px font-size & 1.4em
+.tab-content    margin-bottom: -2px
+.tab-icon-image margin-bottom: 1px
+*/

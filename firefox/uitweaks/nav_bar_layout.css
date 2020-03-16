@@ -3,14 +3,14 @@ body{
 }
 
 #nav-bar{
-  min-height: 1.35em !important;
-  max-height: 1.35em !important;
+  min-height: 1.4em !important;
+  max-height: 1.4em !important;
   box-shadow: none !important;
 }
 
 #urlbar{
-  min-height: 1.35em !important;
-  max-height: 1.35em !important;
+  min-height: 1.4em !important;
+  max-height: 1.4em !important;
   border-width: 0 !important;
   border-radius: 0 !important;
 }
@@ -20,8 +20,8 @@ body{
 }
 
 #urlbar-input{
-  min-height: 1.35em !important;
-  max-height: 1.35em !important;
+  min-height: 1.4em !important;
+  max-height: 1.4em !important;
   padding-left: 7px !important;
   padding-right: 7px !important;
   padding-bottom: 1px !important;
@@ -66,5 +66,5 @@ body{
   background-image: url("chrome://browser/skin/chevron.svg");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 0.875em !important;
+  background-size: 0.9em !important;
 }

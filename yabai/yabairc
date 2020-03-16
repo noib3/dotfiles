@@ -34,11 +34,11 @@ yabai -m config mouse_action2                   resize
 # Space settings
 
 yabai -m config layout                          bsp
-yabai -m config top_padding                     25
-yabai -m config bottom_padding                  25
-yabai -m config left_padding                    25
-yabai -m config right_padding                   25
-yabai -m config window_gap                      25
+yabai -m config top_padding                     30
+yabai -m config bottom_padding                  30
+yabai -m config left_padding                    30
+yabai -m config right_padding                   30
+yabai -m config window_gap                      30
 
 # ---------------------------------------------------------------------------
 # Rules
