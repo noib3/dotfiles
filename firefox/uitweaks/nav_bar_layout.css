@@ -1,48 +1,38 @@
-/* Paddings and margins */
-#urlbar-container{
-  margin-right: 0 !important;
-  margin-left: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+body{
+  --toolbarbutton-border-radius: 0
 }
 
-#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
-.urlbarView-row .urlbarView-favicon { /* urlbar search results margin */
-  margin-left: 7px !important;
-}
-
-#urlbar-input{
-  padding-left: 7px !important;
-  padding-right: 7px !important;
-  padding-bottom: 1px !important;
-}
-
-#nav-bar-overflow-button{
-  padding-top: 0 !important;
-  padding-bottom: 1px !important;
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-}
-
-/* Heights and widths */
 #nav-bar{
   min-height: 1.35em !important;
   max-height: 1.35em !important;
+  box-shadow: none !important;
 }
 
 #urlbar{
   min-height: 1.35em !important;
   max-height: 1.35em !important;
+  border-width: 0 !important;
+  border-radius: 0 !important;
+}
+
+#urlbar[focused="true"]{
+  box-shadow: none !important;
 }
 
 #urlbar-input{
   min-height: 1.35em !important;
   max-height: 1.35em !important;
+  padding-left: 7px !important;
+  padding-right: 7px !important;
+  padding-bottom: 1px !important;
+  border-radius: 0 !important;
 }
 
-/* Borders */
-#navigator-toolbox{
-  border-width: 0 !important;
+#urlbar-container{
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 #urlbar-background{
@@ -53,26 +43,21 @@
   border-width: 0 !important;
 }
 
-#urlbar{
-  border-width: 0 !important;
-  border-radius: 0 !important;
-}
-
-#urlbar-input{
-  border-radius: 0 !important;
-}
-
 #nav-bar-overflow-button{
-  border-radius: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 1px !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
 }
 
-/* Shadows */
-#urlbar[focused="true"]{
-  box-shadow: none !important;
+#navigator-toolbox{
+  border-width: 0 !important;
 }
 
-#nav-bar{
-  box-shadow: none !important;
+/* Search results margin */
+#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
+.urlbarView-row .urlbarView-favicon {
+  margin-left: 7px !important;
 }
 
 /* Overflow button custom size icon */

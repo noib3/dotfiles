@@ -1,54 +1,43 @@
+# -------------------------- ALACRITTY CONFIG FILE --------------------------
+
+# ---------------------------------------------------------------------------
+# Set the login shell
+
 shell:
   program: /bin/zsh
   args:
     - --login
+
+# ---------------------------------------------------------------------------
+# Font
 
 font:
   normal:
     family: Iosevka
   size:
     16.0
-    #15.0
+
+# ---------------------------------------------------------------------------
+# Colorscheme
 
 schemes:
-  nord: &nord # https://github.com/arcticicestudio/nord-alacritty/blob/develop/src/nord.yml
-    primary:
-      background: '0x121111'
-      foreground: '0xD8DEE9'
-    cursor:
-      text: '0x2E3440'
-      cursor: '0xD8DEE9'
-    normal:
-      black: '0x3B4252'
-      red: '0xBF616A'
-      green: '0xA3BE8C'
-      yellow: '0xEBCB8B'
-      blue: '0x81A1C1'
-      magenta: '0xB48EAD'
-      cyan: '0x88C0D0'
-      white: '0xE5E9F0'
-    bright:
-      black: '0x4C566A'
-      red: '0xBF616A'
-      green: '0xA3BE8C'
-      yellow: '0xEBCB8B'
-      blue: '0x81A1C1'
-      magenta: '0xB48EAD'
-      cyan: '0x8FBCBB'
-      white: '0xeceff4'
   pers: &pers
     primary:
-      #background: '0x121111'
       background: '0x131520'
-      foreground: '0xc7c7c7'
+      foreground: '0xC7C7C7'
     cursor:
-      text: '0xfeffff'
-      cursor: '0xc7c7c7'
+      text: '0xFEFFFF'
+      cursor: '0xC7C7C7'
     selection:
-      text: '0xffffff'
-      background: '0x7aa6da'
+      text: '0xFFFFFF'
+      background: '0x7AA6DA'
 
 colors: *pers
+
+# ---------------------------------------------------------------------------
+# Misc
+
+draw_bold_text_with_bright_colors: true
 
 window:
   decorations: buttonless
@@ -56,41 +45,40 @@ window:
     x: 17
     y: 12
 
-background_opacity: 1.00
-draw_bold_text_with_bright_colors: true
+# ---------------------------------------------------------------------------
+# Set keybindings
 
 key_bindings:
+  # Alacritty actions
+  - { key: N, mods: Super, action: SpawnNewInstance }
   - { key: Q, mods: Super, action: Quit }
-  - { key: Comma, mods: Super, chars: "\x0e" } # ctrl-n
+  # Chars to be printed
+  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
+  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
+  - { key: LBracket, mods: Alt, chars: "\x5B" } # [
+  - { key: RBracket, mods: Alt, chars: "\x5D" } # ]
   - { key: 23, mods: Alt, chars: "\x7E" } # ~
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
-  - { key: LBracket, mods: Alt, chars: "\x5B" } # [
-  - { key: RBracket, mods: Alt, chars: "\x5D" } # ]
-  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
-  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
-  - { key: N, mods: Super, action: SpawnNewInstance }
-  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
+  # Chars with corresponding shell bindings
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
+  - { key: Comma, mods: Super, chars: "\x0e" } # ctrl-n
+  - { key: D, mods: Super, chars: "\x06" } # ctrl-f
+  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
+  # Chars with corresponding neovim bindings
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: D, mods: Super, chars: "\x06" } # ctrl-f
-  - { key: F, mods: Super, chars: "\x07" } # ctrl-g
-  # tmux keys (xxd -psd to get the escape codes)
+  # Tmux bindings
   - { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c
   - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
   - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
   - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3
   - { key: 21, mods: Super, chars: "\x02\x34" } # ctrl-b 4
   - { key: 23, mods: Super, chars: "\x02\x35" } # ctrl-b 5
-  - { key: Up, mods: Command|Alt, chars: "\x02\x1b\x5b\x41" } # ctrl-b Up
-  - { key: Down, mods: Command|Alt, chars: "\x02\x1b\x5b\x42" } # ctrl-b Down
-  - { key: Right, mods: Command|Alt, chars: "\x02\x1b\x5b\x43" } # ctrl-b Right
-  - { key: Left, mods: Command|Alt, chars: "\x02\x1b\x5b\x44" } # ctrl-b Left
   - { key: K, mods: Command|Alt, chars: "\x02\x6b" } # ctrl-b k
   - { key: J, mods: Command|Alt, chars: "\x02\x6a" } # ctrl-b j
   - { key: L, mods: Command|Alt, chars: "\x02\x6c" } # ctrl-b l

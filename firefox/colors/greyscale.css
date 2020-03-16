@@ -5,6 +5,7 @@
   --unfocused-tab-color: #393939;
   --urlbar-color: #393939;
   --popup-menu-color: #393939;
+  --tab-divider-color: #4bc24d;
 }
 
 /*:root{
@@ -45,14 +46,14 @@
   background-color: var(--urlbar-color) !important;
 }
 
-/* Disable overflow button opacity when firefox isn't focused */
-.toolbarbutton-1:not(:hover):-moz-window-inactive,
-:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
-  opacity: 1 !important;
-}
-
 /* Overflow popup menu */
 .panel-subview-body{
   color: var(--text-color) !important;
   background-color: var(--popup-menu-color) !important;
+}
+
+/* Disable overflow button opacity when firefox isn't focused */
+.toolbarbutton-1:not(:hover):-moz-window-inactive,
+:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
+  opacity: 1 !important;
 }

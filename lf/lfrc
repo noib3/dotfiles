@@ -1,40 +1,48 @@
+# ----------------------------- LF CONFIG FILE ------------------------------
+
+# ---------------------------------------------------------------------------
 # Boolean valued options
+
 set color256 on
 set ignorecase on
 set hidden on
-# these next two options are needed
-# when defining custom commands to make
-# $f work even when there are spaces in
-# the path of the selected file
-set ifs " "
-set filesep " "
 
+# ---------------------------------------------------------------------------
 # String valued options
+
 set previewer "~/.config/lf/previewer.sh"
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
 set timefmt ""
 set ratios "1:2:3"
+set ifs " "
+set filesep " "
 
-# Commands
+# ---------------------------------------------------------------------------
+# Custom commands
+
 cmd open ${{
-    case $(file --mime-type "$f" -b) in
-        text/*) $EDITOR "$f";;
-        *) for i in "$f"; do open "$i" >/dev/null 2>&1 & done;;
-    esac
+    for v in "$fx"; do
+        case $(file --mime-type "$v" -b) in
+            text/*) $EDITOR "$v";;
+            *) open "$v" &>/dev/null;;
+        esac
+    done
 }}
 
 cmd eject ${{
     for v in "$fx"; do
-        diskutil eject "$v" >/dev/null
+        diskutil eject "$v" &>/dev/null
     done
 }}
 
 cmd make_wallpaper ${{
     osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
-    osascript -e 'quit app "Finder"' > /dev/null 2>&1
+    osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-# Mappings
+# ---------------------------------------------------------------------------
+# Key mappings
+
 map e
 map m
 
@@ -50,3 +58,4 @@ map gnf cd "~/.config"
 map gdl cd "~/Downloads"
 map gun cd "~/Dropbox/Uni/III"
 map gss cd "~/Dropbox/Screenshots"
+map gwp cd "~/Dropbox/Wallpapers"

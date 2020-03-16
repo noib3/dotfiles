@@ -1,7 +1,7 @@
 # ----------------------------- ZSH CONFIG FILE -----------------------------
 
-# 'echo "export ZDOTDIR=~/.config/zsh" >> /private/etc/zprofile"' to source
-# this file in this non-standard location
+# 'echo "export ZDOTDIR=~/.config/zsh" >> /private/etc/zprofile"' to load
+# config file in this non-standard location
 
 # ---------------------------------------------------------------------------
 # Set the $PATH environment variable
@@ -17,6 +17,7 @@ PATH=$PATH:/sbin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
 PATH=$PATH:$HOME/Scripts
+export PATH
 
 # ---------------------------------------------------------------------------
 # Set/unset shell options and specify command line promp
@@ -24,6 +25,8 @@ PATH=$PATH:$HOME/Scripts
 setopt MENU_COMPLETE
 setopt AUTO_CD
 setopt histignoredups
+setopt histignorespace
+set -o histignorespace
 unsetopt CASE_GLOB
 unsetopt BEEP
 PROMPT='%F{252}%1~ %F{224}> %F{255}'
@@ -47,8 +50,15 @@ HISTFILE=~/.cache/zsh/zsh_history
 # ---------------------------------------------------------------------------
 # Key Bindings
 
-# Unbind 'Ctrl + S' key combination
+# Unbind 'Ctrl + S'
 stty -ixon
+
+# Close terminal window
+close_window() {
+    yabai -m window --close
+}
+zle -N close_window
+bindkey '^W' close_window
 
 # Edit alacritty config file (bound to 'cmd + ,' in alacritty.yml)
 term_config() {
@@ -79,7 +89,7 @@ fuzzy_edit() {
     zle reset-prompt
 }
 zle -N fuzzy_edit
-bindkey '^F^E' fuzzy_edit
+bindkey '^S' fuzzy_edit
 
 # ---------------------------------------------------------------------------
 # Aliases
@@ -121,7 +131,6 @@ alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 
 # Misc
-alias c='clear && printf "\e[3J"'
 alias gpom='git push origin master'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 
@@ -132,6 +141,16 @@ source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
 source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
 source $ZDOTDIR/exports.zsh
+
+# ---------------------------------------------------------------------------
+# Misc
+
+# 'c' to clear the screen, remove the scrollback and clear the editing buffer
+accept-line() case $BUFFER in
+  (c) printf '\e[H\e[3J'; BUFFER=; zle redisplay;;
+  (*) zle .accept-line
+esac
+zle -N accept-line
 
 
 # Set wallpaper from command line

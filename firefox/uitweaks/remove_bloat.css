@@ -1,182 +1,159 @@
-/* Back and forward buttons */
 #back-button,
 #forward-button {
   display: none !important;
 }
 
-/* New tab button */
 #tabs-newtab-button {
   display:none !important;
 }
 
-/* Reload button */
 #reload-button{
   display: none !important;
 }
 
-/* Home button */
 #home-button{
   display: none !important;
 }
 
-/* Stop button when loading a page */
 #stop-button{
   display: none !important;
 }
 
-/* Empty space before the urlbar */
 #customizableui-special-spring1{
   display: none !important;
 }
 
-/* Save to pocket button in urlbar */
 #pocket-button{
   display: none !important;
 }
 
-/* Bookmarks this page button in urlbar */
 #star-button{
   display: none !important;
 }
 
-/* Zoom level in urlbar */
 #urlbar-zoom-button {
   display: none !important;
 }
 
-/* Empty space after the urlbar */
 #customizableui-special-spring2{
   display: none !important;
 }
 
-/* Library button */
 #library-button{
   display: none !important;
 }
 
-/* Show sidebars button */
 #sidebar-button{
   display: none !important;
 }
 
-/* Firefox account button */
 #fxa-toolbar-menu-button{
   display: none !important;
 }
 
-/* Close, minimize, maximize buttons in the top left corner */
 .titlebar-buttonbox-container {
   display: none !important;
 }
 
-/* Spaces before and after the tab bar*/
 .titlebar-spacer[type="pre-tabs"],
 .titlebar-spacer[type="post-tabs"] {
  display: none;
 }
 
-/* Tab highlight line */
 .tab-line[selected="true"] {
   display: none !important;
 }
 
-/* Site information button in urlbar */
 #identity-box[pageproxystate="valid"] {
   display: none !important;
 }
 
-/* Recommended extensions button in urlbar */
 #cfr-button{
   display: none !important;
 }
 
-/* Page actions button in urlbar */
 #pageActionButton {
   display: none !important;
 }
 
-/* 'Toggle reader view' button in urlbar */
 #reader-mode-button{
   display: none !important;
 }
 
-/* Show history button in urlbar */
 .urlbar-history-dropmarker,
 #urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
   display: none !important;
 }
 
-/* Bottom left url preview when hovering over a link */
 #statuspanel[type="overLink"] {
   display: none !important;
 }
 
-/* Bottom left loading indicator when loading a page */
 #statuspanel[type="status"] {
   display: none !important;
 }
 
-/* Private browsing button */
 #TabsToolbar .private-browsing-indicator {
   display: none !important;
 }
 
-/* Shield button in urlbar */
 #tracking-protection-icon-container {
   display: none !important;
 }
 
-/* "Go to.." arrow button in urlbar when searching */
 #urlbar-go-button{
   display: none !important;
 }
 
-/* White line at the end of urlbar */
 #pageActionSeparator{
   display: none !important;
 }
 
-/* 'Open All in Tabs' option when clicking on a bookmarked folder */
 #PlacesToolbarItems .bookmarks-actions-menuseparator,
 .openintabs-menuitem {
   display: none !important;
 }
 
-/* 'Customize Toolbar' box at the bottom of the overflow menu */
 #overflowMenu-customize-button{
   display: none !important;
 }
 
-/* Magnifying glass button when searching */
 #identity-box {
   visibility: collapse !important;
 }
 
-/* General menu buttons */
 #PanelUI-button,
 #PanelUI-menu-button{
   display: none !important;
 }
 
-/* Empty box before urlbar search results */
 #PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
 .urlbarView-row .urlbarView-type-icon {
   display: none !important;
 }
 
-/* Tab overflow button when a lot of tabs are open */
 .scrollbutton-up,
 .scrollbutton-down{
   display: none !important;
 }
 
-/* New tab button when a lot of tabs are open */
 #new-tab-button,
 #alltabs-button{
   display: none !important;
 }
 
-/* Disable Bookmarks Toolbar */
 #PersonalToolbar{
+  display: none !important;
+}
+
+#sidebar-search-container{
+  display: none !important;
+}
+
+#sidebar-close{
+  display: none !important;
+}
+
+#sidebar-header{
   display: none !important;
 }

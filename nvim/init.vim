@@ -1,4 +1,9 @@
+" --------------------------- NEOVIM CONFIG FILE ----------------------------
+
+
+" ---------------------------------------------------------------------------
 " Plugins
+
 call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
@@ -11,7 +16,9 @@ Plug 'terryma/vim-smooth-scroll'
 Plug 'tpope/vim-surround'
 call plug#end()
 
-" Basics
+" ---------------------------------------------------------------------------
+" Basic settings
+
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -20,10 +27,15 @@ set relativenumber
 set noshowmode
 set clipboard+=unnamedplus
 
+" ---------------------------------------------------------------------------
+" Lets
+
 let mapleader = ","
 let g:is_posix = 1
 
-" Mappings
+" ---------------------------------------------------------------------------
+" Key mappings
+
 nnoremap <C-s> :w<cr>
 inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
@@ -43,10 +55,11 @@ nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
+" ---------------------------------------------------------------------------
 " Colorscheme
+
 syntax enable
 colorscheme gruvbox
-"colorscheme nord
 
 " Highlight colors
 highlight Comment cterm=italic
@@ -54,7 +67,9 @@ highlight Normal ctermbg=NONE
 highlight visual ctermbg=white ctermfg=Blue
 highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
+" ---------------------------------------------------------------------------
 " Lightline
+
 let g:lightline = {
       \ 'colorscheme': 'srcery_drk',
       \ 'active': {
@@ -68,6 +83,9 @@ let g:lightline = {
       \   'lines': '%LL',
       \ }
       \ }
+
+" ---------------------------------------------------------------------------
+" FileType-specific settings
 
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
@@ -85,6 +103,9 @@ autocmd FileType yaml setlocal shiftwidth=2
 " Css
 autocmd FileType css setlocal shiftwidth=2
 
+" ---------------------------------------------------------------------------
+" Misc
+
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
@@ -95,5 +116,4 @@ fun! <SID>StripTrailingWhitespaces()
     %s/\s\+$//e
     call cursor(l, c)
 endfun
-
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
