@@ -42,8 +42,14 @@
   margin-bottom: 0 !important;
 }
 
-/*
+.tab-icon-sound{
+  margin-top: 1px !important;
+  margin-bottom: 1px !important;
+  height: 1em !important;
+  width: 1em !important;
+}
 
+/*
 @14px font-size & 1.4em
 .tab-content    margin-bottom: -2px
 .tab-icon-image margin-bottom: 1px
