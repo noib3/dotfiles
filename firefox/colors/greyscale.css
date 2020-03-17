@@ -6,6 +6,7 @@
   --urlbar-color: #393939;
   --popup-menu-color: #393939;
   --tab-divider-color: #4bc24d;
+  --lwt-accent-color: var(--tab-divider-color) !important;
 }
 
 /* Unfocused tab */
@@ -21,13 +22,12 @@
 }
 
 /* Tab divider lines */
-:root{
-  --lwt-accent-color: var(--tab-divider-color) !important;
+/* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
+.tabbrowser-tab::after{
+  visibility: hidden !important;
 }
-
 #navigator-toolbox{
   --tabs-border-color: var(--tab-divider-color) !important;
-  --toolbar-bg-color: var(--tab-divider-color) !important;
 }
 
 /* Urlbar */
