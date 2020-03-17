@@ -1,9 +1,12 @@
-#back-button,
-#forward-button {
+#back-button{
   display: none !important;
 }
 
-#tabs-newtab-button {
+#forward-button{
+  display: none !important;
+}
+
+#tabs-newtab-button{
   display:none !important;
 }
 
@@ -23,6 +26,10 @@
   display: none !important;
 }
 
+#customizableui-special-spring2{
+  display: none !important;
+}
+
 #pocket-button{
   display: none !important;
 }
@@ -31,11 +38,7 @@
   display: none !important;
 }
 
-#urlbar-zoom-button {
-  display: none !important;
-}
-
-#customizableui-special-spring2{
+#urlbar-zoom-button{
   display: none !important;
 }
 
@@ -51,28 +54,11 @@
   display: none !important;
 }
 
-.titlebar-buttonbox-container {
-  display: none !important;
-}
-
-.titlebar-spacer[type="pre-tabs"],
-.titlebar-spacer[type="post-tabs"] {
- display: none;
-}
-
-.tab-line[selected="true"] {
-  display: none !important;
-}
-
-#identity-box[pageproxystate="valid"] {
-  display: none !important;
-}
-
 #cfr-button{
   display: none !important;
 }
 
-#pageActionButton {
+#pageActionButton{
   display: none !important;
 }
 
@@ -80,24 +66,7 @@
   display: none !important;
 }
 
-.urlbar-history-dropmarker,
-#urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
-  display: none !important;
-}
-
-#statuspanel[type="overLink"] {
-  display: none !important;
-}
-
-#statuspanel[type="status"] {
-  display: none !important;
-}
-
-#TabsToolbar .private-browsing-indicator {
-  display: none !important;
-}
-
-#tracking-protection-icon-container {
+#tracking-protection-icon-container{
   display: none !important;
 }
 
@@ -105,39 +74,30 @@
   display: none !important;
 }
 
-#pageActionSeparator{
-  display: none !important;
-}
-
-#PlacesToolbarItems .bookmarks-actions-menuseparator,
-.openintabs-menuitem {
-  display: none !important;
-}
-
 #overflowMenu-customize-button{
   display: none !important;
 }
 
-#identity-box {
+#identity-box{
   visibility: collapse !important;
 }
 
-#PanelUI-button,
+#PanelUI-button{
+  display: none !important;
+}
+
 #PanelUI-menu-button{
   display: none !important;
 }
 
-#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
-.urlbarView-row .urlbarView-type-icon {
+#pageActionSeparator{
   display: none !important;
 }
 
-.scrollbutton-up,
-.scrollbutton-down{
+#new-tab-button{
   display: none !important;
 }
 
-#new-tab-button,
 #alltabs-button{
   display: none !important;
 }
@@ -150,10 +110,60 @@
   display: none !important;
 }
 
-#sidebar-close{
+#statuspanel[type="status"]{
   display: none !important;
 }
 
-#sidebar-header{
+#statuspanel[type="overLink"]{
+  display: none !important;
+}
+
+#identity-box[pageproxystate="valid"]{
+  display: none !important;
+}
+
+.scrollbutton-up{
+  display: none !important;
+}
+.scrollbutton-down{
+  display: none !important;
+}
+
+.sidebar-search-container{
+  display: none !important;
+}
+
+.titlebar-buttonbox-container{
+  display: none !important;
+}
+
+.tab-line[selected="true"]{
+  display: none !important;
+}
+
+.titlebar-spacer[type="pre-tabs"]{
+  display: none !important;
+}
+
+.titlebar-spacer[type="post-tabs"]{
+  display: none !important;
+}
+
+#TabsToolbar .private-browsing-indicator{
+  display: none !important;
+}
+
+#PlacesToolbarItems .bookmarks-actions-menuseparator,
+.openintabs-menuitem{
+  display: none !important;
+}
+
+#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
+.urlbarView-row .urlbarView-type-icon{
+  display: none !important;
+}
+
+.urlbar-history-dropmarker,
+#urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker{
   display: none !important;
 }

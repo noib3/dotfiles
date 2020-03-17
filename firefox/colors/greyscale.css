@@ -7,6 +7,8 @@
   --popup-menu-color: #393939;
   --tab-divider-color: #4bc24d;
   --lwt-accent-color: var(--tab-divider-color) !important;
+  --sidebar-text-color: var(--text-color) !important;
+  /*--sidebar-border-colorz: #b2bac9 !important;*/
 }
 
 /* Unfocused tab */
@@ -58,4 +60,19 @@
 .toolbarbutton-1:not(:hover):-moz-window-inactive,
 :root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
   opacity: 1 !important;
+}
+
+/* Sidebar */
+.sidebar-placesTreechildren{
+  /*border-right: 2px solid var(--sidebar-border-colorz);
+  border-bottom: 2px solid var(--sidebar-border-colorz);*/
+  padding-top: 5px !important;
+}
+
+#sidebar-header{
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+  /*border-bottom: 2px solid #00ff00;
+  border-top: 2px solid var(--sidebar-border-colorz);
+  border-right: 2px solid var(--sidebar-border-colorz);*/
 }

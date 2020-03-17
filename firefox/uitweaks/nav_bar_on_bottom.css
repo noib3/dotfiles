@@ -46,3 +46,13 @@
   */
   margin-top: calc(-15.4em - 108px) !important;
 }
+
+/* Urlbar search results favicons (make them 1em tall and wide plus some extras) */
+.urlbarView-type-icon, .urlbarView-favicon{
+  height: 1em !important;
+  width: 1em !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  flex-shrink: 0 !important;
+  margin-bottom: 0.2em !important;
+}

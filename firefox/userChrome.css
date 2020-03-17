@@ -3,6 +3,7 @@
 /* ----------------------------------------------------------------------- */
 /* Font */
 
+/*@import url("./fonts/iosevka.css");*/
 @import url("/Users/noibe/.config/firefox/fonts/iosevka.css");
 
 /* ----------------------------------------------------------------------- */
@@ -17,7 +18,6 @@
 @import url("/Users/noibe/.config/firefox/uitweaks/full_width_tabs.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/numbered_tabs.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/bookmarks_sidebar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
