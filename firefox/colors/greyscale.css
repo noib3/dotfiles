@@ -8,14 +8,6 @@
   --tab-divider-color: #4bc24d;
 }
 
-/*:root{
-  --lwt-accent-color: #4bc24d !important;
-}
-
-#navigator-toolbox{
-  --tabs-border-color: #4bc24d !important;
-}*/
-
 /* Unfocused tab */
 .tab-content{
   color: var(--text-color) !important;
@@ -26,6 +18,16 @@
 .tab-content[selected="true"]{
   color: var(--text-color) !important;
   background-color: var(--focused-tab-color) !important;
+}
+
+/* Tab divider lines */
+:root{
+  --lwt-accent-color: var(--tab-divider-color) !important;
+}
+
+#navigator-toolbox{
+  --tabs-border-color: var(--tab-divider-color) !important;
+  --toolbar-bg-color: var(--tab-divider-color) !important;
 }
 
 /* Urlbar */

@@ -1,4 +1,5 @@
 q
+set softvol=true
 colorscheme themes/sick
 colorscheme default
 set repeat_current=false
