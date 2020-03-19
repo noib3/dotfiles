@@ -8,7 +8,6 @@
   --tab-divider-color: #4bc24d;
   --lwt-accent-color: var(--tab-divider-color) !important;
   --sidebar-text-color: var(--text-color) !important;
-  /*--sidebar-border-colorz: #b2bac9 !important;*/
 }
 
 /* Unfocused tab */

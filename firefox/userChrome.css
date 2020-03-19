@@ -1,25 +1,23 @@
 /* ------------------------- FIREFOX CONFIG FILE ------------------------- */
 
-/* cd to firefox profile folder listed in about:support, then 'ln -s ~/.config/firefox/{colors fonts uitweaks userChrome.css} && ln ~/.config/firefox/userContent.css' to be able to put userChrome file here and to load all extra files with relative paths */
-
 /* ----------------------------------------------------------------------- */
 /* Font */
 
-@import url("./fonts/iosevka.css");
+@import url("/Users/noibe/.config/firefox/fonts/iosevka.css");
 
 /* ----------------------------------------------------------------------- */
 /* Colorscheme */
 
-@import url("./colors/greyscale.css");
+@import url("/Users/noibe/.config/firefox/colors/greyscale.css");
 
 /* ----------------------------------------------------------------------- */
 /* UI Tweaks */
 
-@import url("./uitweaks/remove_bloat.css");
-@import url("./uitweaks/full_width_tabs.css");
-@import url("./uitweaks/numbered_tabs.css");
-@import url("./uitweaks/tab_bar_layout.css");
-@import url("./uitweaks/nav_bar_layout.css");
-@import url("./uitweaks/tab_close_on_hover.css");
-@import url("./uitweaks/nav_bar_on_bottom.css");
-@import url("./uitweaks/nav_bar_on_hover.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/remove_bloat.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/full_width_tabs.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/numbered_tabs.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");
