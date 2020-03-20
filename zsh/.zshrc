@@ -32,16 +32,20 @@ unsetopt BEEP
 
 # ---------------------------------------------------------------------------
 # Format prompt, with custom format for git directories
+
+setopt PROMPT_SUBST
 autoload -Uz vcs_info
-precmd() { vcs_info }
+precmd() {
+    vcs_info
+    if [[ -n ${vcs_info_msg_0_} ]]; then
+        PROMPT="${vcs_info_msg_0_} %F{#a18ee8}> %F{#cfcfcf}"
+    else
+        PROMPT="%F{#e1e1e1}%1~ %F{#e69ab7}> %F{#cfcfcf}"
+    fi
+}
 zstyle ':vcs_info:*' enable git
-# 1. use functions in prompt definition
-# 2. use different prompts if in git directory
-# 3. get directory names relative to git directory
+zstyle ':vcs_info:git:*' formats '%F{#ede845}[$(repo) %F{#cfcfcf}on %F{#ede845} %b] %F{#cfcfcf}$(basename %S)'
 repo() { basename $(git remote get-url origin) | sed 's/.git//' }
-commits() { git rev-list --count "$1" 2>/dev/null }
-zstyle ':vcs_info:*' formats '%F{#adadad}on %F{#ede845} %b '
-PROMPT='%F{#e1e1e1}%1~ ${vcs_info_msg_0_}%F{#e69ab7}> %F{#ffffff}'
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
@@ -86,7 +90,11 @@ fuzzy_cd() {
            fd -0 --type d --ignore-file ~/.config/fd/ignore --hidden |
            fzf --read0 --height=50%) \
     && cd ~/$dir
-    zle reset-prompt
+    printf '\e[H\e[3J'
+    if zle; then
+        zle reset-prompt
+    fi
+    #zle clear-screen
 }
 zle -N fuzzy_cd
 bindkey '^X^F' fuzzy_cd
@@ -98,7 +106,9 @@ fuzzy_edit() {
             fd -0 --type f --ignore-file ~/.config/fd/ignore --hidden |
             fzf --read0 --height=50%) \
     && cd $dir && $EDITOR ~/$file
-    zle reset-prompt
+    if zle; then
+        zle reset-prompt
+    fi
 }
 zle -N fuzzy_edit
 bindkey '^S' fuzzy_edit
@@ -123,9 +133,6 @@ alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 # Edit config files
 alias zshrc='$EDITOR ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc'
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias skhdrc='$EDITOR ~/.config/skhd/skhdrc'
-alias nvimrc='$EDITOR ~/.config/nvim/init.vim'
-alias lfrc='$EDITOR ~/.config/lf/lfrc'
 alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
 
 # Custom scripts
@@ -159,11 +166,20 @@ zle -N accept-line
 # ---------------------------------------------------------------------------
 # Source additional files
 
-source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
-source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
-source $ZDOTDIR/exports.zsh
+# brew install zsh-autosuggestions
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# brew install zsh-syntax-highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# gotta get syntax highlighting for less
+#source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
+
+# gotta git clone zsh-autopair into /usr/local/share
+source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
+
+# gotta put this back in this file
+source $ZDOTDIR/exports.zsh
 
 # Set wallpaper from command line
 #   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'

@@ -71,8 +71,10 @@ body{
 }
 
 /* Downloads button margins */
+#downloads-indicator-anchor > *{
+  background-image: none !important;
+}
 #downloads-button{
-  list-style-image: none !important;
   background-image: url("chrome://browser/skin/downloads/download-icons.svg#arrow-with-bar");
   background-repeat: no-repeat;
   background-position: center;

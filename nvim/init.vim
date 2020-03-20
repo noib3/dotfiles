@@ -73,15 +73,23 @@ highlight ErrorMsg ctermfg=224 ctermbg=NONE
 " ---------------------------------------------------------------------------
 " Lightline
 
+" let g:lightline = {
+"       \ 'colorscheme': 'srcery_drk',
+"       \ 'active': {
+"       \   'left': [ ['mode', 'paste'],
+"       \             ['relativepath', 'modified', 'readonly'] ],
+"       \   'right': [ [], ['filetype', 'lines'] ]
+"       \ },
+"       \ 'component': {
+"       \   'lines': '%Ll',
+"       \ }
+"       \ }
 let g:lightline = {
       \ 'colorscheme': 'srcery_drk',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
       \             ['relativepath', 'modified', 'readonly'] ],
-      \   'right': [ [], ['filetype', 'lines'] ]
-      \ },
-      \ 'component': {
-      \   'lines': '%Ll',
+      \   'right': [ ['filetype'] ]
       \ }
       \ }
 

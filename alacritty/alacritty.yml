@@ -14,8 +14,9 @@ shell:
 font:
   normal:
     family: Iosevka Nerd Font
-  size:
-    17.0
+  size: 17.0
+  offset:
+    y: 1
 
 # ---------------------------------------------------------------------------
 # Colorscheme
@@ -42,8 +43,8 @@ draw_bold_text_with_bright_colors: true
 window:
   decorations: buttonless
   padding:
-    x: 17
-    y: 12
+    x: 20
+    y: 15
 
 # ---------------------------------------------------------------------------
 # Set keybindings
@@ -84,3 +85,6 @@ key_bindings:
   - { key: J, mods: Command|Alt, chars: "\x02\x6a" } # ctrl-b j
   - { key: L, mods: Command|Alt, chars: "\x02\x6c" } # ctrl-b l
   - { key: H, mods: Command|Alt, chars: "\x02\x68" } # ctrl-b h
+  # Ciao
+  - { key: H, mods: Super, command: { program: "/bin/sh", args: ["/Users/noibe/test.sh"] }} # ctrl-w
+

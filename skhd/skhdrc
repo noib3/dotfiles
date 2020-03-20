@@ -10,12 +10,12 @@ cmd + shift - n: /Applications/Alacritty.app/Contents/MacOS/alacritty --command 
 # Let 'Cmd + b' unaltered to firefox to open bookmarks sidebar
 cmd - b [
     *          : open -na /Applications/Firefox.app
-    "firefox"  ~
+    "Firefox"  ~
 ]
 
 # Disable 'Cmd + s' in firefox
 cmd - s [
-    "firefox"  : false
+    "Firefox"  : false
 ]
 
 cmd - o: open -na /Applications/Alacritty.app && skhd --key "ctrl - left" && sleep 1 && skhd --key "ab" && skhd --key "ctrl - w"
