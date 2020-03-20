@@ -46,7 +46,7 @@ PROMPT='%F{#e1e1e1}%1~ ${vcs_info_msg_0_}%F{#e69ab7}> %F{#ffffff}'
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
 
-autoload -Uz compinit && compinit
+autoload -Uz compinit
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
