@@ -24,6 +24,18 @@ cmd - o: open -na /Applications/Alacritty.app && skhd --key "ctrl - left" && sle
 # Manage windows and spaces
 
 # Extend same focus-switching keys to tmux panes
+#alt - up [
+#    *           : yabai -m window --focus north
+#    "Alacritty" : if [ "$TMUX" = "" ]; then yabai -m window --focus north; else if [ $(tmux display-message -p '#{pane_at_top}') -ne 1 ]; then tmux select-pane -U; else yabai -m window --focus north; fi; fi
+#]
+#alt - f [
+#    *           : yabai -m window --focus north
+#    "Alacritty" : if [ "$TMUX" = "" ]; then yabai -m window --focus north; else yabai -m window --focus west; fi
+#]
+#alt - down [
+#    *           : yabai -m window --focus south
+#    "Alacritty" : if [ "$TMUX" = "" ]; then yabai -m window --focus south; else if [ $(tmux display-message -p '#{pane_at_bottom}') -ne 1 ]; then tmux select-pane -D; else yabai -m window --focus south; fi; fi
+#]
 alt - up [
     *           : yabai -m window --focus north
     "Alacritty" : if [ $(tmux display-message -p '#{pane_at_top}') -ne 1 ]; then tmux select-pane -U; else yabai -m window --focus north || true; fi
@@ -34,11 +46,11 @@ alt - down [
 ]
 alt - left [
     *           : yabai -m window --focus west
-    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_left}') -ne 1 ]; then tmux select-pane -L; else yabai -m window --focus west || true; fi
+    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_left}') -ne 1 ]; then tmux select-pane -L; else yabai -m window --focus west; fi
 ]
 alt - right [
     *           : yabai -m window --focus east
-    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_right}') -ne 1 ]; then tmux select-pane -R; else yabai -m window --focus east || true; fi
+    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_right}') -ne 1 ]; then tmux select-pane -R; else yabai -m window --focus east; fi
 ]
 
 alt - h: yabai -m window --resize left:-15:0

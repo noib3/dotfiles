@@ -74,6 +74,10 @@
   display: none !important;
 }
 
+#downloadsHistory{
+  display: none !important;
+}
+
 #overflowMenu-customize-button{
   display: none !important;
 }

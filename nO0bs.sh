@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# ---------------------------------------------------------------------------
+# nO0bs - Noibe's macOs day-0 Bootstrapping Scripts
+
+
+# ---------------------------------------------------------------------------
 # System Preferences -> Mission Control -> Uncheck "Automatically rearrange spaces based of most recent use"
 # System Preferences -> Keyboard -> Key Repeat all the way to the right
 # System Preferences -> Keyboard -> Delay Until Repeat all the way to the right

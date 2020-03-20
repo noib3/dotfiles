@@ -20,21 +20,33 @@ PATH=$PATH:$HOME/Scripts
 export PATH
 
 # ---------------------------------------------------------------------------
-# Set/unset shell options and specify command line promp
+# Set/unset shell options
 
+# enable prompt expansion
+setopt PROMPT_SUBST
 setopt MENU_COMPLETE
 setopt AUTO_CD
-setopt histignoredups
-setopt histignorespace
-set -o histignorespace
+setopt HISTIGNOREDUPS
 unsetopt CASE_GLOB
 unsetopt BEEP
-PROMPT='%F{252}%1~ %F{224}> %F{255}'
+
+# ---------------------------------------------------------------------------
+# Format prompt, with custom format for git directories
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:*' enable git
+# 1. use functions in prompt definition
+# 2. use different prompts if in git directory
+# 3. get directory names relative to git directory
+repo() { basename $(git remote get-url origin) | sed 's/.git//' }
+commits() { git rev-list --count "$1" 2>/dev/null }
+zstyle ':vcs_info:*' formats '%F{#adadad}on %F{#ede845} %b '
+PROMPT='%F{#e1e1e1}%1~ ${vcs_info_msg_0_}%F{#e69ab7}> %F{#ffffff}'
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
 
-autoload -U compinit
+autoload -Uz compinit && compinit
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
@@ -65,7 +77,7 @@ term_config() {
     $EDITOR ~/.config/alacritty/alacritty.yml
 }
 zle -N term_config
-bindkey '^T^C' term_config
+bindkey '^X^T' term_config
 
 # Use fd/fzf combo to change directory...
 fuzzy_cd() {
@@ -77,7 +89,7 @@ fuzzy_cd() {
     zle reset-prompt
 }
 zle -N fuzzy_cd
-bindkey '^F^C' fuzzy_cd
+bindkey '^X^F' fuzzy_cd
 
 # ...or edit a file
 fuzzy_edit() {
@@ -135,14 +147,6 @@ alias gpom='git push origin master'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
 
 # ---------------------------------------------------------------------------
-# Source additional files
-
-source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
-source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
-source $ZDOTDIR/exports.zsh
-
-# ---------------------------------------------------------------------------
 # Misc
 
 # 'c' to clear the screen, remove the scrollback and clear the editing buffer
@@ -151,6 +155,14 @@ accept-line() case $BUFFER in
   (*) zle .accept-line
 esac
 zle -N accept-line
+
+# ---------------------------------------------------------------------------
+# Source additional files
+
+source $ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
+source $ZDOTDIR/plugins/zsh-autopair/autopair.zsh
+source $ZDOTDIR/exports.zsh
 
 
 # Set wallpaper from command line

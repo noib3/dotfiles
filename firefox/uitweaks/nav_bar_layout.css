@@ -69,3 +69,15 @@ body{
   background-size: 0.9em !important;
   margin-bottom: 1px !important;
 }
+
+/* Downloads button margins */
+#downloads-button{
+  list-style-image: none !important;
+  background-image: url("chrome://browser/skin/downloads/download-icons.svg#arrow-with-bar");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 0.9em !important;
+  margin-bottom: 1px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

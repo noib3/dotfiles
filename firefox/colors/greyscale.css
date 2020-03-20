@@ -49,6 +49,12 @@
   background-color: var(--urlbar-color) !important;
 }
 
+/* Downloads button in urlbar */
+#downloads-button{
+  color: var(--text-color) !important;
+  background-color: var(--urlbar-color) !important;
+}
+
 /* Overflow popup menu */
 .panel-subview-body{
   color: var(--text-color) !important;

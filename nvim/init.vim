@@ -7,6 +7,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+Plug 'ryanoasis/vim-devicons'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -25,6 +26,7 @@ set number
 set relativenumber
 set noshowmode
 set clipboard+=unnamedplus
+set fileencoding=utf-8
 
 " ---------------------------------------------------------------------------
 " Lets
@@ -46,6 +48,8 @@ inoremap <C-a> <esc>^i
 nnoremap <C-e> g_
 vnoremap <C-e> g_
 inoremap <C-e> <esc>g_a
+
+nnoremap <C-g> g<C-g>
 
 nnoremap ss :%s//g<left><left>
 
@@ -73,13 +77,11 @@ let g:lightline = {
       \ 'colorscheme': 'srcery_drk',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['readonly', 'absolutepath', 'modified'] ],
-      \   'right': [ ['lines'],
-      \              ['fileencoding'],
-      \              ['filetype'] ]
+      \             ['relativepath', 'modified', 'readonly'] ],
+      \   'right': [ [], ['filetype', 'lines'] ]
       \ },
       \ 'component': {
-      \   'lines': '%LL',
+      \   'lines': '%Ll',
       \ }
       \ }
 

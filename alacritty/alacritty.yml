@@ -13,9 +13,9 @@ shell:
 
 font:
   normal:
-    family: Iosevka
+    family: Iosevka Nerd Font
   size:
-    16.0
+    17.0
 
 # ---------------------------------------------------------------------------
 # Colorscheme
@@ -63,14 +63,15 @@ key_bindings:
   - { key: 10, mods: Alt, chars: "\x60"} # `
   # Chars with corresponding shell bindings
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
-  - { key: Comma, mods: Super, chars: "\x0e" } # ctrl-n
-  - { key: D, mods: Super, chars: "\x06" } # ctrl-f
+  - { key: Comma, mods: Super, chars: "\x18\x14" } # ctrl-x ctrl-t
+  - { key: D, mods: Super, chars: "\x18\x06" } # ctrl-x ctrl-f
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   # Chars with corresponding neovim bindings
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
+  - { key: G, mods: Super, chars: "\x07" } # ctrl-u
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   # Tmux bindings
   - { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c
