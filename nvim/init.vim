@@ -7,7 +7,6 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
-Plug 'ryanoasis/vim-devicons'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -61,7 +60,6 @@ nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 " ---------------------------------------------------------------------------
 " Colorscheme
 
-syntax enable
 colorscheme gruvbox
 
 " Highlight colors
@@ -85,11 +83,11 @@ highlight ErrorMsg ctermfg=224 ctermbg=NONE
 "       \ }
 "       \ }
 let g:lightline = {
-      \ 'colorscheme': 'srcery_drk',
+      \ 'colorscheme': 'my_custom',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
       \             ['relativepath', 'modified', 'readonly'] ],
-      \   'right': [ ['filetype'] ]
+      \   'right': [ ['lineinfo'], ['filetype'] ]
       \ }
       \ }
 

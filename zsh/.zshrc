@@ -47,7 +47,7 @@ export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
 
 export LS_COLORS='no=90:di=01;34:ex=01;32:ln=35:mh=31:*.mp3=33:*.md=04;93:*.ttf=95:*.otf=95:*.png=04;92:*.jpg=04;92'
-export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/ignore'
+export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
 # ---------------------------------------------------------------------------
 # Format prompt, with custom format for git directories
@@ -104,7 +104,7 @@ bindkey '^X^T' term_config
 fuzzy_cd() {
     local dir
     dir=$(cd &&
-           fd -0 --type d --ignore-file ~/.config/fd/ignore --hidden |
+           fd -0 --type d --ignore-file ~/.config/fd/fdignore --hidden |
            fzf --read0 --height=50%) \
     && cd ~/$dir
     printf '\e[H\e[3J'
@@ -120,7 +120,7 @@ bindkey '^X^F' fuzzy_cd
 fuzzy_edit() {
     dir=$(pwd)
     file=$(cd &&
-            fd -0 --type f --ignore-file ~/.config/fd/ignore --hidden |
+            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50%) \
     && cd $dir && $EDITOR ~/$file
     if zle; then
@@ -144,8 +144,8 @@ alias tree='tree -N'
 alias ssh='ssh -F ~/.config/ssh/ssh.conf'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
+alias a2='aria2c --conf-path ~/.config/aria2/aria2.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
-alias tr='transmission-remote'
 
 # Edit config files
 alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
@@ -168,6 +168,16 @@ alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 # Misc
 alias gpom='git push origin master'
 alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+
+# ---------------------------------------------------------------------------
+# Transmission
+
+trl() { transmission-remote --list }
+tra() { transmission-remote --add "$1" }
+trst() { transmission-remote --torrent "$1" --start }
+trsp() { transmission-remote --torrent "$1" --stop }
+trr() { transmission-remote --torrent "$1" --remove }
+trp() { transmission-remote --torrent "$1" --remove-and-delete }
 
 # ---------------------------------------------------------------------------
 # Misc
