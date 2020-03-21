@@ -12,6 +12,9 @@
 # Quit the finder
 defaults write com.apple.finder QuitMenuItem -bool false && killall Finder
 
+# Remove 'Other' from login screen
+sudo defaults write /Library/Preferences/com.apple.loginwindow SHOWOTHERUSERS_MANAGED -bool FALSE
+
 # Disable Gatekeeper and open every program without being asked for confirmation
 sudo spctl --master-disable
 # System Preferences -> Security & Privacy -> Allow apps downloaded from -> Check "Anywhere"

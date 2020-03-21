@@ -85,6 +85,3 @@ key_bindings:
   - { key: J, mods: Command|Alt, chars: "\x02\x6a" } # ctrl-b j
   - { key: L, mods: Command|Alt, chars: "\x02\x6c" } # ctrl-b l
   - { key: H, mods: Command|Alt, chars: "\x02\x68" } # ctrl-b h
-  # Ciao
-  - { key: H, mods: Super, command: { program: "/bin/sh", args: ["/Users/noibe/test.sh"] }} # ctrl-w
-

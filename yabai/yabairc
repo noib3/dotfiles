@@ -1,5 +1,3 @@
-#!/usr/bin/env sh
-
 # ---------------------------- YABAI CONFIG FILE ----------------------------
 
 # ---------------------------------------------------------------------------
@@ -38,7 +36,7 @@ yabai -m config top_padding                     30
 yabai -m config bottom_padding                  30
 yabai -m config left_padding                    30
 yabai -m config right_padding                   30
-yabai -m config window_gap                      30
+yabai -m config window_gap                      20
 
 # ---------------------------------------------------------------------------
 # Rules
