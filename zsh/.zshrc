@@ -147,7 +147,7 @@ alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmu
 # Custom scripts
 alias -g ndiet='~/Bin/ndiet/ndiet.py'
 alias -g 2d2small='~/Bin/2d2small/2d2small.sh'
-alias tfin='~/Scripts/tfin/tfin.sh'
+alias -g tfin='~/Scripts/tfin/tfin.sh'
 alias -g peek='peek.py'
 alias -g ufetch='ufetch.sh'
 alias -g colortest='colortest.sh'

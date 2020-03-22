@@ -32,6 +32,7 @@ set fileencoding=utf-8
 
 let mapleader=","
 let g:is_posix=1
+let g:netrw_home=$HOME.'/.cache/nvim'
 
 " ---------------------------------------------------------------------------
 " Key mappings
