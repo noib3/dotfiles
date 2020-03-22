@@ -136,10 +136,8 @@ alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'
 alias tree='tree -N'
-alias ssh='ssh -F ~/.config/ssh/ssh.conf'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias a2='aria2c --conf-path ~/.config/aria2/aria2.conf'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 
 # Edit config files

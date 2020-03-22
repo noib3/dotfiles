@@ -21,3 +21,10 @@ sudo spctl --master-disable
 
 # Install homebrew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# push to github without password
+ssh-keygen -t rsa -C "riccardo.mazzarini98@gmail.com"
+# copy the content of ~/.ssh/id_rsa.pub, go to github -> settings -> ssh and gpg keys -> new ssh key -> paste
+# answer 'yes' to
+ssh -T git@github.com
+# go to the repository on github, close or download -> use ssh url, copy that url and paste it in <git_repo>/.git/config under [remote "origin"]
