@@ -62,23 +62,18 @@ precmd() {
     fi
 }
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats '%F{#ede845}[$(repo) %F{#cfcfcf}on %F{#ede845} %b] %F{#cfcfcf}$(basename %S)'
+zstyle ':vcs_info:git:*' formats '%F{#ede845}[$(repo) %F{#bbbbbb}on %F{#ede845} %b] %F{#e1e1e1}$(basename %S)'
 repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
 
-autoload -Uz compinit
+autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zmodload zsh/complist
 _comp_options+=(globdots)
-
-# ---------------------------------------------------------------------------
-# Specify cached files location
-
-compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 
 # ---------------------------------------------------------------------------
 # Key Bindings

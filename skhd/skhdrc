@@ -47,15 +47,15 @@ alt - down: yabai -m window --focus south
 alt - left: yabai -m window --focus west
 alt - right: yabai -m window --focus east
 
-alt - h: yabai -m window --resize left:-15:0
-alt - j: yabai -m window --resize bottom:0:15
-alt - k: yabai -m window --resize top:0:-15
-alt - l: yabai -m window --resize right:15:0
+alt - h: yabai -m window --resize left:-25:0
+alt - j: yabai -m window --resize bottom:0:25
+alt - k: yabai -m window --resize top:0:-25
+alt - l: yabai -m window --resize right:25:0
 
-ctrl - h: yabai -m window --resize right:-15:0
-ctrl - j: yabai -m window --resize top:0:15
-ctrl - k: yabai -m window --resize bottom:0:-15
-ctrl - l: yabai -m window --resize left:15:0
+ctrl - h: yabai -m window --resize right:-25:0
+ctrl - j: yabai -m window --resize top:0:25
+ctrl - k: yabai -m window --resize bottom:0:-25
+ctrl - l: yabai -m window --resize left:25:0
 
 ctrl - up: yabai -m window --swap north
 ctrl - down: yabai -m window --swap south
