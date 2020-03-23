@@ -140,10 +140,6 @@ alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 
-# Edit config files
-alias yabairc='$EDITOR ~/.config/yabai/yabairc && ~/.config/yabai/yabairc'
-alias tmuxrc='$EDITOR ~/.config/tmux/tmux.conf && tmux source ~/.config/tmux/tmux.conf'
-
 # Custom scripts
 alias -g ndiet='~/Bin/ndiet/ndiet.py'
 alias -g 2d2small='~/Bin/2d2small/2d2small.sh'
@@ -198,48 +194,3 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh
-
-# Find a way to make entr run in the background, then
-#   echo /Users/noibe/.config/yabai/yabairc | entr /bin/sh /Users/noibe/.config/yabai/yabairc
-#   echo /Users/noibe/.config/tmux/tmux.conf | entr /usr/local/bin/tmux source /Users/noibe/.config/tmux/tmux.conf
-# Set wallpaper from command line
-#   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "<absolute_path_to_file>"'
-#   osascript -e 'quit app "Finder"'
-# Or, to use it inside a shell function,
-#   osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$1\""
-
-# Disable the "Are you sure you want to open this application?" dialog
-#   defaults write com.apple.LaunchServices LSQuarantine -bool false
-
-# List all songs and pipe them into tmd
-#   find ~/Music -iname "*\.mp3" -print0 | xargs -0 tmd
-
-# Change TeX home tree
-#   sudo tlmgr conf texmf TEXMFHOME "~/TeX/texmf"
-
-# Empty Dock
-#   defaults write com.apple.dock recent-apps -array
-#   defaults write com.apple.dock persistent-apps -array
-
-# Hide Dock
-#   defaults write com.apple.dock autohide-delay -float 1000
-
-# Keep programs out of dock
-#   System Preferences -> Dock -> Show recent applications in Dock [uncheck]
-
-# If Dock gets stuck and won't launch anymore
-#   launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   launchctl   load -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   launchctl start com.apple.Dock.agent
-#   launchctl unload -F /System/Library/LaunchAgents/com.apple.Dock.plist
-#   /System/Library/CoreServices/Dock.app/Contents/MacOS/Dock
-#   rm -rf ~/Library/Application Support/Dock
-#   rm -rf ~/Library/Preferences/com.apple.dock.plist
-#   sudo reboot
-
-# Write to /System
-#   sudo mount -uw /
-#   killall Finder
-
-# defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
-# defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)A
