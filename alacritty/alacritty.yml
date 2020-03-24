@@ -4,7 +4,7 @@
 # Set the login shell
 
 shell:
-  program: /bin/zsh
+  program: /usr/local/bin/zsh
   args:
     - --login
 

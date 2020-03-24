@@ -1,7 +1,7 @@
 # ----------------------------- ZSH CONFIG FILE -----------------------------
 
-# 'echo "export ZDOTDIR=~/.config/zsh" >> /private/etc/zprofile"' to load
-# config file in this non-standard location
+# sudo touch /etc/zshenv && echo "export ZDOTDIR=~/.config/zsh" | sudo tee /etc/zshenv >/dev/null
+# to load config file in this non-standard location
 
 # ---------------------------------------------------------------------------
 # Set/unset shell options

@@ -88,9 +88,12 @@ sudo nvram SystemAudioVolume=%01 # this is the first one that worked on my macbo
 #sudo nvram SystemAudioVolume=" "
 
 
+# KEEP FINDER FROM OPENING WHEN NO OTHER APPS ARE OPENED
+launchctl unload /System/Library/LaunchAgents/com.apple.Finder.plist
+
 # FINDER OUT OF DOCK AND CMD-TAB MENU (https://apple.stackexchange.com/questions/30415/how-can-i-remove-the-finder-icon-from-my-dock?newreg=7853552a016a48d2a67c03406a1b7af9)
 sudo nvim /System/Library/CoreServices/Dock.app/Contents/Resources/DockMenus.plist
-# find the sections 'finder-quit' and 'finder-running', and add a new subsection to them:
+# find the sections 'finder-quit', 'finder-running' and 'trash', and add a new subsection to them:
 <dict>
     <key>command</key>
     <integer>1004</integer>
@@ -100,3 +103,12 @@ sudo nvim /System/Library/CoreServices/Dock.app/Contents/Resources/DockMenus.pli
 # open the Finder, then
 killall Dock
 # right click on the finder icon in the Dock and remove it
+
+
+# STOP CREATION OF .DS_Store FILES
+# download the latest .zip release from 'https://github.com/xiaozhuai/odourless/releases'
+# move it to /Applications
+# in case it doesn't launch (in my case it said something like 'this has to be under /Applications', even if it was under /Applications), just run it from the command line:
+# /Applications/Odourless.app/Contents/MacOS/odourless
+# install the daemon on the lil gui that pops up
+# reboot and you should be gucci
