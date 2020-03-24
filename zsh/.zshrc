@@ -162,6 +162,7 @@ bindkey '^S' fuzzy_edit
 # Cli aliases for GUI programs
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
+alias skim='/Applications/Skim.app/Contents/MacOS/skim'
 
 # Specify particular program behaviour
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
