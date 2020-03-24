@@ -3,6 +3,9 @@
 case $1 in
     period-changed)
         if [ ! "$3" = "none" ]; then
-            osascript -e "display notification \"Switching to $3 temps...\" with title \"Redshift\""
+            upper_first="$(tr '[:lower:]' '[:upper:]' <<< ${3:0:1})${3:1}"
+            echo $upper_first | sed 's/time//;s/$/ time/' |
+                /usr/local/bin/terminal-notifier -title Redshift -subtitle "Switching temps" \
+                    -appIcon $(dirname "$0")/redshift-icon-256.png
         fi
 esac

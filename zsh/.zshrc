@@ -66,6 +66,37 @@ zstyle ':vcs_info:git:*' formats '%F{#ede845}[$(repo) %F{#bbbbbb}on %F{#ede845}î
 repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 
 # ---------------------------------------------------------------------------
+# Enable vi mode
+
+bindkey -v
+# key input delay in hundredths of a second
+KEYTIMEOUT=1
+
+# make backspace work after entering and leaving normal mode
+bindkey "^?" backward-delete-char
+
+# change cursor shape depending on vi mode
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] ||
+     [[ $1 = 'block' ]]; then
+    echo -ne '\e[1 q'
+
+  elif [[ ${KEYMAP} == main ]] ||
+       [[ ${KEYMAP} == viins ]] ||
+       [[ ${KEYMAP} = '' ]] ||
+       [[ $1 = 'beam' ]]; then
+    echo -ne '\e[5 q'
+  fi
+}
+zle -N zle-keymap-select
+
+_fix_cursor() {
+   echo -ne '\e[5 q'
+}
+
+precmd_functions+=(_fix_cursor)
+
+# ---------------------------------------------------------------------------
 # Tab Autocompletion
 
 autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
