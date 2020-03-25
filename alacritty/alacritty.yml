@@ -72,7 +72,7 @@ key_bindings:
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
-  - { key: G, mods: Super, chars: "\x07" } # ctrl-u
+  - { key: G, mods: Super, chars: "\x07" } # ctrl-g
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   # Tmux bindings
   - { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c

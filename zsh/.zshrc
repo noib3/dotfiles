@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------------
 # Set/unset shell options
 
-# enable prompt expansion
 setopt PROMPT_SUBST
 setopt MENU_COMPLETE
 setopt AUTO_CD
@@ -54,14 +53,43 @@ export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
 bindkey -v
 
-# key input delay in hundredths of a second
-KEYTIMEOUT=5
+# bind zle widgets in viins (default) and vicmd modes
+bindkey '^?' backward-delete-char
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^U' backward-kill-line
+bindkey -M vicmd '^A' beginning-of-line
+bindkey -M vicmd '^E' end-of-line
+bindkey -M vicmd '^U' backward-kill-line
 
-# make backspace work after entering and leaving normal mode
-bindkey "^?" backward-delete-char
+# yank to and paste from clipboard (pbpaste and pbcopy are macOS-specific tools)
+# I'm gonna delete this since zsh-system-clipboard does what I need
+yank-to-clipboard() {
+    #
+}
+zle -N yank-to-clipboard
+bindkey -M vicmd 'y' yank-to-clipboard
+
+paste-from-clipboard-after() {
+    LBUFFER=$LBUFFER${RBUFFER:0:1}
+    RBUFFER=$(pbpaste)${RBUFFER:1}
+    CURSOR=$(( $CURSOR + ${#$(pbpaste)} - 1 ))
+}
+zle -N paste-from-clipboard-after
+bindkey -M vicmd 'p' paste-from-clipboard-after
+
+paste-from-clipboard-inplace() {
+    RBUFFER=$(pbpaste)$RBUFFER
+    CURSOR=$(( $CURSOR + ${#$(pbpaste)} - 1 ))
+}
+zle -N paste-from-clipboard-inplace
+bindkey -M vicmd 'P' paste-from-clipboard-inplace
+
+# key input delay in hundredths of a second
+KEYTIMEOUT=1
 
 # change cursor shape depending on vi mode
-function zle-keymap-select {
+zle-keymap-select() {
   if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
     echo -ne '\e[1 q'
   elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
@@ -72,7 +100,7 @@ zle -N zle-keymap-select
 
 zle-line-init() { zle-keymap-select 'beam' }
 
- _fix_cursor() {
+_fix_cursor() {
    echo -ne '\e[5 q'
 }
 
@@ -80,12 +108,10 @@ precmd_functions+=(_fix_cursor)
 
 # git clone https://github.com/softmoth/zsh-vim-mode /usr/local/share/zsh-vim-mode
 #source /usr/local/share/zsh-vim-mode/zsh-vim-mode.plugin.zsh
-#
-#KEYTIMEOUT=5
-#
+
 #MODE_CURSOR_VICMD="#cfcfcf block"
 #MODE_CURSOR_VIINS="#cfcfcf bar"
-#
+
 #MODE_INDICATOR_VIINS='%F{#9ec400}[I]%f'
 #MODE_INDICATOR_VICMD='%F{#7aa6da}[N]%f'
 #MODE_INDICATOR_VISUAL='%F{#b77ee0}[V]%f'
@@ -120,7 +146,6 @@ _comp_options+=(globdots)
 
 # Unbind 'Ctrl + S'
 stty -ixon
-bindkey '^E' vi-end-of-line
 
 # Close terminal window
 close_window() {
@@ -232,3 +257,6 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh
+
+# git clone https://github.com/kutsan/zsh-system-clipboard /usr/local/share/zsh-system-clipboard
+source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
