@@ -50,51 +50,58 @@ export LS_COLORS='no=90:di=01;34:ex=01;32:ln=35:mh=31:*.mp3=33:*.md=04;93:*.ttf=
 export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
 # ---------------------------------------------------------------------------
-# Format prompt, with custom format for git directories
-
-autoload -Uz vcs_info
-precmd() {
-    vcs_info
-    if [[ -n ${vcs_info_msg_0_} ]]; then
-        PROMPT="${vcs_info_msg_0_} %F{#a18ee8}> %F{#cfcfcf}"
-    else
-        PROMPT="%F{#e1e1e1}%1~ %F{#e69ab7}> %F{#cfcfcf}"
-    fi
-}
-zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats '%F{#ede845}[$(repo) %F{#bbbbbb}on %F{#ede845} %b] %F{#e1e1e1}$(basename %S)'
-repo() { basename $(git remote get-url origin) | sed 's/.git//' }
-
-# ---------------------------------------------------------------------------
 # Enable vi mode
 
 bindkey -v
+
 # key input delay in hundredths of a second
-KEYTIMEOUT=1
+KEYTIMEOUT=5
 
 # make backspace work after entering and leaving normal mode
 bindkey "^?" backward-delete-char
 
 # change cursor shape depending on vi mode
 function zle-keymap-select {
-  if [[ ${KEYMAP} == vicmd ]] ||
-     [[ $1 = 'block' ]]; then
+  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
     echo -ne '\e[1 q'
-
-  elif [[ ${KEYMAP} == main ]] ||
-       [[ ${KEYMAP} == viins ]] ||
-       [[ ${KEYMAP} = '' ]] ||
-       [[ $1 = 'beam' ]]; then
+  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
     echo -ne '\e[5 q'
   fi
 }
 zle -N zle-keymap-select
 
-_fix_cursor() {
+zle-line-init() { zle-keymap-select 'beam' }
+
+ _fix_cursor() {
    echo -ne '\e[5 q'
 }
 
 precmd_functions+=(_fix_cursor)
+
+# git clone https://github.com/softmoth/zsh-vim-mode /usr/local/share/zsh-vim-mode
+#source /usr/local/share/zsh-vim-mode/zsh-vim-mode.plugin.zsh
+#
+#KEYTIMEOUT=5
+#
+#MODE_CURSOR_VICMD="#cfcfcf block"
+#MODE_CURSOR_VIINS="#cfcfcf bar"
+#
+#MODE_INDICATOR_VIINS='%F{#9ec400}[I]%f'
+#MODE_INDICATOR_VICMD='%F{#7aa6da}[N]%f'
+#MODE_INDICATOR_VISUAL='%F{#b77ee0}[V]%f'
+
+# ---------------------------------------------------------------------------
+# Format prompt, with custom format for git directories
+
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' formats '%F{#ede845}$(repo) %F{#bbbbbb}on %F{#ede845} %b'
+repo() { basename $(git remote get-url origin) | sed 's/.git//' }
+
+PROMPT='%F{#e1e1e1}%1~ %F{#e69ab7}> %F{#cfcfcf}'
+RPROMPT='${vcs_info_msg_0_}'
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
@@ -111,6 +118,7 @@ _comp_options+=(globdots)
 
 # Unbind 'Ctrl + S'
 stty -ixon
+bindkey '^E' vi-end-of-line
 
 # Close terminal window
 close_window() {
@@ -162,7 +170,6 @@ bindkey '^S' fuzzy_edit
 # Cli aliases for GUI programs
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
-alias skim='/Applications/Skim.app/Contents/MacOS/skim'
 
 # Specify particular program behaviour
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
@@ -220,9 +227,6 @@ source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# gotta get syntax highlighting for less
-#source $ZDOTDIR/plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh

@@ -26,6 +26,10 @@ set relativenumber
 set noshowmode
 set clipboard+=unnamedplus
 set fileencoding=utf-8
+set undofile
+set undodir=$HOME/.cache
+set undolevels=1000
+set undoreload=10000
 
 " ---------------------------------------------------------------------------
 " Lets
@@ -113,3 +117,6 @@ fun! <SID>StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" Reset zsh cursor to beam style upon exit
+" autocmd VimLeave * call system('printf "\e[5 q" > $TTY')
