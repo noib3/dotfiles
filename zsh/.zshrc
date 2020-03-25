@@ -94,14 +94,16 @@ precmd_functions+=(_fix_cursor)
 # Format prompt, with custom format for git directories
 
 autoload -Uz vcs_info
-precmd() { vcs_info }
-
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats '%F{#ede845}$(repo) %F{#bbbbbb}on %F{#ede845} %b'
 repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 
+precmd() {
+    vcs_info
+    RPROMPT="${vcs_info_msg_0_}"
+}
+
 PROMPT='%F{#e1e1e1}%1~ %F{#e69ab7}> %F{#cfcfcf}'
-RPROMPT='${vcs_info_msg_0_}'
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
