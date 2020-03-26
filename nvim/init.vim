@@ -117,8 +117,3 @@ fun! <SID>StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
-
-" Clear command line after saving
-" autocmd BufWritePost * :echo 'ciao'
-autocmd CmdlineChanged * :echo 'comes'
-" CmdlineChanged

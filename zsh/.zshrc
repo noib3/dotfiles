@@ -59,6 +59,8 @@ reg_div_clr=#e69ab7
 vi_inst_clr=#9ec400
 vi_norm_clr=#7aa6da
 vi_visl_clr=#b77ee0
+vi_visl_bg=#7aa6da
+vi_visl_fg=#ffffff
 
 # Git info
 git_main_clr=#ede845
@@ -70,7 +72,8 @@ git_onbr_clr=#bbbbbb
 bindkey -v
 
 # mode switching delay in hundredths of a second (default is 40)
-KEYTIMEOUT=5
+# making it less then 30 seems to cause problems with surrounds
+KEYTIMEOUT=30
 
 # bind zle widgets in viins (default) and vicmd modes
 bindkey '^?' backward-delete-char
@@ -84,16 +87,17 @@ bindkey -M vicmd '^U' backward-kill-line
 # change cursor shape depending on vi mode
 # zle-keymap-select is executed everytime the mode changes
 function zle-keymap-select() {
-    if [ $KEYMAP = viins ] || [ $KEYMAP = main ]; then
+    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]]; then
         echo -ne '\e[5 q'
         RPROMPT='%F{$vi_inst_clr}[I]%f'
-    elif [ $KEYMAP = vicmd ]; then
+    elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
-        RPROMPT='%F{$vi_norm_clr}[N]%f'
-    elif [ $KEYMAP = visual ]; then
-        RPROMPT='%F{$vi_visl_clr}[V]%f'
-    else
-        echo $KEYMAP
+        local active=${REGION_ACTIVE:-0}
+        if [[ $active = 1 ]] || [[ $active = 2 ]]; then
+            RPROMPT='%F{$vi_visl_clr}[V]%f'
+        else
+            RPROMPT='%F{$vi_norm_clr}[N]%f'
+        fi
     fi
     zle reset-prompt
 }
@@ -106,26 +110,69 @@ ciao() {
 
 precmd_functions+=(ciao)
 
-zle_highlight=(region:bg=#7aa6da,fg=#ffffff)
+# stripped down version of the vim-surround plugin implementation
+# taken from 'https://github.com/softmoth/zsh-vim-mode'
+function vim-mode-bindkey () {
+    local -a maps
+    local command
+
+    while (( $# )); do
+        [[ $1 = '--' ]] && break
+        maps+=$1
+        shift
+    done
+    shift
+
+    command=$1
+    shift
+
+    function vim-mode-accum-combo () {
+        typeset -g -a combos
+        local combo="$1"; shift
+        if (( $#@ )); then
+            local cur="$1"; shift
+            vim-mode-accum-combo "$combo$cur" "$@"
+        else
+            combos+="$combo"
+        fi
+    }
+
+    local -a combos
+    vim-mode-accum-combo '' "$@"
+    for c in ${combos}; do
+        for m in ${maps}; do
+            bindkey -M $m "$c" $command
+        done
+    done
+}
+
+autoload -U select-bracketed
+zle -N select-bracketed
+for m in visual viopp; do
+    for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
+        vim-mode-bindkey $m -- select-bracketed $c
+    done
+done
+
+autoload -U select-quoted
+zle -N select-quoted
+for m in visual viopp; do
+    for c in {a,i}{\',\",\`}; do
+        vim-mode-bindkey $m -- select-quoted $c
+    done
+done
 
 autoload -Uz surround
 zle -N delete-surround surround
 zle -N change-surround surround
 zle -N add-surround surround
-bindkey -a cs change-surround
-bindkey -a ds delete-surround
-bindkey -a ys add-surround
-bindkey -M visual S add-surround
+vim-mode-bindkey vicmd  -- change-surround cs
+vim-mode-bindkey vicmd  -- delete-surround ds
+vim-mode-bindkey vicmd  -- add-surround    ys
+vim-mode-bindkey visual -- add-surround    S
 
-# git clone https://github.com/softmoth/zsh-vim-mode /usr/local/share/zsh-vim-mode
-#source /usr/local/share/zsh-vim-mode/zsh-vim-mode.plugin.zsh
-
-#MODE_CURSOR_VICMD="#cfcfcf block"
-#MODE_CURSOR_VIINS="#cfcfcf bar"
-#
-#MODE_INDICATOR_VIINS='%F{#9ec400}[I]%f'
-#MODE_INDICATOR_VICMD='%F{#7aa6da}[N]%f'
-#MODE_INDICATOR_VISUAL='%F{#b77ee0}[V]%f'
+# background and foreground in vi visual and v-block modes
+zle_highlight=(region:bg=$vi_visl_bg,fg=$vi_visl_fg)
 
 # ---------------------------------------------------------------------------
 # Format prompt, with custom format for git directories
@@ -165,14 +212,48 @@ close_window() {
 zle -N close_window
 bindkey '^W' close_window
 
-# Edit alacritty config file (bound to 'cmd + ,' in alacritty.yml)
+# Edit alacritty config file
 term_config() {
     $EDITOR ~/.config/alacritty/alacritty.yml
+    printf '\e[5 q'
+    if zle; then
+        zle reset-prompt
+    fi
 }
 zle -N term_config
 bindkey '^X^T' term_config
 
-# Use fd/fzf combo to change directory...
+# Use fd/fzf combo to edit a file, ...
+fuzzy_edit() {
+    dir=$(pwd)
+    file=$(cd &&
+            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
+            fzf --read0 --height=50%) \
+    && cd $dir && $EDITOR ~/$file
+    printf '\e[5 q'
+    if zle; then
+        zle reset-prompt
+    fi
+}
+zle -N fuzzy_edit
+bindkey '^X^E' fuzzy_edit
+
+# ...to search a file, ...
+fuzzy_search() {
+#    dir=$(pwd)
+#    file=$(cd &&
+#            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
+#            fzf --read0 --height=50%) \
+#    && cd $dir && $EDITOR ~/$file
+#    printf '\e[5 q'
+#    if zle; then
+#        zle reset-prompt
+#    fi
+}
+zle -N fuzzy_search
+bindkey '^S' fuzzy_search
+
+# ...or to change directory
 fuzzy_cd() {
     local dir
     dir=$(cd &&
@@ -188,20 +269,18 @@ fuzzy_cd() {
 zle -N fuzzy_cd
 bindkey '^X^F' fuzzy_cd
 
-# ...or edit a file
-fuzzy_edit() {
-    dir=$(pwd)
-    file=$(cd &&
-            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
-            fzf --read0 --height=50%) \
-    && cd $dir && $EDITOR ~/$file
-    printf '\e[5 q'
+# clear the screen and echo current ndiet diet
+ndiet_current(){
+    clear
+    ~/bin/ndiet/ndiet.py -c
+    tput civis && read -s -k '?'
     if zle; then
-        zle reset-prompt
+        yabai -m window --close
     fi
+    tput cnorm
 }
-zle -N fuzzy_edit
-bindkey '^S' fuzzy_edit
+zle -N ndiet_current
+bindkey '^X^N' ndiet_current
 
 # ---------------------------------------------------------------------------
 # Aliases
