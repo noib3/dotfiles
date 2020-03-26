@@ -87,28 +87,44 @@ bindkey -M vicmd '^U' backward-kill-line
 # change cursor shape depending on vi mode
 # zle-keymap-select is executed everytime the mode changes
 function zle-keymap-select() {
-    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]]; then
+    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]] || [[ $KEYMAP = '' ]]; then
         echo -ne '\e[5 q'
-        RPROMPT='%F{$vi_inst_clr}[I]%f'
+        RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
     elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
         local active=${REGION_ACTIVE:-0}
         if [[ $active = 1 ]] || [[ $active = 2 ]]; then
-            RPROMPT='%F{$vi_visl_clr}[V]%f'
+            RPROMPT="${vcs_info_msg_0_}  %F{$vi_visl_clr}[V]%f"
         else
-            RPROMPT='%F{$vi_norm_clr}[N]%f'
+            RPROMPT="${vcs_info_msg_0_}  %F{$vi_norm_clr}[N]%f"
         fi
     fi
     zle reset-prompt
 }
 zle -N zle-keymap-select
 
-ciao() {
-    echo -ne '\e[5 q'
-    RPROMPT='%F{$vi_inst_clr}[I]%f'
+ciao(){
+    zle visual-mode
+    zle zle-keymap-select
 }
+zle -N ciao
+bindkey -M vicmd 'v' ciao
 
-precmd_functions+=(ciao)
+come(){
+    zle deactivate-region
+    zle zle-keymap-select
+}
+zle -N come
+bindkey -M visual '^[' come
+
+# ciao() {
+#    #echo -ne '\e[5 q'
+#    #echo 'ciao'
+#    #RPROMPT="%F{$vi_inst_clr}[I]%f"
+#}
+#
+## these functions are called after precmd
+#precmd_functions+=(ciao)
 
 # stripped down version of the vim-surround plugin implementation
 # taken from 'https://github.com/softmoth/zsh-vim-mode'
@@ -184,7 +200,8 @@ repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 
 precmd() {
     vcs_info
-    RPROMPT="${vcs_info_msg_0_}"
+    echo -ne '\e[5 q'
+    RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
 }
 
 PROMPT='%F{$reg_dir_clr}%1~ %F{$reg_div_clr}>%f '
