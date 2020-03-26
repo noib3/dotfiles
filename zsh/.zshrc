@@ -230,7 +230,6 @@ alias -g Omega='Omega.py'
 alias -g ffls='ffls.sh'
 alias -g committed='committed.sh'
 alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
-alias -g rmds='find ~ -depth -name ".DS_Store" -exec rm {} \;'
 
 # Misc
 alias gpom='git push origin master'

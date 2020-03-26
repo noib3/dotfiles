@@ -118,4 +118,7 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
-autocmd VimLeave * let &t_me="\<Esc>]50;CursorShape=1\x7"
+" Clear command line after saving
+" autocmd BufWritePost * :echo 'ciao'
+autocmd CmdlineChanged * :echo 'comes'
+" CmdlineChanged
