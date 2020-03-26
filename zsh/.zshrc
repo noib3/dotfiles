@@ -49,9 +49,28 @@ export LS_COLORS='no=90:di=01;34:ex=01;32:ln=35:mh=31:*.mp3=33:*.md=04;93:*.ttf=
 export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
 # ---------------------------------------------------------------------------
+# Colors
+
+# Regular
+reg_dir_clr=#e1e1e1
+reg_div_clr=#e69ab7
+
+# Vi mode
+vi_inst_clr=#9ec400
+vi_norm_clr=#7aa6da
+vi_visl_clr=#b77ee0
+
+# Git info
+git_main_clr=#ede845
+git_onbr_clr=#bbbbbb
+
+# ---------------------------------------------------------------------------
 # Enable vi mode
 
 bindkey -v
+
+# mode switching delay in hundredths of a second (default is 40)
+KEYTIMEOUT=5
 
 # bind zle widgets in viins (default) and vicmd modes
 bindkey '^?' backward-delete-char
@@ -62,56 +81,48 @@ bindkey -M vicmd '^A' beginning-of-line
 bindkey -M vicmd '^E' end-of-line
 bindkey -M vicmd '^U' backward-kill-line
 
-# yank to and paste from clipboard (pbpaste and pbcopy are macOS-specific tools)
-# I'm gonna delete this since zsh-system-clipboard does what I need
-yank-to-clipboard() {
-    #
-}
-zle -N yank-to-clipboard
-bindkey -M vicmd 'y' yank-to-clipboard
-
-paste-from-clipboard-after() {
-    LBUFFER=$LBUFFER${RBUFFER:0:1}
-    RBUFFER=$(pbpaste)${RBUFFER:1}
-    CURSOR=$(( $CURSOR + ${#$(pbpaste)} - 1 ))
-}
-zle -N paste-from-clipboard-after
-bindkey -M vicmd 'p' paste-from-clipboard-after
-
-paste-from-clipboard-inplace() {
-    RBUFFER=$(pbpaste)$RBUFFER
-    CURSOR=$(( $CURSOR + ${#$(pbpaste)} - 1 ))
-}
-zle -N paste-from-clipboard-inplace
-bindkey -M vicmd 'P' paste-from-clipboard-inplace
-
-# key input delay in hundredths of a second
-KEYTIMEOUT=1
-
 # change cursor shape depending on vi mode
-zle-keymap-select() {
-  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
-    echo -ne '\e[1 q'
-  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ ${KEYMAP} = '' ]] || [[ $1 = 'beam' ]]; then
-    echo -ne '\e[5 q'
-  fi
+# zle-keymap-select is executed everytime the mode changes
+function zle-keymap-select() {
+    if [ $KEYMAP = viins ] || [ $KEYMAP = main ]; then
+        echo -ne '\e[5 q'
+        RPROMPT='%F{$vi_inst_clr}[I]%f'
+    elif [ $KEYMAP = vicmd ]; then
+        echo -ne '\e[1 q'
+        RPROMPT='%F{$vi_norm_clr}[N]%f'
+    elif [ $KEYMAP = visual ]; then
+        RPROMPT='%F{$vi_visl_clr}[V]%f'
+    else
+        echo $KEYMAP
+    fi
+    zle reset-prompt
 }
 zle -N zle-keymap-select
 
-zle-line-init() { zle-keymap-select 'beam' }
-
-_fix_cursor() {
-   echo -ne '\e[5 q'
+ciao() {
+    echo -ne '\e[5 q'
+    RPROMPT='%F{$vi_inst_clr}[I]%f'
 }
 
-precmd_functions+=(_fix_cursor)
+precmd_functions+=(ciao)
+
+zle_highlight=(region:bg=#7aa6da,fg=#ffffff)
+
+autoload -Uz surround
+zle -N delete-surround surround
+zle -N change-surround surround
+zle -N add-surround surround
+bindkey -a cs change-surround
+bindkey -a ds delete-surround
+bindkey -a ys add-surround
+bindkey -M visual S add-surround
 
 # git clone https://github.com/softmoth/zsh-vim-mode /usr/local/share/zsh-vim-mode
 #source /usr/local/share/zsh-vim-mode/zsh-vim-mode.plugin.zsh
 
 #MODE_CURSOR_VICMD="#cfcfcf block"
 #MODE_CURSOR_VIINS="#cfcfcf bar"
-
+#
 #MODE_INDICATOR_VIINS='%F{#9ec400}[I]%f'
 #MODE_INDICATOR_VICMD='%F{#7aa6da}[N]%f'
 #MODE_INDICATOR_VISUAL='%F{#b77ee0}[V]%f'
@@ -121,7 +132,7 @@ precmd_functions+=(_fix_cursor)
 
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats '%F{#ede845}$(repo) %F{#bbbbbb}on %F{#ede845} %b'
+zstyle ':vcs_info:git:*' formats '%F{$git_main_clr}$(repo) %F{$git_onbr_clr}on %F{$git_main_clr} %b%f'
 repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 
 precmd() {
@@ -129,7 +140,7 @@ precmd() {
     RPROMPT="${vcs_info_msg_0_}"
 }
 
-PROMPT='%F{#e1e1e1}%1~ %F{#e69ab7}> %F{#cfcfcf}'
+PROMPT='%F{$reg_dir_clr}%1~ %F{$reg_div_clr}>%f '
 
 # ---------------------------------------------------------------------------
 # Tab Autocompletion
@@ -184,6 +195,7 @@ fuzzy_edit() {
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50%) \
     && cd $dir && $EDITOR ~/$file
+    printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -251,6 +263,8 @@ zle -N accept-line
 
 # brew install zsh-autosuggestions
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"
+ZSH_AUTOSUGGEST_STRATEGY=(history completion match_prev_cmd)
 
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

@@ -118,5 +118,4 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
-" Reset zsh cursor to beam style upon exit
-" autocmd VimLeave * call system('printf "\e[5 q" > $TTY')
+autocmd VimLeave * let &t_me="\<Esc>]50;CursorShape=1\x7"
