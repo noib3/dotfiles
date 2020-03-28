@@ -57,8 +57,8 @@ nnoremap <C-g> g<C-g>
 
 nnoremap ss :%s//g<left><left>
 
-nnoremap <silent> <C-u> :call smooth_scroll#up(10, 10, 1)<cr>
-nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
+"nnoremap <silent> <C-u> :call smooth_scroll#up(10, 10, 1)<cr>
+"nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
 
