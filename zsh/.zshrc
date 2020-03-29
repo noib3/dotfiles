@@ -10,6 +10,7 @@ setopt PROMPT_SUBST
 setopt MENU_COMPLETE
 setopt AUTO_CD
 setopt HISTIGNOREDUPS
+setopt IGNORE_EOF
 unsetopt CASE_GLOB
 unsetopt BEEP
 
@@ -229,6 +230,14 @@ close_window() {
 zle -N close_window
 bindkey '^W' close_window
 
+# Open lf
+open_lf() {
+    lf ~/Dropbox
+    yabai -m window --close
+}
+zle -N open_lf
+bindkey '^X^F' open_lf
+
 # Edit alacritty config file
 term_config() {
     $EDITOR ~/.config/alacritty/alacritty.yml
@@ -284,7 +293,7 @@ fuzzy_cd() {
     fi
 }
 zle -N fuzzy_cd
-bindkey '^X^F' fuzzy_cd
+bindkey '^X^D' fuzzy_cd
 
 # clear the screen and echo current ndiet diet
 ndiet_current(){

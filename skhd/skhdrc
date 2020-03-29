@@ -4,7 +4,17 @@
 # Manage programs
 
 cmd - return: open -na /Applications/Alacritty.app
-cmd - f: /Applications/Alacritty.app/Contents/MacOS/alacritty --command lf ~/Dropbox
+
+# open lf
+cmd - f : \
+    yabai -m signal --add \
+             label=float_next \
+             event=application_launched \
+             action="yabai -m signal --remove float_next;\
+                     SPAWN_ID=$(yabai -m query --windows | jq -r ".[] | select(.pid==$YABAI_PROCESS_ID).id");\
+                     skhd --key \"ctrl - x\" && skhd --key \"ctrl - f\"";\
+    open -na /Applications/Alacritty.app
+
 
 # Show current diet on a borderless, centered, floating window
 cmd + shift - n : \

@@ -67,7 +67,7 @@ key_bindings:
   - { key: Comma, mods: Super, chars: "\x18\x14" } # ctrl-x ctrl-t
   - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
-  - { key: D, mods: Super, chars: "\x18\x06" } # ctrl-x ctrl-f
+  - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
   # Chars with corresponding neovim bindings
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d

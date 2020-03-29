@@ -112,3 +112,7 @@ killall Dock
 # /Applications/Odourless.app/Contents/MacOS/odourless
 # install the daemon on the lil gui that pops up
 # reboot and you should be gucci
+
+
+# Change TeX directory
+sudo tlmgr conf texmf TEXMFHOME "~/Library/texmf"
