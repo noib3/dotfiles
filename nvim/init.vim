@@ -7,6 +7,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+Plug 'unblevable/quick-scope'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -61,6 +62,10 @@ nnoremap ss :%s//g<left><left>
 "nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
+nnoremap <leader>w <C-w><C-k>
+nnoremap <leader>a <C-w><C-h>
+nnoremap <leader>s <C-w><C-j>
+nnoremap <leader>d <C-w><C-l>
 
 " ---------------------------------------------------------------------------
 " Colorscheme
@@ -83,6 +88,11 @@ let g:lightline = {
       \   'right': [ ['percent'] ]
       \ }
       \ }
+
+" ---------------------------------------------------------------------------
+" Quickscope ----------------------------------------------------------------
+
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " ---------------------------------------------------------------------------
 " FileType-specific settings

@@ -254,7 +254,7 @@ fuzzy_edit() {
     dir=$(pwd)
     file=$(cd &&
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
-            fzf --read0 --height=50%) \
+            fzf --read0 --height=50% --layout=reverse) \
     && cd $dir && $EDITOR ~/$file
     printf '\e[5 q'
     if zle; then
@@ -284,7 +284,7 @@ fuzzy_cd() {
     local dir
     dir=$(cd &&
            fd -0 --type d --ignore-file ~/.config/fd/fdignore --hidden |
-           fzf --read0 --height=50%) \
+           fzf --read0 --height=50% --layout=reverse) \
     && cd ~/$dir
     printf '\e[H\e[3J'
     precmd
