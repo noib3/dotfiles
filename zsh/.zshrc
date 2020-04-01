@@ -232,7 +232,7 @@ bindkey '^W' close_window
 
 # Open lf
 open_lf() {
-    lf ~/Dropbox
+    lf ~/Downloads
     yabai -m window --close
 }
 zle -N open_lf

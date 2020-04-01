@@ -40,7 +40,7 @@ cmd make_wallpaper ${{
     osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-map w %{{
+map s %{{
     echo $(du -sh "$f" | awk '{ print $1 }')
 }}
 

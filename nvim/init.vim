@@ -7,6 +7,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+Plug 'drewtempelmeyer/palenight.vim'
 Plug 'unblevable/quick-scope'
 Plug 'farmergreg/vim-lastplace'
 Plug 'vim-pandoc/vim-pandoc'
@@ -28,9 +29,10 @@ set noshowmode
 set clipboard+=unnamedplus
 set fileencoding=utf-8
 set undofile
-set undodir=$HOME/.cache
+set undodir=$HOME/.cache/nvim
 set undolevels=1000
 set undoreload=10000
+set termguicolors
 
 " ---------------------------------------------------------------------------
 " Lets
@@ -62,6 +64,7 @@ nnoremap ss :%s//g<left><left>
 "nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
 
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
+
 nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
@@ -69,13 +72,13 @@ nnoremap <leader>d <C-w><C-l>
 
 " ---------------------------------------------------------------------------
 " Colorscheme
-
-colorscheme gruvbox
+colorscheme palenight
+"colorscheme gruvbox
 
 " Highlight colors
-highlight Comment cterm=italic
-highlight Normal ctermbg=NONE
-highlight visual ctermbg=white ctermfg=Blue
+highlight Comment gui=italic cterm=italic
+highlight Normal guibg=NONE ctermbg=NONE
+highlight visual guifg=#ffffff guibg=#7aa6da ctermbg=white ctermfg=Blue
 highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
 " ---------------------------------------------------------------------------
@@ -90,16 +93,23 @@ let g:lightline = {
       \ }
 
 " ---------------------------------------------------------------------------
-" Quickscope ----------------------------------------------------------------
+" Quickscope
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " ---------------------------------------------------------------------------
-" FileType-specific settings
-
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:!pdflatex %:p<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t> :!pdflatex %:p<CR>
 
+" ---------------------------------------------------------------------------
+" ConTeXt
+autocmd FileType context setlocal shiftwidth=2
+autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
+autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
+
+" ---------------------------------------------------------------------------
 " Markdown
 let g:pandoc#folding#fdc = 0
 autocmd FileType rmd nnoremap <buffer> <C-r> :RMarkdown pdf<cr>
@@ -107,9 +117,11 @@ autocmd FileType rmd inoremap <buffer> <C-r> <esc>:RMarkdown pdf<cr>a
 autocmd FileType rmd setlocal nospell
 autocmd FileType rmd setlocal shiftwidth=2
 
+" ---------------------------------------------------------------------------
 " Yaml
 autocmd FileType yaml setlocal shiftwidth=2
 
+" ---------------------------------------------------------------------------
 " Css
 autocmd FileType css setlocal shiftwidth=2
 
