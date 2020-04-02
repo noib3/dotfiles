@@ -100,8 +100,8 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 " ---------------------------------------------------------------------------
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:!pdflatex %:p<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t> :!pdflatex %:p<CR>
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:!arara %:p<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t> :!arara %:p<CR>
 
 " ---------------------------------------------------------------------------
 " ConTeXt

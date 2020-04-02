@@ -90,15 +90,15 @@ bindkey -M vicmd '^U' backward-kill-line
 function zle-keymap-select() {
     if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]] || [[ $KEYMAP = '' ]]; then
         echo -ne '\e[5 q'
-        RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
+        #RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
     elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
         local active=${REGION_ACTIVE:-0}
-        if [[ $active = 1 ]] || [[ $active = 2 ]]; then
-            RPROMPT="${vcs_info_msg_0_}  %F{$vi_visl_clr}[V]%f"
-        else
-            RPROMPT="${vcs_info_msg_0_}  %F{$vi_norm_clr}[N]%f"
-        fi
+        #if [[ $active = 1 ]] || [[ $active = 2 ]]; then
+        #    RPROMPT="${vcs_info_msg_0_}  %F{$vi_visl_clr}[V]%f"
+        #else
+        #    RPROMPT="${vcs_info_msg_0_}  %F{$vi_norm_clr}[N]%f"
+        #fi
     fi
     zle reset-prompt
 }
@@ -202,7 +202,8 @@ repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 precmd() {
     vcs_info
     echo -ne '\e[5 q'
-    RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
+    #RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
+    RPROMPT="${vcs_info_msg_0_}"
 }
 
 PROMPT='%F{$reg_dir_clr}%1~ %F{$reg_div_clr}>%f '
