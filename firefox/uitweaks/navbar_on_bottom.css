@@ -11,7 +11,7 @@
 
 #nav-bar-customization-target{ flex-grow: 1; }
 
-/* Search results above nav bar */
+/* Search results above navbar */
 .urlbarView{
   border-width: 0 !important;
 }
