@@ -1,12 +1,4 @@
-/* Variables */
 :root{
-  --text-color: #ebebeb;
-  --focused-tab-color: #626262;
-  --unfocused-tab-color: #393939;
-  --urlbar-color: #393939;
-  --popup-menu-color: #393939;
-  /*--tab-divider-color: #4bc24d;*/
-  --tab-divider-color: #6f435d;
   --lwt-accent-color: var(--tab-divider-color) !important;
   --sidebar-text-color: var(--text-color) !important;
 }
@@ -28,6 +20,7 @@
 .tabbrowser-tab::after{
   visibility: hidden !important;
 }
+
 #navigator-toolbox{
   --tabs-border-color: var(--tab-divider-color) !important;
 }
@@ -44,14 +37,14 @@
   background-color: var(--urlbar-color) !important;
 }
 
-/* Overflow button in urlbar */
-#nav-bar-overflow-button{
+/* Downloads button in urlbar */
+#downloads-button{
   color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
 }
 
-/* Downloads button in urlbar */
-#downloads-button{
+/* Overflow button in urlbar */
+#nav-bar-overflow-button{
   color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
 }
@@ -62,23 +55,8 @@
   background-color: var(--popup-menu-color) !important;
 }
 
-/* Disable overflow button opacity when firefox isn't focused */
+/* Disable overflow button opacity change when firefox isn't focused */
 .toolbarbutton-1:not(:hover):-moz-window-inactive,
-:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"] {
+:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"]{
   opacity: 1 !important;
-}
-
-/* Sidebar */
-.sidebar-placesTreechildren{
-  /*border-right: 2px solid var(--sidebar-border-colorz);
-  border-bottom: 2px solid var(--sidebar-border-colorz);*/
-  padding-top: 5px !important;
-}
-
-#sidebar-header{
-  padding-top: 3px !important;
-  padding-bottom: 3px !important;
-  /*border-bottom: 2px solid #00ff00;
-  border-top: 2px solid var(--sidebar-border-colorz);
-  border-right: 2px solid var(--sidebar-border-colorz);*/
 }

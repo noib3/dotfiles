@@ -52,6 +52,7 @@ map m
 
 map <c-w> quit
 map <enter> shell
+map <esc> clear
 map d delete
 map x cut
 map ej eject

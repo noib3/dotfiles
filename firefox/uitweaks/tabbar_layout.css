@@ -1,9 +1,9 @@
-:root {
+:root{
   --tab-min-height: 1.4em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
 }
 
-#TabsToolbar {
+#TabsToolbar{
   height: var(--tab-min-height) !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -29,6 +29,7 @@
   line-height: 1.4em !important;
 }
 
+/* Favicon */
 .tab-icon-image{
   margin-top: 0 !important;
   margin-bottom: 1px !important;
@@ -37,24 +38,16 @@
   width: 1em !important;
 }
 
+/* Page loading animation */
 .tab-throbber{
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
+/* Speaker icon when audio is playing */
 .tab-icon-sound{
   margin-top: 1px !important;
   margin-bottom: 1px !important;
   height: 1em !important;
   width: 1em !important;
 }
-
-/*
-@14px font-size & 1.4em
-.tab-content    margin-bottom: -2px
-.tab-icon-image margin-bottom: 1px
-
-@17px font-size & 1.4em
-.tab-content    margin-bottom: -2px
-.tab-icon-image margin-bottom: 1px
-*/

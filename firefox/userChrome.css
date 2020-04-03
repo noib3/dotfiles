@@ -1,23 +1,19 @@
 /* ------------------------- FIREFOX CONFIG FILE ------------------------- */
 
-/* ----------------------------------------------------------------------- */
 /* Font */
-
 @import url("/Users/noibe/.config/firefox/fonts/iosevka.css");
 
-/* ----------------------------------------------------------------------- */
 /* Colorscheme */
+@import url("/Users/noibe/.config/firefox/colors/themes/magenta-divider.css");
+@import url("/Users/noibe/.config/firefox/colors/colors.css");
 
-@import url("/Users/noibe/.config/firefox/colors/greyscale.css");
-
-/* ----------------------------------------------------------------------- */
 /* UI Tweaks */
-
 @import url("/Users/noibe/.config/firefox/uitweaks/remove_bloat.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/full_width_tabs.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/numbered_tabs.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/tab_bar_layout.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/tabbar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/navbar_layout.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/sidebar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_bottom.css");
-@import url("/Users/noibe/.config/firefox/uitweaks/nav_bar_on_hover.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/navbar_on_bottom.css");
+@import url("/Users/noibe/.config/firefox/uitweaks/navbar_on_focus.css");
