@@ -41,7 +41,7 @@ cmd make_wallpaper ${{
 }}
 
 map s %{{
-    echo $(du -sh "$f" | awk '{ print $1 }')
+    echo $(sudo du -sh "$f" | awk '{ print $1 }')
 }}
 
 # ---------------------------------------------------------------------------
