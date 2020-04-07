@@ -200,7 +200,7 @@ bindkey '^X^T' term_config
 # Use fd/fzf combo to edit a file..
 fuzzy_edit() {
     dir=$(pwd)
-    file=$(cd ~ &&
+    file=$(cd &&
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50% --layout=reverse) \
     && cd $dir && $EDITOR ~/$file
@@ -215,7 +215,7 @@ bindkey '^X^E' fuzzy_edit
 # ..search a file..
 fuzzy_search() {
     dir=$(pwd)
-    file=$(cd ~ &&
+    file=$(cd &&
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50% --layout=reverse) \
     && cd $dir && LBUFFER="$LBUFFER~/$file "
@@ -229,7 +229,7 @@ bindkey '^S' fuzzy_search
 # ..or to change directory
 fuzzy_cd() {
     local dir
-    dir=$(cd ~ &&
+    dir=$(cd &&
            fd -0 --type d --ignore-file ~/.config/fd/fdignore --hidden |
            fzf --read0 --height=50% --layout=reverse) \
     && cd ~/$dir
