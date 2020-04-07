@@ -1,0 +1,121 @@
+1. Disable SIP (can't be done via script, has to be done manually)
+2. Download homebrew
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+3. Enable tab to click
+     System Preferences -> Trackpad -> Check 'Tap to click'
+4. Make brew casks available
+     brew tap caskroom/cask
+5. Download firefox
+     brew cask install firefox
+6. Add battery percentage to menu bar
+     Click battery icon in menu bar -> Show Percentage
+7. Remove input sources in menu bar
+     System Preferences -> Keyboard -> Input Sources -> Uncheck 'Show Input menu in menu bar'
+8. Show Bluetooth in menu bar
+     System Preferences -> Bluetooth -> Check 'Show Bluetooth in menu bar'
+9. Manually put bluetooth icon between Wi-Fi and battery in menu bar
+10. Disable Gatekeeper (pt 1)
+      sudo spctl --master-disable; defaults write com.apple.LaunchServices LSQuarantine -bool false
+11. Open firefox without being prompted for dialog
+      sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
+12. Edit sudoers file to uso sudo without password
+      echo "noibe ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+13. Download bitwarden firefox extension
+14. Sign in to gmail to get bitwarden master password
+15. Remove apps from dock
+      defaults write com.apple.dock recent-apps -array
+      defaults write com.apple.dock persistent-apps -array
+      killall Dock
+16. Remove downloads folder from Dock
+      Right click downloads folder -> Options -> Remove from Dock
+17. Keep programs out of dock
+      System Preferences -> Dock -> Uncheck 'Show recent applications in Dock'
+18. Show Dock on hover only
+      System Preferences -> Dock -> Uncheck 'Automatically hide and show the Dock'
+19. Hide Dock
+      defaults write com.apple.dock autohide-delay -float 1000
+      killall Dock
+20. Show menu bar on hover only
+      System Preferences -> General -> Check 'Automatically hide and show the menu bar'
+21. Change key repeat and initial key repeat
+      defaults write -g InitialKeyRepeat -int 10
+      defaults write -g KeyRepeat -int 10
+22. Don't rearrange spaces
+      System Preferences -> Mission Control -> Uncheck 'Automatically rearrange Spaces based on most recent use'
+23. Remove everything from notifications 'Today' page
+24. Remove public folder from home folder
+      sudo rm -rf Public
+25. Install programs
+      brew install zsh entr calcurse fd git lf nvim tmux transmission-cli redshift coreutils koekeishiya/formulae/yabai koekeishiya/formulae/skhd fzf zsh-autosuggestions zsh-syntax-highlighting
+      brew cask install alacritty
+26. Change shell to zsh
+      sudo sh -c 'echo /usr/local/bin/zsh >> /etc/shells'
+      chsh -s /usr/local/bin/zsh
+27. Install vim-plug
+      curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+28. Install dropbox
+      brew cask install dropbox
+29. Allow skhd and yabai accessibility permission
+30. Key repeat
+      System Preferences -> Keyboard -> Key repeat both to max
+31. Allow dropbox accessibility permissions
+32. Link greyscale vim lightline
+33. Set correct time
+      System Preferences -> Date and time -> Time Zone -> select time zone
+34. Compaudit
+      compaudit
+      sudo chmod -R 755 the top directory of each compaudit (in my case it returned the directoryies /usr/local/share/zsh and /usr/local/share/zsh/site-functions, so sudo chmod -R 755 /usr/local/share/zsh was enough)
+35. Login firefox
+36. firefox about:config options
+37. load firefox config
+    cd ~/Library/Application\ Support/Firefox/Profiles/*-release/
+    mkdir chrome && cd chrome
+    ln -s ~/.config/firefox/userChrome.css
+    ln ~/.config/firefox/userContent.css
+38. Install iosevka nerd font
+      brew cask install font-iosevka-nerd-font
+39. Install ssh
+      brew install openssh
+40. download scripts folder
+     git clone https://github.com/n0ibe/scripts
+41. create ssh key for github
+    ssh-keygen -t rsa -C "riccardo.mazzarini98@gmail.com"
+# copy the content of ~/.ssh/id_rsa.pub, go to github -> settings -> ssh and gpg keys -> new ssh key -> paste
+# answer 'yes' to
+ssh -T git@github.com
+# go to the repository on github, close or download -> use ssh url, copy that url and paste it in <git_repo>/.git/config under [remote "origin"]
+42. download calcurse
+      git clone https://github.com/n0ibe/calcurse
+      mv calcurse ~/.local/share/
+43. remove finder and trash from dock
+      sudo mount -uw /
+      killall Finder (maybe not necessary)
+      sudo nvim /System/Library/CoreServices/Dock.app/Contents/Resources/DockMenus.plist
+      find the sections 'finder-quit', 'finder-running', 'trash' and add a new entry
+      <dict>
+          <key>command</key>
+          <integer>1004</integer>
+          <key>name</key>
+          <string>REMOVE_FROM_DOCK</string>
+      </dict>
+44. link at login files
+      cd /Library/LaunchDaemons
+      sudo ln -s ~/scripts/@login/Odourless/odourless-daemon.plist
+      launchctl load /Library/LaunchDaemons/odourless-daemon.plist
+      reboot and test if it works
+45. rm ~/.config/zsh/.zsh-history ~/.CFUserTextEncoding ~/.viminfo ~/.zsh-history
+46. make zsh history dir
+      mkdir ~/.cache/zsh
+47. link login files
+    cd ~/Library/LaunchAgents
+    ln -s ~/scripts/@login/....plist
+    launchctl load ./*.plist
+48. disable remove from dock sound
+        System Preferences -> Sound -> Uncheck 'Play user interface sound effects'
+49. install texlive
+      brew cask install mactex-no-gui
+50. install ndiet
+      mkdir ~/bin && cd ~/bin
+      git clone https://github.com/n0ibe/ndiet
+      pip3 install pyfiglet
+      pip3 install docopt
