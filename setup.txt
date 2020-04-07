@@ -119,3 +119,41 @@ ssh -T git@github.com
       git clone https://github.com/n0ibe/ndiet
       pip3 install pyfiglet
       pip3 install docopt
+      pip3 install gkeepapi
+51. remove everything inside useless folders (this should be done at the beginning)
+     rm Desktop/* Documents/* Downloads/* Movies/* Music/* Pictures/* .Trash/*
+52. install speedtest
+      brew install speedtest-cli
+53. rename host
+      sudo scutil --set ComputerName "MBAir" LocalHostname "MBAir" HostName "MBAir"
+54. for every git folder downloaded, edit the remote origin url in the git config file to be of the form git@github.com:n0ibe/<repo_name>.git
+55. load vimium c config file
+56. Finder
+    defaults write com.apple.finder QuitMenuItem -bool true; killall Finder
+    Preferences -> Uncheck 'External disks' and 'CDs, DVDs and iPods'
+    Preferences -> New Finder windows show home
+    Delete all Tags
+    Remove Documents Desktop Recents Airdrop from Sidebar
+    Add ~ and .config to sidebar
+    Order sidebar folders with Applications on top
+    brew cask install mysides
+    mysides add dotfiles file:///Users/noibe/.config to add config folder, also options to list and remove folders from favourites in finder sidebar
+    tags can be deleted from preferences -> tags
+    stuff can be removed from sidebar via preferences -> sidebar
+    preferences -> advanced to show filename extensions, dont show warnings
+    show view options -> group by name sort by name -> use as defaults
+57. Attach an external display and rearrange so that the external is the main one
+58. download logitech options
+      brew tap homebrew/cask-drivers
+      brew cask install logitech-options (have to reboot for it to take effect)
+      allow accessibility to logitech options (have to select it manually clicking on +)
+59. install lf previews
+      brew install mediainfo highlight
+      brew cask install pdftotext
+60. install skim
+      preferences -> Sync -> Check 'check for file changes' and 'reload automatically'
+61. use skim as default pdf viewer
+      right click on a pdf file -> get info -> open with: skim.app -> change all
+62. debloat skim
+      skim -> view -> hide contents pane and notes pane, toogle toolbar
+      skim -> preferences -> general -> remember lat page viewed
