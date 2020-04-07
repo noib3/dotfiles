@@ -28,13 +28,13 @@ cmd + shift - n : \
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - n\"";\
     open -na /Applications/Alacritty.app
 
-# Let 'Cmd + b' unaltered to firefox to open bookmarks sidebar
+# Let cmd - b unaltered to firefox to open bookmarks sidebar
 cmd - b [
     *          : open -na /Applications/Firefox.app
     "Firefox"  ~
 ]
 
-# Disable 'Cmd + s' in firefox
+# Disable cmd - s in firefox
 cmd - s [
     "Firefox"  : false
 ]
