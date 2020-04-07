@@ -1,5 +1,6 @@
-#!/bin/sh
-# needs to be chmodded
+#!/usr/bin/env sh
+
+# needs to be executable
 
 case "$1" in
     *.png|*.jpg|*.jpeg|*.mp4|*.mkv) mediainfo "$1";;

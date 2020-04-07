@@ -1,16 +1,12 @@
-# -------------------------- ALACRITTY CONFIG FILE --------------------------
+# ---------------------- ALACRITTY CONFIG FILE ----------------------
 
-# ---------------------------------------------------------------------------
 # Set the login shell
-
 shell:
   program: /usr/local/bin/zsh
   args:
     - --login
 
-# ---------------------------------------------------------------------------
 # Font
-
 font:
   normal:
     family: Iosevka Nerd Font
@@ -18,9 +14,7 @@ font:
   offset:
     y: 1
 
-# ---------------------------------------------------------------------------
 # Colorscheme
-
 schemes:
   pers: &pers
     primary:
@@ -35,19 +29,15 @@ schemes:
 
 colors: *pers
 
-# ---------------------------------------------------------------------------
-# Misc
-
+# Use bright cols for bold chars
 draw_bold_text_with_bright_colors: true
 
+# Window layout
 window:
   decorations: buttonless
   padding:
     x: 20
     y: 15
-
-# ---------------------------------------------------------------------------
-# Set keybindings
 
 key_bindings:
   # Alacritty actions

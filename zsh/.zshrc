@@ -1,22 +1,15 @@
-# ----------------------------- ZSH CONFIG FILE -----------------------------
+# ------------------------- ZSH CONFIG FILE -------------------------
 
-# sudo touch /etc/zshenv && echo "export ZDOTDIR=~/.config/zsh" | sudo tee /etc/zshenv >/dev/null
-# to load config file in this non-standard location
-
-# ---------------------------------------------------------------------------
 # Set/unset shell options
-
-setopt PROMPT_SUBST
-setopt MENU_COMPLETE
-setopt AUTO_CD
 setopt HISTIGNOREDUPS
+setopt MENU_COMPLETE
+setopt PROMPT_SUBST
 setopt IGNORE_EOF
+setopt AUTO_CD
 unsetopt CASE_GLOB
 unsetopt BEEP
 
-# ---------------------------------------------------------------------------
-# Set the $PATH env variable
-
+# Set PATH
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/python@3.8/bin
@@ -27,11 +20,8 @@ PATH=$PATH:/bin
 PATH=$PATH:/sbin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/opt/X11/bin
-PATH=$PATH:$HOME/Scripts
 
-# ---------------------------------------------------------------------------
 # Export env variables
-
 export PATH
 export VISUAL=nvim
 export EDITOR=$VISUAL
@@ -49,27 +39,19 @@ export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
 export LS_COLORS='no=90:di=01;34:ex=01;32:ln=35:mh=31:*.mp3=33:*.md=04;93:*.ttf=95:*.otf=95:*.png=04;92:*.jpg=04;92'
 export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
-# ---------------------------------------------------------------------------
-# Colors
-
-# Regular
+# Directory and divider colors in prompt
 reg_dir_clr=#e1e1e1
 reg_div_clr=#e69ab7
 
-# Vi mode
-vi_inst_clr=#9ec400
-vi_norm_clr=#7aa6da
-vi_visl_clr=#b77ee0
+# Visual mode colors
 vi_visl_bg=#7aa6da
 vi_visl_fg=#ffffff
 
-# Git info
+# Git info colors
 git_main_clr=#ede845
 git_onbr_clr=#bbbbbb
 
-# ---------------------------------------------------------------------------
 # Enable vi mode
-
 bindkey -v
 
 # mode switching delay in hundredths of a second (default is 40)
@@ -85,47 +67,21 @@ bindkey -M vicmd '^A' beginning-of-line
 bindkey -M vicmd '^E' end-of-line
 bindkey -M vicmd '^U' backward-kill-line
 
+# background and foreground colors in visual and v-block modes
+zle_highlight=(region:bg=$vi_visl_bg,fg=$vi_visl_fg)
+
 # change cursor shape depending on vi mode
 # zle-keymap-select is executed everytime the mode changes
 function zle-keymap-select() {
     if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]] || [[ $KEYMAP = '' ]]; then
         echo -ne '\e[5 q'
-        #RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
     elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
-        local active=${REGION_ACTIVE:-0}
-        #if [[ $active = 1 ]] || [[ $active = 2 ]]; then
-        #    RPROMPT="${vcs_info_msg_0_}  %F{$vi_visl_clr}[V]%f"
-        #else
-        #    RPROMPT="${vcs_info_msg_0_}  %F{$vi_norm_clr}[N]%f"
-        #fi
     fi
     zle reset-prompt
 }
 zle -N zle-keymap-select
 
-ciao(){
-    zle visual-mode
-    zle zle-keymap-select
-}
-zle -N ciao
-bindkey -M vicmd 'v' ciao
-
-come(){
-    zle deactivate-region
-    zle zle-keymap-select
-}
-zle -N come
-bindkey -M visual '^[' come
-
-# ciao() {
-#    #echo -ne '\e[5 q'
-#    #echo 'ciao'
-#    #RPROMPT="%F{$vi_inst_clr}[I]%f"
-#}
-#
-## these functions are called after precmd
-#precmd_functions+=(ciao)
 
 # stripped down version of the vim-surround plugin implementation
 # taken from 'https://github.com/softmoth/zsh-vim-mode'
@@ -188,12 +144,7 @@ vim-mode-bindkey vicmd  -- delete-surround ds
 vim-mode-bindkey vicmd  -- add-surround    ys
 vim-mode-bindkey visual -- add-surround    S
 
-# background and foreground in vi visual and v-block modes
-zle_highlight=(region:bg=$vi_visl_bg,fg=$vi_visl_fg)
-
-# ---------------------------------------------------------------------------
 # Format prompt, with custom format for git directories
-
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats '%F{$git_main_clr}$(repo) %F{$git_onbr_clr}on %F{$git_main_clr} %b%f'
@@ -202,24 +153,18 @@ repo() { basename $(git remote get-url origin) | sed 's/.git//' }
 precmd() {
     vcs_info
     echo -ne '\e[5 q'
-    #RPROMPT="${vcs_info_msg_0_}  %F{$vi_inst_clr}[I]%f"
     RPROMPT="${vcs_info_msg_0_}"
 }
 
 PROMPT='%F{$reg_dir_clr}%1~ %F{$reg_div_clr}>%f '
 
-# ---------------------------------------------------------------------------
 # Tab Autocompletion
-
 autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zmodload zsh/complist
 _comp_options+=(globdots)
-
-# ---------------------------------------------------------------------------
-# Key Bindings
 
 # Unbind 'Ctrl + S'
 stty -ixon
@@ -234,7 +179,9 @@ bindkey '^W' close_window
 # Open lf
 open_lf() {
     lf ~/Downloads
-    yabai -m window --close
+    if zle; then
+        yabai -m window --close
+    fi
 }
 zle -N open_lf
 bindkey '^X^F' open_lf
@@ -250,7 +197,7 @@ term_config() {
 zle -N term_config
 bindkey '^X^T' term_config
 
-# Use fd/fzf combo to edit a file, ...
+# Use fd/fzf combo to edit a file..
 fuzzy_edit() {
     dir=$(pwd)
     file=$(cd &&
@@ -265,7 +212,7 @@ fuzzy_edit() {
 zle -N fuzzy_edit
 bindkey '^X^E' fuzzy_edit
 
-# ...to search a file, ...
+# ..search a file..
 fuzzy_search() {
 #    dir=$(pwd)
 #    file=$(cd &&
@@ -280,7 +227,7 @@ fuzzy_search() {
 zle -N fuzzy_search
 bindkey '^S' fuzzy_search
 
-# ...or to change directory
+# ..or to change directory
 fuzzy_cd() {
     local dir
     dir=$(cd &&
@@ -309,50 +256,37 @@ ndiet_current(){
 zle -N ndiet_current
 bindkey '^X^N' ndiet_current
 
-# ---------------------------------------------------------------------------
-# Aliases
-
-# Cli aliases for GUI programs
+# Aliases for GUI programs
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
-# Specify particular program behaviour
+# Aliases to always specify program options
 alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias grep='grep --color=auto'
-alias tree='tree -N'
+alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
+alias grep='grep --color=auto'
+alias tree='tree -N'
 
-# Custom scripts
+# Aliases for user scripts
+alias -g 2d2small='~/Dropbox/2d2small/2d2small.sh'
 alias -g ndiet='~/Bin/ndiet/ndiet.py'
-alias -g 2d2small='~/Bin/2d2small/2d2small.sh'
-alias -g tfin='~/Scripts/tfin/tfin.sh'
-alias -g peek='peek.py'
-alias -g ufetch='ufetch.sh'
-alias -g colortest='colortest.sh'
-alias -g tmd='tmd.sh'
-alias -g Omega='Omega.py'
-alias -g ffls='ffls.sh'
-alias -g committed='committed.sh'
-alias -g lscolors='for i in {1..256}; do print -P "%F{$i}Color : $i"; done;'
 
-# Misc
-alias gpom='git push origin master'
-alias ytdlmp3='youtube-dl --extract-audio --audio-format mp3'
+alias -g committed='~/scripts/committed.sh'
+alias -g ufetch='~/scripts/ufetch.sh'
+alias -g peek='~/scripts/peek.py'
 
-# ---------------------------------------------------------------------------
+alias -g tfin='~/scripts/retired/tfin/oldtfin.sh'
+alias -g Omega='~/scripts/retired/Omega.py'
+alias -g tmd='~/scripts/retired/tmd.sh'
+
 # Transmission
-
 trl() { transmission-remote --list }
 tra() { transmission-remote --add "$1" }
 trst() { transmission-remote --torrent "$1" --start }
 trsp() { transmission-remote --torrent "$1" --stop }
 trr() { transmission-remote --torrent "$1" --remove }
 trp() { transmission-remote --torrent "$1" --remove-and-delete }
-
-# ---------------------------------------------------------------------------
-# Misc
 
 # 'c' to clear the screen, remove the scrollback and clear the editing buffer
 # the alias is just to make the 'c' green with zsh-syntax-highlighting
@@ -363,13 +297,8 @@ accept-line() case $BUFFER in
 esac
 zle -N accept-line
 
-# ---------------------------------------------------------------------------
-# Source additional files
-
 # brew install zsh-autosuggestions
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"
-ZSH_AUTOSUGGEST_STRATEGY=(history completion match_prev_cmd)
 
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

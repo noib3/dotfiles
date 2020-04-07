@@ -1,41 +1,39 @@
-# ----------------------------- LF CONFIG FILE ------------------------------
+# ------------------------- LF CONFIG FILE --------------------------
 
-# ---------------------------------------------------------------------------
 # Boolean valued options
-
-set color256 on
 set ignorecase on
+set color256 on
 set hidden on
 
-# ---------------------------------------------------------------------------
 # String valued options
-
-set previewer "~/.config/lf/previewer.sh"
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
-set timefmt ""
+set previewer "~/.config/lf/previewer.sh"
 set ratios "1:2:3"
-set ifs " "
 set filesep " "
+set timefmt ""
+set ifs " "
 
-# ---------------------------------------------------------------------------
 # Custom commands
-
 cmd open ${{
     for v in "$fx"; do
         case $(file --mime-type "$v" -b) in
-            text/*) $EDITOR "$v";;
-            *) open "$v" &>/dev/null;;
+            text/*)
+                $EDITOR "$v"
+                ;;
+            *)
+                open "$v" &>/dev/null
+                ;;
         esac
     done
 }}
 
-cmd eject ${{
+map ej ${{
     for v in "$fx"; do
         diskutil eject "$v" &>/dev/null
     done
 }}
 
-cmd make_wallpaper ${{
+map mw ${{
     osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
     osascript -e 'quit app "Finder"' &>/dev/null
 }}
@@ -44,9 +42,7 @@ map s %{{
     echo $(sudo du -sh "$f" | awk '{ print $1 }')
 }}
 
-# ---------------------------------------------------------------------------
 # Key mappings
-
 map e
 map m
 
@@ -55,15 +51,13 @@ map <enter> shell
 map <esc> clear
 map d delete
 map x cut
-map ej eject
-map mw make_wallpaper
 
+map gdl cd "~/Downloads"
 map gvl cd "/Volumes"
 map gnf cd "~/.config"
-map gdl cd "~/Downloads"
-map gdr cd "~/Downloads"
+map gtm cd "~/Library/texmf"
+map gdr cd "~/Dropbox"
 map gun cd "~/Dropbox/Uni/III"
 map gss cd "~/Dropbox/Screenshots"
-map gwp cd "~/Dropbox/Themes/Wallpapers"
 map glg cd "~/Dropbox/Fitness/logs"
-map gtm cd "~/Library/texmf"
+map gwp cd "~/Dropbox/Themes/Wallpapers"

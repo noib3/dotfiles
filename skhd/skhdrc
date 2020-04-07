@@ -1,11 +1,9 @@
-# ---------------------------- SKHD CONFIG FILE -----------------------------
+# ------------------------ SKHD CONFIG FILE -------------------------
 
-# ---------------------------------------------------------------------------
-# Manage programs
-
+# Open alacritty
 cmd - return: open -na /Applications/Alacritty.app
 
-# open lf
+# Open alacritty with lf running
 cmd - f : \
     yabai -m signal --add \
              label=float_next \
@@ -14,7 +12,6 @@ cmd - f : \
                      SPAWN_ID=$(yabai -m query --windows | jq -r ".[] | select(.pid==$YABAI_PROCESS_ID).id");\
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - f\"";\
     open -na /Applications/Alacritty.app
-
 
 # Show current diet on a borderless, centered, floating window
 cmd + shift - n : \
@@ -42,9 +39,6 @@ cmd - s [
     "Firefox"  : false
 ]
 
-# ---------------------------------------------------------------------------
-# Manage windows and spaces
-
 # Extend same focus-switching keys to tmux panes
 # Fuck this, I don't think you can do it properly
 #alt - up [
@@ -64,11 +58,13 @@ cmd - s [
 #    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_right}') -ne 1 ]; then tmux select-pane -R; else yabai -m window --focus east; fi
 #]
 
+# Switch focus
 alt - up: yabai -m window --focus north
 alt - down: yabai -m window --focus south
 alt - left: yabai -m window --focus west
 alt - right: yabai -m window --focus east
 
+# Resize
 alt - h: yabai -m window --resize left:-25:0
 alt - j: yabai -m window --resize bottom:0:25
 alt - k: yabai -m window --resize top:0:-25
@@ -79,34 +75,39 @@ ctrl - j: yabai -m window --resize top:0:25
 ctrl - k: yabai -m window --resize bottom:0:-25
 ctrl - l: yabai -m window --resize left:25:0
 
+# Swap windows
 ctrl - up: yabai -m window --swap north
 ctrl - down: yabai -m window --swap south
 ctrl - left: yabai -m window --swap west
 ctrl - right: yabai -m window --swap east
 
+# Focus space
 alt - 1: yabai -m space --focus 1
 alt - 2: yabai -m space --focus 2
 alt - 3: yabai -m space --focus 3
 alt - 4: yabai -m space --focus 4
 
+# Mirror, rotate, balance space
 alt - x: yabai -m space --mirror x-axis
 alt - y: yabai -m space --mirror y-axis
 alt - r: yabai -m space --rotate 90
 alt - b: yabai -m space --balance
 
+# Create, destroy, move space
 alt - w: yabai -m space --destroy && yabai -m space --focus prev
 alt - n: yabai -m space --create && yabai -m space --focus last
 alt - q: yabai -m space --move prev
 alt - p: yabai -m space --move next
 
+# Move window to space and follow focus
 alt + cmd - 1: yabai -m window --space 1 && yabai -m space --focus 1
 alt + cmd - 2: yabai -m window --space 2 && yabai -m space --focus 2
 alt + cmd - 3: yabai -m window --space 3 && yabai -m space --focus 3
 alt + cmd - 4: yabai -m window --space 4 && yabai -m space --focus 4
+
+# Move window to new space and follow focus
 alt + cmd - n: yabai -m space --create && yabai -m window --space last && yabai -m space --focus last
 
-# ---------------------------------------------------------------------------
 # Take screenshots
-
 shift + cmd - 3: screencapture ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
 shift + cmd - 4: screencapture -i ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@_/;s/:/./g;s/-/:/g').png

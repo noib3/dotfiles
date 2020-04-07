@@ -164,8 +164,19 @@ ssh -T git@github.com
 64. tell transmission to run script when torrent is done
       transmission-remote --torrent-done-script ~/.config/transmission/notify-done.sh
 65. login youtube, switch account and enable dark mode and english
-66. dropbox -> preferences -> check 'open the desktop app when starting dropbox'
-67. brew install terminal-notifier
-68. Allow terminal-notifier notifications
-69. System Preferences -> Energy Saver -> never computer and display sleep for battery and power adapter
-70. System Preferences -> Energy Saver -> Uncheck 'put hard disks to spleep when possible' and 'slightly dim the display while on battery power'
+66. brew install terminal-notifier
+67. Allow terminal-notifier notifications
+68. System Preferences -> Energy Saver -> never computer and display sleep for battery and power adapter
+69. System Preferences -> Energy Saver -> Uncheck 'put hard disks to spleep when possible' and 'slightly dim the display while on battery power'
+70. Logitech options -> zoom with wheel,
+    Logitech options -> Point & Scroll -> Scroll direction -> Natural, Thumb wheel direction -> Inverted
+    set pointer and scrolling speed
+    Smooth scrolling -> disabled
+71. System Preferences -> Desktop & Screen Saver -> Screen Saver -> Start after: Never
+72. System Preferences -> Date and Time -> Clock -> Date Options check 'show the day of the week'
+73. sudo touch /etc/zshenv && echo "export ZDOTDIR=~/.config/zsh" | sudo tee /etc/zshenv >/dev/null
+74. brew install tree
+75. mkdir ~/.cache/python
+75. mkdir ~/.cache/less
+
+osascript -e 'tell app "System Events" to restart'

@@ -1,13 +1,9 @@
-# ---------------------------- YABAI CONFIG FILE ----------------------------
+# ------------------------ YABAI CONFIG FILE ------------------------
 
-# ---------------------------------------------------------------------------
 # Bar settings
-
 yabai -m config status_bar                      off
 
-# ---------------------------------------------------------------------------
 # Global settings
-
 yabai -m config mouse_follows_focus             off
 yabai -m config focus_follows_mouse             off
 yabai -m config window_placement                second_child
@@ -28,9 +24,7 @@ yabai -m config mouse_modifier                  ctrl
 yabai -m config mouse_action1                   move
 yabai -m config mouse_action2                   resize
 
-# ---------------------------------------------------------------------------
 # Space settings
-
 yabai -m config layout                          bsp
 yabai -m config top_padding                     33
 yabai -m config bottom_padding                  33
@@ -38,15 +32,14 @@ yabai -m config left_padding                    33
 yabai -m config right_padding                   33
 yabai -m config window_gap                      18
 
-# ---------------------------------------------------------------------------
-# Rules
-
-yabai -m rule --add app="^System Preferences$" manage=off
-yabai -m rule --add app="^Disk Utility$" manage=off
-yabai -m rule --add app="^Activity Monitor$" manage=off
-yabai -m rule --add app="^Calculator$" manage=off
+# Unmanaged programs
 yabai -m rule --add app="^Digital Colour Meter$" manage=off
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^Activity Monitor$" manage=off
 yabai -m rule --add app="^Keychain Access$" manage=off
+yabai -m rule --add app="^Disk Utility$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
 
+# Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on

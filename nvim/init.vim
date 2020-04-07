@@ -1,25 +1,15 @@
-" --------------------------- NEOVIM CONFIG FILE ----------------------------
+" ----------------------- NEOVIM CONFIG FILE ------------------------
 
-" ---------------------------------------------------------------------------
 " Plugins
-
 call plug#begin('~/.config/nvim/plugged')
 Plug 'jiangmiao/auto-pairs'
-Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
 Plug 'drewtempelmeyer/palenight.vim'
-Plug 'unblevable/quick-scope'
 Plug 'farmergreg/vim-lastplace'
-Plug 'vim-pandoc/vim-pandoc'
-Plug 'vim-pandoc/vim-pandoc-syntax'
-Plug 'vim-pandoc/vim-rmarkdown'
-Plug 'terryma/vim-smooth-scroll'
 Plug 'tpope/vim-surround'
 call plug#end()
 
-" ---------------------------------------------------------------------------
 " Basic settings
-
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -34,16 +24,12 @@ set undolevels=1000
 set undoreload=10000
 set termguicolors
 
-" ---------------------------------------------------------------------------
 " Lets
-
 let mapleader=","
 let g:is_posix=1
 let g:netrw_home=$HOME.'/.cache/nvim'
 
-" ---------------------------------------------------------------------------
 " Key mappings
-
 nnoremap <C-s> :w<cr>
 inoremap <C-s> <esc>:w<cr>a
 nnoremap <C-w> :q<cr>
@@ -56,24 +42,17 @@ nnoremap <C-e> g_
 vnoremap <C-e> g_
 inoremap <C-e> <esc>g_a
 
-nnoremap <C-g> g<C-g>
-
-nnoremap ss :%s//g<left><left>
-
-"nnoremap <silent> <C-u> :call smooth_scroll#up(10, 10, 1)<cr>
-"nnoremap <silent> <C-d> :call smooth_scroll#down(10, 10, 1)<cr>
-
-nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
-
 nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
 
-" ---------------------------------------------------------------------------
+nnoremap ss :%s//g<left><left>
+
+nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
+
 " Colorscheme
 colorscheme palenight
-"colorscheme gruvbox
 
 " Highlight colors
 highlight Comment gui=italic cterm=italic
@@ -81,9 +60,7 @@ highlight Normal guibg=NONE ctermbg=NONE
 highlight visual guifg=#ffffff guibg=#7aa6da ctermbg=white ctermfg=Blue
 highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
-" ---------------------------------------------------------------------------
 " Lightline
-
 let g:lightline = {
       \ 'colorscheme': 'greyscale',
       \ 'active': {
@@ -92,41 +69,21 @@ let g:lightline = {
       \ }
       \ }
 
-" ---------------------------------------------------------------------------
-" Quickscope
-
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
-" ---------------------------------------------------------------------------
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
 autocmd FileType tex inoremap <buffer> <C-t> <esc>:!arara %:p<CR>a
 autocmd FileType tex nnoremap <buffer> <C-t> :!arara %:p<CR>
 
-" ---------------------------------------------------------------------------
 " ConTeXt
 autocmd FileType context setlocal shiftwidth=2
 autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
 autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
 
-" ---------------------------------------------------------------------------
-" Markdown
-let g:pandoc#folding#fdc = 0
-autocmd FileType rmd nnoremap <buffer> <C-r> :RMarkdown pdf<cr>
-autocmd FileType rmd inoremap <buffer> <C-r> <esc>:RMarkdown pdf<cr>a
-autocmd FileType rmd setlocal nospell
-autocmd FileType rmd setlocal shiftwidth=2
-
-" ---------------------------------------------------------------------------
 " Yaml
 autocmd FileType yaml setlocal shiftwidth=2
 
-" ---------------------------------------------------------------------------
 " Css
 autocmd FileType css setlocal shiftwidth=2
-
-" ---------------------------------------------------------------------------
-" Misc
 
 " Disable auto-comments on new line
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
