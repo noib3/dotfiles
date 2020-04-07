@@ -123,8 +123,6 @@ ssh -T git@github.com
       pip3 install pyfiglet
       pip3 install docopt
       pip3 install gkeepapi
-51. remove everything inside useless folders (this should be done at the beginning)
-     rm Desktop/* Documents/* Downloads/* Movies/* Music/* Pictures/* .Trash/*
 52. install speedtest
       brew install speedtest-cli
 53. rename host

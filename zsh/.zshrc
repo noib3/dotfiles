@@ -82,7 +82,6 @@ function zle-keymap-select() {
 }
 zle -N zle-keymap-select
 
-
 # stripped down version of the vim-surround plugin implementation
 # taken from 'https://github.com/softmoth/zsh-vim-mode'
 function vim-mode-bindkey () {
