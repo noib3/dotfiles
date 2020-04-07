@@ -114,6 +114,9 @@ ssh -T git@github.com
         System Preferences -> Sound -> Uncheck 'Play user interface sound effects'
 49. install texlive
       brew cask install mactex-no-gui
+      git clone https://github.com/n0ibe/texmf
+      mv texmf ~/Library/texmf
+      sudo ln -s ~/Library/tex/context /usr/local/texlive/texmf-local/tex/
 50. install ndiet
       mkdir ~/bin && cd ~/bin
       git clone https://github.com/n0ibe/ndiet
@@ -157,3 +160,12 @@ ssh -T git@github.com
 62. debloat skim
       skim -> view -> hide contents pane and notes pane, toogle toolbar
       skim -> preferences -> general -> remember lat page viewed
+63. install cursorcerer and set the timer in the com.defaults file
+64. tell transmission to run script when torrent is done
+      transmission-remote --torrent-done-script ~/.config/transmission/notify-done.sh
+65. login youtube, switch account and enable dark mode and english
+66. dropbox -> preferences -> check 'open the desktop app when starting dropbox'
+67. brew install terminal-notifier
+68. Allow terminal-notifier notifications
+69. System Preferences -> Energy Saver -> never computer and display sleep for battery and power adapter
+70. System Preferences -> Energy Saver -> Uncheck 'put hard disks to spleep when possible' and 'slightly dim the display while on battery power'
