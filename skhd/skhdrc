@@ -39,9 +39,14 @@ cmd - s [
     "Firefox"  : false
 ]
 
-# Open bitwarden in Firefox
-cmd - d [
+# Open bitwarden in Firefox sidebar
+cmd - e [
     "Firefox"  : skhd --key "shift + alt - y"
+]
+
+# Open downloads in Firefox sidebar
+cmd - d [
+    "Firefox"  : skhd --key "f4"
 ]
 
 # Extend same focus-switching keys to tmux panes

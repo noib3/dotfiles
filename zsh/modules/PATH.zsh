@@ -1,0 +1,10 @@
+PATH=/usr/local/opt/coreutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/python@3.8/bin
+PATH=$PATH:/usr/local/bin
+PATH=$PATH:/usr/bin
+PATH=$PATH:/usr/sbin
+PATH=$PATH:/bin
+PATH=$PATH:/sbin
+PATH=$PATH:/Library/TeX/texbin
+PATH=$PATH:/opt/X11/bin

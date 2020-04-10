@@ -10,7 +10,21 @@
 
 /* Open new tab button */
 #tabs-newtab-button{
-  display:none !important;
+  display: none !important;
+}
+
+/* Downloads button */
+#downloads-button{
+  display: none !important;
+}
+
+/* Overflow button */
+#nav-bar-overflow-button{
+  display: none !important;
+}
+
+#_bbb81fb3-49c1-4a42-bcc9-94bc93e19fb8_-browser-action{
+  display: none !important;
 }
 
 /* Reload page button */
