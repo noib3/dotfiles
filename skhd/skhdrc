@@ -39,6 +39,11 @@ cmd - s [
     "Firefox"  : false
 ]
 
+# Open bitwarden in Firefox
+cmd - d [
+    "Firefox"  : skhd --key "shift + alt - y"
+]
+
 # Extend same focus-switching keys to tmux panes
 # Fuck this, I don't think you can do it properly
 #alt - up [

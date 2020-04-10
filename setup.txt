@@ -158,7 +158,7 @@ ssh -T git@github.com
 62. debloat skim
       skim -> view -> hide contents pane and notes pane, toogle toolbar
       skim -> preferences -> general -> remember lat page viewed
-63. install cursorcerer and set the timer in the com.defaults file
+63. brew cask install mpv
 64. tell transmission to run script when torrent is done
       transmission-remote --torrent-done-script ~/.config/transmission/notify-done.sh
 65. login youtube, switch account and enable dark mode and english
@@ -176,5 +176,5 @@ ssh -T git@github.com
 74. brew install tree
 75. mkdir ~/.cache/python
 75. mkdir ~/.cache/less
-
+76. defaults write com.apple.Finder AppleShowAllFiles true
 osascript -e 'tell app "System Events" to restart'

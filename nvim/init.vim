@@ -71,8 +71,8 @@ let g:lightline = {
 
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:!arara %:p<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t> :!arara %:p<CR>
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:!pdflatex %:p<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t> :!pdflatex %:p<CR>
 
 " ConTeXt
 autocmd FileType context setlocal shiftwidth=2

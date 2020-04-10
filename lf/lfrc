@@ -17,12 +17,8 @@ set ifs " "
 cmd open ${{
     for v in "$fx"; do
         case $(file --mime-type "$v" -b) in
-            text/*)
-                $EDITOR "$v"
-                ;;
-            *)
-                open "$v" &>/dev/null
-                ;;
+            text/*) $EDITOR "$v";;
+            *) open "$v" &>/dev/null;;
         esac
     done
 }}
