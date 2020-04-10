@@ -20,7 +20,6 @@
 .tabbrowser-tab::after{
   visibility: hidden !important;
 }
-
 #navigator-toolbox{
   --tabs-border-color: var(--tab-divider-color) !important;
 }
