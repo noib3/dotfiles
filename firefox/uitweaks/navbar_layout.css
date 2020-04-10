@@ -1,8 +1,3 @@
-body{
-  /* On hover border radius for navbar buttons */
-  --toolbarbutton-border-radius: 0
-}
-
 #nav-bar{
   min-height: 1.4em !important;
   max-height: 1.4em !important;
@@ -44,13 +39,6 @@ body{
   border-width: 0 !important;
 }
 
-#nav-bar-overflow-button{
-  padding-top: 0 !important;
-  padding-bottom: 1px !important;
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-}
-
 #navigator-toolbox{
   border-width: 0 !important;
 }
@@ -59,29 +47,4 @@ body{
 #PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
 .urlbarView-row .urlbarView-favicon {
   margin-left: 7px !important;
-}
-
-/* Overflow button */
-#PlacesChevron, #nav-bar-overflow-button{
-  list-style-image: none !important;
-  background-image: url("chrome://browser/skin/chevron.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 0.9em !important;
-  margin-bottom: 1px !important;
-}
-
-/* Downloads button */
-#downloads-indicator-anchor > *{
-  background-image: none !important;
-}
-
-#downloads-button{
-  background-image: url("chrome://browser/skin/downloads/download-icons.svg#arrow-with-bar");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 0.9em !important;
-  margin-bottom: 1px !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
 }

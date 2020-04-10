@@ -53,21 +53,20 @@ key_bindings:
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
   # Chars with corresponding shell bindings
-  - { key: W, mods: Super, chars: "\x17" } # ctrl-w
   - { key: Comma, mods: Super, chars: "\x18\x14" } # ctrl-x ctrl-t
   - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
-  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
   # Chars with corresponding neovim bindings
-  - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
-  - { key: G, mods: Super, chars: "\x07" } # ctrl-g
+  - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
+  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: T, mods: Super, chars: "\x14" } # ctrl-t
+  # Chars with both
+  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
+  - { key: W, mods: Super, chars: "\x17" } # ctrl-w
   # Tmux bindings
-  #- { key: T, mods: Super, chars: "\x02\x63" } # ctrl-b c
   - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
   - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
   - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3

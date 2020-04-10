@@ -36,27 +36,3 @@
   color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
 }
-
-/* Downloads button in urlbar */
-#downloads-button{
-  color: var(--text-color) !important;
-  background-color: var(--urlbar-color) !important;
-}
-
-/* Overflow button in urlbar */
-#nav-bar-overflow-button{
-  color: var(--text-color) !important;
-  background-color: var(--urlbar-color) !important;
-}
-
-/* Overflow popup menu */
-.panel-subview-body{
-  color: var(--text-color) !important;
-  background-color: var(--popup-menu-color) !important;
-}
-
-/* Disable overflow button opacity change when firefox isn't focused */
-.toolbarbutton-1:not(:hover):-moz-window-inactive,
-:root:not([customizing]) .toolbarbutton-1:-moz-window-inactive[disabled="true"]{
-  opacity: 1 !important;
-}
