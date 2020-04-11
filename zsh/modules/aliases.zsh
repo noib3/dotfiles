@@ -9,6 +9,8 @@ alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias grep='grep --color=auto'
 alias tree='tree -aN'
+alias rm='rm -i'
+#function cd { builtin cd "$@" && printf '\e[H\e[3J' && ls }
 
 # Aliases for user scripts
 alias -g 2d2small='~/Dropbox/2d2small/2d2small.sh'

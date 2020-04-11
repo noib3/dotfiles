@@ -32,11 +32,10 @@ bindkey '^X^T' term_config
 # Use fd/fzf combo to edit a file..
 fuzzy_edit() {
     dir=$(pwd)
-    file=$(cd &&
+    file=$(builtin cd &&
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50% --layout=reverse) \
-    && cd $dir && $EDITOR ~/$file
-    printf '\e[5 q'
+    && builtin cd $dir && $EDITOR ~/$file && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -47,10 +46,10 @@ bindkey '^X^E' fuzzy_edit
 # ..search a file..
 fuzzy_search() {
     dir=$(pwd)
-    file=$(cd &&
+    file=$(builtin cd &&
             fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
             fzf --read0 --height=50% --layout=reverse) \
-    && cd $dir && LBUFFER="$LBUFFER~/$file "
+    && builtin cd $dir && LBUFFER="$LBUFFER~/$file "
     if zle; then
         zle reset-prompt
     fi
@@ -70,6 +69,7 @@ fuzzy_cd() {
     if zle; then
         zle reset-prompt
     fi
+    #ls
 }
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
