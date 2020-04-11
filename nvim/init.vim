@@ -71,13 +71,23 @@ let g:lightline = {
 
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:!pdflatex %:p<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t> :!pdflatex %:p<CR>
+autocmd FileType tex inoremap <buffer> <C-t>
+                 \ <esc>:!cd $(dirname "%:p") && pdflatex "%:p"<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t>
+                 \ :!cd $(dirname "%:p") && pdflatex "%:p"<CR>
+"autocmd FileType tex nnoremap <buffer> <leader>p
+"                 \ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
+autocmd FileType tex nnoremap <leader>p
+                 \ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)' | redraw!<CR>
+                 \ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
+autocmd BufReadPost *.tex :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)
 
 " ConTeXt
 autocmd FileType context setlocal shiftwidth=2
 autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
 autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
+autocmd FileType context nnoremap <buffer> <leader>p
+                 \ :!open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
 
 " Yaml
 autocmd FileType yaml setlocal shiftwidth=2

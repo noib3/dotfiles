@@ -119,5 +119,5 @@ alt + cmd - 4: yabai -m window --space 4 && yabai -m space --focus 4
 alt + cmd - n: yabai -m space --create && yabai -m window --space last && yabai -m space --focus last
 
 # Take screenshots
-shift + cmd - 3: screencapture ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/').png
-shift + cmd - 4: screencapture -i ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@_/;s/:/./g;s/-/:/g').png
+#shift + cmd - 3: screencapture ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
+#shift + cmd - 4: screencapture -i ~/Dropbox/Screenshots/$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
