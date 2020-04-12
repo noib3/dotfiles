@@ -1,6 +1,5 @@
 # ------------------------ SKHD CONFIG FILE -------------------------
 
-# Open alacritty
 cmd - return: open -na /Applications/Alacritty.app
 
 # Open alacritty with lf running
@@ -9,7 +8,6 @@ cmd - f : \
              label=float_next \
              event=application_launched \
              action="yabai -m signal --remove float_next;\
-                     SPAWN_ID=$(yabai -m query --windows | jq -r ".[] | select(.pid==$YABAI_PROCESS_ID).id");\
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - f\"";\
     open -na /Applications/Alacritty.app
 
@@ -28,25 +26,26 @@ cmd + shift - n : \
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - n\"";\
     open -na /Applications/Alacritty.app
 
-# Let cmd - b unaltered to firefox to open bookmarks sidebar
 cmd - b [
-    *          : open -na /Applications/Firefox.app
+    #*          : open -na /Applications/Firefox.app
+    *          : open -na /Applications/Vivaldi.app --args --enable-features=OverlayScrollbar
     "Firefox"  ~
+    "Vivaldi"  : skhd --key "cmd + alt - b"
 ]
 
-# Disable cmd - s in firefox
-cmd - s [
-    "Firefox"  : false
-]
-
-# Open bitwarden in Firefox sidebar
 cmd - e [
     "Firefox"  : skhd --key "shift + alt - y"
+    "Vivaldi"  : skhd --key "alt + cmd - e"
 ]
 
-# Open downloads in Firefox sidebar
 cmd - d [
     "Firefox"  : skhd --key "f4"
+    "Vivaldi"  : skhd --key "alt + cmd - l"
+]
+
+cmd - s [
+    "Firefox"  : false
+    "Vivaldi"  : false
 ]
 
 # Extend same focus-switching keys to tmux panes

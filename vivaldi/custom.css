@@ -1,0 +1,61 @@
+/* Sync button in top right */
+#tabs-container > div.toolbar.toolbar-tabbar.toolbar-noflex.sync-and-trash-container > div.button-toolbar.synced-tabs-button{
+  display: none !important;
+}
+
+/* Sidebar */
+/*#switch{
+  display: none !important;
+}*/
+
+/* Icons left of urlbar */
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(1),
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(2),
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(3),
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(4),
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(5) > button,
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-noflex.toolbar-large > div:nth-child(6) > button{
+  display: none !important;
+}
+
+/* address bar */
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.iconmenu-container.searchfield{
+  display: none !important;
+}
+
+/* bin icon in top right */
+#tabs-container > div.toolbar.toolbar-tabbar.toolbar-noflex.sync-and-trash-container > div.button-toolbar.toggle-trash > button{
+  display: none !important;
+}
+
+/* lock icon in urlbar */
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.addressfield > button{
+  display: none !important;
+}
+
+/* Bookmark icon in urlbar */
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.addressfield > div.toolbar.toolbar-small.toolbar-insideinput > div.button-toolbar.create-bookmark.ck8xa7fkv000c3f5mh6ap6jnx > button{
+  display: none !important;
+}
+
+/* Show typed history icon in urlbar */
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.addressfield > div.toolbar.toolbar-small.toolbar-insideinput > div:nth-child(5) > button{
+  display: none !important;
+}
+
+#main > div.toolbar.toolbar-addressbar.toolbar-mainbar.toolbar-large > div.addressfield{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+*{
+  font-family: "Iosevka Nerd Font" !important;
+  font-size: 17px !important;
+}
