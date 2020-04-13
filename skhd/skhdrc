@@ -48,6 +48,11 @@ cmd - s [
     "Vivaldi"  : false
 ]
 
+cmd - m [
+    "Firefox"  : false
+    "Vivaldi"  : false
+]
+
 # Extend same focus-switching keys to tmux panes
 # Fuck this, I don't think you can do it properly
 #alt - up [
