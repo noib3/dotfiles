@@ -5,12 +5,34 @@
   margin: 0 !important;
 }
 
-.tab-header {
+.tab-position .tab .tab-header {
+  padding: 0 !important;
+  flex: none !important;
   height: 1.4em !important;
-  line-height: 1.4em !important;
 }
 
-.favicon {
+/* Favicon box */
+.tab-position .tab .favicon {
+  filter: none !important;
+  min-height: 10px !important;
+  min-width: 10px !important;
   height: 1em !important;
-  padding: 1px !important;
+  width: 1em !important;
+  padding: 0 !important;
+  margin-top: calc(0.2em + 1px) !important;
+  margin-bottom: calc(0.2em - 1px) !important;
+  margin-left: 9px !important;
+  margin-right: 8px !important;
+}
+
+/* Favicon image */
+.favicon.jstest-favicon-image > img {
+  height: 1em !important;
+  width: 1em !important;
+}
+
+/* Tab title */
+.tab-position .tab .title {
+  margin: 0 !important;
+  padding-top: 1px !important;
 }

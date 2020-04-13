@@ -1,0 +1,28 @@
+:root {
+  --text-color: #ebebeb;
+  --focused-tab-color: #626262;
+  --unfocused-tab-color: #393939;
+  --urlbar-color: #393939;
+}
+
+/* Focused tab */
+.tab-position .tab.active .tab-header {
+  color: #ebebeb !important;
+  background-color: rgb(98, 98, 98) !important;
+}
+
+/* Unfocused tab */
+.tab-position .tab .tab-header {
+  color: #ebebeb !important;
+  background-color: #39393900 !important;
+}
+
+/*.tab-position .tab .tab-header {
+  color: var(--text-color) !important;
+  background-color: var(--unfocused-tab-color) !important;
+}*/
+
+/*.tab-position .tab .active .tab-header {
+  color: var(--text-color) !important;
+  background-color: var(--focused-tab-color) !important;
+}*/
