@@ -1,0 +1,21 @@
+/* Navbar */
+.addressfield {
+  padding: 0 !important;
+  border: 0 !important;
+  margin: 0 !important;
+}
+
+/* Urlbar */
+.button-addressfield {
+  display: none !important;
+}
+
+/* Text in urlbar */
+input[type=text] {
+  padding: 0 !important;
+}
+
+/* height of navbar and urlbar */
+.addressfield, .UrlField {
+  height: 1.4em !important;
+}

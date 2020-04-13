@@ -1,0 +1,16 @@
+#header, #titlebar, #tabs-container {
+  height: 1.4em !important;
+  padding: 0 !important;
+  border: 0 !important;
+  margin: 0 !important;
+}
+
+.tab-header {
+  height: 1.4em !important;
+  line-height: 1.4em !important;
+}
+
+.favicon {
+  height: 1em !important;
+  padding: 1px !important;
+}

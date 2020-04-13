@@ -1,0 +1,20 @@
+/* Remove all buttons from toolbar */
+.button-toolbar {
+  display: none !important;
+}
+
+/* Remove address bar */
+.iconmenu-container {
+  display: none !important;
+}
+
+/* Space right of urlbar */
+.toolbar-small.toolbar-insideinput {
+  display: none !important;
+}
+
+/* Close, minimize, maximize buttons */
+.window-buttongroup {
+  display: none !important;
+}
+
