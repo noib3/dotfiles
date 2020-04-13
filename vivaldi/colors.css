@@ -7,14 +7,14 @@
 
 /* Focused tab */
 .tab-position .tab.active .tab-header {
-  color: #ebebeb !important;
-  background-color: rgb(98, 98, 98) !important;
+  color: var(--text-color) !important;
+  background-color: var(--focused-tab-color) !important;
 }
 
 /* Unfocused tab */
 .tab-position .tab .tab-header {
-  color: #ebebeb !important;
-  background-color: #39393900 !important;
+  color: var(--text-color) !important;
+  background-color: var(--unfocused-tab-color) !important;
 }
 
 /*.tab-position .tab .tab-header {

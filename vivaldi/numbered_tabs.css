@@ -1,4 +1,4 @@
 /* Adapted from https://github.com/MrOtherGuy/firefox-csshacks/blob/master/chrome/numbered_tabs.css */
 
 .tab-strip:first-child{ counter-reset: nth-tab 0 } /* Change to -1 for 0-indexing */
-.title::before{ content: counter(nth-tab) ": "; counter-increment: nth-tab }
+.title::before{ content: counter(nth-tab) ": "; counter-increment: nth-tab; white-space: pre }
