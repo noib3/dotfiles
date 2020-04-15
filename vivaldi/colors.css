@@ -1,28 +1,27 @@
 :root {
-  --text-color: #ebebeb;
+  /* This should be the colors being displayed,
+     but since Vivaldi seems to darken every colour,
+     we correct it by specifying lighter colors. */
+  /* --text-color: #ebebeb;
+  --unfocused-tab-text-color: #b6b6b6;
   --focused-tab-color: #626262;
   --unfocused-tab-color: #393939;
-  --urlbar-color: #393939;
+  --urlbar-color: #393939; */
+  --text-fixed-color: #eeeeee;
+  --unfocused-tab-text-fixed-color: #bebebe;
+  --focused-tab-fixed-color: #6d6d6d;
+  --unfocused-tab-fixed-color: #414141;
+  --urlbar-fixed-color: #393939;
 }
 
 /* Focused tab */
 .tab-position .tab.active .tab-header {
-  color: var(--text-color) !important;
-  background-color: var(--focused-tab-color) !important;
+  color: var(--text-fixed-color) !important;
+  background-color: var(--focused-tab-fixed-color) !important;
 }
 
 /* Unfocused tab */
 .tab-position .tab .tab-header {
-  color: var(--text-color) !important;
-  background-color: var(--unfocused-tab-color) !important;
+  color: var(--unfocused-tab-text-fixed-color) !important;
+  background-color: var(--unfocused-tab-fixed-color) !important;
 }
-
-/*.tab-position .tab .tab-header {
-  color: var(--text-color) !important;
-  background-color: var(--unfocused-tab-color) !important;
-}*/
-
-/*.tab-position .tab .active .tab-header {
-  color: var(--text-color) !important;
-  background-color: var(--focused-tab-color) !important;
-}*/

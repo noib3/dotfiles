@@ -1,5 +1,10 @@
-/* Remove all buttons from toolbar */
+/* Remove all buttons from navbar */
 .button-toolbar {
+  display: none !important;
+}
+
+/* Remove all buttons from urlbar */
+.button-addressfield {
   display: none !important;
 }
 

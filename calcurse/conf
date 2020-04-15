@@ -30,3 +30,4 @@ general.systemdialogs=no
 notification.command=printf '\a'
 notification.notifyall=flagged-only
 notification.warning=300
+appearance.emptyday=--

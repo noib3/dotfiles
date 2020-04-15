@@ -12,7 +12,7 @@ cmd - f : \
     open -na /Applications/Alacritty.app
 
 # Show current diet on a borderless, centered, floating window
-cmd + shift - n : \
+alt - d : \
     yabai -m signal --add \
              label=float_next \
              event=application_launched \

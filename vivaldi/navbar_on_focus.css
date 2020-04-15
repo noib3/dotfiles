@@ -1,0 +1,31 @@
+/* Adapted from https://forum.vivaldi.net/topic/11208/autohide-adress-bar/7 */
+
+/*Addressbar settings*/
+/*.toolbar-addressbar {
+  position: absolute;
+  transform: translateY(-200%);
+}
+
+.toolbar-addressbar:focus-within, .toolbar-addressbar:hover, .toolbar-addressbar:focus {
+  position: absolute;
+  width: 100%;
+  transform: translateY(0%);
+}*/
+
+/*.addressfield .pageload:not(.unstarted).progressing {
+  opacity: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-190%, 200%);
+  display: block;
+  width: auto;
+  background-color: white;
+  box-shadow: 2px 2px 2px 0px #535251cf;
+}
+
+.addressfield .pageload .pageload-ticker {
+  padding-left: 5px;
+  text-align: left;
+  border-right: 0;
+}*/

@@ -2,11 +2,11 @@
 
 " Plugins
 call plug#begin('~/.config/nvim/plugged')
-Plug 'jiangmiao/auto-pairs'
-Plug 'itchyny/lightline.vim'
-Plug 'drewtempelmeyer/palenight.vim'
-Plug 'farmergreg/vim-lastplace'
-Plug 'tpope/vim-surround'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'itchyny/lightline.vim'
+  Plug 'drewtempelmeyer/palenight.vim'
+  Plug 'farmergreg/vim-lastplace'
+  Plug 'tpope/vim-surround'
 call plug#end()
 
 " Basic settings
@@ -18,11 +18,11 @@ set relativenumber
 set noshowmode
 set clipboard+=unnamedplus
 set fileencoding=utf-8
+set termguicolors
 set undofile
 set undodir=$HOME/.cache/nvim
 set undolevels=1000
 set undoreload=10000
-set termguicolors
 
 " Lets
 let mapleader=","
@@ -60,6 +60,12 @@ highlight Normal guibg=NONE ctermbg=NONE
 highlight visual guifg=#ffffff guibg=#7aa6da ctermbg=white ctermfg=Blue
 highlight ErrorMsg ctermfg=224 ctermbg=NONE
 
+" Vertically center document when entering insert mode
+autocmd InsertEnter * norm zz
+
+" Disable auto-comments on new line
+autocmd FileType * setlocal formatoptions-=cro
+
 " Lightline
 let g:lightline = {
       \ 'colorscheme': 'greyscale',
@@ -68,6 +74,15 @@ let g:lightline = {
       \   'right': [ ['percent'] ]
       \ }
       \ }
+
+" Remove trailing whitespace when saving
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
@@ -94,15 +109,3 @@ autocmd FileType yaml setlocal shiftwidth=2
 
 " Css
 autocmd FileType css setlocal shiftwidth=2
-
-" Disable auto-comments on new line
-autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-" Remove trailing whitespace when saving
-fun! <SID>StripTrailingWhitespaces()
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    call cursor(l, c)
-endfun
-autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()

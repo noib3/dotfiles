@@ -177,4 +177,6 @@ ssh -T git@github.com
 75. mkdir ~/.cache/python
 75. mkdir ~/.cache/less
 76. defaults write com.apple.Finder AppleShowAllFiles true
+77. System preferences -> General -> show scroll bars -> when scrolling
+
 osascript -e 'tell app "System Events" to restart'

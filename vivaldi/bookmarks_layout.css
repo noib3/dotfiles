@@ -1,0 +1,19 @@
+/* Search box */
+#panels > div.panel-group > div > div.panel.panel-bookmarks > header > div {
+  display: none !important;
+}
+
+/* 'Sort manually' title */
+#panels > div.panel-group > div > div.panel.panel-bookmarks > div > div > select {
+  display: none !important;
+}
+
+/* Stuff under bookmarks */
+#panels > div.panel-group > div > div.panel.panel-bookmarks > section.panel-bookmarks-edit.limited {
+  display: none !important;
+}
+
+/* Space between Bookmarks title and Bookmarks */
+#panels > div.panel-group > div > div.panel.panel-bookmarks > div {
+  display: none !important;
+}
