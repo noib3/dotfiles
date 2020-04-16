@@ -23,3 +23,15 @@
   display: none !important;
 }
 
+/* Side panel */
+#switch {
+  display: none !important;
+}
+
+#panels-container {
+  width: 0 !important;
+}
+
+.panel-group {
+  left: 0 !important;
+}
