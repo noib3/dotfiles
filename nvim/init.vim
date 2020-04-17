@@ -93,8 +93,9 @@ autocmd FileType tex nnoremap <buffer> <C-t>
 "autocmd FileType tex nnoremap <buffer> <leader>p
 "                 \ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
 autocmd FileType tex nnoremap <leader>p
-                 \ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)' | redraw!<CR>
-                 \ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
+                 \ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)'<CR>
+                 "\ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)' | redraw!<CR>
+                 "\ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
 autocmd BufReadPost *.tex :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)
 
 " ConTeXt

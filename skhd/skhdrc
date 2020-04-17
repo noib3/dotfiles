@@ -27,8 +27,7 @@ alt - d : \
     open -na /Applications/Alacritty.app
 
 cmd - b [
-    #*          : open -na /Applications/Firefox.app
-    *          : open -na /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api --enable-features=OverlayScrollbar
+    *          : open -na /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
     "Firefox"  ~
     "Vivaldi"  : skhd --key "cmd + alt - b"
 ]

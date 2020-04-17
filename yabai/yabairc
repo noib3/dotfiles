@@ -42,4 +42,4 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 
 # Sticky programs
-yabai -m rule --add app="^Digital Colour Meter$" sticky=on
+yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above
