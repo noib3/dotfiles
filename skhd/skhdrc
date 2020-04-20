@@ -1,15 +1,8 @@
 # ------------------------ SKHD CONFIG FILE -------------------------
 
 cmd - return: open -na /Applications/Alacritty.app
-
-# Open alacritty with lf running
-cmd - f : \
-    yabai -m signal --add \
-             label=float_next \
-             event=application_launched \
-             action="yabai -m signal --remove float_next;\
-                     skhd --key \"ctrl - x\" && skhd --key \"ctrl - f\"";\
-    open -na /Applications/Alacritty.app
+cmd - f : /Applications/Alacritty.app/Contents/MacOS/alacritty -e lf ~/Downloads
+cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
 
 # Show current diet on a borderless, centered, floating window
 alt - d : \

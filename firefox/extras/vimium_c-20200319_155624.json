@@ -13,8 +13,6 @@
 		"map gh openUrl url=\"https://google.com\" reuse=0",
 		"map nh openUrl url=\"https://google.com\" reuse=1",
 		"",
-		"map gvc openUrl url=\"moz-extension://55d1d2f3-d053-6e43-8bf5-96edbb5bb47e/pages/options.html\" reuse=0",
-		"map nvc openUrl url=\"moz-extension://55d1d2f3-d053-6e43-8bf5-96edbb5bb47e/pages/options.html\" reuse=1",
 		"",
 		"map gkp openUrl url=\"https://keep.google.com\" reuse=0",
 		"map nkp openUrl url=\"https://keep.google.com\" reuse=1",

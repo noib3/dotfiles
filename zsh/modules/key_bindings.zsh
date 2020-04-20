@@ -8,16 +8,6 @@ close_window() {
 zle -N close_window
 bindkey '^W' close_window
 
-# Open lf
-open_lf() {
-    lf ~/Downloads
-    if zle; then
-        yabai -m window --close
-    fi
-}
-zle -N open_lf
-bindkey '^X^F' open_lf
-
 # Edit terminal config
 term_config() {
     $EDITOR ~/.config/alacritty/alacritty.yml
