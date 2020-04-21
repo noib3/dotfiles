@@ -110,3 +110,7 @@ autocmd FileType yaml setlocal shiftwidth=2
 
 " Css
 autocmd FileType css setlocal shiftwidth=2
+
+" Tex forward search for the Skim pdf viewer
+" https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization/#tex-pdf-synchronization
+map <leader>f :w<CR>:silent !/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>
