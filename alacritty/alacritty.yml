@@ -54,7 +54,6 @@ key_bindings:
   - { key: 10, mods: Alt, chars: "\x60"} # `
   # Chars with corresponding shell bindings
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: Comma, mods: Super, chars: "\x18\x14" } # ctrl-x ctrl-t
   - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
   - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
   # Chars with corresponding neovim bindings
@@ -66,13 +65,3 @@ key_bindings:
   # Chars with both
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
-  # Tmux bindings
-  - { key: 18, mods: Super, chars: "\x02\x31" } # ctrl-b 1
-  - { key: 19, mods: Super, chars: "\x02\x32" } # ctrl-b 2
-  - { key: 20, mods: Super, chars: "\x02\x33" } # ctrl-b 3
-  - { key: 21, mods: Super, chars: "\x02\x34" } # ctrl-b 4
-  - { key: 23, mods: Super, chars: "\x02\x35" } # ctrl-b 5
-  - { key: K, mods: Command|Alt, chars: "\x02\x6b" } # ctrl-b k
-  - { key: J, mods: Command|Alt, chars: "\x02\x6a" } # ctrl-b j
-  - { key: L, mods: Command|Alt, chars: "\x02\x6c" } # ctrl-b l
-  - { key: H, mods: Command|Alt, chars: "\x02\x68" } # ctrl-b h

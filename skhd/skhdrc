@@ -116,22 +116,3 @@ alt + shift - d : \
                      yabai -m window $SPAWN_ID --move abs:869:200; \
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - n\""; \
     open -na /Applications/Alacritty.app
-
-# Extend same focus-switching keys to tmux panes
-# Fuck this, I don't think you can do it properly
-#alt - up [
-#    *           : yabai -m window --focus north
-#    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_top}') -ne 1 ]; then tmux select-pane -U; else yabai -m window --focus north || true; fi
-#]
-#alt - down [
-#    *           : yabai -m window --focus south
-#    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_bottom}') -ne 1 ]; then tmux select-pane -D; else yabai -m window --focus south || true; fi
-#]
-#alt - left [
-#    *           : yabai -m window --focus west
-#    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_left}') -ne 1 ]; then tmux select-pane -L; else yabai -m window --focus west; fi
-#]
-#alt - right [
-#    *           : yabai -m window --focus east
-#    "Alacritty" : if [ $(tmux display-message -p '#{pane_at_right}') -ne 1 ]; then tmux select-pane -R; else yabai -m window --focus east; fi
-#]

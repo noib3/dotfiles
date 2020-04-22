@@ -8,17 +8,6 @@ close_window() {
 zle -N close_window
 bindkey '^W' close_window
 
-# Edit terminal config
-term_config() {
-    $EDITOR ~/.config/alacritty/alacritty.yml
-    printf '\e[5 q'
-    if zle; then
-        zle reset-prompt
-    fi
-}
-zle -N term_config
-bindkey '^X^T' term_config
-
 # Use fd/fzf combo to edit a file..
 fuzzy_edit() {
     dir=$(pwd)
