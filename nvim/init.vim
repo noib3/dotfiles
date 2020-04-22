@@ -2,11 +2,13 @@
 
 " Plugins
 call plug#begin('~/.config/nvim/plugged')
-  Plug 'jiangmiao/auto-pairs'
-  Plug 'itchyny/lightline.vim'
-  Plug 'drewtempelmeyer/palenight.vim'
-  Plug 'farmergreg/vim-lastplace'
+  Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-surround'
+  Plug 'itchyny/lightline.vim'
+  Plug 'chrisbra/Colorizer'
+  Plug 'farmergreg/vim-lastplace'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'drewtempelmeyer/palenight.vim'
 call plug#end()
 
 " Basic settings
@@ -74,6 +76,9 @@ let g:lightline = {
       \   'right': [ ['percent'] ]
       \ }
       \ }
+
+" Colorizer
+let g:colorizer_auto_color=1
 
 " Remove trailing whitespace when saving
 fun! <SID>StripTrailingWhitespaces()

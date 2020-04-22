@@ -16,20 +16,5 @@
 @import url("/Users/noibe/.config/firefox/uitweaks/sidebar_layout.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/tab_close_on_hover.css");
 
-/* These two tweaks used to:
-   a) place the navbar on the bottom of the screen, with the search results
-      being displayed on top of it;
-   b) show the navbar only when focused. */
-
-/* They both stopped working with the new urlbar in Firefox 75 */
-
 @import url("/Users/noibe/.config/firefox/uitweaks/navbar_on_bottom.css");
 @import url("/Users/noibe/.config/firefox/uitweaks/navbar_on_focus.css");
-
-/* This is a first attempt at reverting the FF75 urlbar to the old one, copied from
-   MrOtherGuy's github page. Those two tweaks don't work even with this code. */
-
-/*@import url("/Users/noibe/.config/firefox/uitweaks/fix_FF75_urlbar.css");*/
-
-/* I'm leaving Firefox without any plan to ever come back to it. I'm tired of having to
-   fix a bunch of shitty and pointless UI changes with every update. */

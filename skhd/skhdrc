@@ -11,7 +11,7 @@ cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty -e calcurse -C ~/
 
 # Launch the browser. If focused window is a browser, open bookmarks sidebar
 cmd - b [
-    *         : open -na /Applications/Vivaldi.app
+    *         : open -na /Applications/Firefox.app
     "Firefox" ~
     "Vivaldi" : skhd --key "alt + cmd - b"
 ]
@@ -50,10 +50,10 @@ ctrl - left  : yabai -m window --swap west
 ctrl - right : yabai -m window --swap east
 
 # Warp windows
-alt + shift - up    : yabai -m window --warp north
-alt + shift - down  : yabai -m window --warp south
-alt + shift - left  : yabai -m window --warp west
-alt + shift - right : yabai -m window --warp east
+cmd + shift - up    : yabai -m window --warp north
+cmd + shift - down  : yabai -m window --warp south
+cmd + shift - left  : yabai -m window --warp west
+cmd + shift - right : yabai -m window --warp east
 
 # Make windows larger
 alt - h : yabai -m window --resize left:-25:0

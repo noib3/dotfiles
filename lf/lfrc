@@ -12,6 +12,7 @@ set ratios "1:2:3"
 set filesep " "
 set timefmt ""
 set ifs " "
+set sortby ext
 
 # Custom commands
 cmd open ${{
@@ -49,6 +50,7 @@ map d delete
 map x cut
 
 map gdl cd "~/Downloads"
+map gsc cd "~/scripts"
 map gvl cd "/Volumes"
 map gnf cd "~/.config"
 map gtm cd "~/Library/texmf"

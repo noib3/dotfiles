@@ -160,7 +160,7 @@ ssh -T git@github.com
       skim -> preferences -> general -> remember lat page viewed
 63. brew cask install mpv
 64. tell transmission to run script when torrent is done
-      transmission-remote --torrent-done-script ~/.config/transmission/notify-done.sh
+      transmission-remote --torrent-done-script ~/scripts/transmission/notify-done.sh
 65. login youtube, switch account and enable dark mode and english
 66. brew install terminal-notifier
 67. Allow terminal-notifier notifications

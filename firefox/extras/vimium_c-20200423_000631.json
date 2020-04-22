@@ -1,9 +1,9 @@
 {
 	"name": "Vimium C",
-	"@time": "3/19/2020, 3:56:24 PM",
-	"time": 1584629784079,
+	"@time": "23/04/2020, 00:06:31",
+	"time": 1587593191005,
 	"environment": {
-		"extension": "1.81.3",
+		"extension": "1.81.5",
 		"platform": "mac"
 	},
 	"exclusionRules": [],
@@ -12,7 +12,6 @@
 		"",
 		"map gh openUrl url=\"https://google.com\" reuse=0",
 		"map nh openUrl url=\"https://google.com\" reuse=1",
-		"",
 		"",
 		"map gkp openUrl url=\"https://keep.google.com\" reuse=0",
 		"map nkp openUrl url=\"https://keep.google.com\" reuse=1",
@@ -28,6 +27,9 @@
 		"",
 		"map gyt openUrl url=\"https://youtube.com\" reuse=0",
 		"map nyt openUrl url=\"https://youtube.com\" reuse=1",
+		"",
+		"map gtw openUrl url=\"https://twitch.tv\" reuse=0",
+		"map ntw openUrl url=\"https://twitch.tv\" reuse=1",
 		"",
 		"map gnf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=0",
 		"map nnf openUrl url=\"https://github.com/n0ibe/dotfiles\" reuse=1",
