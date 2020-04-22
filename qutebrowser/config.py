@@ -65,6 +65,7 @@ config.unbind("gr")
 config.unbind("gm")
 
 config.bind("gh", f"open {HOME_PAGE}")
+config.bind("nh", f"open -t {HOME_PAGE}")
 
 config.bind("gkp", "open https://keep.google.com")
 config.bind("nkp", "open -t https://keep.google.com")

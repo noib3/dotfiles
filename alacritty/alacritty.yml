@@ -53,6 +53,7 @@ key_bindings:
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
   # Chars with corresponding shell bindings
+  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Comma, mods: Super, chars: "\x18\x14" } # ctrl-x ctrl-t
   - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
   - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
@@ -61,7 +62,6 @@ key_bindings:
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
-  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: T, mods: Super, chars: "\x14" } # ctrl-t
   # Chars with both
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
