@@ -32,13 +32,13 @@ export EDITOR=$VISUAL
 export LC_LL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-# Export history/cache files locations
+# Export custom history/cache files locations
 export HISTFILE=$HOME/.cache/zsh/zsh_history
 export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
-export PYTHONSTARTUP=$HOME/.config/python/python-startup.py
+export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
 
-# Export LS_COLORS used by ls, lf and others for file coloring
+# Export LS_COLORS variable used by ls, lf and others for file coloring
 export LS_COLORS=$(printf %s            \
                      'no=90:'           \
                      'di=01;34:'        \
@@ -82,11 +82,10 @@ zle-keymap-select() {
     elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
     fi
-    zle reset-prompt
 }
 zle -N zle-keymap-select
 
-# Enable vim-surround-like functionalities for vi mode
+# Enable vim-surround-like functionalities in vi mode
 autoload -U select-bracketed
 zle -N select-bracketed
 for m in visual viopp; do
@@ -112,7 +111,7 @@ bindkey -M vicmd ds delete-surround
 bindkey -M vicmd ys add-surround
 bindkey -M visual S add-surround
 
-# Set prompt with git infos for directories under version control
+# Set prompt with support for git infos in directories under version control
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{$git_onbr_clr}on %F{$git_main_clr} %b%f'
@@ -133,10 +132,10 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zmodload zsh/complist
 _comp_options+=(globdots)
 
-# Unbind 'Ctrl + S'
+# Disable ctrl+s
 stty -ixon
 
-# Close terminal window
+# Close window
 close_window() {
     yabai -m window --close
 }
@@ -188,7 +187,7 @@ fuzzy_cd() {
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
-# Clear the screen and echo current ndiet diet
+# Clear the screen and echo current diet
 ndiet_current(){
     clear
     ~/bin/ndiet/ndiet.py -c
@@ -227,7 +226,7 @@ alias -g tmd='~/scripts/retired/tmd.sh'
 # Other aliases
 alias reboot='osascript -e "tell app \"System Events\" to restart"'
 
-# A single 'c' clears the screen and isn't added to the command history
+# A single 'c' clears the screen without being added to the command history
 # The alias is just so that zsh-syntax-highlighting doesn't color it in red
 accept-line() case $BUFFER in
   (c) printf '\e[H\e[3J'; BUFFER=; zle redisplay;;
