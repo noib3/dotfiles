@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd ~/.local/share/calcurse
+
+# Add everything except pid file
+git add apts todo notes README.md
+
+# Commit with an empty message and push to Github
+git commit --allow-empty-message -m ''
+git push origin master
