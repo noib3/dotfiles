@@ -1,13 +1,14 @@
 # ------------------------- LF CONFIG FILE --------------------------
 
 # Boolean valued options
-set ignorecase on
-set color256 on
-set hidden on
+set ignorecase
+set color256
+set hidden
+set drawbox
 
 # String valued options
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
-set previewer "~/.config/lf/previewer.sh"
+set previewer ~/.config/lf/previewer.sh
 set ratios "1:2:3"
 set filesep " "
 set timefmt ""

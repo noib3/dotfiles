@@ -144,11 +144,9 @@ bindkey '^W' close_window
 
 # Use fd/fzf combo to edit a file..
 fuzzy_edit() {
-    dir=$(pwd)
-    file=$(builtin cd &&
-            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
-            fzf --read0 --height=50% --layout=reverse) \
-    && builtin cd $dir && $EDITOR ~/$file && printf '\e[5 q'
+    file=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
+              fzf --read0 --height=50% --layout=reverse) \
+    && $EDITOR ~/$file && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -158,11 +156,9 @@ bindkey '^X^E' fuzzy_edit
 
 # ..search a file..
 fuzzy_search() {
-    dir=$(pwd)
-    file=$(builtin cd &&
-            fd -0 --type f --ignore-file ~/.config/fd/fdignore --hidden |
-            fzf --read0 --height=50% --layout=reverse) \
-    && builtin cd $dir && LBUFFER="$LBUFFER~/$file "
+    file=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
+              fzf --read0 --height=50% --layout=reverse) \
+    && LBUFFER="$LBUFFER~/$file "
     if zle; then
         zle reset-prompt
     fi
@@ -172,17 +168,12 @@ bindkey '^S' fuzzy_search
 
 # ..or to change directory
 fuzzy_cd() {
-    local dir
-    dir=$(cd &&
-           fd -0 --type d --ignore-file ~/.config/fd/fdignore --hidden |
-           fzf --read0 --height=50% --layout=reverse) \
-    && cd ~/$dir
-    printf '\e[H\e[3J'
-    precmd
+    dir=$(fd . ~ -0 --type d --hidden | sed "s=$HOME/==g" |
+             fzf --read0 --height=50% --layout=reverse) \
+    && cd ~/$dir && precmd
     if zle; then
         zle reset-prompt
     fi
-    #ls
 }
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
@@ -234,6 +225,10 @@ accept-line() case $BUFFER in
 esac
 zle -N accept-line
 alias c=''
+
+# Clear the screen automatically when the directory is changed
+# chpwd is executed every time the current directory changes
+chpwd() { printf '\e[H\e[3J' }
 
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

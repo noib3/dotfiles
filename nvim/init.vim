@@ -81,34 +81,38 @@ let g:lightline = {
 let g:colorizer_auto_color=1
 
 " Remove trailing whitespace when saving
-fun! <SID>StripTrailingWhitespaces()
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    call cursor(l, c)
-endfun
+function! <SID>StripTrailingWhitespaces()
+  let l = line(".")
+  let c = col(".")
+  %s/\s\+$//e
+  call cursor(l, c)
+endfunction
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+
+" Open pdf file created by latex/context document
+function! OpenPdf()
+  let fname = expand('%:p:r').'.pdf'
+  if filereadable(fname)
+    execute 'silent !open '.shellescape(fname, 1)
+  else
+    echohl ErrorMsg
+    echomsg 'No pdf file "'.fname.'"'
+    echohl None
+  endif
+endfunction
 
 " LaTeX
 autocmd FileType tex setlocal shiftwidth=2
-autocmd FileType tex inoremap <buffer> <C-t>
-                 \ <esc>:!cd $(dirname "%:p") && pdflatex "%:p"<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t>
-                 \ :!cd $(dirname "%:p") && pdflatex "%:p"<CR>
-"autocmd FileType tex nnoremap <buffer> <leader>p
-"                 \ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
-autocmd FileType tex nnoremap <leader>p
-                 \ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)'<CR>
-                 "\ :execute 'silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)' | redraw!<CR>
-                 "\ :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
-autocmd BufReadPost *.tex :silent !open $(echo "%:p" \| sed s/.tex/.pdf/g)
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:!cd $(dirname "%:p") && pdflatex "%:p"<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t> :!cd $(dirname "%:p") && pdflatex "%:p"<CR>
+autocmd FileType tex nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
+autocmd BufReadPost *.tex :call OpenPdf()
 
 " ConTeXt
 autocmd FileType context setlocal shiftwidth=2
 autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
 autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
-autocmd FileType context nnoremap <buffer> <leader>p
-                 \ :!open $(echo "%:p" \| sed s/.tex/.pdf/g)<CR>
+autocmd FileType context nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
 
 " Yaml
 autocmd FileType yaml setlocal shiftwidth=2
