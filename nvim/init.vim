@@ -78,16 +78,16 @@ let g:lightline = {
       \ }
 
 " Colorizer
-let g:colorizer_auto_color=1
+" let g:colorizer_auto_color=1
 
 " Remove trailing whitespace when saving
-function! <SID>StripTrailingWhitespaces()
+function! StripTrailingWhitespaces()
   let l = line(".")
   let c = col(".")
   %s/\s\+$//e
   call cursor(l, c)
 endfunction
-autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre * :call StripTrailingWhitespaces()
 
 " Open pdf file created by latex/context document
 function! OpenPdf()
@@ -101,25 +101,19 @@ function! OpenPdf()
   endif
 endfunction
 
+" Set shorter shiftwidht for some filetypes
+autocmd FileType tex,context,yaml,css setlocal shiftwidth=2
+
 " LaTeX
-autocmd FileType tex setlocal shiftwidth=2
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:!cd $(dirname "%:p") && pdflatex "%:p"<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t> :!cd $(dirname "%:p") && pdflatex "%:p"<CR>
+autocmd FileType tex inoremap <buffer> <C-t> <esc>:!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>a
+autocmd FileType tex nnoremap <buffer> <C-t> :!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>
 autocmd FileType tex nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
 autocmd BufReadPost *.tex :call OpenPdf()
+autocmd FileType tex nnoremap <buffer> <silent> <leader>f :!/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>
 
 " ConTeXt
 autocmd FileType context setlocal shiftwidth=2
 autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
 autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
 autocmd FileType context nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
-
-" Yaml
-autocmd FileType yaml setlocal shiftwidth=2
-
-" Css
-autocmd FileType css setlocal shiftwidth=2
-
-" Tex forward search for the Skim pdf viewer
-" https://sourceforge.net/p/skim-app/wiki/TeX_and_PDF_Synchronization/#tex-pdf-synchronization
-map <leader>f :w<CR>:silent !/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>
+autocmd FileType context nnoremap <buffer> <silent> <leader>f :!/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>

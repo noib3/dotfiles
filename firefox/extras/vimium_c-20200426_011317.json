@@ -1,7 +1,7 @@
 {
 	"name": "Vimium C",
-	"@time": "23/04/2020, 00:06:31",
-	"time": 1587593191005,
+	"@time": "26/04/2020, 01:13:17",
+	"time": 1587856397118,
 	"environment": {
 		"extension": "1.81.5",
 		"platform": "mac"
@@ -39,6 +39,12 @@
 		"",
 		"map gng openUrl url=\"https://secure.ing.it/login.aspx\" reuse=0",
 		"map nng openUrl url=\"https://secure.ing.it/login.aspx\" reuse=1",
+		"",
+		"map gbg openUrl url=\"https://rarbgunblocked.org/torrents.php\" reuse=0",
+		"map nbg openUrl url=\"https://rarbgunblocked.org/torrents.php\" reuse=1",
+		"",
+		"map glh openUrl url=\"http://localhost:9091/transmission/web/\" reuse=0",
+		"map nlh openUrl url=\"http://localhost:9091/transmission/web/\" reuse=1",
 		""
 	],
 	"searchEngines": "."
