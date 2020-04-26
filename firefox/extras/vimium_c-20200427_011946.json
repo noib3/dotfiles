@@ -1,7 +1,7 @@
 {
 	"name": "Vimium C",
-	"@time": "26/04/2020, 01:13:17",
-	"time": 1587856397118,
+	"@time": "27/04/2020, 01:19:46",
+	"time": 1587943186339,
 	"environment": {
 		"extension": "1.81.5",
 		"platform": "mac"
@@ -45,6 +45,9 @@
 		"",
 		"map glh openUrl url=\"http://localhost:9091/transmission/web/\" reuse=0",
 		"map nlh openUrl url=\"http://localhost:9091/transmission/web/\" reuse=1",
+		"",
+		"map glg openUrl url=\"http://libgen.li/\" reuse=0",
+		"map nlg openUrl url=\"http://libgen.li/\" reuse=1",
 		""
 	],
 	"searchEngines": "."

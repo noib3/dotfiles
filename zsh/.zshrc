@@ -12,48 +12,8 @@ setopt AUTO_CD
 unsetopt CASE_GLOB
 unsetopt BEEP
 
-# Set and export PATH
-PATH=/usr/local/opt/coreutils/libexec/gnubin
-PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
-PATH=$PATH:/usr/local/opt/python@3.8/bin
-PATH=$PATH:/Library/TeX/texbin
-PATH=$PATH:/usr/local/bin
-PATH=$PATH:/usr/sbin
-PATH=$PATH:/usr/bin
-PATH=$PATH:/sbin
-PATH=$PATH:/bin
-export PATH
-
-# Export default editor
-export VISUAL=nvim
-export EDITOR=$VISUAL
-
-# Export locale settings
-export LC_LL=en_US.UTF-8
-export LANG=en_US.UTF-8
-
-# Export custom history/cache files locations
+# Custom history file location
 export HISTFILE=$HOME/.cache/zsh/zsh_history
-export LESSHISTFILE=$HOME/.cache/less/lesshst
-export MPLCONFIGDIR=$HOME/.cache/matplotlib
-export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
-
-# Export LS_COLORS variable used by ls, lf and others for file coloring
-export LS_COLORS=$(printf %s            \
-                     'no=90:'           \
-                     'di=01;34:'        \
-                     'ex=01;32:'        \
-                     'ln=35:'           \
-                     'mh=31:'           \
-                     '*.mp3=33:'        \
-                     '*.md=04;93:'      \
-                     '*.ttf=95:'        \
-                     '*.otf=95:'        \
-                     '*.png=04;92:'     \
-                     '*.jpg=04;92')
-
-# Export fzf default search command
-export FZF_DEFAULT_COMMAND='fd --type f --ignore-file ~/.config/fd/fdignore'
 
 # Enable vi mode
 bindkey -v
@@ -123,6 +83,10 @@ precmd() {
     vcs_info
     echo -ne '\e[5 q'
 }
+
+# Clear the screen automatically when the directory is changed
+# chpwd is executed every time the current directory changes
+chpwd() { printf '\e[H\e[3J' }
 
 # Tab autocompletion
 autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
@@ -225,10 +189,6 @@ accept-line() case $BUFFER in
 esac
 zle -N accept-line
 alias c=''
-
-# Clear the screen automatically when the directory is changed
-# chpwd is executed every time the current directory changes
-chpwd() { printf '\e[H\e[3J' }
 
 # brew install zsh-syntax-highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
