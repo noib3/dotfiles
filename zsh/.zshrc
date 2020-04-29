@@ -1,7 +1,10 @@
 # ------------------------- ZSH CONFIG FILE -------------------------
 
 # Set colorscheme
-source ~/.config/zsh/themes/default.zsh
+source $ZDOTDIR/themes/default.zsh
+
+# Source aliases
+source $ZDOTDIR/.zaliases
 
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
@@ -121,7 +124,7 @@ bindkey '^W' close_window
 fuzzy_edit() {
     file=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
               fzf --read0 --height=50% --layout=reverse) \
-    && $EDITOR ~/$file && printf '\e[5 q'
+    && $EDITOR ~/$file && print -s "${EDITOR} ~/${file}" && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -165,32 +168,6 @@ ndiet_current(){
 }
 zle -N ndiet_current
 bindkey '^X^N' ndiet_current
-
-# Aliases for GUI programs
-alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
-alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
-
-# Aliases to specify program options
-alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
-alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
-alias tmux='tmux -f ~/.config/tmux/tmux.conf'
-alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
-alias grep='grep --color=auto'
-alias tree='tree -aN'
-alias rm='rm -i'
-
-# Aliases for user scripts
-alias -g 2d2small='~/Dropbox/2d2small/2d2small.sh'
-alias -g ndiet='~/Bin/ndiet/ndiet.py'
-alias -g committed='~/scripts/committed.sh'
-alias -g ufetch='~/scripts/ufetch.sh'
-alias -g peek='~/scripts/peek.py'
-alias -g tfin='~/scripts/retired/tfin/oldtfin.sh'
-alias -g Omega='~/scripts/retired/Omega.py'
-alias -g tmd='~/scripts/retired/tmd.sh'
-
-# Other aliases
-alias reboot='osascript -e "tell app \"System Events\" to restart"'
 
 # A single 'c' clears the screen without being added to the command history
 # The alias is just so that zsh-syntax-highlighting doesn't color it in red
