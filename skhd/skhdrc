@@ -70,6 +70,8 @@ ctrl - l : yabai -m window --resize left:25:0
 # Move windows to spaces and follow focus
 alt + cmd - n : yabai -m space --create && \
                 yabai -m window --space last && yabai -m space --focus last
+alt + cmd - w : yabai -m window --close; \
+                yabai -m space --destroy && yabai -m space --focus recent
 alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
 alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2
 alt + cmd - 3 : yabai -m window --space 3 && yabai -m space --focus 3
@@ -91,7 +93,7 @@ ctrl + cmd - 5: yabai -m space --move 5
 
 # Create, destroy, mirror, rotate, balance spaces
 alt - n : yabai -m space --create && yabai -m space --focus last
-alt - w : yabai -m space --destroy && yabai -m space --focus prev
+alt - w : yabai -m space --destroy && yabai -m space --focus recent
 alt - x : yabai -m space --mirror x-axis
 alt - y : yabai -m space --mirror y-axis
 alt - r : yabai -m space --rotate 90

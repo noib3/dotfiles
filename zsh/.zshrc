@@ -3,6 +3,17 @@
 # Set colorscheme
 source ~/.config/zsh/themes/default.zsh
 
+PATH=/usr/local/opt/coreutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/python@3.8/bin
+PATH=$PATH:/Library/TeX/texbin
+PATH=$PATH:/usr/local/bin
+PATH=$PATH:/usr/sbin
+PATH=$PATH:/usr/bin
+PATH=$PATH:/sbin
+PATH=$PATH:/bin
+export PATH
+
 # Set/unset shell options
 setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE

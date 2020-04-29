@@ -5,7 +5,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-surround'
   Plug 'itchyny/lightline.vim'
-  Plug 'chrisbra/Colorizer'
   Plug 'farmergreg/vim-lastplace'
   Plug 'jiangmiao/auto-pairs'
   Plug 'drewtempelmeyer/palenight.vim'
@@ -77,9 +76,6 @@ let g:lightline = {
       \ }
       \ }
 
-" Colorizer
-" let g:colorizer_auto_color=1
-
 " Remove trailing whitespace when saving
 function! StripTrailingWhitespaces()
   let l = line(".")
@@ -89,31 +85,51 @@ function! StripTrailingWhitespaces()
 endfunction
 autocmd BufWritePre * :call StripTrailingWhitespaces()
 
-" Open pdf file created by latex/context document
-function! OpenPdf()
-  let fname = expand('%:p:r').'.pdf'
-  if filereadable(fname)
-    execute 'silent !open '.shellescape(fname, 1)
+" Open the PDF file created by a TeX document
+function! OpenPDF()
+  let filename = expand('%:p:r').'.pdf'
+  if filereadable(filename)
+    execute 'silent !open' shellescape(filename, 1)
   else
     echohl ErrorMsg
-    echomsg 'No pdf file "'.fname.'"'
+    echomsg 'No pdf file "'.filename.'"'
     echohl None
   endif
 endfunction
 
-" Set shorter shiftwidht for some filetypes
+" Close the PDF file created by a TeX document
+function! ClosePDF()
+  let filename = expand('%:p:r').'.pdf'
+  if filereadable(filename)
+      "execute 'silent !touch /Users/noibe/ciao'
+  endif
+endfunction
+
+" Use SyncTex to jump from a line in a TeX document to its PDF output
+function! ForwardSyncTeXSearch()
+  let filename = expand('%:p:r').'.pdf'
+  if filereadable(filename)
+    execute 'silent !/Applications/Skim.app/Contents/SharedSupport/displayline' line('.') shellescape(filename, 1)
+  else
+    echohl ErrorMsg
+    echomsg 'No pdf file "'.filename.'"'
+    echohl None
+  endif
+endfunction
+
+" Set shorter shiftwidths for some filetypes
 autocmd FileType tex,context,yaml,css setlocal shiftwidth=2
 
 " LaTeX
 autocmd FileType tex inoremap <buffer> <C-t> <esc>:!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>a
 autocmd FileType tex nnoremap <buffer> <C-t> :!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>
-autocmd FileType tex nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
-autocmd BufReadPost *.tex :call OpenPdf()
-autocmd FileType tex nnoremap <buffer> <silent> <leader>f :!/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>
+autocmd FileType tex nnoremap <buffer> <silent> <leader>p :call OpenPDF()<CR>
+autocmd FileType tex nnoremap <buffer> <silent> <leader>f :call ForwardSyncTeXSearch()<CR>
+autocmd BufReadPost *.tex :call OpenPDF()
+autocmd BufUnload *.tex :call ClosePDF()
 
 " ConTeXt
-autocmd FileType context setlocal shiftwidth=2
 autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
 autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
-autocmd FileType context nnoremap <buffer> <silent> <leader>p :call OpenPdf()<CR>
-autocmd FileType context nnoremap <buffer> <silent> <leader>f :!/Applications/Skim.app/Contents/SharedSupport/displayline <C-r>=line('.')<CR> %<.pdf<CR>
+autocmd FileType context nnoremap <buffer> <silent> <leader>p :call OpenPDF()<CR>
+autocmd FileType context nnoremap <buffer> <silent> <leader>f :call ForwardSyncTeXSearch()<CR>
