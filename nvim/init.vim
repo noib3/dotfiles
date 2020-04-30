@@ -50,9 +50,9 @@ nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
-nnoremap ss :%s//g<left><left>
-nnoremap <leader>r :so ~/.config/nvim/init.vim<CR>
+nnoremap <leader>r :so ~/.config/nvim/init.vim | echomsg 'ciao'<CR>
 nnoremap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<CR>
+nnoremap ss :%s//g<left><left>
 
 " Colorscheme
 " colorscheme gruvbox
