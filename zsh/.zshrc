@@ -6,16 +6,16 @@ source $ZDOTDIR/themes/default.zsh
 # Source aliases
 source $ZDOTDIR/.zaliases
 
-PATH=/usr/local/opt/coreutils/libexec/gnubin
-PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
-PATH=$PATH:/usr/local/opt/python@3.8/bin
-PATH=$PATH:/Library/TeX/texbin
-PATH=$PATH:/usr/local/bin
-PATH=$PATH:/usr/sbin
-PATH=$PATH:/usr/bin
-PATH=$PATH:/sbin
-PATH=$PATH:/bin
-export PATH
+# PATH=/usr/local/opt/coreutils/libexec/gnubin
+# PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
+# PATH=$PATH:/usr/local/opt/python@3.8/bin
+# PATH=$PATH:/Library/TeX/texbin
+# PATH=$PATH:/usr/local/bin
+# PATH=$PATH:/usr/sbin
+# PATH=$PATH:/usr/bin
+# PATH=$PATH:/sbin
+# PATH=$PATH:/bin
+# export PATH
 
 # Set/unset shell options
 setopt HISTIGNOREDUPS
@@ -28,6 +28,25 @@ unsetopt BEEP
 
 # Custom history file location
 export HISTFILE=$HOME/.cache/zsh/zsh_history
+
+# TODO: add functions to precmd like this
+# autoload add-zsh-hook
+# add-zsh-hook precmd <function_name>
+
+# Export LS_COLORS variable used by ls, lf and others for file coloring
+export LS_COLORS=$(printf %s            \
+                     'no=90:'           \
+                     'di=01;34:'        \
+                     'ex=01;32:'        \
+                     'ln=35:'           \
+                     'mh=31:'           \
+                     '*.mp3=33:'        \
+                     '*.md=04;93:'      \
+                     '*.ttf=95:'        \
+                     '*.otf=95:'        \
+                     '*.png=04;92:'     \
+                     '*.jpg=04;92'      \
+                  )
 
 # Enable vi mode
 bindkey -v
@@ -121,10 +140,10 @@ zle -N close_window
 bindkey '^W' close_window
 
 # Use fd/fzf combo to edit a file..
-fuzzy_edit() {
-    file=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
-              fzf --read0 --height=50% --layout=reverse) \
-    && $EDITOR ~/$file && print -s "${EDITOR} ~/${file}" && printf '\e[5 q'
+function fuzzy_edit() {
+    filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
+                  fzf --read0 --height=50% --layout=reverse) \
+    && $EDITOR ~/$filename && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -132,11 +151,17 @@ fuzzy_edit() {
 zle -N fuzzy_edit
 bindkey '^X^E' fuzzy_edit
 
-# ..search a file..
-fuzzy_search() {
-    file=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
-              fzf --read0 --height=50% --layout=reverse) \
-    && LBUFFER="$LBUFFER~/$file "
+function test() {
+    print -s "This is a test"
+}
+zle -N test
+bindkey '^X^T' test
+
+# ..search a filename and add it to the line buffer..
+function fuzzy_search() {
+    filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
+                  fzf --read0 --height=50% --layout=reverse) \
+    && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
     fi
@@ -145,10 +170,10 @@ zle -N fuzzy_search
 bindkey '^S' fuzzy_search
 
 # ..or to change directory
-fuzzy_cd() {
-    dir=$(fd . ~ -0 --type d --hidden | sed "s=$HOME/==g" |
-             fzf --read0 --height=50% --layout=reverse) \
-    && cd ~/$dir && precmd
+function fuzzy_cd() {
+    dirname=$(fd . ~ -0 --type d --hidden | sed "s=$HOME/==g" |
+                 fzf --read0 --height=50% --layout=reverse) \
+    && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt
     fi
@@ -157,7 +182,7 @@ zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
 # Clear the screen and echo current diet
-ndiet_current(){
+function ndiet_current(){
     clear
     ~/bin/ndiet/ndiet.py -c
     tput civis && read -s -k '?'

@@ -72,7 +72,7 @@ let g:lightline = {
       \ 'colorscheme': 'greyscale',
       \ 'active': {
       \   'left': [ ['mode'], ['filename', 'modified', 'readonly'] ],
-      \   'right': [ ['percent'] ]
+      \   'right': [ ['filetype', 'percent'] ]
       \ }
       \ }
 
@@ -84,6 +84,12 @@ function! StripTrailingWhitespaces()
   call cursor(l, c)
 endfunction
 autocmd BufWritePre * :call StripTrailingWhitespaces()
+
+" Compile a TeX document
+function! CompileTeX()
+  let filename = expand('%:p')
+  execute '!cd $(dirname' shellescape(filename, 1).') && pdflatex -synctex=1' shellescape(filename, 1)
+endfunction
 
 " Open the PDF file created by a TeX document
 function! OpenPDF()
@@ -118,18 +124,16 @@ function! ForwardSyncTeXSearch()
 endfunction
 
 " Set shorter shiftwidths for some filetypes
-autocmd FileType tex,context,yaml,css setlocal shiftwidth=2
+autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2
 
-" LaTeX
-autocmd FileType tex inoremap <buffer> <C-t> <esc>:!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>a
-autocmd FileType tex nnoremap <buffer> <C-t> :!cd $(dirname "%:p") && pdflatex -synctex=1 "%:p"<CR>
-autocmd FileType tex nnoremap <buffer> <silent> <leader>p :call OpenPDF()<CR>
-autocmd FileType tex nnoremap <buffer> <silent> <leader>f :call ForwardSyncTeXSearch()<CR>
+" LaTeX/ConTeXt
+autocmd FileType tex,context inoremap <buffer> <silent> <C-t> <esc>:call CompileTeX()<CR>a
+autocmd FileType tex,context nnoremap <buffer> <silent> <C-t> :call CompileTeX()<CR>
+autocmd FileType tex,context nnoremap <buffer> <silent> <leader>p :call OpenPDF()<CR>
+autocmd FileType tex,context nnoremap <buffer> <silent> <leader>f :call ForwardSyncTeXSearch()<CR>
 autocmd BufReadPost *.tex :call OpenPDF()
 autocmd BufUnload *.tex :call ClosePDF()
 
-" ConTeXt
-autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
-autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
-autocmd FileType context nnoremap <buffer> <silent> <leader>p :call OpenPDF()<CR>
-autocmd FileType context nnoremap <buffer> <silent> <leader>f :call ForwardSyncTeXSearch()<CR>
+" " ConTeXt
+" autocmd FileType context inoremap <buffer> <C-t> <esc>:ConTeXt<CR>a
+" autocmd FileType context nnoremap <buffer> <C-t> :ConTeXt<CR>
