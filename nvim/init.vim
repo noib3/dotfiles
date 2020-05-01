@@ -11,9 +11,12 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-endwise'
   Plug 'junegunn/goyo.vim'
   Plug 'farmergreg/vim-lastplace'
+  " colorschemes
   Plug 'jiangmiao/auto-pairs'
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
+  " syntax
+  Plug 'tridactyl/vim-tridactyl'
 call plug#end()
 
 " Sets
@@ -33,10 +36,13 @@ let g:netrw_home=$HOME.'/.cache/nvim'
 let g:is_posix=1
 
 " Maps
+imap <C-a> <esc>^a
 nmap <C-a> ^
 vmap <C-a> ^
+imap <C-e> <esc>$a
 nmap <C-e> $
 vmap <C-e> $
+imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 nmap <silent> <leader>g :Goyo<cr>

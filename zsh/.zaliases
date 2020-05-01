@@ -3,7 +3,7 @@ alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
 # Aliases to specify program options
-alias ls='ls -Ah --color --quoting-style=literal --group-directories-first'
+alias ls='ls -Ahv --color --quoting-style=literal --group-directories-first'
 alias cal='calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse'
 alias tmux='tmux -f ~/.config/tmux/tmux.conf'
 alias brew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
