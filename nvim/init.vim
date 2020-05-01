@@ -93,7 +93,7 @@ autocmd BufWritePre * :call StripTrailingWhitespaces()
 autocmd BufReadPost *.tex :call PdfOpen()
 autocmd BufUnload   *.tex :call PdfClose()
 
-" Remove trailing whitespace without changing cursor positio
+" Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
   let l = line(".")
   let c = col(".")
@@ -101,7 +101,7 @@ function! StripTrailingWhitespaces()
   call cursor(l, c)
 endfunction
 
-" Compile a TeX document
+" Compile a LaTeX/ConTeXt document
 function! TeXCompile()
   let filename = expand('%:p')
   execute '!cd $(dirname' shellescape(filename, 1).') && pdflatex -synctex=1' shellescape(filename, 1)
@@ -123,15 +123,19 @@ endfunction
 function! PdfClose()
   let filename = expand('%:p:r').'.pdf'
   if filereadable(filename)
+    " let Skim_windows_count = system("yabai -m query --windows | jq -r \".[] | select(.app==\\\"Skim\\\").title\" | wc -l")
     " let Skim_windows = system("yabai -m query --windows | jq -r \".[] | select(.app==\\\"Skim\\\")\"")
     let Skim_windows = system("cat /Users/noibe/windows | jq -r \".[] | select(.app==\\\"Skim\\\")\"")
     let Skim_windows_count = systemlist(Skim_windows." \| jq -r \".id\" | wc -l")
-    " let Skim_windows_count = system("yabai -m query --windows | jq -r \".[] | select(.app==\\\"Skim\\\").title\" | wc -l")
-    " if Skim_windows_count == 1
-    "   execute "silent !osascript -e \'quit app \"Skim\"\'"
-    " elseif Skim_windows_count > 1
+    " if there is just one Skim window and its title matches the filename of
+    " the TeX file in the buffer, quit Skim
+    if Skim_windows_count == 1
+      execute "silent !osascript -e \'quit app \"Skim\"\'"
+    " if there are more Skim windows look for the one whose title matches the
+    " filename of the TeX file in the buffer and close it
+    elseif Skim_windows_count > 1
 
-    " endif
+    endif
   endif
 endfunction
 

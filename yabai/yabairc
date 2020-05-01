@@ -40,6 +40,7 @@ yabai -m rule --add app="^Keychain Access$" manage=off
 yabai -m rule --add app="^Disk Utility$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Font Book$" manage=off
 
 # Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above
