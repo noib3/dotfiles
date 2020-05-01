@@ -114,7 +114,7 @@ alt + shift - d : \
                      SPAWN_ID=$(yabai -m query --windows | jq -r ".[] | select(.pid==$YABAI_PROCESS_ID).id"); \
                      yabai -m window $SPAWN_ID --toggle topmost; \
                      yabai -m window $SPAWN_ID --toggle float; \
-                     yabai -m window $SPAWN_ID --resize abs:312:600; \
+                     yabai -m window --resize abs:312:600; \
                      yabai -m window $SPAWN_ID --move abs:869:200; \
                      skhd --key \"ctrl - x\" && skhd --key \"ctrl - n\""; \
     open -na /Applications/Alacritty.app
