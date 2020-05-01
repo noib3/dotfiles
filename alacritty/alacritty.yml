@@ -18,7 +18,8 @@ font:
 schemes:
   pers: &pers
     primary:
-      background: '0x131520'
+      background: '0x24272e'
+      # background: '0x131520'
       foreground: '0xC7C7C7'
     cursor:
       text: '0xFEFFFF'
