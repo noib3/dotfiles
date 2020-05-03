@@ -22,7 +22,8 @@ call plug#end()
 " Sets
 set splitright splitbelow
 set number relativenumber
-set shiftwidth=4 tabstop=4
+set shiftwidth=4
+set tabstop=4
 set expandtab
 set clipboard+=unnamedplus
 set termguicolors
@@ -76,8 +77,9 @@ autocmd InsertEnter * norm zz
 autocmd BufWritePre * :call StripTrailingWhitespaces()
 autocmd FileType * setlocal formatoptions-=cro
 autocmd FileType vim,sh,zsh,python execute "set cc=" . (&cc == "" ? "80" : "")
-autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2
+autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2 tabstop=2
 autocmd FileType tex,context nnoremap <buffer> <silent> <C-t> :call TeXCompile()<cr>
+autocmd FileType tex,context inoremap <buffer> <silent> <C-t> <esc>:call TeXCompile()<cr>a
 autocmd FileType tex,context nnoremap <buffer> <silent> <localleader>p :call PdfOpen()<cr>
 autocmd FileType tex,context nnoremap <buffer> <silent> <localleader>f :call SyncTeXForwardSearch()<cr>
 autocmd BufReadPost *.tex :call PdfOpen()
@@ -125,7 +127,7 @@ function! PdfClose()
       let filename = system("basename ".shellescape(filepath,1))
       for window in skim_windows
         if system("sed 's/\.pdf.*/.pdf/'", window.title) == filename
-          execute "silent !yabai -m window --focus ".shellescape(window.id,1)." && yabai -m window --close"
+          execute "silent !yabai -m window --focus ".shellescape(window.id,1)." && yabai -m window --close && yabai -m window --focus recent"
         endif
       endfor
     endif
