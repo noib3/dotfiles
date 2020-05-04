@@ -128,7 +128,7 @@ bindkey '^W' close_window
 function fuzzy_edit() {
     filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
                   fzf --read0 --height=50% --layout=reverse) \
-    && $EDITOR ~/$filename && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
+    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -137,7 +137,7 @@ zle -N fuzzy_edit
 bindkey '^X^E' fuzzy_edit
 
 function test() {
-    print -s "This is a test"
+    fc -R =(print This)
 }
 zle -N test
 bindkey '^X^T' test

@@ -37,7 +37,7 @@ let g:netrw_home=$HOME.'/.cache/nvim'
 let g:is_posix=1
 
 " Maps
-imap <C-a> <esc>^a
+imap <C-a> <esc>^i
 nmap <C-a> ^
 vmap <C-a> ^
 imap <C-e> <esc>$a

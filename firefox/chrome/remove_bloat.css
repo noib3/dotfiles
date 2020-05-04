@@ -1,0 +1,64 @@
+/* Navigation bar */
+#nav-bar {
+  visibility: collapse !important;
+}
+
+/* New tab button */
+#tabs-newtab-button {
+  display: none !important;
+}
+
+/* Bookmarks toolbar under navbar */
+#PersonalToolbar {
+  display: none !important;
+}
+
+/* New tab button when more tabs are open then you can show at once */
+#new-tab-button {
+  display: none !important;
+}
+
+/* All tab button when more tabs are open then you can show at once */
+#alltabs-button {
+  display: none !important;
+}
+
+/* Bottom left loading status when loading a page */
+#statuspanel[type="status"] {
+  display: none !important;
+}
+
+/* Bottom left url preview when hovering over a link */
+#statuspanel[type="overLink"] {
+  display: none !important;
+}
+
+/* Close, minizime and maximize window buttons */
+.titlebar-buttonbox-container {
+  display: none !important;
+}
+
+/* Empty space before the tab bar */
+.titlebar-spacer[type="pre-tabs"] {
+  display: none !important;
+}
+
+/* Empty space after the tab bar */
+.titlebar-spacer[type="post-tabs"] {
+  display: none !important;
+}
+
+/* Focused tab highlight line */
+.tab-line[selected="true"] {
+  display: none !important;
+}
+
+/* Scroll left button when more tabs are open then you can show at once */
+.scrollbutton-up {
+  display: none !important;
+}
+
+/* Scroll left button when more tabs are open then you can show at once */
+.scrollbutton-down {
+  display: none !important;
+}

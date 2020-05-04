@@ -1,9 +1,7 @@
-set newtab about:blank
-
 bind / fillcmdline find
 
-bind j scrollline 7
-bind k scrollline -7
+bind j scrollline 5
+bind k scrollline -5
 
 unbind --mode=normal n
 unbind --mode=normal gr
