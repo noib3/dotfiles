@@ -13,29 +13,26 @@ cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty -e calcurse -C ~/
 cmd - b [
     *         : open -na /Applications/Firefox.app
     "Firefox" ~
-    "Vivaldi" : skhd --key "alt + cmd - b"
 ]
 
 # If focused window is a browser, open downloads sidebar
 cmd - d [
     "Firefox" : skhd --key "f4"
-    "Vivaldi" : skhd --key "alt + cmd - l"
 ]
 
 # If focused window is a browser, open bitwarden sidebar
 cmd - e [
     "Firefox" : skhd --key "shift + alt - y"
-    "Vivaldi" : skhd --key "alt + cmd - e"
 ]
 
 # Disable cmd-s in some programs
 cmd - s [
     "Firefox" : false
-    "Vivaldi" : false
 ]
 
-# Disable cmd-m in every program
+# Disable cmd-m and cmd-h in every program
 cmd - m : false
+cmd - h : false
 
 # Focus windows
 alt - up    : yabai -m window --focus north

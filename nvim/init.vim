@@ -76,7 +76,7 @@ set statusline+=%y\      " filetype of file in buffer
 autocmd InsertEnter * norm zz
 autocmd BufWritePre * :call StripTrailingWhitespaces()
 autocmd FileType * setlocal formatoptions-=cro
-autocmd FileType vim,sh,zsh,python execute "set cc=" . (&cc == "" ? "80" : "")
+autocmd FileType vim,sh,zsh,python,conf execute "set cc=" . (&cc == "" ? "80" : "")
 autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2 tabstop=2
 autocmd FileType tex,context nnoremap <buffer> <silent> <C-t> :call TeXCompile()<cr>
 autocmd FileType tex,context inoremap <buffer> <silent> <C-t> <esc>:call TeXCompile()<cr>a

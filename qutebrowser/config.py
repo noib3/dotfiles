@@ -43,8 +43,6 @@ config.bind("<Meta-w>", "tab-close", mode="insert")
 config.bind("<Meta-r>", "config-source", mode="normal")
 config.bind("<Meta-r>", "config-source", mode="insert")
 config.bind("<Meta-r>", "config-source", mode="command")
-#config.bind("<Meta-t>", f"open -t {HOME_PAGE}", mode="normal")
-#config.bind("<Meta-t>", f"open -t {HOME_PAGE}", mode="insert")
 config.bind("<Meta-n>", f"open -w {HOME_PAGE}", mode="normal")
 config.bind("<Meta-n>", f"open -w {HOME_PAGE}", mode="insert")
 
@@ -85,8 +83,23 @@ config.bind("nyt", "open -t https://youtube.com")
 config.bind("gtw", "open https://twitch.tv")
 config.bind("ntw", "open -t https://twitch.tv")
 
-config.bind("gdf", "open https://github.com/n0ibe/dotfiles")
-config.bind("ndf", "open -t https://github.com/n0ibe/dotfiles")
+config.bind("gnf", "open https://github.com/n0ibe/dotfiles")
+config.bind("nnf", "open -t https://github.com/n0ibe/dotfiles")
+
+config.bind("gel", "open https://elearning.df.unipi.it/")
+config.bind("nel", "open -t https://elearning.df.unipi.it/")
+
+config.bind("gng", "open https://secure.ing.it/login.aspx")
+config.bind("nng", "open -t https://secure.ing.it/login.aspx")
+
+config.bind("gbg", "open https://rarbgunblocked.org/torrents.php")
+config.bind("nbg", "open -t https://rarbgunblocked.org/torrents.php")
+
+config.bind("glh", "open http://localhost:9091/transmission/web/")
+config.bind("nlh", "open -t http://localhost:9091/transmission/web/")
+
+config.bind("glg", "open http://libgen.li/")
+config.bind("nlg", "open -t http://libgen.li/")
 
 # Misc bindings
 config.bind("zt", "config-cycle tabs.show always switching")
@@ -98,3 +111,4 @@ c.statusbar.hide = True
 c.messages.timeout = 5000
 c.tabs.last_close = "close"
 #c.window.hide_decoration = True
+c.url.searchengines={"DEFAULT": "https://google.com/search?q={}", "yt": "https://youtube.com/results?search_query={}"}
