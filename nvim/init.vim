@@ -42,7 +42,7 @@ nmap <C-a> ^
 vmap <C-a> ^
 imap <C-e> <esc>$a
 nmap <C-e> $
-vmap <C-e> $
+vmap <C-e> g_
 imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>

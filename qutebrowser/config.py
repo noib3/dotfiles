@@ -1,3 +1,5 @@
+config.load_autoconfig()
+
 # Constants
 HOME_PAGE="https://google.com"
 LIGHT_GRAY="#626262"
@@ -11,7 +13,7 @@ c.colors.statusbar.normal.bg = DARK_GRAY
 c.colors.statusbar.command.bg = c.colors.statusbar.normal.bg
 
 # Tabs
-c.tabs.padding = {"bottom": 2, "left": 0, "right": 7, "top": 1}
+c.tabs.padding = {"bottom": 0, "left": 0, "right": 7, "top": 0}
 c.tabs.indicator.padding = {"bottom": 0, "left": 0, "right": 7, "top": 0}
 c.tabs.indicator.width = 1
 c.tabs.title.format = "{index}: {current_title}"
@@ -28,12 +30,9 @@ c.fonts.default_size = "17pt"
 
 # Search engines
 c.url.searchengines = {
-    "DEFAULT": "https://google.com/search?q{}",
+    "DEFAULT": "https://google.com/search?q={}",
     "yt": "https://youtube.com/results?search_query={}"
 }
-
-#
-c.bindings.key_mappings.update( {"<Meta-l>": "o", "<Meta-t>": "O"} )
 
 # Command key bindings
 config.bind("<Meta-q>", "quit", mode="normal")
@@ -53,9 +52,7 @@ config.bind(f"<Meta-0>", "tab-focus 10", mode="normal")
 config.bind(f"<Meta-0>", "tab-focus 10", mode="insert")
 
 config.bind(f"<Meta-left>", "back", mode="normal")
-config.bind(f"<Meta-left>", "back", mode="insert")
 config.bind(f"<Meta-right>", "forward", mode="normal")
-config.bind(f"<Meta-right>", "forward", mode="insert")
 
 # Navigation bindings
 config.unbind("n")
@@ -105,10 +102,9 @@ config.bind("nlg", "open -t http://libgen.li/")
 config.bind("zt", "config-cycle tabs.show always switching")
 
 # Misc
-c.window.title_format = "qutebrowser"
 c.url.start_pages = [HOME_PAGE]
 c.statusbar.hide = True
-c.messages.timeout = 5000
+c.messages.timeout = 2000
 c.tabs.last_close = "close"
 #c.window.hide_decoration = True
-c.url.searchengines={"DEFAULT": "https://google.com/search?q={}", "yt": "https://youtube.com/results?search_query={}"}
+c.bindings.key_mappings.update( {"<Meta-t>": "O"} )

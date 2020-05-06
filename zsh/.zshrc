@@ -93,7 +93,7 @@ bindkey -M visual S add-surround
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{$git_onbr_clr}on %F{$git_main_clr} %b%f'
-PROMPT='%F{$reg_dir_clr}[%n %F{$git_onbr_clr}in %F{$reg_dir_clr}%1~${vcs_info_msg_0_}] %F{$reg_div_clr}>%f '
+PROMPT='%F{$reg_dir_clr}%1~${vcs_info_msg_0_} %F{$reg_div_clr}>%f '
 
 # Get git infos and reset cursor to its insert mode shape
 # precmd is executed before each prompt
@@ -124,7 +124,7 @@ close_window() {
 zle -N close_window
 bindkey '^W' close_window
 
-# Use fd/fzf combo to edit a file..
+# Use fd and fzf to edit a file..
 function fuzzy_edit() {
     filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
                   fzf --read0 --height=50% --layout=reverse) \

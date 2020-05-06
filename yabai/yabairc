@@ -1,5 +1,9 @@
 # ------------------------ YABAI CONFIG FILE ------------------------
 
+# NOTE:
+# This config file is for yabai v2.4.3, the last version that implemented
+# window borders.
+
 # Bar settings
 yabai -m config status_bar                      off
 
@@ -41,6 +45,7 @@ yabai -m rule --add app="^Disk Utility$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
+yabai -m rule --add title="^ndiet$" manage=off
 
 # Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above
