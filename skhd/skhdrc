@@ -7,7 +7,7 @@ cmd - return : open -na /Applications/Alacritty.app
 cmd - f : /Applications/Alacritty.app/Contents/MacOS/alacritty -e ranger ~/Downloads
 
 # Show current diet
-cmd - d : /Applications/Alacritty.app/Contents/MacOS/alacritty -t ndiet -d 49 20 --position 800 200 -e lf
+cmd - g : /Applications/Alacritty.app/Contents/MacOS/alacritty -t ndiet -d 49 20 --position 800 200 -e lf
 
 # Launch calcurse
 cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
