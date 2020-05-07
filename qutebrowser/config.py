@@ -66,6 +66,8 @@ config.bind(f"<Meta-right>", "forward", mode="normal")
 config.unbind("n")
 config.unbind("gr")
 config.unbind("gm")
+config.unbind("gb")
+config.unbind("gl")
 
 config.bind("gh", f"open {HOME_PAGE}")
 config.bind("nh", f"open -t {HOME_PAGE}")
@@ -114,5 +116,5 @@ c.url.start_pages = [HOME_PAGE]
 c.statusbar.hide = True
 c.messages.timeout = 2000
 c.tabs.last_close = "close"
-#c.window.hide_decoration = True
+# c.window.hide_decoration = True
 c.bindings.key_mappings.update( {"<Meta-t>": "O"} )

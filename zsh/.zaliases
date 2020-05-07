@@ -1,6 +1,5 @@
 # Aliases for GUI programs
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
-alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox'
 
 # Aliases to specify program options
 alias ls='ls -Ahv --color --quoting-style=literal --group-directories-first'
