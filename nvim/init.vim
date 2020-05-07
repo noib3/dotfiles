@@ -2,6 +2,14 @@
 
 " TODO
 " 1. color splits
+" 2. color background and foreground of active and non active tabs
+" 3. remove status line
+" 4. clear the command line instead of cluttering it when saving
+" 5. extend tab width to the max allowed (1 tab -> 100%, 2 tabs -> 50% etc.)
+" 6. unsaved changes mark is a single * after the filename without any spaces
+" 7. make tabs numbered
+" 8. filetype icon before tab number
+" 9. command to hide and show the tabline
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -46,6 +54,7 @@ vmap <C-e> g_
 imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
+imap <silent> <C-w> <esc>:q<cr>
 nmap <silent> <leader>g :Goyo<cr>
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
@@ -54,6 +63,10 @@ nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
+" paste replacing selected text without overwriting register
+" doesn't work if the selection extends to the end of the line
+xnoremap p "_dP
+xnoremap P "_dP
 
 " Colorscheme
 colorscheme onedark
@@ -62,15 +75,24 @@ colorscheme onedark
 highlight Normal guibg=NONE ctermbg=NONE
 highlight Visual guibg=#7aa6da guifg=#ffffff ctermbg=blue ctermfg=white
 highlight Comment gui=italic cterm=italic
+" highlight TabLineSel guibg=#7aa6da guifg=#abb2bf
 
 " Statusline
 set statusline=
-set statusline+=\ %F\ \  " full path to file in buffer
-set statusline+=%m       " modified flag
-set statusline+=%h       " help buffer flag
-set statusline+=%r       " readonly flag
-set statusline+=%=       " switch from left to right side
-set statusline+=%y\      " filetype of file in buffer
+" set statusline+=\ %F\ \  " full path to file in buffer
+" set statusline+=%m       " modified flag
+" set statusline+=%h       " help buffer flag
+" set statusline+=%r       " readonly flag
+" set statusline+=%=       " switch from left to right side
+" set statusline+=%y\      " filetype of file in buffer
+
+set showtabline=2
+set tabline+=\ %t\ \  " full path to file in buffer
+set tabline+=%m       " modified flag
+set tabline+=%h       " help buffer flag
+set tabline+=%r       " readonly flag
+set tabline+=%=       " switch from left to right side
+set tabline+=%y\      " filetype of file in buffer
 
 " Autocmds
 autocmd InsertEnter * norm zz

@@ -6,17 +6,6 @@ source $ZDOTDIR/themes/default.zsh
 # Source aliases
 source $ZDOTDIR/.zaliases
 
-# PATH=/usr/local/opt/coreutils/libexec/gnubin
-# PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
-# PATH=$PATH:/usr/local/opt/python@3.8/bin
-# PATH=$PATH:/Library/TeX/texbin
-# PATH=$PATH:/usr/local/bin
-# PATH=$PATH:/usr/sbin
-# PATH=$PATH:/usr/bin
-# PATH=$PATH:/sbin
-# PATH=$PATH:/bin
-# export PATH
-
 # Set/unset shell options
 setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE
@@ -125,22 +114,21 @@ zle -N close_window
 bindkey '^W' close_window
 
 # Use fd and fzf to edit a file..
+# fc -R adds the command to the history without needing to issue a command
+# (see here https://unix.stackexchange.com/questions/583443/adding-a-string-to-the-zsh-history)
+# however it seems like that alone doesn't save the command between sessions, and
+# that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
+# a line, which is needed if you leave (n)vim in normal mode with the block cursor
 function fuzzy_edit() {
     filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
                   fzf --read0 --height=50% --layout=reverse) \
-    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") && printf '\e[5 q'
+    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
 }
 zle -N fuzzy_edit
 bindkey '^X^E' fuzzy_edit
-
-function test() {
-    fc -R =(print This)
-}
-zle -N test
-bindkey '^X^T' test
 
 # ..search a filename and add it to the line buffer..
 function fuzzy_search() {
@@ -166,19 +154,6 @@ function fuzzy_cd() {
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
-# Clear the screen and echo current diet
-function ndiet_current(){
-    clear
-    ~/bin/ndiet/ndiet.py -c
-    tput civis && read -s -k '?'
-    if zle; then
-        yabai -m window --close
-    fi
-    tput cnorm
-}
-zle -N ndiet_current
-bindkey '^X^N' ndiet_current
-
 # A single 'c' clears the screen without being added to the command history
 # The alias is just so that zsh-syntax-highlighting doesn't color it in red
 accept-line() case $BUFFER in
@@ -199,3 +174,6 @@ source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh
+
+# git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
+source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh

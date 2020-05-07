@@ -4,6 +4,8 @@ config.load_autoconfig()
 HOME_PAGE="https://google.com"
 LIGHT_GRAY="#626262"
 DARK_GRAY="#393939"
+TEXT_ACTIVE="#ebebeb"
+TEXT_INACTIVE="#b6b6b6"
 
 # Statusbar
 c.statusbar.widgets = []
@@ -18,7 +20,13 @@ c.tabs.indicator.padding = {"bottom": 0, "left": 0, "right": 7, "top": 0}
 c.tabs.indicator.width = 1
 c.tabs.title.format = "{index}: {current_title}"
 
-# Tabs colors
+# Tabs foreground
+c.colors.tabs.odd.fg = TEXT_INACTIVE
+c.colors.tabs.even.fg = c.colors.tabs.odd.fg
+c.colors.tabs.selected.odd.fg = TEXT_ACTIVE
+c.colors.tabs.selected.even.fg = c.colors.tabs.selected.odd.fg
+
+# Tabs background
 c.colors.tabs.odd.bg = DARK_GRAY
 c.colors.tabs.even.bg = c.colors.tabs.odd.bg
 c.colors.tabs.selected.odd.bg = LIGHT_GRAY
