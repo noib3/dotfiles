@@ -4,18 +4,26 @@
 
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
-PATH=$PATH:/usr/local/opt/python@3.8/bin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/usr/local/bin
 PATH=$PATH:/usr/bin
 PATH=$PATH:/bin
 PATH=$PATH:/usr/sbin
 PATH=$PATH:/sbin
+PATH=$PATH:/Applications/Alacritty.app/Contents/MacOS
+PATH=$PATH:/Applications/qutebrowser.app/Contents/MacOS
+PATH=$PATH:/Users/noibe/scripts
+PATH=$PATH:/Users/noibe/scripts/pfetch
+PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
 
 # Preferred editor
 export VISUAL=nvim
 export EDITOR=$VISUAL
+
+# Export terminal and browser
+export TERMINAL=alacritty
+export BROWSER=qutebrowser
 
 # Locale settings
 export LC_LL=en_US.UTF-8
@@ -25,6 +33,9 @@ export LANG=en_US.UTF-8
 export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
+
+# Don't update homebrew automatically every time it's launched
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Export LS_COLORS variable used by ls, lf and others for file coloring
 export LS_COLORS=$(printf %s            \

@@ -1,9 +1,20 @@
 config.load_autoconfig()
 
+# Completion settings
+c.completion.height = "25%"
+c.completion.open_categories = ["history"]
+c.completion.scrollbar.width = 0
+c.completion.show = "auto"
+c.completion.shrink = True
+c.completion.timestamp_format = ""
+c.completion.web_history.max_items = 10
+
 # Constants
 HOME_PAGE="https://google.com"
 LIGHT_GRAY="#626262"
+# LIGHT_GRAY="#787878"
 DARK_GRAY="#393939"
+DARK_GRAYA="#4b4b4b"
 TEXT_ACTIVE="#ebebeb"
 TEXT_INACTIVE="#b6b6b6"
 
@@ -15,9 +26,8 @@ c.colors.statusbar.normal.bg = DARK_GRAY
 c.colors.statusbar.command.bg = c.colors.statusbar.normal.bg
 
 # Tabs
-c.tabs.padding = {"bottom": 0, "left": 0, "right": 7, "top": 0}
-c.tabs.indicator.padding = {"bottom": 0, "left": 0, "right": 7, "top": 0}
-c.tabs.indicator.width = 1
+c.tabs.indicator.width = 0
+c.tabs.padding = {"bottom": 1, "left": 7, "right": 7, "top": 1}
 c.tabs.title.format = "{index}: {current_title}"
 
 # Tabs foreground
@@ -28,6 +38,7 @@ c.colors.tabs.selected.even.fg = c.colors.tabs.selected.odd.fg
 
 # Tabs background
 c.colors.tabs.odd.bg = DARK_GRAY
+# c.colors.tabs.even.bg = DARK_GRAYA
 c.colors.tabs.even.bg = c.colors.tabs.odd.bg
 c.colors.tabs.selected.odd.bg = LIGHT_GRAY
 c.colors.tabs.selected.even.bg = c.colors.tabs.selected.odd.bg
@@ -68,6 +79,7 @@ config.unbind("gr")
 config.unbind("gm")
 config.unbind("gb")
 config.unbind("gl")
+config.unbind("gt")
 
 config.bind("gh", f"open {HOME_PAGE}")
 config.bind("nh", f"open -t {HOME_PAGE}")

@@ -3,13 +3,16 @@
 " TODO
 " 1. color splits
 " 2. color background and foreground of active and non active tabs
-" 3. remove status line
 " 4. clear the command line instead of cluttering it when saving
 " 5. extend tab width to the max allowed (1 tab -> 100%, 2 tabs -> 50% etc.)
 " 6. unsaved changes mark is a single * after the filename without any spaces
 " 7. make tabs numbered
 " 8. filetype icon before tab number
 " 9. command to hide and show the tabline
+" 10. vim indent consider first level too
+" 11. vim indent change color to the same color of comments
+" 12. set shiftwidth=2 for tex files
+" 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -19,6 +22,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-endwise'
   Plug 'junegunn/goyo.vim'
   Plug 'farmergreg/vim-lastplace'
+  Plug 'Yggdroot/indentLine'
   " colorschemes
   Plug 'jiangmiao/auto-pairs'
   Plug 'morhetz/gruvbox'
@@ -37,11 +41,22 @@ set clipboard+=unnamedplus
 set termguicolors
 set noshowmode
 set undofile
+set laststatus=0
+
+" Tabline
+set showtabline=1
+set tabline+=\ %t\ \  " full path to file in buffer
+set tabline+=%m       " modified flag
+set tabline+=%h       " help buffer flag
+set tabline+=%r       " readonly flag
+set tabline+=%=       " switch from left to right side
+set tabline+=%y\      " filetype of file in buffer
 
 " Lets
 let mapleader=","
 let maplocalleader=","
 let g:netrw_home=$HOME.'/.cache/nvim'
+let g:tex_conceal=''
 let g:is_posix=1
 
 " Maps
@@ -66,7 +81,6 @@ nnoremap <leader>d <C-w><C-l>
 " paste replacing selected text without overwriting register
 " doesn't work if the selection extends to the end of the line
 xnoremap p "_dP
-xnoremap P "_dP
 
 " Colorscheme
 colorscheme onedark
@@ -76,23 +90,6 @@ highlight Normal guibg=NONE ctermbg=NONE
 highlight Visual guibg=#7aa6da guifg=#ffffff ctermbg=blue ctermfg=white
 highlight Comment gui=italic cterm=italic
 " highlight TabLineSel guibg=#7aa6da guifg=#abb2bf
-
-" Statusline
-set statusline=
-" set statusline+=\ %F\ \  " full path to file in buffer
-" set statusline+=%m       " modified flag
-" set statusline+=%h       " help buffer flag
-" set statusline+=%r       " readonly flag
-" set statusline+=%=       " switch from left to right side
-" set statusline+=%y\      " filetype of file in buffer
-
-set showtabline=2
-set tabline+=\ %t\ \  " full path to file in buffer
-set tabline+=%m       " modified flag
-set tabline+=%h       " help buffer flag
-set tabline+=%r       " readonly flag
-set tabline+=%=       " switch from left to right side
-set tabline+=%y\      " filetype of file in buffer
 
 " Autocmds
 autocmd InsertEnter * norm zz
@@ -140,11 +137,11 @@ function! PdfClose()
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
     " if there is just one Skim window and its title matches the filename of
-    " the TeX file in the buffer, quit Skim
+    " the file in the buffer, quit Skim
     if len(skim_windows) == 1
       execute "silent !osascript -e \'quit app \"Skim\"\'"
     " if there are more Skim windows look for the one whose title matches the
-    " filename of the TeX file in the buffer and close it
+    " filename of the file in the buffer and close it
     elseif len(skim_windows) > 1
       let filename = system("basename ".shellescape(filepath,1))
       for window in skim_windows

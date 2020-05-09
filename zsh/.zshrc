@@ -95,14 +95,6 @@ precmd() {
 # chpwd is executed every time the current directory changes
 chpwd() { printf '\e[H\e[3J' }
 
-# Tab autocompletion
-autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-zmodload zsh/complist
-_comp_options+=(globdots)
-
 # Disable ctrl+s
 stty -ixon
 
@@ -122,7 +114,8 @@ bindkey '^W' close_window
 function fuzzy_edit() {
     filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
                   fzf --read0 --height=50% --layout=reverse) \
-    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
+    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") \
+    && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -155,7 +148,7 @@ zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
 # A single 'c' clears the screen without being added to the command history
-# The alias is just so that zsh-syntax-highlighting doesn't color it in red
+# The alias is just so that fast-syntax-highlighting doesn't color it in red
 accept-line() case $BUFFER in
   (c) printf '\e[H\e[3J'; BUFFER=; zle redisplay;;
   (*) zle .accept-line
@@ -163,8 +156,16 @@ esac
 zle -N accept-line
 alias c=''
 
-# brew install zsh-syntax-highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Tab autocompletion
+autoload -Uz compinit
+compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
+_comp_options+=(globdots)
+
+# git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
+source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh
+
+# git clone https://github.com/zdharma/fast-syntax-highlighting /usr/local/share/fast-syntax-highlighting
+source /usr/local/share/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 # brew install zsh-autosuggestions
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -174,6 +175,3 @@ source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh
-
-# git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
-source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh

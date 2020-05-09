@@ -1,16 +1,22 @@
 # ------------------------ SKHD CONFIG FILE -------------------------
 
-# Open a new terminal window
-cmd - return : open -na /Applications/Alacritty.app
+# Open a browser window
+cmd - b : $BROWSER
 
-# Launch lf in downloads folder
-cmd - f : /Applications/Alacritty.app/Contents/MacOS/alacritty -e ranger ~/Downloads
+# Open a terminal
+cmd - return : $TERMINAL
+cmd - f      : $TERMINAL -e lf ~/Downloads
+cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
+
+# Open a file
+cmd - o : alacritty -t opener --dimensions 75 8 --position 704 300 -e \
+                       zsh -c 'fd -0 --type f --hidden | \
+                               fzf --read0 --height=50% --layout=reverse | \
+                               (nohup xargs -I {} $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
 
 # Show current diet
-cmd - g : /Applications/Alacritty.app/Contents/MacOS/alacritty -t ndiet -d 34 15 --position 868 250 -e zsh -c '/Users/noibe/bin/ndiet/ndiet.py -c && tput civis && read -s -k "?"'
-
-# Launch calcurse
-cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
+cmd - g : alacritty -t ndiet --dimensions 34 14 --position 868 250 -e \
+                       zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
 # Disable cmd-m and cmd-h in every program
 cmd - m : false
@@ -79,7 +85,7 @@ alt - r : yabai -m space --rotate 90
 alt - b : yabai -m space --balance
 
 # Screenshot the whole screen
-shift + cmd - 3 : screencapture ~/Dropbox/Screenshots/whole_$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
+shift + cmd - 3 : screencapture ~/Dropbox/Screenshots/whole_$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
 
 # Screenshot a portion of the screen
-shift + cmd - 4 : screencapture -i ~/Dropbox/Screenshots/portion_$(/usr/local/opt/coreutils/libexec/gnubin/date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
+shift + cmd - 4 : screencapture -i ~/Dropbox/Screenshots/portion_$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png

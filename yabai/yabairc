@@ -30,11 +30,11 @@ yabai -m config mouse_action2                   resize
 
 # Space settings
 yabai -m config layout                          bsp
-yabai -m config top_padding                     35
-yabai -m config bottom_padding                  35
-yabai -m config left_padding                    35
-yabai -m config right_padding                   35
-yabai -m config window_gap                      15
+yabai -m config top_padding                     30
+yabai -m config bottom_padding                  30
+yabai -m config left_padding                    30
+yabai -m config right_padding                   30
+yabai -m config window_gap                      13
 
 # Unmanaged programs
 yabai -m rule --add app="^Digital Colour Meter$" manage=off
@@ -45,7 +45,9 @@ yabai -m rule --add app="^Disk Utility$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
-yabai -m rule --add title="^ndiet$" manage=off
+
+yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on
+yabai -m rule --add title="^opener$" manage=off layer=above sticky=on
 
 # Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above
