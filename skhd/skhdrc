@@ -100,5 +100,5 @@ shift + cmd - 3 : screencapture ~/Dropbox/Screenshots/$(date --rfc-3339=seconds 
                                                         sed 's/+.*$//;s/ /@/;s/-/:/g').png
 
 # Screenshot a portion of the screen
-shift + cmd - 3 : screencapture -i ~/Dropbox/Screenshots/$(date --rfc-3339=seconds | \
+shift + cmd - 4 : screencapture -i ~/Dropbox/Screenshots/$(date --rfc-3339=seconds | \
                                                            sed 's/+.*$//;s/ /@/;s/-/:/g').png
