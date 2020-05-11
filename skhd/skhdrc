@@ -9,10 +9,18 @@ cmd - f      : $TERMINAL -e lf ~/Downloads
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
 
 # Open a file
-cmd - o : alacritty -t opener --dimensions 75 8 --position 704 300 -e \
-                       zsh -c 'fd -0 --type f --hidden | \
-                               fzf --read0 --height=50% --layout=reverse | \
-                               (nohup xargs -I {} $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
+cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
+                        --dimensions 64 6 --position 684 231 -t fuzzy_opener \
+                        -e zsh -c 'printf "\e[5 q" && \
+                                   fd --type f --hidden --color always | \
+                                   sed "s/\[1;34m/\[90m/g" | \
+                                   fzf --prompt="  " --pointer="→" \
+                                       --no-info --ansi \
+                                       --color="hl:-1,hl+:-1" | \
+                                   # xargs file --mime-type -b | \
+                                   (nohup xargs -I{} $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
+                                   # (nohup xargs -I'{}' zsh -c 'case $1 in; text/*) $TERMINAL -e zsh -c "$EDITOR $1" &>/dev/null;; *) open $1 &>/dev/null;; esac' sh {} & )
+# file --mime-type -b ~/scripts/peek | xargs -I'{}' zsh -c 'case $1 in; text/*) echo "is a test";; *) echo "bho" ;; esac' sh {}
 
 # Show current diet
 cmd - g : alacritty -t ndiet --dimensions 34 14 --position 868 250 -e \
@@ -64,8 +72,8 @@ alt + cmd - 4 : yabai -m window --space 4 && yabai -m space --focus 4
 alt + cmd - 5 : yabai -m window --space 4 && yabai -m space --focus 5
 
 # Focus spaces
-alt - 1 : yabai -m space --focus 1
-alt - 2 : yabai -m space --focus 2
+alt - 1 : yabai -m space --focus 1 && yabai -m window --focus prev
+alt - 2 : yabai -m space --focus 2 && yabai -m window --focus prev
 alt - 3 : yabai -m space --focus 3
 alt - 4 : yabai -m space --focus 4
 

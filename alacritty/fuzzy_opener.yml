@@ -1,0 +1,44 @@
+# Font
+font:
+  normal:
+    family: Iosevka Nerd Font
+  size: 21.0
+  offset:
+    y: 1
+
+# Colorscheme
+schemes:
+  wip: &wip
+    primary:
+      background: '0x322C34'
+      foreground: '0xC7C7C7'
+    cursor:
+      text: '0xFEFFFF'
+      cursor: '0xC7C7C7'
+
+colors: *wip
+
+# Window layout
+window:
+  decorations: none
+  padding:
+    x: 20
+    y: 15
+
+key_bindings:
+  # Alacritty actions
+  - { key: Q, mods: Super, action: Quit }
+  # Chars to be printed
+  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
+  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
+  - { key: LBracket, mods: Alt, chars: "\x5B" } # [
+  - { key: RBracket, mods: Alt, chars: "\x5D" } # ]
+  - { key: 23, mods: Alt, chars: "\x7E" } # ~
+  - { key: 41, mods: Alt, chars: "\x40" } # @
+  - { key: 39, mods: Alt, chars: "\x23" } # #
+  - { key: 10, mods: Alt, chars: "\x60"} # `
+  # Chars with corresponding shell bindings
+  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
+  # Chars with corresponding neovim bindings
+  - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
+  - { key: Right, mods: Super, chars: "\x05" } # ctrl-e

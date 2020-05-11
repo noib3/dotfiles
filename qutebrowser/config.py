@@ -121,7 +121,8 @@ config.bind("glg", "open http://libgen.li/")
 config.bind("nlg", "open -t http://libgen.li/")
 
 # Misc bindings
-config.bind("zt", "config-cycle tabs.show always switching")
+c.tabs.show="multiple"
+config.bind("zt", "config-cycle tabs.show always multiple")
 
 # Misc
 c.url.start_pages = [HOME_PAGE]

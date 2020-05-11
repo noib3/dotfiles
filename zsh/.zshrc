@@ -112,8 +112,8 @@ bindkey '^W' close_window
 # that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
 # a line, which is needed if you leave (n)vim in normal mode with the block cursor
 function fuzzy_edit() {
-    filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
-                  fzf --read0 --height=50% --layout=reverse) \
+    filename=$(fd . ~ --type f --hidden --color always | sed "s=$HOME/==g" |
+                  fzf --height=40% --ansi) \
     && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") \
     && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
     if zle; then
@@ -125,8 +125,8 @@ bindkey '^X^E' fuzzy_edit
 
 # ..search a filename and add it to the line buffer..
 function fuzzy_search() {
-    filename=$(fd . ~ -0 --type f --hidden | sed "s=$HOME/==g" |
-                  fzf --read0 --height=50% --layout=reverse) \
+    filename=$(fd . ~ --type f --hidden --color always | sed "s=$HOME/==g" |
+                  fzf --height=40% --ansi) \
     && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
@@ -137,8 +137,8 @@ bindkey '^S' fuzzy_search
 
 # ..or to change directory
 function fuzzy_cd() {
-    dirname=$(fd . ~ -0 --type d --hidden | sed "s=$HOME/==g" |
-                 fzf --read0 --height=50% --layout=reverse) \
+    dirname=$(fd . ~ --type d --hidden --color always | sed "s=$HOME/==g" |
+                 fzf --height=40% --ansi) \
     && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt
@@ -159,7 +159,9 @@ alias c=''
 # Tab autocompletion
 autoload -Uz compinit
 compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 _comp_options+=(globdots)
+set +o list_types # hide trailing /
 
 # git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
 source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh

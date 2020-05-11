@@ -43,7 +43,7 @@ schemes:
       white: '0xECEFF4'
   wip: &wip
     primary:
-      background: '0x24272e'
+      background: '0x282A36'
       foreground: '0xC7C7C7'
     cursor:
       text: '0xFEFFFF'
@@ -53,9 +53,6 @@ schemes:
       background: '0x7AA6DA'
 
 colors: *wip
-
-# Use bright cols for bold chars
-draw_bold_text_with_bright_colors: false
 
 # Window layout
 window:
