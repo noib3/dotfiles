@@ -2,8 +2,7 @@
 #   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
 # In particular, you need to comment out the contents of /etc/zprofile
 
-PATH=
-PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
+PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/usr/local/bin

@@ -17,10 +17,13 @@ cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                                    fzf --prompt="  " --pointer="→" \
                                        --no-info --ansi \
                                        --color="hl:-1,hl+:-1" | \
-                                   # xargs file --mime-type -b | \
-                                   (nohup xargs -I{} $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
-                                   # (nohup xargs -I'{}' zsh -c 'case $1 in; text/*) $TERMINAL -e zsh -c "$EDITOR $1" &>/dev/null;; *) open $1 &>/dev/null;; esac' sh {} & )
+                                   (nohup xargs -I'{}' $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
+
 # file --mime-type -b ~/scripts/peek | xargs -I'{}' zsh -c 'case $1 in; text/*) echo "is a test";; *) echo "bho" ;; esac' sh {}
+
+# alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml --dimensions 64 6 --position 684 231 -t fuzzy_opener -e zsh -c 'printf "\e[5 q" && fd --type f --hidden --color always | sed "s/\[1;34m/\[90m/g" | fzf --prompt="  " --pointer="→" --no-info --ansi --color="hl:-1,hl+:-1" | (nohup xargs -I'{}' $TERMINAL -e zsh -c "$EDITOR {}" &>/dev/null &)'
+
+# alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml --dimensions 64 6 --position 684 231 -t fuzzy_opener -e zsh -c 'printf "\e[5 q" && fd --type f --hidden --color always | sed "s/\[1;34m/\[90m/g" | fzf --prompt="  " --pointer="→" --no-info --ansi --color="hl:-1,hl+:-1" | xargs file --mime-type -b | xargs -I"{}" zsh -c "case $1 in; text/*) $TERMINAL -e zsh -c \"$EDITOR $1\";; *) open $1;; esac" sh {} &>/dev/null'
 
 # Show current diet
 cmd - g : alacritty -t ndiet --dimensions 34 14 --position 868 250 -e \
@@ -93,7 +96,9 @@ alt - r : yabai -m space --rotate 90
 alt - b : yabai -m space --balance
 
 # Screenshot the whole screen
-shift + cmd - 3 : screencapture ~/Dropbox/Screenshots/whole_$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
+shift + cmd - 3 : screencapture ~/Dropbox/Screenshots/$(date --rfc-3339=seconds | \
+                                                        sed 's/+.*$//;s/ /@/;s/-/:/g').png
 
 # Screenshot a portion of the screen
-shift + cmd - 4 : screencapture -i ~/Dropbox/Screenshots/portion_$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g').png
+shift + cmd - 3 : screencapture -i ~/Dropbox/Screenshots/$(date --rfc-3339=seconds | \
+                                                           sed 's/+.*$//;s/ /@/;s/-/:/g').png
