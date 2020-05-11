@@ -17,7 +17,7 @@ yabai -m config window_shadow                   on
 yabai -m config window_border                   on
 yabai -m config window_border_placement         inset
 yabai -m config window_border_width             2
-yabai -m config window_border_radius            3
+yabai -m config window_border_radius            4.5
 yabai -m config active_window_border_topmost    on
 yabai -m config active_window_border_color      0xffbac2cf
 yabai -m config active_window_opacity           1.0
