@@ -60,8 +60,6 @@ window:
   padding:
     x: 20
     y: 15
-    # x: 0
-    # y: 0
 
 key_bindings:
   # Alacritty actions

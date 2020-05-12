@@ -112,8 +112,8 @@ bindkey '^W' close_window
 # that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
 # a line, which is needed if you leave (n)vim in normal mode with the block cursor
 function fuzzy_edit() {
-    filename=$(fd . ~ --type f --hidden --color always | sed "s=$HOME/==g" |
-                  fzf --height=40% --ansi) \
+    filename=$(fd . ~ --type f --hidden --color always | sed "s=.*noibe/==g" |
+                  fzf --height=40%) \
     && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") \
     && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
     if zle; then
@@ -125,8 +125,8 @@ bindkey '^X^E' fuzzy_edit
 
 # ..search a filename and add it to the line buffer..
 function fuzzy_search() {
-    filename=$(fd . ~ --type f --hidden --color always | sed "s=$HOME/==g" |
-                  fzf --height=40% --ansi) \
+    filename=$(fd . ~ --type f --hidden --color always | sed "s=.*noibe/==g" |
+                  fzf --height=40%) \
     && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
@@ -137,8 +137,8 @@ bindkey '^S' fuzzy_search
 
 # ..or to change directory
 function fuzzy_cd() {
-    dirname=$(fd . ~ --type d --hidden --color always | sed "s=$HOME/==g" |
-                 fzf --height=40% --ansi) \
+    dirname=$(fd . ~ --type d --hidden --color always | sed "s=.*noibe/==g" |
+              fzf --height=40%) \
     && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt

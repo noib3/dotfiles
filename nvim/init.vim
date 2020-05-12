@@ -13,6 +13,7 @@
 " 11. vim indent change color to the same color of comments
 " 12. set shiftwidth=2 for tex files
 " 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
+" 14. get another column at 100 chars
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')

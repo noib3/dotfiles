@@ -15,7 +15,7 @@ cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                                    fd --type f --hidden --color always | \
                                    sed "s/\[1;34m/\[90m/g" | \
                                    fzf --prompt="  " --pointer="→" \
-                                       --no-info --ansi \
+                                       --no-info \
                                        --color="hl:-1,hl+:-1" | \
                                    (nohup xargs -I{} \
                                     zsh -c '\''case $(file --mime-type -b $1) in; \
@@ -65,7 +65,7 @@ ctrl - l : yabai -m window --resize left:25:0
 
 # Move windows to spaces and follow focus
 alt + cmd - n : yabai -m space --create && \
-                yabai -m window --space last && yabai -m space --focus last
+                yabai -m window --space last && yabai -m space --focus last && yabai -m window --focus recent
 alt + cmd - w : yabai -m window --close; \
                 yabai -m space --destroy && yabai -m space --focus recent
 alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
