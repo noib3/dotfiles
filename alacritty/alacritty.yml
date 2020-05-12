@@ -58,8 +58,8 @@ colors: *wip
 window:
   decorations: buttonless
   padding:
-    x: 20
-    y: 15
+    x: 8
+    y: 5
 
 key_bindings:
   # Alacritty actions

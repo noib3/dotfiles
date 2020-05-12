@@ -9,11 +9,11 @@
 " 7. make tabs numbered
 " 8. filetype icon before tab number
 " 9. command to hide and show the tabline
-" 10. vim indent consider first level too
-" 11. vim indent change color to the same color of comments
+" 10. vim indent change color to the same color of comments
 " 12. set shiftwidth=2 for tex files
 " 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
 " 14. get another column at 100 chars
+" 15. silence compile command for latex and content
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -28,8 +28,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
-  " syntax
-  Plug 'tridactyl/vim-tridactyl'
 call plug#end()
 
 " Sets
@@ -60,6 +58,12 @@ let g:netrw_home=$HOME.'/.cache/nvim'
 let g:tex_conceal=''
 let g:is_posix=1
 
+" indentLine
+let g:indentLine_showFirstIndentLevel=1
+let g:indentLine_char='│'
+let g:indentLine_first_char='│'
+let g:indentLine_color_gui='#5C6370'
+
 " Maps
 imap <C-a> <esc>^i
 nmap <C-a> ^
@@ -71,7 +75,6 @@ imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
-nmap <silent> <leader>g :Goyo<cr>
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
 nmap ss :%s//g<left><left>
@@ -79,9 +82,6 @@ nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
-" paste replacing selected text without overwriting register
-" doesn't work if the selection extends to the end of the line
-xnoremap p "_dP
 
 " Colorscheme
 colorscheme onedark
