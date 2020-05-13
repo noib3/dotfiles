@@ -8,6 +8,11 @@ cmd - return : $TERMINAL
 cmd - f      : $TERMINAL -e lf ~/Downloads
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
 
+# Show current diet
+cmd - g : alacritty --config-file ~/.config/alacritty/ndiet.yml \
+                    --dimensions 34 14 --position 851 231 -t ndiet \
+                    -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
+
 # Open a file
 cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                         --dimensions 64 6 --position 684 231 -t fuzzy_opener \
@@ -23,11 +28,6 @@ cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                                                    *) open $1;; \
                                                esac'\'' \
                                     sh {} &>/dev/null &)'
-
-# Show current diet
-cmd - g : alacritty --config-file ~/.config/alacritty/ndiet.yml \
-                    --dimensions 34 14 --position 851 231 -t ndiet \
-                    -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
 # Disable cmd-m and cmd-h in every program
 cmd - m : false
@@ -68,11 +68,11 @@ alt + cmd - n : yabai -m space --create && \
                 yabai -m window --space last && yabai -m space --focus last && yabai -m window --focus recent
 alt + cmd - w : yabai -m window --close; \
                 yabai -m space --destroy && yabai -m space --focus recent
-alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
-alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2
-alt + cmd - 3 : yabai -m window --space 3 && yabai -m space --focus 3
-alt + cmd - 4 : yabai -m window --space 4 && yabai -m space --focus 4
-alt + cmd - 5 : yabai -m window --space 4 && yabai -m space --focus 5
+alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1 && yabai -m window --focus recent
+alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2 && yabai -m window --focus recent
+alt + cmd - 3 : yabai -m window --space 3 && yabai -m space --focus 3 && yabai -m window --focus recent
+alt + cmd - 4 : yabai -m window --space 4 && yabai -m space --focus 4 && yabai -m window --focus recent
+alt + cmd - 5 : yabai -m window --space 4 && yabai -m space --focus 5 && yabai -m window --focus recent
 
 # Focus spaces
 alt - 1 : yabai -m space --focus 1 && yabai -m window --focus recent

@@ -1,7 +1,6 @@
 " ----------------------- NEOVIM CONFIG FILE ------------------------
 
 " TODO
-" 1. color splits
 " 2. color background and foreground of active and non active tabs
 " 4. clear the command line instead of cluttering it when saving
 " 5. extend tab width to the max allowed (1 tab -> 100%, 2 tabs -> 50% etc.)
@@ -14,6 +13,12 @@
 " 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
 " 14. get another column at 100 chars
 " 15. silence compile command for latex and content
+" 16. reproduce yabai focus switching problem
+" 17. c + cmd-right is the same as c + $
+" 18. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 19. understand why ipc.c opens in textedit
+" 20. fzf launcher support for multiple files
+" 21. fzf launcher sometimes it doesn't launch
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -43,7 +48,7 @@ set undofile
 set laststatus=0
 
 " Tabline
-set showtabline=1
+set showtabline=2
 set tabline+=\ %t\ \  " full path to file in buffer
 set tabline+=%m       " modified flag
 set tabline+=%h       " help buffer flag
@@ -90,7 +95,17 @@ colorscheme onedark
 highlight Normal guibg=NONE ctermbg=NONE
 highlight Visual guibg=#7aa6da guifg=#ffffff ctermbg=blue ctermfg=white
 highlight Comment gui=italic cterm=italic
-" highlight TabLineSel guibg=#7aa6da guifg=#abb2bf
+
+highlight TabLineSel guibg=#0000ff guifg=#abb2bf
+highlight TabLine guibg=#ff00ff guifg=#abb2bf
+highlight TabLineFill guibg=#00ff00 guifg=#abb2bf
+
+highlight VertSplit guibg=#5C6370 guifg=NONE
+highlight StatusLine guibg=#5C6370 guifg=NONE
+highlight StatusLineNC guibg=#5C6370 guifg=NONE
+
+" Change vertical split character to a space
+set fillchars=vert:\  "
 
 " Autocmds
 autocmd InsertEnter * norm zz

@@ -2,7 +2,8 @@
 #   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
 # In particular, you need to comment out the contents of /etc/zprofile
 
-PATH=/usr/local/opt/coreutils/libexec/gnubin
+PATH=/opt/local/bin:/opt/local/sbin
+PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/usr/local/bin
@@ -17,6 +18,8 @@ PATH=$PATH:/Users/noibe/scripts
 PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
+
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 # Preferred editor
 export VISUAL=nvim

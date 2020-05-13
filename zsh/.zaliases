@@ -7,3 +7,4 @@ alias rm='rm -i'
 
 # Other aliases
 alias reboot='osascript -e "tell app \"System Events\" to restart"'
+alias shutdown='osascript -e "tell app \"System Events\" to shut down"'
