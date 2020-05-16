@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-cd ~/.local/share/calcurse
+cd ~/Dropbox/share
 
 # Add everything except pid file
-git add apts todo notes README.md
+git add .
 
 # Commit with an empty message and push to Github
 git commit --allow-empty-message -m ''

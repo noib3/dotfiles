@@ -6,10 +6,11 @@ cmd - b : $BROWSER
 # Open a terminal
 cmd - return : $TERMINAL
 cmd - f      : $TERMINAL -e lf ~/Downloads
-cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/.local/share/calcurse
+cmd - g      : $TERMINAL -e gotop
+cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
 # Show current diet
-cmd - g : alacritty --config-file ~/.config/alacritty/ndiet.yml \
+cmd - k : alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     --dimensions 34 14 --position 851 231 -t ndiet \
                     -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
@@ -28,6 +29,9 @@ cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                                                    *) open $1;; \
                                                esac'\'' \
                                     sh {} &>/dev/null &)'
+                        # --dimensions 64 6 --position 380 180 -t fuzzy_opener \
+
+# alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml --dimensions 64 6 --position 380 180 -t fuzzy_opener -e zsh -c 'printf "\e[5 q" && fd --type f --hidden --color always | sed "s/\[1;34m/\[90m/g" | fzf --prompt="  " --pointer="→" --no-info --color="hl:-1,hl+:-1" | (nohup xargs -I{} zsh -c '\''case $(file --mime-type -b $1) in; text/*) $TERMINAL -e zsh -c "$EDITOR \"${1}\"";; *) open $1;; esac'\'' sh {} &>/dev/null &)'
 
 # Disable cmd-m and cmd-h in every program
 cmd - m : false

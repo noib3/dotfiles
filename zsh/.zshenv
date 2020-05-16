@@ -14,6 +14,7 @@ PATH=$PATH:/sbin
 PATH=$PATH:/usr/local/opt/python@3.8/bin
 PATH=$PATH:/Applications/Alacritty.app/Contents/MacOS
 PATH=$PATH:/Applications/qutebrowser.app/Contents/MacOS
+PATH=$PATH:/Applications/Brave\ Browser.app/Contents/MacOS
 PATH=$PATH:/Users/noibe/scripts
 PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
@@ -27,7 +28,8 @@ export EDITOR=$VISUAL
 
 # Export terminal and browser
 export TERMINAL=alacritty
-export BROWSER=qutebrowser
+# export BROWSER=qutebrowser
+export BROWSER=Brave\ Browser
 
 # Locale settings
 export LC_LL=en_US.UTF-8

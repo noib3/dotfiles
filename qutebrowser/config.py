@@ -12,7 +12,6 @@ c.completion.web_history.max_items = 10
 # Constants
 HOME_PAGE="https://google.com"
 LIGHT_GRAY="#626262"
-# LIGHT_GRAY="#787878"
 DARK_GRAY="#393939"
 DARK_GRAYA="#4b4b4b"
 TEXT_ACTIVE="#ebebeb"

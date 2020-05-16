@@ -1,7 +1,6 @@
 " ----------------------- NEOVIM CONFIG FILE ------------------------
 
 " TODO
-" 2. color background and foreground of active and non active tabs
 " 4. clear the command line instead of cluttering it when saving
 " 5. extend tab width to the max allowed (1 tab -> 100%, 2 tabs -> 50% etc.)
 " 6. unsaved changes mark is a single * after the filename without any spaces
@@ -19,6 +18,8 @@
 " 19. understand why ipc.c opens in textedit
 " 20. fzf launcher support for multiple files
 " 21. fzf launcher sometimes it doesn't launch
+" 22. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 23. brave on space 1, nvim + spagnolo + pdf on space 2, cmd + alt + n on pdf file, alt + 1, alt + 2, alt + 3 and pdf isn't focused
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -48,13 +49,13 @@ set undofile
 set laststatus=0
 
 " Tabline
-set showtabline=2
-set tabline+=\ %t\ \  " full path to file in buffer
-set tabline+=%m       " modified flag
-set tabline+=%h       " help buffer flag
-set tabline+=%r       " readonly flag
-set tabline+=%=       " switch from left to right side
-set tabline+=%y\      " filetype of file in buffer
+set showtabline=1
+" set tabline=\ %t\ \  " full path to file in buffer
+" set tabline+=%m       " modified flag
+" set tabline+=%h       " help buffer flag
+" set tabline+=%r       " readonly flag
+" set tabline+=%=       " switch from left to right side
+" set tabline+=%y\      " filetype of file in buffer
 
 " Lets
 let mapleader=","
@@ -76,17 +77,29 @@ vmap <C-a> ^
 imap <C-e> <esc>$a
 nmap <C-e> $
 vmap <C-e> g_
+
 imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
+
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
 nmap ss :%s//g<left><left>
+
 nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
+
+nmap <F1> 1gt
+nmap <F2> 2gt
+nmap <F3> 3gt
+nmap <F4> 4gt
+imap <F1> <esc>1gt
+imap <F2> <esc>2gt
+imap <F3> <esc>3gt
+imap <F4> <esc>4gt
 
 " Colorscheme
 colorscheme onedark
@@ -96,9 +109,9 @@ highlight Normal guibg=NONE ctermbg=NONE
 highlight Visual guibg=#7aa6da guifg=#ffffff ctermbg=blue ctermfg=white
 highlight Comment gui=italic cterm=italic
 
-highlight TabLineSel guibg=#0000ff guifg=#abb2bf
-highlight TabLine guibg=#ff00ff guifg=#abb2bf
-highlight TabLineFill guibg=#00ff00 guifg=#abb2bf
+highlight TabLineSel guibg=#626262 guifg=#ebebeb
+highlight TabLine guibg=#393939 guifg=#b6b6b6
+highlight TabLineFill guibg=NONE guifg=NONE
 
 highlight VertSplit guibg=#5C6370 guifg=NONE
 highlight StatusLine guibg=#5C6370 guifg=NONE
