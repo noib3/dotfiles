@@ -181,3 +181,4 @@ ssh -T git@github.com
 78. Font Book -> User -> Iosevka Nerd Font -> disable everything except Medium Regular Italic Bold Heavy Bold-Italic
 79. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right'
 80. Use /usr/local/etc/gitconfig for git config file instead of ~/.config/gitconfig. To use that you need to use the --system flag, so for ex 'git config --system user.name n0ibe' etc. To list all configs and the file where they are defined use 'git config --list --show-origin'
+81. brew tap jakehilborn/jakehilborn && brew install displayplacer

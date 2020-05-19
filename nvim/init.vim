@@ -20,6 +20,10 @@
 " 21. fzf launcher sometimes it doesn't launch
 " 22. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
 " 23. brave on space 1, nvim + spagnolo + pdf on space 2, cmd + alt + n on pdf file, alt + 1, alt + 2, alt + 3 and pdf isn't focused
+" 24. comment and refactor redshift notify-change
+" 25. refactor alacritty configs
+" 26. refactor skhd and yabai configs
+" 27. find a place for vimium-c and finally drop firefox
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')

@@ -15,8 +15,13 @@ cmd - k : alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
 # Open a file
-cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
-                        --dimensions 64 6 --position 684 231 -t fuzzy_opener \
+cmd - space : case $(displayplacer list | grep Resolution | awk '{print $2}') in; \
+                  1440x900*) x_pos=380; y_pos=180;; \
+                  2048x1152*) x_pos=684; y_pos=231;; \
+                  *) x_pos=400; y_pos=200;; \
+                  esac; \
+              alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
+                        --dimensions 64 6 --position $x_pos $y_pos -t fuzzy_opener \
                         -e zsh -c 'printf "\e[5 q" && \
                                    fd --type f --hidden --color always | \
                                    sed "s/\[1;34m/\[90m/g" | \
@@ -25,13 +30,10 @@ cmd - space : alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                                        --color="hl:-1,hl+:-1" | \
                                    (nohup xargs -I{} \
                                     zsh -c '\''case $(file --mime-type -b $1) in; \
-                                                   text/*) $TERMINAL -e zsh -c "$EDITOR \"${1}\"";; \
+                                                   text*) $TERMINAL -e zsh -c "$EDITOR \"${1}\"";; \
                                                    *) open $1;; \
                                                esac'\'' \
                                     sh {} &>/dev/null &)'
-                        # --dimensions 64 6 --position 380 180 -t fuzzy_opener \
-
-# alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml --dimensions 64 6 --position 380 180 -t fuzzy_opener -e zsh -c 'printf "\e[5 q" && fd --type f --hidden --color always | sed "s/\[1;34m/\[90m/g" | fzf --prompt="  " --pointer="→" --no-info --color="hl:-1,hl+:-1" | (nohup xargs -I{} zsh -c '\''case $(file --mime-type -b $1) in; text/*) $TERMINAL -e zsh -c "$EDITOR \"${1}\"";; *) open $1;; esac'\'' sh {} &>/dev/null &)'
 
 # Disable cmd-m and cmd-h in every program
 cmd - m : false
