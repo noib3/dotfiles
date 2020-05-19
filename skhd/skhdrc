@@ -10,8 +10,13 @@ cmd - g      : $TERMINAL -e gotop
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
 # Show current diet
-cmd - k : alacritty --config-file ~/.config/alacritty/ndiet.yml \
-                    --dimensions 34 14 --position 851 231 -t ndiet \
+cmd - k : case $(displayplacer list | grep Resolution | awk '{print $2}') in; \
+              1440x900*) x_pos=380; y_pos=180;; \
+              2048x1152*) x_pos=851; y_pos=231;; \
+              *) x_pos=400; y_pos=200;; \
+              esac; \
+          alacritty --config-file ~/.config/alacritty/ndiet.yml \
+                    --dimensions 34 14 --position $x_pos $y_pos -t ndiet \
                     -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
 # Open a file
