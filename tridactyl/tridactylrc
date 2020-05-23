@@ -1,0 +1,55 @@
+set modeindicator false
+
+bind / fillcmdline find
+
+bind j scrollline 5
+bind k scrollline -5
+
+unbind --mode=normal n
+unbind --mode=normal gr
+unbind --mode=normal gt
+
+bind gh open https://google.com
+bind nh tabopen https://google.com
+
+bind gma open https://mail.google.com
+bind nma tabopen https://mail.google.com
+
+bind gkp open https://keep.google.com
+bind nkp tabopen https://keep.google.com
+
+bind gdr open https://drive.google.com
+bind ndr tabopen https://drive.google.com
+
+bind gyt open https://youtube.com
+bind nyt tabopen https://youtube.com
+
+bind gre open https://reddit.com
+bind nre tabopen https://reddit.com
+
+bind gtw open https://twitch.tv
+bind ntw tabopen https://twitch.tv
+
+bind gww open https://web.whatsapp.com/
+bind nww tabopen https://web.whatsapp.com/
+
+bind gnf open https://github.com/n0ibe/dotfiles
+bind nnf tabopen https://github.com/n0ibe/dotfiles
+
+bind gel open https://elearning.df.unipi.it/
+bind nel tabopen https://elearning.df.unipi.it/
+
+bind gpa open https://www.studenti.unipi.it/auth/studente/HomePageStudente.do
+bind npa tabopen https://www.studenti.unipi.it/auth/studente/HomePageStudente.do
+
+bind gng open https://secure.ing.it/login.aspx
+bind nng tabopen https://secure.ing.it/login.aspx
+
+bind gbg open https://rarbgunblocked.org/torrents.php
+bind nbg tabopen https://rarbgunblocked.org/torrents.php
+
+bind glh open http://localhost:9091/transmission/web/
+bind nlh tabopen http://localhost:9091/transmission/web/
+
+bind glg open http://libgen.li/
+bind nlg tabopen http://libgen.li/

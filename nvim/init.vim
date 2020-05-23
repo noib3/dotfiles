@@ -24,6 +24,7 @@
 " 25. refactor alacritty configs
 " 26. refactor skhd and yabai configs
 " 27. find a place for vimium-c and finally drop firefox
+" 28. if line extends multiple rows, up and down arrows should move inside the line
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')

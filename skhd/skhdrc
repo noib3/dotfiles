@@ -44,6 +44,19 @@ cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') i
 cmd - m : false
 cmd - h : false
 
+# Disable cmd-s, cmd-t and cmd-l in Firefox
+cmd - s [
+    "Firefox" : false
+]
+
+cmd - t [
+    "Firefox" : false
+]
+
+cmd - l [
+    "Firefox" : false
+]
+
 # Focus windows
 alt - up    : yabai -m window --focus north
 alt - down  : yabai -m window --focus south
