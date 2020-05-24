@@ -179,6 +179,7 @@ ssh -T git@github.com
 76. defaults write com.apple.Finder AppleShowAllFiles true
 77. System preferences -> General -> show scroll bars -> when scrolling
 78. Font Book -> User -> Iosevka Nerd Font -> disable everything except Medium Regular Italic Bold Heavy Bold-Italic
-79. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right'
+79. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need them to work with qutebrowser, otherwise stick with forward and back)
 80. Use /usr/local/etc/gitconfig for git config file instead of ~/.config/gitconfig. To use that you need to use the --system flag, so for ex 'git config --system user.name n0ibe' etc. To list all configs and the file where they are defined use 'git config --list --show-origin'
 81. brew tap jakehilborn/jakehilborn && brew install displayplacer
+82. brew cask install whatsapp
