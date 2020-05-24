@@ -1,4 +1,7 @@
-# ------------------------- ZSH CONFIG FILE -------------------------
+#  ____  ___  _   _
+# (_   )/ __)( )_( )
+#  / /_ \__ \ ) _ (
+# (____)(___/(_) (_)
 
 # Set colorscheme
 source $ZDOTDIR/themes/default.zsh

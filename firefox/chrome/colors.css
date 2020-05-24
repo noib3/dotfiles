@@ -1,37 +1,37 @@
-:root{
+:root {
   --lwt-accent-color: var(--tab-divider-color) !important;
   --sidebar-text-color: var(--text-color) !important;
 }
 
 /* Unfocused tab */
-.tab-content{
+.tab-content {
   color: var(--text-color) !important;
   background-color: var(--unfocused-tab-color) !important;
 }
 
 /* Focused tab */
-.tab-content[selected="true"]{
+.tab-content[selected="true"] {
   color: var(--text-color) !important;
   background-color: var(--focused-tab-color) !important;
 }
 
 /* Tab divider lines */
 /* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
-.tabbrowser-tab::after{
+.tabbrowser-tab::after {
   visibility: hidden !important;
 }
-#navigator-toolbox{
+#navigator-toolbox {
   --tabs-border-color: var(--tab-divider-color) !important;
 }
 
 /* Urlbar */
-#urlbar{
+#urlbar {
   color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
 }
 
 /* Urlbar search results */
-.urlbarView:not(.megabar){
+.urlbarView:not(.megabar) {
   color: var(--text-color) !important;
   background-color: var(--urlbar-color) !important;
 }

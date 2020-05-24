@@ -1,4 +1,7 @@
-" ----------------------- NEOVIM CONFIG FILE ------------------------
+"  _  _  ____  _____  _  _  ____  __  __
+" ( \( )( ___)(  _  )( \/ )(_  _)(  \/  )
+"  )  (  )__)  )(_)(  \  /  _)(_  )    (
+" (_)\_)(____)(_____)  \/  (____)(_/\/\_)
 
 " TODO
 " 4. clear the command line instead of cluttering it when saving
@@ -10,7 +13,6 @@
 " 10. vim indent change color to the same color of comments
 " 12. set shiftwidth=2 for tex files
 " 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
-" 14. get another column at 100 chars
 " 15. silence compile command for latex and content
 " 16. reproduce yabai focus switching problem
 " 17. c + cmd-right is the same as c + $
@@ -39,6 +41,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
+  "
+  Plug 'tridactyl/vim-tridactyl'
 call plug#end()
 
 " Sets
@@ -88,7 +92,7 @@ nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
 
-nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80" : "")<cr>
+nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
 nmap ss :%s//g<left><left>
 
@@ -129,7 +133,7 @@ set fillchars=vert:\  "
 autocmd InsertEnter * norm zz
 autocmd BufWritePre * :call StripTrailingWhitespaces()
 autocmd FileType * setlocal formatoptions-=cro
-autocmd FileType vim,sh,zsh,python,conf execute "set cc=" . (&cc == "" ? "80" : "")
+autocmd FileType vim,sh,zsh,python,conf execute "set cc=" . (&cc == "" ? "80,100" : "")
 autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2 tabstop=2
 autocmd FileType tex,context nnoremap <buffer> <silent> <C-t> :call TeXCompile()<cr>
 autocmd FileType tex,context inoremap <buffer> <silent> <C-t> <esc>:call TeXCompile()<cr>a

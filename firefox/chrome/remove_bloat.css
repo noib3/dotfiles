@@ -1,7 +1,7 @@
 /* Navigation bar */
-/* #nav-bar { */
-/*   visibility: collapse !important; */
-/* } */
+#nav-bar {
+  visibility: collapse !important;
+}
 
 /* New tab button */
 #tabs-newtab-button {
@@ -61,4 +61,9 @@
 /* Scroll left button when more tabs are open then you can show at once */
 .scrollbutton-down {
   display: none !important;
+}
+
+/* Black border line between tabs and page */
+#navigator-toolbox{
+  border-width: 0 !important;
 }
