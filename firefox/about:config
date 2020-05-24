@@ -4,8 +4,5 @@ Turn on loading of userChrome.css and userContent.css
 Disable all animations
   toolkit.cosmeticAnimations.enabled -> False
 
-Disable search engine suggestions when searching
-    browser.urlbar.oneOffSearches -> False
-
 Allow zooming
   apz.allow_zooming -> True
