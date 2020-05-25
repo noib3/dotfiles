@@ -1,0 +1,5 @@
+/.cache/*
+/Library/*
+!/Library/texmf/
+/.dropbox/*
+/Dropbox/.dropbox.cache/*

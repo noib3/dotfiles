@@ -51,11 +51,9 @@ cmd - h : false
 cmd - s [
     "Firefox" : false
 ]
-
 cmd - t [
     "Firefox" : false
 ]
-
 cmd - l [
     "Firefox" : false
 ]
