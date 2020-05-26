@@ -11,7 +11,6 @@
 " 8. filetype icon before tab number
 " 9. command to hide and show the tabline
 " 10. vim indent change color to the same color of comments
-" 12. set shiftwidth=2 for tex files
 " 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
 " 15. silence compile command for latex and content
 " 16. reproduce yabai focus switching problem
@@ -25,9 +24,12 @@
 " 24. comment and refactor redshift notify-change
 " 25. refactor alacritty configs
 " 26. refactor skhd and yabai configs
-" 27. find a place for vimium-c and finally drop firefox
 " 28. if line extends multiple rows, up and down arrows should move inside the line
 " 29. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 30. fd ignore .cache and Library with cmd-e and cmd-d
+" 31. cmd-e and cmd-d fix colors
+" 32. ranger function to open file, eject disk, make wallpaper
+" 33. ranger edit a file and move around with cmd-e and cmd-d
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -78,20 +80,25 @@ let g:is_posix=1
 let g:indentLine_showFirstIndentLevel=1
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
-let g:indentLine_color_gui='#5C6370'
+let g:indentLine_color_gui='#5c6370'
 
 " Maps
-imap <C-a> <esc>^i
-nmap <C-a> ^
-vmap <C-a> ^
-imap <C-e> <esc>$a
-nmap <C-e> $
+imap <C-a> <esc>g^i
+nmap <C-a> g^
+vmap <C-a> g^
+imap <C-e> <esc>g$a
+nmap <C-e> g$
 vmap <C-e> g_
 
 imap <silent> <C-s> <esc>:w<cr>a
 nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
+
+nnoremap <up> g<up>
+vnoremap <up> g<up>
+nnoremap <down> g<down>
+vnoremap <down> g<down>
 
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
