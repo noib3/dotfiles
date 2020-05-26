@@ -4,32 +4,37 @@
 " (_)\_)(____)(_____)  \/  (____)(_/\/\_)
 
 " TODO
-" 4. clear the command line instead of cluttering it when saving
-" 5. extend tab width to the max allowed (1 tab -> 100%, 2 tabs -> 50% etc.)
-" 6. unsaved changes mark is a single * after the filename without any spaces
-" 7. make tabs numbered
-" 8. filetype icon before tab number
-" 9. command to hide and show the tabline
-" 10. vim indent change color to the same color of comments
-" 13. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
-" 15. silence compile command for latex and content
-" 16. reproduce yabai focus switching problem
-" 17. c + cmd-right is the same as c + $
-" 18. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 19. understand why ipc.c opens in textedit
-" 20. fzf launcher support for multiple files
-" 21. fzf launcher sometimes it doesn't launch
-" 22. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 23. brave on space 1, nvim + spagnolo + pdf on space 2, cmd + alt + n on pdf file, alt + 1, alt + 2, alt + 3 and pdf isn't focused
-" 24. comment and refactor redshift notify-change
-" 25. refactor alacritty configs
-" 26. refactor skhd and yabai configs
-" 28. if line extends multiple rows, up and down arrows should move inside the line
-" 29. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 30. fd ignore .cache and Library with cmd-e and cmd-d
-" 31. cmd-e and cmd-d fix colors
-" 32. ranger function to open file, eject disk, make wallpaper
-" 33. ranger edit a file and move around with cmd-e and cmd-d
+" 2. vim indent change color to the same color of comments
+" 3. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
+" 4. silence compile command for latex and content
+" 5. reproduce yabai focus switching problem
+" 6. c + cmd-right is the same as c + $
+" 7. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 8. fzf launcher support for multiple files
+" 9. fzf launcher sometimes it doesn't launch
+" 10. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 11. brave on space 1, nvim + spagnolo + pdf on space 2, cmd + alt + n on pdf file, alt + 1, alt + 2, alt + 3 and pdf isn't focused
+" 12. comment and refactor redshift notify-change
+" 13. refactor alacritty configs
+" 14. refactor skhd and yabai configs
+" 15. cmd - right should go the end of actual line instead of logical line
+" 16. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 17. fd ignore .cache and Library with cmd-e and cmd-d
+" 18. cmd-e and cmd-d fix colors
+" 19. ranger function to open file, eject disk, make wallpaper
+" 20. ranger edit a file and move around with cmd-e and cmd-d
+" 21. firefox hide tab bar if single tab open, show on hover
+" 22. firefox make .app to open torrents
+" 22. firefox make bookmarks setup
+" 23. firefox make bitwarden setup
+" 24. firefox make downloads setup
+" 25. firefox rice tridactyl gui
+" 26. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 27. finances web frontend
+" 28. remake ndiet
+" 29. setup bar with uebersicht
+" 30. refactor 2d2small and journal classes
+" 31. make closing brackets for $$ in tex
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -60,15 +65,6 @@ set noshowmode
 set undofile
 set laststatus=0
 
-" Tabline
-set showtabline=1
-" set tabline=\ %t\ \  " full path to file in buffer
-" set tabline+=%m       " modified flag
-" set tabline+=%h       " help buffer flag
-" set tabline+=%r       " readonly flag
-" set tabline+=%=       " switch from left to right side
-" set tabline+=%y\      " filetype of file in buffer
-
 " Lets
 let mapleader=","
 let maplocalleader=","
@@ -83,6 +79,11 @@ let g:indentLine_first_char='│'
 let g:indentLine_color_gui='#5c6370'
 
 " Maps
+nnoremap <up> g<up>
+vnoremap <up> g<up>
+nnoremap <down> g<down>
+vnoremap <down> g<down>
+
 imap <C-a> <esc>g^i
 nmap <C-a> g^
 vmap <C-a> g^
@@ -95,11 +96,6 @@ nmap <silent> <C-s> :w<cr>
 nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
 
-nnoremap <up> g<up>
-vnoremap <up> g<up>
-nnoremap <down> g<down>
-vnoremap <down> g<down>
-
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
 nmap ss :%s//g<left><left>
@@ -108,15 +104,6 @@ nnoremap <leader>w <C-w><C-k>
 nnoremap <leader>a <C-w><C-h>
 nnoremap <leader>s <C-w><C-j>
 nnoremap <leader>d <C-w><C-l>
-
-nmap <F1> 1gt
-nmap <F2> 2gt
-nmap <F3> 3gt
-nmap <F4> 4gt
-imap <F1> <esc>1gt
-imap <F2> <esc>2gt
-imap <F3> <esc>3gt
-imap <F4> <esc>4gt
 
 " Colorscheme
 colorscheme onedark

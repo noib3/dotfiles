@@ -4,7 +4,12 @@
 # (___/(_)\_)(_) (_)(____/
 
 # Open a browser window
-cmd - b : $BROWSER
+# cmd - b : $BROWSER
+cmd - b [
+    *         : $BROWSER
+    "Firefox" ~
+]
+
 
 # Open a terminal
 cmd - return : $TERMINAL

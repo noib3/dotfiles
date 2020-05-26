@@ -90,8 +90,3 @@ key_bindings:
 
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
-
-  - { key: Key1, mods: Super, chars: "\x1b\x4f\x50" } # fn-f1
-  - { key: Key2, mods: Super, chars: "\x1b\x4f\x51" } # fn-f2
-  - { key: Key3, mods: Super, chars: "\x1b\x4f\x52" } # fn-f3
-  - { key: Key4, mods: Super, chars: "\x1b\x4f\x53" } # fn-f4
