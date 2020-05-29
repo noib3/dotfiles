@@ -1,11 +1,19 @@
 #!/usr/bin/env sh
 
+# the first parameter indicates the event
 case $1 in
     period-changed)
+        # the second and third parameters are the old and the new periods
+        # the values can be 'night', 'daytime' and 'transition'
         if [ ! "$3" = "none" ]; then
-            upper_first="$(tr '[:lower:]' '[:upper:]' <<< ${3:0:1})${3:1}"
-            echo $upper_first | sed 's/time//;s/$/ time/' |
-                /usr/local/bin/terminal-notifier -title "Redshift" -subtitle "Switching temps" \
-                    -appIcon $(dirname "$0")/Redshift-icon.png
+            # capitalize the first letter of the period
+            cap_first="$(tr '[:lower:]' '[:capitalize:]' <<< ${3:0:1})${3:1}"
+            # use sed to remove the string 'time' and to add ' time' to the end
+            # of the period, so that 'Night' and 'Daytime' become 'Night time'
+            # and 'Day time'
+            echo $cap_first | sed 's/time//;s/$/ time/' | \
+                /usr/local/bin/terminal-notifier -title "Redshift" \
+                                                 -subtitle "Switching temps" \
+                                                 -appIcon $(dirname "$0")/Redshift-icon.png
         fi
 esac

@@ -4,37 +4,39 @@
 " (_)\_)(____)(_____)  \/  (____)(_/\/\_)
 
 " TODO
-" 2. vim indent change color to the same color of comments
-" 3. when saving all trailing whitespace is deleted, but don't move the cursor from the column you're on
-" 4. silence compile command for latex and content
-" 5. reproduce yabai focus switching problem
-" 6. c + cmd-right is the same as c + $
-" 7. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 8. fzf launcher support for multiple files
-" 9. fzf launcher sometimes it doesn't launch
-" 10. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 11. brave on space 1, nvim + spagnolo + pdf on space 2, cmd + alt + n on pdf file, alt + 1, alt + 2, alt + 3 and pdf isn't focused
-" 12. comment and refactor redshift notify-change
-" 13. refactor alacritty configs
-" 14. refactor skhd and yabai configs
-" 15. cmd - right should go the end of actual line instead of logical line
-" 16. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 17. fd ignore .cache and Library with cmd-e and cmd-d
-" 18. cmd-e and cmd-d fix colors
-" 19. ranger function to open file, eject disk, make wallpaper
-" 20. ranger edit a file and move around with cmd-e and cmd-d
-" 21. firefox hide tab bar if single tab open, show on hover
-" 22. firefox make .app to open torrents
-" 22. firefox make bookmarks setup
-" 23. firefox make bitwarden setup
-" 24. firefox make downloads setup
-" 25. firefox rice tridactyl gui
-" 26. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 27. finances web frontend
-" 28. remake ndiet
-" 29. setup bar with uebersicht
-" 30. refactor 2d2small and journal classes
-" 31. make closing brackets for $$ in tex
+" 1. silence compile command for latex and content
+" 2. fix yabai focus switching problem
+" 3. c + cmd-right is the same as c + $
+" 4. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 5. fzf launcher support for multiple files
+" 6. fzf launcher sometimes it doesn't launch
+" 7. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 8. three terminal on space 1, cmd + alt + n on a terminal, go back to space 1, change focus, go back to space 2
+" 9. refactor alacritty configs
+" 10. refactor skhd and yabai configs
+" 11. cmd - right should go the end of actual line instead of logical line
+" 12. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 13. fd ignore .cache and Library with cmd-e and cmd-d
+" 14. cmd-e and cmd-d fix colors
+" 15. ranger function to open file, eject disk, make wallpaper
+" 16. ranger edit a file and move around with cmd-e and cmd-d
+" 17. firefox hide tab bar if single tab open, show on hover
+" 18. firefox make .app to open torrents
+" 19. firefox make bookmarks setup
+" 20. firefox make bitwarden setup
+" 21. firefox make downloads setup
+" 22. firefox rice tridactyl gui
+" 23. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 24. finances web frontend
+" 25. remake ndiet
+" 26. setup bar with uebersicht
+" 27. refactor 2d2small and journal classes
+" 28. make closing brackets for $$ in tex
+" 29. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" 30. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
+" 31. fix ranger text and pdf previews, pdf previews overflows bug
+" 32. ranger show size of file or directory, show elements inside directories
+" 33. ranger customize colorscheme
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -45,6 +47,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'junegunn/goyo.vim'
   Plug 'farmergreg/vim-lastplace'
   Plug 'Yggdroot/indentLine'
+  Plug 'lervag/vimtex'
   " colorschemes
   Plug 'jiangmiao/auto-pairs'
   Plug 'morhetz/gruvbox'
@@ -72,11 +75,14 @@ let g:netrw_home=$HOME.'/.cache/nvim'
 let g:tex_conceal=''
 let g:is_posix=1
 
+" vimtex
+let g:vimtex_mappings_enabled=0
+
 " indentLine
 let g:indentLine_showFirstIndentLevel=1
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
-let g:indentLine_color_gui='#5c6370'
+let g:indentLine_defaultGroup='Comment'
 
 " Maps
 nnoremap <up> g<up>
@@ -97,7 +103,6 @@ nmap <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
 
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
-nmap <silent> <leader>r :execute "source ~/.config/nvim/init.vim"<cr>
 nmap ss :%s//g<left><left>
 
 nnoremap <leader>w <C-w><C-k>
@@ -139,10 +144,10 @@ autocmd BufUnload   *.tex :call PdfClose()
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
-  let l = line('.')
-  let c = col('.')
-  %s/\s\+$//e
-  call cursor(l, c)
+  let [_, line, col, _, _] = getcurpos()
+  execute printf('%d substitute/\%%%dc\s\+$//e', line, col+1)
+  execute printf('vglobal/\%%%dl/substitute/\s\+$//e', line)
+  call cursor(line, col)
 endfunction
 
 " Compile a LaTeX/ConTeXt document

@@ -1,14 +1,9 @@
+#!/usr/bin/env sh
+
 #  _  _   __    ____    __    ____
 # ( \/ ) /__\  (  _ \  /__\  (_  _)
 #  \  / /(__)\  ) _ < /(__)\  _)(_
 #  (__)(__)(__)(____/(__)(__)(____)
-
-# NOTE:
-# This config file is for yabai v2.4.3, the last version that implemented
-# window borders.
-
-# Bar settings
-yabai -m config status_bar                      off
 
 # Global settings
 yabai -m config mouse_follows_focus             off
@@ -17,12 +12,6 @@ yabai -m config window_placement                second_child
 yabai -m config window_topmost                  off
 yabai -m config window_opacity                  on
 yabai -m config window_shadow                   on
-yabai -m config window_border                   on
-yabai -m config window_border_placement         inset
-yabai -m config window_border_width             2
-yabai -m config window_border_radius            4.5
-yabai -m config active_window_border_topmost    on
-yabai -m config active_window_border_color      0xffbac2cf
 yabai -m config active_window_opacity           1.0
 yabai -m config normal_window_opacity           1.0
 yabai -m config auto_balance                    off
@@ -48,8 +37,12 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
 
-yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on border=off
-yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above sticky=on opacity=0.98 border=off
+yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on #border=off
+yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above sticky=on opacity=0.98 #border=off
 
 # Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above
+
+# kill any existing limelight process if one exists, before we launch a new one
+killall limelight &> /dev/null
+limelight &> /dev/null &
