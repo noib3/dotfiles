@@ -69,9 +69,6 @@ handle_extension() {
             ## Preview as text conversion
             pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - | \
               fmt -w "${PV_WIDTH}" && exit 5
-            mutool draw -F txt -i -- "${FILE_PATH}" 1-10 | \
-              fmt -w "${PV_WIDTH}" && exit 5
-            exiftool "${FILE_PATH}" && exit 5
             exit 1;;
 
         ## BitTorrent
@@ -302,9 +299,11 @@ handle_mime() {
                 local pygmentize_format='terminal'
                 local highlight_format='ansi'
             fi
-            env HIGHLIGHT_OPTIONS="${HIGHLIGHT_OPTIONS}" highlight \
-                --out-format="${highlight_format}" \
-                --force -- "${FILE_PATH}" && exit 5
+            # env HIGHLIGHT_OPTIONS="${HIGHLIGHT_OPTIONS}" highlight \
+            #     --out-format="${highlight_format}" \
+            #     --force -- "${FILE_PATH}" && exit 5
+            highlight -O ansi -- "${FILE_PATH}" && exit 5
+
             env COLORTERM=8bit bat --color=always --style="plain" \
                 -- "${FILE_PATH}" && exit 5
             pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}"\
@@ -328,13 +327,13 @@ handle_mime() {
         ## Video and audio
         video/* | audio/*)
             mediainfo "${FILE_PATH}" && exit 5
-            exiftool "${FILE_PATH}" && exit 5
             exit 1;;
     esac
 }
 
 handle_fallback() {
-    echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}" && exit 5
+    # echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}" && exit 5
+    echo 'empty' && exit 5
     exit 1
 }
 

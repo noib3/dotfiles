@@ -1,7 +1,8 @@
 # Open a browser window
 # cmd - b : $BROWSER
 cmd - b [
-    *         : $BROWSER
+    # *         : $BROWSER
+    *         : open -na /Applications/Firefox.app
     "Firefox" ~
 ]
 

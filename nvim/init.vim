@@ -29,7 +29,6 @@
 " 28. make closing brackets for $$ in tex
 " 29. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
 " 30. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
-" 31. fix ranger text and pdf previews, pdf previews overflows bug
 " 32. ranger show size of file or directory, show elements inside directories
 " 33. ranger customize colorscheme
 
