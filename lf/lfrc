@@ -1,5 +1,3 @@
-# ------------------------- LF CONFIG FILE --------------------------
-
 # Boolean valued options
 set ignorecase
 set color256

@@ -1,19 +1,12 @@
 #!/usr/bin/env sh
 
-#  _  _   __    ____    __    ____
-# ( \/ ) /__\  (  _ \  /__\  (_  _)
-#  \  / /(__)\  ) _ < /(__)\  _)(_
-#  (__)(__)(__)(____/(__)(__)(____)
-
 # Global settings
 yabai -m config mouse_follows_focus             off
 yabai -m config focus_follows_mouse             off
 yabai -m config window_placement                second_child
 yabai -m config window_topmost                  off
-yabai -m config window_opacity                  on
+yabai -m config window_opacity                  off
 yabai -m config window_shadow                   on
-yabai -m config active_window_opacity           1.0
-yabai -m config normal_window_opacity           1.0
 yabai -m config auto_balance                    off
 yabai -m config mouse_modifier                  ctrl
 yabai -m config mouse_action1                   move
@@ -25,7 +18,7 @@ yabai -m config top_padding                     30
 yabai -m config bottom_padding                  30
 yabai -m config left_padding                    30
 yabai -m config right_padding                   30
-yabai -m config window_gap                      13
+yabai -m config window_gap                      15
 
 # Unmanaged programs
 yabai -m rule --add app="^Digital Colour Meter$" manage=off
@@ -37,8 +30,8 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
 
-yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on #border=off
-yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above sticky=on opacity=0.98 #border=off
+yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above opacity=0.98
+yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on
 
 # Sticky programs
 yabai -m rule --add app="^Digital Colour Meter$" sticky=on layer=above

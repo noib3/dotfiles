@@ -1,8 +1,3 @@
-"  _  _  ____  _____  _  _  ____  __  __
-" ( \( )( ___)(  _  )( \/ )(_  _)(  \/  )
-"  )  (  )__)  )(_)(  \  /  _)(_  )    (
-" (_)\_)(____)(_____)  \/  (____)(_/\/\_)
-
 " TODO
 " 1. silence compile command for latex and content
 " 2. fix yabai focus switching problem
