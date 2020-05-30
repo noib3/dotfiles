@@ -1,7 +1,5 @@
 # Open a browser window
-# cmd - b : $BROWSER
 cmd - b [
-    # *         : $BROWSER
     *         : open -na /Applications/Firefox.app
     "Firefox" ~
 ]
@@ -11,16 +9,6 @@ cmd - return : $TERMINAL
 cmd - f      : $TERMINAL -e ranger ~/Downloads
 cmd - g      : $TERMINAL -e gotop
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
-
-# Show current diet
-cmd - k : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
-              1440x900*) x_pos=547; y_pos=180;; \
-              2048x1152*) x_pos=851; y_pos=231;; \
-              *) x_pos=400; y_pos=200;; \
-          esac; \
-          alacritty --config-file ~/.config/alacritty/ndiet.yml \
-                    --dimensions 34 14 --position $x_pos $y_pos -t ndiet \
-                    -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
 # Open a file
 cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
@@ -42,6 +30,27 @@ cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') i
                                                    *) open $1;; \
                                                esac'\'' \
                                     sh {} &>/dev/null &)'
+
+# Execute auto commit script
+cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
+              1440x900*) x_pos=547; y_pos=180;; \
+              2048x1152*) x_pos=851; y_pos=231;; \
+              *) x_pos=400; y_pos=200;; \
+          esac; \
+          alacritty --config-file ~/.config/alacritty/ndiet.yml \
+                    --dimensions 54 14 --position $x_pos $y_pos -t ndiet \
+                    -e zsh -c 'committed --clear'
+
+# Show current diet
+cmd - k : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
+              1440x900*) x_pos=547; y_pos=180;; \
+              2048x1152*) x_pos=851; y_pos=231;; \
+              *) x_pos=400; y_pos=200;; \
+          esac; \
+          alacritty --config-file ~/.config/alacritty/ndiet.yml \
+                    --dimensions 34 14 --position $x_pos $y_pos -t ndiet \
+                    -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
+
 
 # Disable cmd-m and cmd-h in every program
 cmd - m : false
