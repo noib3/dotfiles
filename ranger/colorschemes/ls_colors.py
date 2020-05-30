@@ -4,6 +4,11 @@ import ranger.gui.context
 import ranger.gui.widgets.browsercolumn
 from os import getenv
 from subprocess import check_output, CalledProcessError
+from ranger.gui.color import (
+    black, blue, cyan, green, magenta, red, white, yellow, default,
+    normal, bold, reverse, dim, BRIGHT,
+    default_colors,
+)
 
 
 class ls_colors(ColorScheme):
@@ -236,5 +241,10 @@ class ls_colors(ColorScheme):
                 if context.marked:
                     attr |= style.bold
                     fg = style.yellow
+        elif context.in_titlebar:
+            if context.hostname:
+                fg = red if context.bad else green
+            attr |= bold
+
 
         return fg, bg, attr
