@@ -38,7 +38,7 @@ cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
               *) x_pos=400; y_pos=200;; \
           esac; \
           alacritty --config-file ~/.config/alacritty/ndiet.yml \
-                    --dimensions 71 13 --position $x_pos $y_pos -t ndiet \
+                    --dimensions 71 14 --position $x_pos $y_pos -t ndiet \
                     -e zsh -c 'committed --clear'
 
 # Show current diet
