@@ -1,10 +1,10 @@
-# Set the login shell
+# Shell
 shell:
   program: /usr/local/bin/zsh
   args:
     - --login
 
-# Font
+# Fonts
 font:
   normal:
     family: Iosevka Nerd Font
@@ -12,43 +12,69 @@ font:
   offset:
     y: 1
 
-# Colorscheme
+# Colorschemes
 schemes:
+  # Gruvbox dark
+  gruvbox: &gruvbox
+    primary:
+      # background: '#1d2021'
+      background: '#282828'
+      foreground: '#ebdbb2'
+    normal:
+      black:   '#282828'
+      red:     '#cc241d'
+      green:   '#98971a'
+      yellow:  '#d79921'
+      blue:    '#458588'
+      magenta: '#b16286'
+      cyan:    '#689d6a'
+      white:   '#a89984'
+    bright:
+      black:   '#928374'
+      red:     '#fb4934'
+      green:   '#b8bb26'
+      yellow:  '#fabd2f'
+      blue:    '#83a598'
+      magenta: '#d3869b'
+      cyan:    '#8ec07c'
+      white:   '#ebdbb2'
+  # Nord
   nord: &nord
     primary:
-      background: '0x2E3440'
-      foreground: '0xD8DEE9'
+      background: '#2e3440'
+      foreground: '#d8dee9'
     cursor:
-      text: '0x2E3440'
-      cursor: '0xD8DEE9'
+      text:    '#2e3440'
+      cursor:  '#d8dee9'
     normal:
-      black: '0x3B4252'
-      red: '0xBF616A'
-      green: '0xA3BE8C'
-      yellow: '0xEBCB8B'
-      blue: '0x81A1C1'
-      magenta: '0xB48EAD'
-      cyan: '0x88C0D0'
-      white: '0xE5E9F0'
+      black:   '#3b4252'
+      red:     '#BF616a'
+      green:   '#a3be8c'
+      yellow:  '#ebcb8b'
+      blue:    '#81a1c1'
+      magenta: '#b48ead'
+      cyan:    '#88c0d0'
+      white:   '#e5e9f0'
     bright:
-      black: '0x4C566A'
-      red: '0xBF616A'
-      green: '0xA3BE8C'
-      yellow: '0xEBCB8B'
-      blue: '0x81A1C1'
-      magenta: '0xB48EAD'
-      cyan: '0x8FBCBB'
-      white: '0xECEFF4'
+      black:   '#4c566a'
+      red:     '#bf616A'
+      green:   '#a3be8c'
+      yellow:  '#ebcb8b'
+      blue:    '#81a1c1'
+      magenta: '#b48ead'
+      cyan:    '#8fbcbb'
+      white:   '#eCeff4'
+  # Mostly default
   wip: &wip
     primary:
-      background: '0x282A36'
-      foreground: '0xC7C7C7'
+      background: '#282a36'
+      foreground: '#c7c7c7'
     cursor:
-      text: '0xFEFFFF'
-      cursor: '0xC7C7C7'
+      text: '#feffff'
+      cursor: '#c7C7c7'
     selection:
-      text: '0xFFFFFF'
-      background: '0x7AA6DA'
+      text: '#ffffff'
+      background: '#7aa6dA'
 
 colors: *wip
 
@@ -59,11 +85,9 @@ window:
     x: 8
     y: 5
 
+# Bindings
 key_bindings:
-
-  - { key: N, mods: Super, action: SpawnNewInstance }
   - { key: Q, mods: Super, action: Quit }
-
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
   - { key: LBracket, mods: Alt, chars: "\x5B" } # [
@@ -72,16 +96,13 @@ key_bindings:
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
-
-  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
-  - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
-  - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
-
-  - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
-  - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
-  - { key: T, mods: Super, chars: "\x14" } # ctrl-t
-
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
+  - { key: T, mods: Super, chars: "\x14" } # ctrl-t
+  - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
+  - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
+  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
+  - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
+  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
+  - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
+  - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
