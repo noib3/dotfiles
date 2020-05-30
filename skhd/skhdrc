@@ -14,7 +14,6 @@ cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/ca
 cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
                   1440x900*) x_pos=380; y_pos=180;; \
                   2048x1152*) x_pos=684; y_pos=231;; \
-                  *) x_pos=400; y_pos=200;; \
               esac; \
               alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                         --dimensions 64 6 --position $x_pos $y_pos -t fuzzy_opener \
@@ -35,7 +34,6 @@ cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') i
 cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
               1440x900*) x_pos=547; y_pos=180;; \
               2048x1152*) x_pos=684; y_pos=231;; \
-              *) x_pos=400; y_pos=200;; \
           esac; \
           alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     --dimensions 71 14 --position $x_pos $y_pos -t committed \
@@ -45,15 +43,12 @@ cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
 cmd - k : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
               1440x900*) x_pos=547; y_pos=180;; \
               2048x1152*) x_pos=851; y_pos=231;; \
-              *) x_pos=400; y_pos=200;; \
           esac; \
           alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     --dimensions 34 14 --position $x_pos $y_pos -t ndiet \
                     -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
-
-# Disable cmd-m and cmd-h in every program
-cmd - m : false
+# Disable cmd-h in every program
 cmd - h : false
 
 # Disable cmd-s, cmd-t and cmd-l in Firefox
