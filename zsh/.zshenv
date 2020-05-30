@@ -1,6 +1,6 @@
 # On macOS, the PATH is built up as described here:
 #   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
-# In particular, you need to comment out the contents of /etc/zprofile
+# In particular, you need to 'sudo rm /etc/zprofile'
 
 PATH=/opt/local/bin:/opt/local/sbin
 PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
@@ -29,8 +29,6 @@ export EDITOR=$VISUAL
 
 # Export terminal and browser
 export TERMINAL=alacritty
-# export BROWSER=qutebrowser
-# export BROWSER=Brave\ Browser
 export BROWSER=firefox
 
 # Locale settings

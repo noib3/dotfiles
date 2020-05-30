@@ -1,11 +1,16 @@
-# Aliases to specify program options
 alias ls='ls -Ahv --color --quoting-style=literal --group-directories-first'
-
 # alias ls='exa -a'
+
 alias grep='grep --color=auto'
 alias rm='rm -i'
 alias r='ranger'
 
-# Other aliases
+alias upd='brew update'
+alias upg='brew upgrade'
+alias bsl='brew services list'
+alias bst='brew services start'
+alias bsp='brew services stop'
+alias bsr='brew services restart'
+
 alias reboot='osascript -e "tell app \"System Events\" to restart"'
 alias shutdown='osascript -e "tell app \"System Events\" to shut down"'

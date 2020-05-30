@@ -30,7 +30,7 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
 
-yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above opacity=0.98
+yabai -m rule --add title="^fuzzy_opener$" manage=off layer=above opacity=0.8
 yabai -m rule --add title="^ndiet$" manage=off layer=above sticky=on
 
 # Sticky programs
