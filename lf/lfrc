@@ -51,7 +51,7 @@ map x cut
 map gdl cd "~/Downloads"
 map gsc cd "~/scripts"
 map gvl cd "/Volumes"
-map gnf cd "~/.config"
+map gdf cd "~/.config"
 map gtm cd "~/Library/texmf"
 map gdr cd "~/Dropbox"
 # map gmn cd "~/Dropbox/Finances/$(date +%Y)"

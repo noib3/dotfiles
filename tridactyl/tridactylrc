@@ -33,8 +33,8 @@ bind ntw tabopen https://twitch.tv
 bind gww open https://web.whatsapp.com/
 bind nww tabopen https://web.whatsapp.com/
 
-bind gnf open https://github.com/n0ibe/dotfiles
-bind nnf tabopen https://github.com/n0ibe/dotfiles
+bind gdf open https://github.com/n0ibe/dotfiles
+bind ndf tabopen https://github.com/n0ibe/dotfiles
 
 bind gel open https://elearning.df.unipi.it/
 bind nel tabopen https://elearning.df.unipi.it/
