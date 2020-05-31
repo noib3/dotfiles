@@ -6,7 +6,8 @@ cmd - b [
 
 # Launch terminal programs
 cmd - return : $TERMINAL
-cmd - f      : $TERMINAL -e ranger ~/Downloads
+# cmd - f      : $TERMINAL -e ranger ~/Downloads
+cmd - f      : $TERMINAL -e lf ~/Downloads
 cmd - g      : $TERMINAL -e gotop
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 

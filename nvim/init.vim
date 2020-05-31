@@ -5,6 +5,7 @@
 " 4. understand why sometimes when it's launched with fzf_opener it looks fucked up
 " 5. fzf launcher support for multiple files
 " 6. fzf launcher sometimes it doesn't launch
+" 7. disable indentLine in .txt files
 " 7. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
 " 8. three terminal on space 1, cmd + alt + n on a terminal, go back to space 1, change focus, go back to space 2
 " 9. refactor skhd and yabai configs
