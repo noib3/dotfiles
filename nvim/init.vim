@@ -1,35 +1,36 @@
 " TODO
 " 1. silence compile command for latex and content
 " 2. fix yabai focus switching problem
-" 3. c + cmd-right is the same as c + $
-" 4. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 5. fzf launcher support for multiple files
-" 6. fzf launcher sometimes it doesn't launch
-" 7. disable indentLine in .txt files
-" 7. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 8. three terminal on space 1, cmd + alt + n on a terminal, go back to space 1, change focus, go back to space 2
-" 9. refactor skhd and yabai configs
-" 10. cmd - right in visual mode should go the end of actual line instead of logical line
-" 11. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 12. fd ignore .cache and Library with cmd-e and cmd-d
-" 13. cmd-e and cmd-d fix colors
-" 14. ranger function to open file, eject disk, make wallpaper
-" 15. ranger edit a file and move around with cmd-e and cmd-d
-" 16. firefox hide tab bar if single tab open, show on hover
-" 17. firefox make .app to open torrents
-" 18. firefox make bookmarks setup
-" 19. firefox make bitwarden setup
-" 20. firefox make downloads setup
-" 21. firefox rice tridactyl gui
-" 22. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 23. finances web frontend
-" 24. remake ndiet
-" 25. setup bar with uebersicht
-" 26. refactor 2d2small and journal classes
-" 27. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
-" 28. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
-" 29. ranger show size of file or directory, show elements inside directories
-" 30. ranger customize colorscheme
+" 3. lf set natural ordering like ls -l
+" 4. lf report issue with updating files on external volumes
+" 5. lf report issue with hidden not being respected
+" 6. lf report issue with status bar being empty on startup
+" 7. lf move around with cmd-d and edit file with cmd-e
+" 8. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 9. fzf launcher support for multiple files
+" 10. fzf launcher sometimes it doesn't launch
+" 11. disable indentLine in .txt files
+" 12. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 13. three terminal on space 1, cmd + alt + n on a terminal, go back to space 1, change focus, go back to space 2
+" 14. refactor skhd and yabai configs
+" 15. cmd - right in visual mode should go the end of actual line instead of logical line
+" 16. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 17. fd ignore .cache and Library with cmd-e and cmd-d
+" 18. cmd-e and cmd-d fix colors
+" 19. ranger edit a file and move around with cmd-e and cmd-d
+" 20. firefox hide tab bar if single tab open, show on hover
+" 21. firefox make .app to open torrents
+" 22. firefox make bookmarks setup
+" 23. firefox make bitwarden setup
+" 24. firefox make downloads setup
+" 25. firefox rice tridactyl gui
+" 26. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 27. finances web frontend
+" 28. remake ndiet
+" 29. setup bar with uebersicht
+" 30. refactor 2d2small and journal classes
+" 31. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" 32. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -79,30 +80,29 @@ let g:indentLine_first_char='│'
 let g:indentLine_defaultGroup='Comment'
 
 " Maps
-nnoremap <up> g<up>
-vnoremap <up> g<up>
-nnoremap <down> g<down>
-vnoremap <down> g<down>
+map <up> g<up>
+map <down> g<down>
 
+map <C-a> g^
 imap <C-a> <esc>g^i
-nmap <C-a> g^
-vmap <C-a> g^
-imap <C-e> <esc>g$a
-nmap <C-e> g$
-vmap <C-e> g_
 
+map <C-e> g$
+vmap <C-e> g_
+imap <C-e> <esc>g$a
+
+map <silent> <C-s> :w<cr>
 imap <silent> <C-s> <esc>:w<cr>a
-nmap <silent> <C-s> :w<cr>
-nmap <silent> <C-w> :q<cr>
+
+map <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
 
-nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 nmap ss :%s//g<left><left>
+nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 
-nnoremap <leader>w <C-w><C-k>
-nnoremap <leader>a <C-w><C-h>
-nnoremap <leader>s <C-w><C-j>
-nnoremap <leader>d <C-w><C-l>
+noremap <leader>w <C-w><C-k>
+noremap <leader>a <C-w><C-h>
+noremap <leader>s <C-w><C-j>
+noremap <leader>d <C-w><C-l>
 
 " Colorscheme
 colorscheme onedark
