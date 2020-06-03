@@ -31,6 +31,9 @@
 " 30. refactor 2d2small and journal classes
 " 31. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
 " 32. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
+" 33. vim look into autogroups and ftplugin files
+" 34. tex file closes other pdfs not only his own fix that
+" 35. limelight borders left on screen need to report that
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')

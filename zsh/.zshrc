@@ -167,6 +167,7 @@ set +o list_types # hide trailing /
 
 # git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
 source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh
+setopt no_list_types
 
 # git clone https://github.com/zdharma/fast-syntax-highlighting /usr/local/share/fast-syntax-highlighting
 source /usr/local/share/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
