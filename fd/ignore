@@ -1,5 +1,5 @@
-/Library/*
-!/Library/texmf/
-/.cache/*
-/.dropbox/*
-/Dropbox/.dropbox.cache/*
+**/Library/*
+!**/Library/texmf/
+**/.cache/*
+**/.dropbox/*
+**/Dropbox/.dropbox.cache/*

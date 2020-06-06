@@ -1,39 +1,34 @@
 " TODO
 " 1. silence compile command for latex and content
-" 2. fix yabai focus switching problem
-" 3. lf set natural ordering like ls -l
-" 4. lf report issue with updating files on external volumes
-" 5. lf report issue with hidden not being respected
-" 6. lf report issue with status bar being empty on startup
-" 7. lf move around with cmd-d and edit file with cmd-e
-" 8. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 9. fzf launcher support for multiple files
-" 10. fzf launcher sometimes it doesn't launch
-" 11. disable indentLine in .txt files
-" 12. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 13. three terminal on space 1, cmd + alt + n on a terminal, go back to space 1, change focus, go back to space 2
-" 14. refactor skhd and yabai configs
-" 15. cmd - right in visual mode should go the end of actual line instead of logical line
-" 16. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 17. fd ignore .cache and Library with cmd-e and cmd-d
-" 18. cmd-e and cmd-d fix colors
-" 19. ranger edit a file and move around with cmd-e and cmd-d
-" 20. firefox hide tab bar if single tab open, show on hover
-" 21. firefox make .app to open torrents
-" 22. firefox make bookmarks setup
-" 23. firefox make bitwarden setup
-" 24. firefox make downloads setup
-" 25. firefox rice tridactyl gui
-" 26. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 27. finances web frontend
-" 28. remake ndiet
-" 29. setup bar with uebersicht
-" 30. refactor 2d2small and journal classes
-" 31. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
-" 32. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
-" 33. vim look into autogroups and ftplugin files
-" 34. tex file closes other pdfs not only his own fix that
-" 35. limelight borders left on screen need to report that
+" 2. lf set natural ordering like ls -l
+" 3. lf report issue with updating files on external volumes
+" 4. lf report issue with status bar being empty on startup
+" 5. lf move around with cmd-d and edit file with cmd-e
+" 6. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 7. fzf launcher support for multiple files
+" 8. fzf launcher sometimes it doesn't launch
+" 9. disable indentLine in .txt files
+" 10. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 11. refactor skhd and yabai configs
+" 12. cmd - right in visual mode should go the end of actual line instead of logical line
+" 13. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 14. cmd-e and cmd-d fix colors
+" 15. firefox hide tab bar if single tab open, show on hover
+" 16. firefox make .app to open torrents
+" 17. firefox make bookmarks setup
+" 18. firefox make bitwarden setup
+" 19. firefox make downloads setup
+" 20. firefox rice tridactyl gui
+" 21. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 22. finances web frontend
+" 23. remake ndiet
+" 24. setup bar with uebersicht
+" 25. refactor 2d2small and journal classes
+" 26. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" 27. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
+" 28. vim look into autogroups and ftplugin files
+" 29. tex file closes other pdfs not only his own fix that
+" 30. limelight borders left on screen need to report that
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
