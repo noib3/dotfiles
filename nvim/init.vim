@@ -10,25 +10,24 @@
 " 9. disable indentLine in .txt files
 " 10. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
 " 11. refactor skhd and yabai configs
-" 12. cmd - right in visual mode should go the end of actual line instead of logical line
-" 13. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 14. cmd-e and cmd-d fix colors
-" 15. firefox hide tab bar if single tab open, show on hover
-" 16. firefox make .app to open torrents
-" 17. firefox make bookmarks setup
-" 18. firefox make bitwarden setup
-" 19. firefox make downloads setup
-" 20. firefox rice tridactyl gui
-" 21. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 22. finances web frontend
-" 23. remake ndiet
-" 24. setup bar with uebersicht
-" 25. refactor 2d2small and journal classes
-" 26. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
-" 27. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
-" 28. vim look into autogroups and ftplugin files
-" 29. tex file closes other pdfs not only his own fix that
-" 30. limelight borders left on screen need to report that
+" 12. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+" 13. cmd-e and cmd-d fix colors
+" 14. firefox hide tab bar if single tab open, show on hover
+" 15. firefox make .app to open torrents
+" 16. firefox make bookmarks setup
+" 17. firefox make bitwarden setup
+" 18. firefox make downloads setup
+" 19. firefox rice tridactyl gui
+" 20. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 21. finances web frontend
+" 22. remake ndiet
+" 23. setup bar with uebersicht
+" 24. refactor 2d2small and journal classes
+" 25. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" 26. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
+" 27. vim look into autogroups and ftplugin files
+" 28. tex file closes other pdfs not only his own fix that
+" 29. limelight borders left on screen need to report that
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -78,29 +77,28 @@ let g:indentLine_first_char='│'
 let g:indentLine_defaultGroup='Comment'
 
 " Maps
-map <up> g<up>
-map <down> g<down>
 
-map <C-a> g^
-imap <C-a> <esc>g^i
+map  <C-a> ^
+imap <C-a> <esc>^i
+map  <C-e> $
+imap <C-e> <esc>$a
 
-map <C-e> g$
-vmap <C-e> g_
-imap <C-e> <esc>g$a
-
-map <silent> <C-s> :w<cr>
+map  <silent> <C-s> :w<cr>
 imap <silent> <C-s> <esc>:w<cr>a
-
-map <silent> <C-w> :q<cr>
+map  <silent> <C-w> :q<cr>
 imap <silent> <C-w> <esc>:q<cr>
-
-nmap ss :%s//g<left><left>
-nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 
 noremap <leader>w <C-w><C-k>
 noremap <leader>a <C-w><C-h>
 noremap <leader>s <C-w><C-j>
 noremap <leader>d <C-w><C-l>
+
+nmap ss :%s//g<left><left>
+nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
+
+" Fix for
+" https://github.com/neovim/neovim/issues/11393
+cnoremap 3636 <c-u>undo<CR>
 
 " Colorscheme
 colorscheme onedark
