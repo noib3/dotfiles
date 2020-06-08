@@ -59,12 +59,13 @@ set splitright splitbelow
 set number relativenumber
 set shiftwidth=4
 set tabstop=4
-set expandtab
-set clipboard+=unnamedplus
-set termguicolors
-set noshowmode
-set undofile
-set laststatus=0
+set expandtab                " expand tabs to spaces
+set clipboard+=unnamedplus   " use the system clipboard
+set termguicolors            " use 24-bit colors
+set noshowmode               " hide the current mode
+set undofile                 " remember undo history across sessions
+set laststatus=0             " hide the status line
+set autochdir                " set the pwd to the directory containing the file
 
 " Lets
 let mapleader=","
@@ -72,16 +73,6 @@ let maplocalleader=","
 let g:netrw_home=$HOME.'/.cache/nvim'
 let g:tex_conceal=''
 let g:is_posix=1
-
-" vimtex
-" let g:vimtex_mappings_enabled=0
-
-" indentLine
-let g:indentLine_char='│'
-let g:indentLine_first_char='│'
-let g:indentLine_showFirstIndentLevel=1
-let g:indentLine_fileTypeExclude=['text']
-let g:indentLine_defaultGroup='Comment'
 
 " Maps
 map  <C-a> ^
@@ -102,7 +93,7 @@ noremap <leader>d <C-w><C-l>
 nmap ss :%s//g<left><left>
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 
-" Fix for https://github.com/neovim/neovim/issues/11393
+" fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <c-u>undo<CR>
 
 " Colorscheme
@@ -129,8 +120,15 @@ autocmd FileType    * setlocal formatoptions-=cro
 autocmd BufWritePre * call StripTrailingWhitespaces()
 autocmd InsertEnter * norm zz
 
-autocmd BufReadPost *.tex call PdfOpen()
-autocmd BufUnload   *.tex call PdfClose()
+" indentLine
+let g:indentLine_char='│'
+let g:indentLine_first_char='│'
+let g:indentLine_showFirstIndentLevel=1
+let g:indentLine_fileTypeExclude=['text']
+let g:indentLine_defaultGroup='Comment'
+
+" vimtex
+" let g:vimtex_mappings_enabled=0
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
@@ -138,51 +136,4 @@ function! StripTrailingWhitespaces()
   execute printf('%d substitute/\%%%dc\s\+$//e', line, col+1)
   execute printf('vglobal/\%%%dl/substitute/\s\+$//e', line)
   call cursor(line, col)
-endfunction
-
-" Open the PDF file created by a TeX document
-function! PdfOpen()
-  let filepath = expand('%:p:r').'.pdf'
-  if filereadable(filepath)
-    execute 'silent !open '.shellescape(filepath,1)
-  else
-    echohl ErrorMsg
-    echomsg 'No pdf file "'.filepath.'"'
-    echohl None
-  endif
-endfunction
-
-" Close the PDF file created by a TeX document
-function! PdfClose()
-  let filepath = expand('%:p:r').'.pdf'
-  if filereadable(filepath)
-    let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
-    let skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
-    " if there is just one Skim window and its title matches the filename of
-    " the file in the buffer, quit Skim
-    if len(skim_windows) == 1
-      execute "silent !osascript -e \'quit app \"Skim\"\'"
-    " if there are more Skim windows look for the one whose title matches the
-    " filename of the file in the buffer and close it
-    elseif len(skim_windows) > 1
-      let filename = system("basename ".shellescape(filepath,1))
-      for window in skim_windows
-        if system("sed 's/\.pdf.*/.pdf/'", window.title) == filename
-          execute "silent !yabai -m window --focus ".shellescape(window.id,1)." && yabai -m window --close && yabai -m window --focus recent"
-        endif
-      endfor
-    endif
-  endif
-endfunction
-
-" Use SyncTex to jump from a line in a TeX document to its PDF output in Skim
-function! SyncTeXForwardSearch()
-  let filepath = expand('%:p:r').'.pdf'
-  if filereadable(filepath)
-    execute "silent !/Applications/Skim.app/Contents/SharedSupport/displayline ".line(".")." ".shellescape(filepath,1)
-  else
-    echohl ErrorMsg
-    echomsg 'No pdf file "'.filepath.'"'
-    echohl None
-  endif
 endfunction
