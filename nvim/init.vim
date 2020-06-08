@@ -129,16 +129,8 @@ autocmd FileType    * setlocal formatoptions-=cro
 autocmd BufWritePre * call StripTrailingWhitespaces()
 autocmd InsertEnter * norm zz
 
-autocmd FileType vim,sh,zsh,python,conf execute "set cc=" . (&cc == "" ? "80,100" : "")
-autocmd FileType tex,context,vim,css,yaml setlocal shiftwidth=2 tabstop=2
-
 autocmd BufReadPost *.tex call PdfOpen()
 autocmd BufUnload   *.tex call PdfClose()
-autocmd FileType tex,context let g:AutoPairs['$']='$'
-autocmd FileType tex,context nnoremap <buffer> <silent> <C-t> :call TeXCompile()<cr>
-autocmd FileType tex,context inoremap <buffer> <silent> <C-t> <esc>:call TeXCompile()<cr>a
-autocmd FileType tex,context nnoremap <buffer> <silent> <localleader>p :call PdfOpen()<cr>
-autocmd FileType tex,context nnoremap <buffer> <silent> <localleader>f :call SyncTeXForwardSearch()<cr>
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
@@ -146,12 +138,6 @@ function! StripTrailingWhitespaces()
   execute printf('%d substitute/\%%%dc\s\+$//e', line, col+1)
   execute printf('vglobal/\%%%dl/substitute/\s\+$//e', line)
   call cursor(line, col)
-endfunction
-
-" Compile a LaTeX/ConTeXt document
-function! TeXCompile()
-  let filepath = expand('%:p')
-  execute "!cd $(dirname ".shellescape(filepath,1).") && pdflatex -synctex=1 ".shellescape(filepath,1)
 endfunction
 
 " Open the PDF file created by a TeX document
