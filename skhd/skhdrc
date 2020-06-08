@@ -55,12 +55,12 @@ cmd - h : false
 cmd - s [
     "Firefox" : false
 ]
-cmd - t [
-    "Firefox" : false
-]
-cmd - l [
-    "Firefox" : false
-]
+# cmd - t [
+#     "Firefox" : false
+# ]
+# cmd - l [
+#     "Firefox" : false
+# ]
 
 # Focus windows
 alt - up    : yabai -m window --focus north

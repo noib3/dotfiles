@@ -1,33 +1,39 @@
 " TODO
-" 1. silence compile command for latex and content
+" NEOVIM
+" 1. vim look into autogroups and ftplugin files
+" 2. silence compile command for latex and content
+" 3. tex file closes other pdfs not only his own fix that
+" 4. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
+
+" LF
+" 1. lf move around with cmd-d and edit file with cmd-e
 " 2. lf set natural ordering like ls -l
 " 3. lf report issue with updating files on external volumes
 " 4. lf report issue with status bar being empty on startup
-" 5. lf move around with cmd-d and edit file with cmd-e
-" 6. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 7. fzf launcher support for multiple files
-" 8. fzf launcher sometimes it doesn't launch
-" 9. disable indentLine in .txt files
-" 10. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 11. refactor skhd and yabai configs
-" 12. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
-" 13. cmd-e and cmd-d fix colors
-" 14. firefox hide tab bar if single tab open, show on hover
-" 15. firefox make .app to open torrents
-" 16. firefox make bookmarks setup
-" 17. firefox make bitwarden setup
-" 18. firefox make downloads setup
-" 19. firefox rice tridactyl gui
-" 20. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 21. finances web frontend
-" 22. remake ndiet
-" 23. setup bar with uebersicht
-" 24. refactor 2d2small and journal classes
-" 25. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
-" 26. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
-" 27. vim look into autogroups and ftplugin files
-" 28. tex file closes other pdfs not only his own fix that
-" 29. limelight borders left on screen need to report that
+
+" FIREFOX
+" 1. firefox hide tab bar if single tab open, show on hover
+" 2. firefox make .app to open torrents
+" 3. firefox make bookmarks setup
+" 4. firefox make bitwarden setup
+" 5. firefox make downloads setup
+
+" OTHER
+" 1. cmd-e and cmd-d fix colors
+" 2. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 3. fzf launcher support for multiple files
+" 4. fzf launcher sometimes it doesn't launch
+" 5. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 6. refactor skhd and yabai configs
+
+" TO CREATE
+" 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" 2. refactor peek script, see why it throws an error, remove creation of tmp file, program gets pulled from keep once the workout is over
+" 3. setup bar with uebersicht
+" 4. refactor 2d2small and journal classes
+" 5. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 6. finances web frontend
+" 7. remake ndiet
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
@@ -71,13 +77,13 @@ let g:is_posix=1
 " let g:vimtex_mappings_enabled=0
 
 " indentLine
-let g:indentLine_showFirstIndentLevel=1
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
+let g:indentLine_showFirstIndentLevel=1
+let g:indentLine_fileTypeExclude=['text']
 let g:indentLine_defaultGroup='Comment'
 
 " Maps
-
 map  <C-a> ^
 imap <C-a> <esc>^i
 map  <C-e> $
@@ -96,8 +102,7 @@ noremap <leader>d <C-w><C-l>
 nmap ss :%s//g<left><left>
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 
-" Fix for
-" https://github.com/neovim/neovim/issues/11393
+" Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <c-u>undo<CR>
 
 " Colorscheme
