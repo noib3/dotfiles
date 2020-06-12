@@ -6,10 +6,9 @@
 " 4. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
 
 " LF
-" 1. lf move around with cmd-d and edit file with cmd-e
-" 2. lf set natural ordering like ls -l
-" 3. lf report issue with updating files on external volumes
-" 4. lf report issue with status bar being empty on startup
+" 1. lf set natural ordering like ls -l
+" 2. lf report issue with updating files on external volumes
+" 3. lf report issue with status bar being empty on startup
 
 " FIREFOX
 " 1. firefox hide tab bar if single tab open, show on hover
@@ -25,6 +24,7 @@
 " 4. fzf launcher sometimes it doesn't launch
 " 5. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
 " 6. refactor skhd and yabai configs
+" 7. ls and lf sort by extension, dotfiles first, uppercase first
 
 " TO CREATE
 " 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder

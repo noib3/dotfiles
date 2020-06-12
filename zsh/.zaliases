@@ -1,4 +1,4 @@
-alias ls='ls -Ahv --color --quoting-style=literal --group-directories-first'
+alias ls='ls -AXh --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'
 alias rm='rm -i'
 alias r='ranger'

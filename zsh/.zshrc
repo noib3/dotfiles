@@ -111,7 +111,7 @@ bindkey '^W' close_window
 # however it seems like that alone doesn't save the command between sessions, and
 # that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
 # a line, which is needed if you leave (n)vim in normal mode with the block cursor
-function fuzzy_edit() {
+function fzf_edit() {
     filename=$(fd . ~ --type f --hidden --color always |
                  sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
                  fzf --height=40% --color="hl:-1,hl+:-1") \
@@ -121,11 +121,11 @@ function fuzzy_edit() {
         zle reset-prompt
     fi
 }
-zle -N fuzzy_edit
-bindkey '^X^E' fuzzy_edit
+zle -N fzf_edit
+bindkey '^X^E' fzf_edit
 
 # ..search a filename and add it to the line buffer..
-function fuzzy_search() {
+function fzf_search() {
     filename=$(fd . ~ --type f --hidden --color always |
                  sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
                  fzf --height=40% --color="hl:-1,hl+:-1") \
@@ -134,11 +134,11 @@ function fuzzy_search() {
         zle reset-prompt
     fi
 }
-zle -N fuzzy_search
-bindkey '^S' fuzzy_search
+zle -N fzf_search
+bindkey '^S' fzf_search
 
 # ..or to change directory
-function fuzzy_cd() {
+function fzf_cd() {
     dirname=$(fd . ~ --type d --hidden --color always | sed "s=.*noibe/==g" |
               fzf --height=40%) \
     && cd ~/$dirname && precmd
@@ -146,8 +146,8 @@ function fuzzy_cd() {
         zle reset-prompt
     fi
 }
-zle -N fuzzy_cd
-bindkey '^X^D' fuzzy_cd
+zle -N fzf_cd
+bindkey '^X^D' fzf_cd
 
 # A single 'c' clears the screen without being added to the command history
 # The alias is just so that fast-syntax-highlighting doesn't color it in red

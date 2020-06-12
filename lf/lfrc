@@ -12,6 +12,7 @@ set filesep " "
 set timefmt ""
 set ifs " "
 set period 1
+set sortby ext
 
 # Custom commands
 cmd open ${{
@@ -38,6 +39,22 @@ map s %{{
     echo $(sudo du -sh "$f" | awk '{ print $1 }')
 }}
 
+cmd fzf_edit ${{
+    clear
+    filename="$(fd . ~ --type f --hidden --color always |
+                 sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
+                 fzf --height=80% --color="hl:-1,hl+:-1")" \
+    && $EDITOR ~/"$filename"
+}}
+
+cmd fzf_cd ${{
+    clear
+    dirname="$(fd . ~ --type d --hidden --color always |
+                 sed "s=.*noibe/==g" |
+                 fzf --height=80%)" \
+    && lf -remote "send $id cd ~/$dirname"
+}}
+
 # Key mappings
 map e
 map m
@@ -45,19 +62,21 @@ map m
 map <c-w> quit
 map <enter> shell
 map <esc> clear
+map <c-e> fzf_edit
+map <c-d> fzf_cd
 map d delete
 map x cut
 
-map gdl cd "~/Downloads"
-map gsc cd "~/scripts"
-map gvl cd "/Volumes"
-map gdf cd "~/.config"
-map gtm cd "~/Library/texmf"
-map gdr cd "~/Dropbox"
+# map gdl cd "~/Downloads"
+# map gsc cd "~/scripts"
+# map gvl cd "/Volumes"
+# map gdf cd "~/.config"
+# map gtm cd "~/Library/texmf"
+# map gdr cd "~/Dropbox"
 # map gmn cd "~/Dropbox/Finances/$(date +%Y)"
-map gmn cd "~/Dropbox/Finances"
-map gsh cd "~/Dropbox/share"
-map gun cd "~/Dropbox/University/triennale/III"
-map gss cd "~/Dropbox/Screenshots"
-map glg cd "~/Dropbox/Fitness/logs"
-map gwp cd "~/Dropbox/Themes/Wallpapers"
+# map gmn cd "~/Dropbox/Finances"
+# map gsh cd "~/Dropbox/share"
+# map gun cd "~/Dropbox/University/triennale/III"
+# map gss cd "~/Dropbox/Screenshots"
+# map glg cd "~/Dropbox/Fitness/logs"
+# map gwp cd "~/Dropbox/Themes/Wallpapers"
