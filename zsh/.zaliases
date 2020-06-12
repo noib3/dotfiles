@@ -1,8 +1,6 @@
 alias ls='ls -AXh --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'
 alias rm='rm -i'
-alias r='ranger'
-alias l='lf'
 
 alias upd='brew update'
 alias upg='brew upgrade'

@@ -62,8 +62,8 @@ map m
 map <c-w> quit
 map <enter> shell
 map <esc> clear
-map <c-e> fzf_edit
-map <c-d> fzf_cd
+map <c-x><c-e> fzf_edit
+map <c-x><c-d> fzf_cd
 map d delete
 map x cut
 
