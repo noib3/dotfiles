@@ -1,27 +1,27 @@
-:root{
+:root {
   --tab-min-height: 1.4em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
 }
 
-#TabsToolbar{
+#TabsToolbar {
   height: var(--tab-min-height) !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
-.tab-content{
+.tab-content {
   padding-top: 0 !important;
   margin-bottom: -2px !important;
   line-height: 1em !important;
 }
 
-.tab-text{
+.tab-text {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   line-height: 1.4em !important;
 }
 
-.tab-label-container{
+.tab-label-container {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   padding-top: 0 !important;
@@ -30,7 +30,7 @@
 }
 
 /* Favicon */
-.tab-icon-image{
+.tab-icon-image {
   margin-top: 0 !important;
   margin-bottom: 1px !important;
   padding-bottom: 0 !important;
@@ -39,13 +39,13 @@
 }
 
 /* Page loading animation */
-.tab-throbber{
+.tab-throbber {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
 /* Speaker icon when audio is playing */
-.tab-icon-sound{
+.tab-icon-sound {
   margin-top: 1px !important;
   margin-bottom: 1px !important;
   height: 1em !important;

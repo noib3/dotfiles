@@ -1,10 +1,24 @@
+/* Font */
 @import url("/Users/noibe/.config/firefox/chrome/fonts/iosevka.css");
-@import url("/Users/noibe/.config/firefox/chrome/themes/grey.css");
 
-@import url("/Users/noibe/.config/firefox/chrome/colors.css");
+/* Colorscheme */
+@import url("/Users/noibe/.config/firefox/chrome/colors/colors.css");
+@import url("/Users/noibe/.config/firefox/chrome/colors/themes/grey.css");
+
+/* Remove all the unnecessary UI garbage */
 @import url("/Users/noibe/.config/firefox/chrome/remove_bloat.css");
+
+/* Tabs */
 @import url("/Users/noibe/.config/firefox/chrome/tabs_layout.css");
 @import url("/Users/noibe/.config/firefox/chrome/full_width_tabs.css");
 @import url("/Users/noibe/.config/firefox/chrome/numbered_tabs.css");
 @import url("/Users/noibe/.config/firefox/chrome/tab_close_button_always_on_hover.css");
-/* @import url("/Users/noibe/.config/firefox/chrome/hide_tabs_with_one_tab.css"); */
+@import url("/Users/noibe/.config/firefox/chrome/hide_tabs_with_one_tab.css");
+
+/* Navbar */
+@import url("/Users/noibe/.config/firefox/chrome/navbar_layout.css");
+/* @import url("/Users/noibe/.config/firefox/chrome/navbar_on_bottom.css"); */
+/* @import url("/Users/noibe/.config/firefox/chrome/navbar_on_focus.css"); */
+
+/* Sidebar */
+@import url("/Users/noibe/.config/firefox/chrome/sidebar_layout.css");

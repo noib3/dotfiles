@@ -3,7 +3,6 @@
 " 1. vim look into autogroups and ftplugin files
 " 2. silence compile command for latex and content
 " 3. tex file closes other pdfs not only his own fix that
-" 4. vim handle copying and pasting of unicode chars like lambda or plus/minus symbols
 
 " LF
 " 1. lf set natural ordering like ls -l
@@ -66,6 +65,7 @@ set noshowmode               " hide the current mode
 set undofile                 " remember undo history across sessions
 set laststatus=0             " hide the status line
 set autochdir                " set the pwd to the directory containing the file
+set makeef=/var/tmp/ef##     " name of the errorfile for the ':make' command
 
 " Lets
 let mapleader=","
@@ -126,9 +126,6 @@ let g:indentLine_first_char='│'
 let g:indentLine_showFirstIndentLevel=1
 let g:indentLine_fileTypeExclude=['text']
 let g:indentLine_defaultGroup='Comment'
-
-" vimtex
-" let g:vimtex_mappings_enabled=0
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()

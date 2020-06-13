@@ -1,0 +1,14 @@
+/* https://www.reddit.com/r/FirefoxCSS/comments/efco2a/autohiding_navigation_bar_feat_hover_focus/ */
+
+#nav-bar {
+  height: 0;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+/* Uncomment to show navbar on hover */
+/*#navigator-toolbox:hover > #nav-bar,*/
+#navigator-toolbox:focus-within > #nav-bar {
+  overflow: inherit;
+  height: auto;
+}
