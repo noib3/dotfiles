@@ -1,8 +1,8 @@
-" TODO
 " NEOVIM
 " 1. vim look into autogroups and ftplugin files
 " 2. silence compile command for latex and content
 " 3. tex file closes other pdfs not only his own fix that
+" 4. undo should go back to last change not to last save
 
 " LF
 " 1. lf set natural ordering like ls -l
@@ -10,14 +10,10 @@
 " 3. lf report issue with status bar being empty on startup
 
 " FIREFOX
-" 1. firefox hide tab bar if single tab open, show on hover
-" 2. firefox make .app to open torrents
-" 3. firefox make bookmarks setup
-" 4. firefox make bitwarden setup
-" 5. firefox make downloads setup
+" 1. firefox fix navbar and megabar
 
 " OTHER
-" 1. cmd-e and cmd-d fix colors
+" TODO 1. cmd-e and cmd-d fix colors
 " 2. understand why sometimes when it's launched with fzf_opener it looks fucked up
 " 3. fzf launcher support for multiple files
 " 4. fzf launcher sometimes it doesn't launch
@@ -36,11 +32,10 @@
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')
-  " syntax
-  Plug 'tridactyl/vim-tridactyl'
   " functionality
-  Plug 'tpope/vim-surround'
   Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-dispatch'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-endwise'
   Plug 'farmergreg/vim-lastplace'

@@ -15,8 +15,8 @@ set errorformat=%f:%l:\ %m
 let g:AutoPairs['$']='$'
 
 " Mappings to compile the document, open the pdf file and forward search from the tex to the pdf
-nmap <buffer> <silent> <C-t> :make<cr>
-imap <buffer> <silent> <C-t> <esc>:make<cr>a
-" nmap <buffer> <silent> <C-t> :execute "!pdflatex -halt-on-error -file-line-error -synctex=1 %"<cr>
+" nmap <buffer> <silent> <C-t> :make<cr>
+" imap <buffer> <silent> <C-t> <esc>:make<cr>a
+nmap <buffer> <silent> <C-t> :execute "!pdflatex -halt-on-error -file-line-error -synctex=1 %"<cr>
 nmap <buffer> <silent> <localleader>p :call tex#pdf_open()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#Skim_forward_search()<cr>

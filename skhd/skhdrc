@@ -1,8 +1,5 @@
 # Open a browser window
-cmd - b [
-    *         : open -na /Applications/Firefox.app
-    "Firefox" ~
-]
+alt - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
 cmd - return : $TERMINAL
@@ -14,6 +11,7 @@ cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/ca
 cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
                   1440x900*) x_pos=380; y_pos=180;; \
                   2048x1152*) x_pos=684; y_pos=231;; \
+                  2560x1440*) x_pos=876; y_pos=288;; \
               esac; \
               alacritty --config-file ~/.config/alacritty/fuzzy_opener.yml \
                         --dimensions 64 6 --position $x_pos $y_pos -t fuzzy_opener \
@@ -34,6 +32,7 @@ cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') i
 cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
               1440x900*) x_pos=547; y_pos=180;; \
               2048x1152*) x_pos=684; y_pos=231;; \
+              2560x1440*) x_pos=876; y_pos=288;; \
           esac; \
           alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     --dimensions 71 14 --position $x_pos $y_pos -t committed \
@@ -43,24 +42,29 @@ cmd - m : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
 cmd - k : case $(displayplacer list | grep Resolution: | awk '{print $2}') in; \
               1440x900*) x_pos=547; y_pos=180;; \
               2048x1152*) x_pos=851; y_pos=231;; \
+              2560x1440*) x_pos=1073; y_pos=288;; \
           esac; \
           alacritty --config-file ~/.config/alacritty/ndiet.yml \
                     --dimensions 34 14 --position $x_pos $y_pos -t ndiet \
                     -e zsh -c 'tput civis && ndiet.py -c && read -s -k "?"'
 
-# Disable cmd-h in every program
-cmd - h : false
+# Open downloads sidebar in Firerox
+cmd - d [
+    "Firefox" : skhd --key "f4"
+]
 
-# Disable cmd-s, cmd-t and cmd-l in Firefox
+# Open Bitwarden sidebar in Firerox
+cmd - e [
+    "Firefox" : skhd --key "shift + alt - y"
+]
+
+# Disable cmd-s in Firefox
 cmd - s [
     "Firefox" : false
 ]
-# cmd - t [
-#     "Firefox" : false
-# ]
-# cmd - l [
-#     "Firefox" : false
-# ]
+
+# Disable cmd-h in every program
+cmd - h : false
 
 # Focus windows
 alt - up    : yabai -m window --focus north

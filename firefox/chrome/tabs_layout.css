@@ -1,24 +1,25 @@
 :root {
-  --tab-min-height: 1.4em !important;
+  --tab-min-height: 1.35em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
 }
 
 #TabsToolbar {
-  height: var(--tab-min-height) !important;
+  min-height: 0 !important;
+  max-height: var(--tab-min-height) !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
 .tab-content {
   padding-top: 0 !important;
-  margin-bottom: -2px !important;
+  margin-bottom: -3px !important;
   line-height: 1em !important;
 }
 
 .tab-text {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  line-height: 1.4em !important;
+  line-height: 1.35em !important;
 }
 
 .tab-label-container {
@@ -26,13 +27,13 @@
   margin-bottom: 0 !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  line-height: 1.4em !important;
+  line-height: 1.35em !important;
 }
 
 /* Favicon */
 .tab-icon-image {
   margin-top: 0 !important;
-  margin-bottom: 1px !important;
+  margin-bottom: 0 !important;
   padding-bottom: 0 !important;
   height: 1em !important;
   width: 1em !important;

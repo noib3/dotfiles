@@ -8,7 +8,8 @@ shell:
 font:
   normal:
     family: Iosevka Nerd Font
-  size: 17.0
+  # size: 17.0
+  size: 20.0
   offset:
     y: 1
 

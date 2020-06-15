@@ -2,7 +2,6 @@
   padding-top: 5px !important;
 }
 
-#sidebar-header{
-  padding-top: 3px !important;
-  padding-bottom: 3px !important;
+#sidebar-header {
+  display: none !important;
 }

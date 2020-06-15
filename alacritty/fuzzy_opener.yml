@@ -2,7 +2,8 @@
 font:
   normal:
     family: Iosevka Nerd Font
-  size: 21.0
+  # size: 21.0
+  size: 24.0
   offset:
     y: 1
 
