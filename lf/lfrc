@@ -42,7 +42,7 @@ map s %{{
 cmd fzf_edit ${{
     clear
     filename="$(fd . ~ --type f --hidden --color always |
-                 sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
+                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g" |
                  fzf --height=80% --color="hl:-1,hl+:-1")" \
     && $EDITOR ~/"$filename"
 }}
@@ -50,8 +50,8 @@ cmd fzf_edit ${{
 cmd fzf_cd ${{
     clear
     dirname="$(fd . ~ --type d --hidden --color always |
-                 sed "s=.*noibe/==g" |
-                 fzf --height=80%)" \
+                sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                fzf --height=80% --color="hl:-1,hl+:-1")" \
     && lf -remote "send $id cd ~/$dirname"
 }}
 

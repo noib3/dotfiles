@@ -113,7 +113,7 @@ bindkey '^W' close_window
 # a line, which is needed if you leave (n)vim in normal mode with the block cursor
 function fzf_edit() {
     filename=$(fd . ~ --type f --hidden --color always |
-                 sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
+                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g" |
                  fzf --height=40% --color="hl:-1,hl+:-1") \
     && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") \
     && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
@@ -127,7 +127,7 @@ bindkey '^X^E' fzf_edit
 # ..search a filename and add it to the line buffer..
 function fzf_search() {
     filename=$(fd . ~ --type f --hidden --color always |
-                 sed "s=.*noibe/==g;s/\[1;34m/\[90m/g" |
+                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g" |
                  fzf --height=40% --color="hl:-1,hl+:-1") \
     && LBUFFER="$LBUFFER~/$filename "
     if zle; then
@@ -139,8 +139,9 @@ bindkey '^S' fzf_search
 
 # ..or to change directory
 function fzf_cd() {
-    dirname=$(fd . ~ --type d --hidden --color always | sed "s=.*noibe/==g" |
-              fzf --height=40%) \
+    dirname=$(fd . ~ --type d --hidden --color always |
+                sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                fzf --height=40% --color="hl:-1,hl+:-1") \
     && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt

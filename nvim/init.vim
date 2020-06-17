@@ -5,22 +5,21 @@
 " 4. undo should go back to last change not to last save
 
 " LF
-" 1. lf set natural ordering like ls -l
-" 2. lf report issue with updating files on external volumes
-" 3. lf report issue with status bar being empty on startup
+" 1. TODO lf request ordering like ls -l
+" 2. TODO lf report issue with updating files on external volumes
+" 3. TODO lf report issue with status bar being empty on startup
 
 " FIREFOX
 " 1. firefox fix navbar and megabar
 
 " OTHER
-" TODO 1. cmd-e and cmd-d fix colors
-" 2. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 3. fzf launcher support for multiple files
-" 4. fzf launcher sometimes it doesn't launch
-" 5. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 6. refactor skhd and yabai configs
-" 7. ls and lf sort by extension, dotfiles first, uppercase first
-" 8. remove divider from dock
+" 1. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 2. fzf launcher support for multiple files
+" 3. fzf launcher sometimes it doesn't launch
+" 4. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 5. refactor skhd and yabai configs
+" 6. ls sort by extension, dotfiles first, uppercase first
+" 7. remove divider from dock
 
 " TO CREATE
 " 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder

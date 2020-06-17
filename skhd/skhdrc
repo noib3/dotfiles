@@ -1,5 +1,5 @@
 # Open a browser window
-alt - w : open -na /Applications/Firefox.app
+ctrl - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
 cmd - return : $TERMINAL
@@ -17,7 +17,7 @@ cmd - space : case $(displayplacer list | grep Resolution: | awk '{print $2}') i
                         --dimensions 64 6 --position $x_pos $y_pos -t fuzzy_opener \
                         -e zsh -c 'printf "\e[5 q" && \
                                    fd --type f --hidden --color always | \
-                                   sed "s/\[1;34m/\[90m/g" | \
+                                   sed "s/\[1;34m/\[1;90m/g" | \
                                    fzf --prompt="  " --pointer="→" \
                                        --no-info \
                                        --color="hl:-1,hl+:-1" | \
@@ -125,7 +125,7 @@ alt - n : yabai -m space --create && yabai -m space --focus last
 alt - w : yabai -m space --destroy
 alt - x : yabai -m space --mirror x-axis
 alt - y : yabai -m space --mirror y-axis
-alt - r : yabai -m space --rotate 90
+alt - r : yabai -m space --rotate 270
 alt - b : yabai -m space --balance
 
 # Screenshot the whole screen

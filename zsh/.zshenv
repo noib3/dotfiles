@@ -2,9 +2,9 @@
 #   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
 # In particular, you need to 'sudo rm /etc/zprofile'
 
-PATH=/opt/local/bin:/opt/local/sbin
-PATH=$PATH:/usr/local/opt/coreutils/libexec/gnubin
+PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
+PATH=$PATH:/usr/local/opt/gnu-sed/libexec/gnubin
 PATH=$PATH:/Library/TeX/texbin
 PATH=$PATH:/usr/local/bin
 PATH=$PATH:/usr/bin
