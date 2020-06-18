@@ -1,5 +1,5 @@
 :root {
-  --lwt-accent-color: var(--tab-divider-color) !important;
+  --lwt-accent-color: var(--focused-tab-color) !important;
   --sidebar-text-color: var(--text-color) !important;
 }
 
@@ -17,11 +17,12 @@
 
 /* Tab divider lines */
 /* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
+#navigator-toolbox {
+  --tabs-border-color: var(--focused-tab-color) !important;
+}
+
 .tabbrowser-tab::after {
   visibility: hidden !important;
-}
-#navigator-toolbox {
-  --tabs-border-color: var(--tab-divider-color) !important;
 }
 
 /* Urlbar */

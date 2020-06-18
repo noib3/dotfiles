@@ -12,7 +12,7 @@ set makeprg=pdflatex\ -halt-on-error\ -file-line-error\ -synctex=1\ %
 set errorformat=%f:%l:\ %m
 
 " Automatically insert a matching dollar sign for inline math
-let g:AutoPairs['$']='$'
+" let g:AutoPairs['$']='$'
 
 " Mappings to compile the document, open the pdf file and forward search from the tex to the pdf
 " nmap <buffer> <silent> <C-t> :make<cr>

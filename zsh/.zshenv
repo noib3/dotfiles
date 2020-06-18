@@ -13,15 +13,11 @@ PATH=$PATH:/usr/sbin
 PATH=$PATH:/sbin
 PATH=$PATH:/usr/local/opt/python@3.8/bin
 PATH=$PATH:/Applications/Alacritty.app/Contents/MacOS
-PATH=$PATH:/Applications/qutebrowser.app/Contents/MacOS
 PATH=$PATH:/Applications/Firefox.app/Contents/MacOS
-PATH=$PATH:/Applications/Brave\ Browser.app/Contents/MacOS
 PATH=$PATH:/Users/noibe/scripts
 PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
-
-export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 # Preferred editor
 export VISUAL=nvim
