@@ -12,7 +12,7 @@ set filesep " "
 set timefmt ""
 set ifs " "
 set period 1
-set sortby ext
+set sortby natural
 
 # Custom commands
 cmd open ${{
@@ -67,16 +67,4 @@ map <c-x><c-d> fzf_cd
 map d delete
 map x cut
 
-# map gdl cd "~/Downloads"
-# map gsc cd "~/scripts"
-# map gvl cd "/Volumes"
-# map gdf cd "~/.config"
-# map gtm cd "~/Library/texmf"
-# map gdr cd "~/Dropbox"
-# map gmn cd "~/Dropbox/Finances/$(date +%Y)"
-# map gmn cd "~/Dropbox/Finances"
-# map gsh cd "~/Dropbox/share"
-# map gun cd "~/Dropbox/University/triennale/III"
-# map gss cd "~/Dropbox/Screenshots"
-# map glg cd "~/Dropbox/Fitness/logs"
-# map gwp cd "~/Dropbox/Themes/Wallpapers"
+map gvl cd "/Volumes"

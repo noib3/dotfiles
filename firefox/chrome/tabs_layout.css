@@ -19,7 +19,7 @@
 .tab-text {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  line-height: 1.4em !important;
+  line-height: var(--tab-min-height) !important;
 }
 
 .tab-label-container {
@@ -27,7 +27,7 @@
   margin-bottom: 0 !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  line-height: 1.4em !important;
+  line-height: var(--tab-min-height) !important;
 }
 
 /* Favicon */
