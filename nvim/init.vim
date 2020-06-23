@@ -1,24 +1,23 @@
-" NEOVIM
+" NVIM
 " 1. vim look into autogroups and ftplugin files
-" 2. silence compile command for latex and content
-" TODO 3. tex file closes other pdfs not only his own fix that
-" TODO 4. undo should go back to last change not to last save
-" 5. understand why sometimes when it's launched with fzf_opener it looks fucked up
+" 2. silence compile command for latex and context
+" 3. switch buffer with fzf bound to C-e
+" 4. open pdf file automatically when opening tex document
+" 5. fix StripTrailingWhitespaces
+" 6. understand why sometimes when it's launched with fzf_opener it looks fucked up
 
 " FIREFOX
 " 1. firefox fix navbar and megabar
 
 " OTHER
-" TODO 1. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 2. remove divider from dock
+" 1. remove divider from dock
 
 " TO CREATE
-" TODO 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
-" 2. setup bar with uebersicht
-" 3. refactor 2d2small and journal classes
-" 4. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
-" 5. finances web frontend
-" 6. remake ndiet
+" 1. uebersicht bar
+" 2. refactor 2d2small and journal classes
+" 3. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
+" 4. finances web frontend
+" 5. remake ndiet
 
 " Plugs
 call plug#begin('~/.config/nvim/plugged')

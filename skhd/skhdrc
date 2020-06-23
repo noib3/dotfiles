@@ -7,22 +7,9 @@ cmd - f      : $TERMINAL -e lf ~/Downloads
 cmd - g      : $TERMINAL -e gotop
 cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
-# Execute auto commit script
-cmd - m : sh ~/scripts/committed/committed
-
-# Open one or multiple files
-cmd - space : \
-    alacritty -t fuzzy_opener --config-file ~/.config/alacritty/fuzzy_opener.yml \
-              -e zsh -c 'printf "\e[5 q" && \
-                         fd --type f --hidden --color always | \
-                         sed "s/\[1;34m/\[1;90m/g" | \
-                         fzf -m --color="hl:-1,hl+:-1" --print0 | \
-                         (nohup xargs -0 -I {} -n 1 -P 0 zsh -c '\'' \
-                             case $(file --mime-type -b $1) in; \
-                                 text*) $TERMINAL -e sh -c "$EDITOR \"$1\"";; \
-                                 *) open $1;; \
-                             esac \
-                         '\'' sh {} &>/dev/null &)'
+# Execute personal scripts
+cmd - space : sh ~/scripts/fzopnr
+cmd - m     : sh ~/scripts/committed/committed
 
 # Open downloads sidebar in Firerox
 cmd - d [

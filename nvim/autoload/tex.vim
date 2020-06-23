@@ -19,20 +19,20 @@ endfunction
 " Close the pdf file created by a TeX document
 function! tex#pdf_close()
   let filepath = expand('%:p:r').'.pdf'
+  let filename = expand('%:t:r').'.pdf'
   if filereadable(filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
-    let skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
+    let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
     " if there is just one Skim window and its title matches the filename of
     " the file in the buffer, quit Skim
-    if len(skim_windows) == 1
+    if len(Skim_windows) == 1 && system("sed 's/\.pdf.*/.pdf/'", Skim_windows[0].title) == filename
       execute "silent !osascript -e \'quit app \"Skim\"\'"
     " if there are more Skim windows look for the one whose title matches the
     " filename of the file in the buffer and close it
-    elseif len(skim_windows) > 1
-      let filename = system("basename ".shellescape(filepath,1))
-      for window in skim_windows
+    elseif len(Skim_windows) > 1
+      for window in Skim_windows
         if system("sed 's/\.pdf.*/.pdf/'", window.title) == filename
-          execute "silent !yabai -m window --focus ".shellescape(window.id,1)." && yabai -m window --close && yabai -m window --focus recent"
+          execute "silent !yabai -m window ".shellescape(window.id,1)." --close"
         endif
       endfor
     endif
