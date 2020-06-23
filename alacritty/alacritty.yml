@@ -8,8 +8,11 @@ shell:
 font:
   normal:
     family: Iosevka Nerd Font
-  # size: 17.0
-  size: 21.0
+    style: Regular
+    # style: Light # for SFMono Nerd Font
+  # size: 17.0 # for Iosevka with resolution 2048x1152
+  # size: 19.0 # for SFMono Nerd Font
+  size: 20
   offset:
     y: 1
 

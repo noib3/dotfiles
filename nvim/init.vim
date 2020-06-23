@@ -1,20 +1,19 @@
 " NEOVIM
 " 1. vim look into autogroups and ftplugin files
 " 2. silence compile command for latex and content
-" 3. tex file closes other pdfs not only his own fix that
-" 4. undo should go back to last change not to last save
+" TODO 3. tex file closes other pdfs not only his own fix that
+" TODO 4. undo should go back to last change not to last save
+" 5. understand why sometimes when it's launched with fzf_opener it looks fucked up
 
 " FIREFOX
 " 1. firefox fix navbar and megabar
 
 " OTHER
-" TODO 1. understand why sometimes when it's launched with fzf_opener it looks fucked up
-" 2. fzf launcher support for multiple files
-" 3. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
-" 4. remove divider from dock
+" TODO 1. fix all skhd yabai bindings, for ex alt+w with a program on space 3 but spawned from space 2 puts it on space 1
+" 2. remove divider from dock
 
 " TO CREATE
-" 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
+" TODO 1. refactor committed script, calcurse.pid doesn't get pushed, I only try to commit if there is something to commit, option to clear the screen for every git folder
 " 2. setup bar with uebersicht
 " 3. refactor 2d2small and journal classes
 " 4. make program to track time, a binding brings up a menu with the current tasks open, if you click on one it continues that task and tracks the time, binding to stop the task, data saved in json/yaml file, web frontend
@@ -82,7 +81,8 @@ nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
 cnoremap 3636 <c-u>undo<CR>
 
 " Colorscheme
-" colorscheme onedark
+set background=dark
+colorscheme onedark
 
 " Highlights
 highlight Normal guibg=NONE ctermbg=NONE
@@ -108,9 +108,9 @@ autocmd InsertEnter * norm zz
 " indentLine
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
-" let g:indentLine_showFirstIndentLevel=1
-let g:indentLine_fileTypeExclude=['text']
-" let g:indentLine_defaultGroup='Comment'
+let g:indentLine_showFirstIndentLevel=1
+let g:indentLine_fileTypeExclude=['text', 'man']
+let g:indentLine_defaultGroup='Comment'
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()

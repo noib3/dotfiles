@@ -7,13 +7,13 @@ case $1 in
         # the values can be 'night', 'daytime' and 'transition'
         if [ ! "$3" = "none" ]; then
             # capitalize the period
-            cap_period="$(tr '[:lower:]' '[:upper:]' <<< ${3:0:1})${3:1}"
+            capd_period="$(tr '[:lower:]' '[:upper:]' <<< ${3:0:1})${3:1}"
             # use sed to remove the string 'time' and to add ' time' to the end
             # of the period, so that 'Night' and 'Daytime' become 'Night time'
             # and 'Day time'
-            echo $cap_period | sed 's/time//;s/$/ time/' | \
+            echo $capd_period | sed 's/time//;s/$/ time/' | \
                 /usr/local/bin/terminal-notifier -title "Redshift" \
                                                  -subtitle "Switching temps" \
-                                                 -appIcon $(dirname "$0")/Redshift-icon.png
+                                                 -appIcon $(dirname "$0")/Redshift-logo.png
         fi
 esac

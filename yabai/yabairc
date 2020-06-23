@@ -33,4 +33,3 @@ yabai -m rule --add app="^Font Book$" manage=off
 # Rules for my scripts
 yabai -m rule --add title="^fuzzy_opener$" manage=off
 yabai -m rule --add title="^committed$" manage=off sticky=on
-yabai -m rule --add title="^ndiet$" manage=off sticky=on

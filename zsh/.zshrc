@@ -1,5 +1,5 @@
 # Set colorscheme
-source $ZDOTDIR/themes/default.zsh
+source $ZDOTDIR/themes/onedark.zsh
 
 # Source aliases
 source $ZDOTDIR/.zaliases

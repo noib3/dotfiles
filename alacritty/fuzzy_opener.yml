@@ -1,4 +1,4 @@
-# Font
+# Fonts
 font:
   normal:
     family: Iosevka Nerd Font
@@ -77,8 +77,8 @@ colors: *wip
 window:
   decorations: buttonless
   padding:
-    x: 20
-    y: 15
+    x: 15
+    y: 10
 
 # Bindings
 key_bindings:

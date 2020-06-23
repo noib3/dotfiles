@@ -11,7 +11,6 @@ PATH=$PATH:/usr/bin
 PATH=$PATH:/bin
 PATH=$PATH:/usr/sbin
 PATH=$PATH:/sbin
-PATH=$PATH:/usr/local/opt/python@3.8/bin
 PATH=$PATH:/Applications/Alacritty.app/Contents/MacOS
 PATH=$PATH:/Applications/Firefox.app/Contents/MacOS
 PATH=$PATH:/Users/noibe/scripts
@@ -19,9 +18,10 @@ PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
 
-# Preferred editor
+# Export editor and man pager
 export VISUAL=nvim
 export EDITOR=$VISUAL
+export MANPAGER="nvim -c 'set ft=man' -"
 
 # Export terminal and browser
 export TERMINAL=alacritty
