@@ -1,36 +1,11 @@
-" NVIM
-" 1. vim look into autogroups and ftplugin files
-" 2. silence compile command for latex and context
-" 3. switch buffer with fzf bound to C-e
+" Filename:   init.vim
+" Github:     https://github.com/n0ibe/macOS-dotfiles
+" Maintainer: Riccardo Mazzarini
 
-" FIREFOX
-" 1. firefox fix navbar and megabar
+" Plugins {{{
 
-" OTHER
-" TODO 0. fix fd-fzf situation: ask fd not to append full path when using . ~
-" 1. remove divider from dock
-" TODO 2. drobox share refactor push script
-" 3. refactor zshrc
-" TODO 4. fd don't ignore ubersicht widgets
-" 5. refactor lf
-" 6. look into mpv enhancements or remove directory if nothing interesting
-" 7. maybe refactor nvim files
-" 8. ask for app dependent bindings for skhd
-" 9. put digital colour meter in top-right corner
-" 10. yabai put rules for macOS programs in a loop that goes through every pre-installed program
-" 11. refactor zsh
-" 12. refactor Fonts, Themes, Wallpapers folders in Dropbox
-
-" TO CREATE
-" 1. uebersicht bar
-" 2. finances web frontend
-" 3. journaling setup
-" 4. bootstrapping script
-" 5. remake ndiet
-
-" Plugs
 call plug#begin('~/.config/nvim/plugged')
-  " functionality
+  " Functionality
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
@@ -40,90 +15,115 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'farmergreg/vim-lastplace'
   Plug 'jiangmiao/auto-pairs'
   Plug 'Yggdroot/indentLine'
-  " colorschemes
+  " Colorschemes
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
 call plug#end()
 
-" Colorscheme
-colorscheme onedark
+" }}}
 
-" Sets
-set splitright splitbelow
-set number relativenumber
-set shiftwidth=4
-set tabstop=4
-set expandtab                " expand tabs to spaces
-set clipboard+=unnamedplus   " use the system clipboard
-set termguicolors            " use 24-bit colors
-set noshowmode               " hide the current mode
-set undofile                 " remember undo history across sessions
-set laststatus=0             " hide the status line
-set autochdir                " set the pwd to the directory containing the file
-set makeef=/var/tmp/ef##     " name of the errorfile for the ':make' command
+" Plugin settings: fzf {{{
 
-" Lets
-let mapleader=","
-let maplocalleader=","
-let g:netrw_home=$HOME.'/.cache/nvim'
-let g:tex_conceal=''
-let g:is_posix=1
+let g:fzf_layout={ 'window': { 'width': 0.7, 'height': 0.7, 'highlight': 'Normal', 'border': 'sharp' } }
 
-" Maps
-map  <C-a> ^
-imap <C-a> <esc>^i
-map  <C-e> $
-imap <C-e> <esc>$a
+" }}}
 
-map  <silent> <C-s> :w<cr>
-imap <silent> <C-s> <esc>:w<cr>a
-map  <silent> <C-w> :q<cr>
-imap <silent> <C-w> <esc>:q<cr>
+" Plugin settings: indentLine {{{
 
-noremap <leader>w <C-w><C-k>
-noremap <leader>a <C-w><C-h>
-noremap <leader>s <C-w><C-j>
-noremap <leader>d <C-w><C-l>
-
-nmap ss :%s//g<left><left>
-nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<cr>
-
-" fix for https://github.com/neovim/neovim/issues/11393
-cnoremap 3636 <c-u>undo<CR>
-
-map <silent> <C-x><C-e> :FZF --prompt=>\ <cr>
-imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\ <cr>
-
-" Highlights
-highlight Normal guibg=NONE ctermbg=NONE
-highlight Visual guibg=#7aa6da guifg=#ffffff ctermbg=blue ctermfg=white
-highlight Comment gui=italic cterm=italic
-
-highlight TabLineSel guibg=#626262 guifg=#ebebeb
-highlight TabLine guibg=#393939 guifg=#b6b6b6
-highlight TabLineFill guibg=NONE guifg=NONE
-
-highlight VertSplit guibg=#5C6370 guifg=NONE
-highlight StatusLine guibg=#5C6370 guifg=NONE
-highlight StatusLineNC guibg=#5C6370 guifg=NONE
-
-" Change vertical split character to a space
-set fillchars=vert:\  "
-
-" Autocmds
-autocmd FileType    * setlocal formatoptions-=cro
-autocmd BufWritePre * call StripTrailingWhitespaces()
-autocmd InsertEnter * norm zz
-
-" indentLine
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
 let g:indentLine_showFirstIndentLevel=1
 let g:indentLine_fileTypeExclude=['text', 'man']
 let g:indentLine_defaultGroup='Comment'
 
-" fzf
-let g:fzf_layout={ 'window': { 'width': 0.7, 'height': 0.7, 'highlight': 'Normal', 'border': 'sharp' } }
+" }}}
+
+" Basic settings {{{
+
+" Line numbering
+set number
+set relativenumber
+
+" Tab handling
+set shiftwidth=4
+set tabstop=4
+set expandtab
+
+" Window splitting
+set splitright
+set splitbelow
+
+" Miscellaneous
+set clipboard+=unnamedplus
+set noshowmode
+set undofile
+set laststatus=0
+set autochdir
+set makeef=/var/tmp/ef##
+
+" }}}
+
+" Variable assignments {{{
+
+" Leader keys
+let mapleader=','
+let maplocalleader=','
+
+"
+let g:netrw_home=$HOME.'/.cache/nvim'
+
+"
+let g:tex_conceal=''
+
+"
+let g:is_posix=1
+
+" }}}
+
+" Key mappings {{{
+
+" Go to beginning/end of line
+map  <C-a> ^
+map  <C-e> $
+imap <C-a> <esc>^i
+imap <C-e> <esc>$a
+
+" Save and quit
+map  <silent> <C-s> :w<CR>
+map  <silent> <C-w> :q<CR>
+imap <silent> <C-s> <esc>:w<CR>a
+imap <silent> <C-w> <esc>:q<CR>
+
+" Replace string globally
+nmap ss :%s//g<Left><Left>
+
+" Open fzf window
+map <silent> <C-x><C-e> :FZF --prompt=>\ <CR>
+imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\ <CR>
+
+" Navigate splits
+noremap <leader>w <C-w><C-k>
+noremap <leader>a <C-w><C-h>
+noremap <leader>s <C-w><C-j>
+noremap <leader>d <C-w><C-l>
+
+" Toggle 80 and 100 characters columns
+nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
+
+" Fix for https://github.com/neovim/neovim/issues/11393
+cnoremap 3636 <c-u>undo<CR>
+
+" }}}
+
+" Autocommands {{{
+
+au FileType    * setlocal formatoptions-=cro
+au BufWritePre * call StripTrailingWhitespaces()
+au InsertEnter * norm zz
+
+" }}}
+
+" Functions {{{
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
@@ -131,3 +131,22 @@ function! StripTrailingWhitespaces()
   %s/\s\+$//e
   call cursor(line, col)
 endfunction
+
+" }}}
+
+" Colors {{{
+
+set termguicolors
+
+" Colorscheme
+colorscheme onedark
+
+" Highlights
+hi Normal guibg=NONE
+hi Comment gui=italic
+hi Visual guibg=#7aa6da guifg=#ffffff
+hi VertSplit guibg=#5c6370 guifg=NONE
+
+" }}}
+
+" vim:foldmethod=marker:foldlevel=0
