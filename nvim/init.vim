@@ -33,7 +33,7 @@ let g:fzf_layout={ 'window': { 'width': 0.7, 'height': 0.7, 'highlight': 'Normal
 let g:indentLine_char='│'
 let g:indentLine_first_char='│'
 let g:indentLine_showFirstIndentLevel=1
-let g:indentLine_fileTypeExclude=['text', 'man']
+let g:indentLine_fileTypeExclude=['text', 'man', 'conf']
 let g:indentLine_defaultGroup='Comment'
 
 " }}}

@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-cd ~/Dropbox/share
-
-git add .
-git commit -m "Autocommit message"
-git push origin master

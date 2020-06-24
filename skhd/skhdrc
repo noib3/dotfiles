@@ -3,14 +3,13 @@ ctrl - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
 cmd - return : $TERMINAL
-cmd - f      : $TERMINAL -e sh -c 'printf "\e[5 q" && lf ~/Downloads'
-cmd - g      : $TERMINAL -e gotop
-cmd - a      : $TERMINAL -e calcurse -C ~/.config/calcurse \
-                                     -D ~/Dropbox/share/calcurse
+cmd - f : $TERMINAL -e sh -c 'printf "\e[5 q" && lf ~/Downloads'
+cmd - g : $TERMINAL -e gotop
+cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
 # Execute personal scripts
-cmd - space : sh ~/scripts/fzopnr
-cmd - m     : sh ~/scripts/committed/committed
+cmd - space : sh ~/scripts/fzopnr.sh
+cmd - m : sh ~/scripts/committed/committed.sh ~/.config ~/scripts $(kpsewhich -var-value TEXMFHOME) ~/bin/diet
 
 # Open downloads sidebar in Firerox
 cmd - d [
