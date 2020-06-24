@@ -3,5 +3,5 @@
 cd ~/Dropbox/share
 
 git add .
-git commit --allow-empty-message -m ''
+git commit -m "Autocommit message"
 git push origin master
