@@ -91,9 +91,7 @@ precmd() {
 
 # Clear the screen automatically when the directory is changed
 # chpwd is executed every time the current directory changes
-chpwd() {
-    printf '\e[H\e[3J'
-}
+chpwd() { printf '\e[H\e[3J' }
 
 # Disable ctrl+s
 stty -ixon
@@ -108,15 +106,15 @@ bindkey '^W' close_window
 # Use fd and fzf to edit a file..
 # fc -R adds the command to the history without needing to issue a command
 # (see here https://unix.stackexchange.com/questions/583443/adding-a-string-to-the-zsh-history)
-# however it seems like that alone doesn't save the command between sessions, and
+# however it seems like that alone doesn't save the command across sessions, and
 # that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
 # a line, which is needed if you leave (n)vim in normal mode with the block cursor
 function fzf_edit() {
-    filename=$(fd . ~ --type f --hidden --color always |
-                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g" |
-                 fzf --height=40% --color="hl:-1,hl+:-1") \
-    && $EDITOR ~/$filename && fc -R =(print "${EDITOR} ~/${filename}") \
-    && print -s "${EDITOR} ~/${filename}" && printf '\e[5 q'
+    filename="$(fzf --height=40%)" \
+        && $EDITOR ~/"$filename" \
+        && fc -R =(print "$EDITOR ~/$filename") \
+        && print -s "$EDITOR ~/$filename"# \
+        && printf '\e[5 q'
     if zle; then
         zle reset-prompt
     fi
@@ -126,10 +124,7 @@ bindkey '^X^E' fzf_edit
 
 # ..search a filename and add it to the line buffer..
 function fzf_search() {
-    filename=$(fd . ~ --type f --hidden --color always |
-                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g" |
-                 fzf --height=40% --color="hl:-1,hl+:-1") \
-    && LBUFFER="$LBUFFER~/$filename "
+    filename="$(fzf --height=40%)" && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
     fi
@@ -141,7 +136,7 @@ bindkey '^S' fzf_search
 function fzf_cd() {
     dirname=$(fd . ~ --type d --hidden --color always |
                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
-                fzf --height=40% --color="hl:-1,hl+:-1") \
+                fzf --height=40%) \
     && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt

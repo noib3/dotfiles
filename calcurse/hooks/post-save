@@ -2,9 +2,6 @@
 
 cd ~/Dropbox/share
 
-# Add everything except pid file
 git add .
-
-# Commit with an empty message and push to Github
 git commit --allow-empty-message -m ''
 git push origin master
