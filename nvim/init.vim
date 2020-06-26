@@ -45,13 +45,17 @@ set number
 set relativenumber
 
 " Tab handling
-set shiftwidth=4
 set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set expandtab
 
 " Window splitting
 set splitright
 set splitbelow
+
+" Code folding
+set foldlevelstart=0
 
 " Miscellaneous
 set clipboard+=unnamedplus
@@ -98,8 +102,8 @@ imap <silent> <C-w> <esc>:q<CR>
 nmap ss :%s//g<Left><Left>
 
 " Open fzf window
-map <silent> <C-x><C-e> :FZF --prompt=>\ <CR>
-imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\ <CR>
+map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
+imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\  ~<CR>
 
 " Navigate splits
 noremap <leader>w <C-w><C-k>
@@ -117,9 +121,12 @@ cnoremap 3636 <c-u>undo<CR>
 
 " Autocommands {{{
 
-au FileType    * setlocal formatoptions-=cro
-au BufWritePre * call StripTrailingWhitespaces()
-au InsertEnter * norm zz
+augroup BaseGroup
+  autocmd!
+  autocmd FileType    * setlocal formatoptions-=cro
+  autocmd BufWritePre * call StripTrailingWhitespaces()
+  autocmd InsertEnter * norm zz
+augroup END
 
 " }}}
 

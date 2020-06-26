@@ -1,20 +1,35 @@
-" Open the pdf file on entry and close it on exit
-autocmd BufEnter <buffer> call tex#pdf_open()
-autocmd BufUnload <buffer> call tex#pdf_close()
+" Filename:   tex.vim
+" Github:     https://github.com/n0ibe/macOS-dotfiles
+" Maintainer: Riccardo Mazzarini
 
-" Use two spaces for the indentation
-setlocal shiftwidth=2 tabstop=2
+" Open the PDF file on entry and close it on exit
+augroup TeXGroup
+  autocmd BufEnter <buffer> call tex#PDFOpen()
+  autocmd BufUnload <buffer> call tex#PDFClose()
+augroup END
+
+" Use two spaces for indentation
+setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Set the make program and use a file-line error format
-set makeprg=pdflatex\ -halt-on-error\ -file-line-error\ -synctex=1\ %
-set errorformat=%f:%l:\ %m
+let &makeprg='pdflatex -halt-on-error -file-line-error -synctex=1 %'
+let &errorformat='%f:%l: %m'
+let &shellpipe='2>&1 | tee'
 
 " Automatically insert a matching dollar sign for inline math
 let g:AutoPairs['$']='$'
 
-" Mappings to compile the document, open the pdf file and forward search from the tex to the pdf
-" nmap <buffer> <silent> <C-t> :make<cr>
-" imap <buffer> <silent> <C-t> <esc>:make<cr>a
-nmap <buffer> <silent> <C-t> :execute "!pdflatex -halt-on-error -file-line-error -synctex=1 %"<cr>
-nmap <buffer> <silent> <localleader>p :call tex#pdf_open()<cr>
+" Mappings to compile the document, open the PDF file and forward search from the tex to the PDF
+nmap <buffer> <silent> <C-t> :call Make()<CR>
+nmap <buffer> <silent> <localleader>p :call tex#PDFOpen()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#Skim_forward_search()<cr>
+
+" Compile a LaTeX document
+function! Make()
+  let [_, line, col, _, _] = getcurpos()
+  make!
+  " if make! exit code is 0
+  " call cursor(line, col)
+  " else
+  silent cn
+endfunction

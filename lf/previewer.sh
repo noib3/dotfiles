@@ -8,7 +8,7 @@ HEIGHT="${2}"
 case "$(file -b --mime-type "${FILE}")" in
     image/*)
         # chafa --fill=block --symbols=block -c 256 -s 80x"${HEIGHT}" "${FILE}";;
-        chafa -c 256 "${FILE}";;
+        chafa -c 2 "${FILE}";;
     text/*)
         highlight -O ansi "$1";;
 esac

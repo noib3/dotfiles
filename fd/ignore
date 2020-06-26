@@ -1,22 +1,24 @@
-**/Library/*
-!**/Library/texmf/
-!**/Library/Application\ Support/Ubersicht/widgets/
+**/.git
 
-**/.config/.git/*
-**/bin/ndiet/.git/*
-**/scripts/.git/*
-**/Dropbox/share/.git/*
-**/Library/texmf/.git/*
+Desktop/
+Movies/
+Music/
+Pictures/
 
-**/Desktop/*
-**/Movies/*
-**/Music/*
-**/Pictures/*
+Library/*
+!Library/texmf
 
-**/.cache/*
-**/.local/*
-**/.config/nvim/plugged/*
-**/scripts/pfetch/*
+!Library/Application\ Support
+Library/Application\ Support/*
+!/Library/Application\ Support/Übersicht
 
-**/.dropbox/*
-**/Dropbox/.dropbox.cache/*
+.cache/
+.local/
+.ssh/
+
+.config/nvim/plugged/
+
+scripts/pfetch/
+
+.dropbox/
+Dropbox/.dropbox.cache/

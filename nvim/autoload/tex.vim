@@ -1,14 +1,12 @@
-" Compile a LaTeX document
-" function! tex#compile_LaTeX()
-"   let filepath = expand('%:p')
-"   execute "!cd $(dirname ".shellescape(filepath,1).") && pdflatex -synctex=1 ".shellescape(filepath,1)
-" endfunction
+" Filename:   tex.vim
+" Github:     https://github.com/n0ibe/macOS-dotfiles
+" Maintainer: Riccardo Mazzarini
 
-" Open the pdf file created by a TeX document
-function! tex#pdf_open()
+" Open the PDF file created by a TeX document
+function! tex#PDFOpen()
   let filepath = expand('%:p:r').'.pdf'
   if filereadable(filepath)
-    execute 'silent !open '.shellescape(filepath,1)
+    execute 'silent !open '.shellescape(filepath,1).' -g'
   else
     echohl ErrorMsg
     echomsg 'No pdf file "'.filepath.'"'
@@ -16,8 +14,8 @@ function! tex#pdf_open()
   endif
 endfunction
 
-" Close the pdf file created by a TeX document
-function! tex#pdf_close()
+" Close the PDF file created by a TeX document
+function! tex#PDFClose()
   let filepath = expand('%:p:r').'.pdf'
   let filename = expand('%:t:r').'.pdf'
   if filereadable(filepath)
@@ -39,8 +37,8 @@ function! tex#pdf_close()
   endif
 endfunction
 
-" Use Skim's displayline to jump from a line in a tex document to its pdf output
-function! tex#Skim_forward_search()
+" Use Skim's displayline to jump from a line in a TeX document to its PDF output
+function! tex#SkimForwardSearch()
   let filepath = expand('%:p:r').'.pdf'
   if filereadable(filepath)
     execute "silent !/Applications/Skim.app/Contents/SharedSupport/displayline ".line(".")." ".shellescape(filepath,1)
