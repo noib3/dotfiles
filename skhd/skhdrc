@@ -2,14 +2,17 @@
 ctrl - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
-cmd - return : $TERMINAL
+cmd - return : open -na /Applications/Alacritty.app
 cmd - f : $TERMINAL -e sh -c 'printf "\e[5 q" && lf ~/Downloads'
 cmd - g : $TERMINAL -e gotop
 cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
 # Execute personal scripts
 cmd - space : sh ~/scripts/fzopnr.sh
-cmd - m : sh ~/scripts/committed/committed.sh ~/.config ~/scripts $(kpsewhich -var-value TEXMFHOME) ~/bin/diet
+cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
+                                              ~/scripts \
+                                              ~/bin/diet \
+                                              $(kpsewhich -var-value TEXMFHOME)
 
 # Open downloads sidebar in Firerox
 cmd - d [
@@ -93,10 +96,10 @@ alt - b : yabai -m space --balance
 
 # Screenshot the whole screen
 shift + cmd - 3 : \
-    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') \
+    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') && \
     screencapture ~/Dropbox/Screenshots/$SS_NAME.png
 
 # Screenshot a portion of the screen
 shift + cmd - 4 : \
-    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') \
+    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') && \
     screencapture -i ~/Dropbox/Screenshots/$SS_NAME.png

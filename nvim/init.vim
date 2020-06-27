@@ -55,7 +55,11 @@ set splitright
 set splitbelow
 
 " Code folding
+set foldmethod=marker
+set foldlevel=0
 set foldlevelstart=0
+set foldtext=MyFoldText()
+set fillchars=fold:\ "
 
 " Miscellaneous
 set clipboard+=unnamedplus
@@ -63,7 +67,7 @@ set noshowmode
 set undofile
 set laststatus=0
 set autochdir
-set makeef=/var/tmp/ef##
+set makeef=/tmp/vim##.err
 
 " }}}
 
@@ -128,6 +132,14 @@ augroup BaseGroup
   autocmd InsertEnter * norm zz
 augroup END
 
+" Open the PDF file on entry and close it on exit
+augroup TeXGroup
+  autocmd!
+  autocmd BufRead *.tex call tex#PDFOpen()
+  autocmd BufDelete *.tex call tex#PDFClose()
+  " autocmd VimLeavePre *.tex call tex#PDFClose()
+augroup END
+
 " }}}
 
 " Functions {{{
@@ -137,6 +149,15 @@ function! StripTrailingWhitespaces()
   let [_, line, col, _, _] = getcurpos()
   %s/\s\+$//e
   call cursor(line, col)
+endfunction
+
+" Fold text
+function! MyFoldText()
+  let line = getline(v:foldstart)
+  let folded_line_num = v:foldend - v:foldstart + 1
+  let line_text = substitute(line, '^" ', '', 'g')
+  let fillcharcount = 66 - len(line_text) - len(folded_line_num)
+  return '+-- '.line_text.' '.repeat('·', fillcharcount).' '.folded_line_num.' lines'
 endfunction
 
 " }}}
@@ -155,5 +176,3 @@ hi Visual guibg=#7aa6da guifg=#ffffff
 hi VertSplit guibg=#5c6370 guifg=NONE
 
 " }}}
-
-" vim:foldmethod=marker:foldlevel=0

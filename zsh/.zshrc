@@ -1,54 +1,68 @@
-# Set colorscheme
-source $ZDOTDIR/themes/onedark.zsh
+# Filename:   .zshrc
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
 
-# Source aliases
-source $ZDOTDIR/.zaliases
+# Shell options {{{
 
-# Set/unset shell options
 setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE
 setopt PROMPT_SUBST
 setopt IGNORE_EOF
 setopt AUTO_CD
+
 unsetopt CASE_GLOB
 unsetopt BEEP
 
-# Custom history file location
-export HISTFILE=$HOME/.cache/zsh/zsh_history
+# }}}
 
-# TODO: add functions to precmd like this
-# autoload add-zsh-hook
-# add-zsh-hook precmd <function_name>
+# Colorscheme {{{
 
-# Enable vi mode
+# Directory and delimiter colors in prompt
+prompt_directory_color=#e1e1e1
+prompt_delimiter_color=#e69ab7
+
+# Git info colors
+git_on_color=#bbbbbb
+git_branch_color=#ede845
+
+# Visual mode colors
+vi_visual_mode_bg_color=#7aa6da
+vi_visual_mode_fg_color=#ffffff
+
+# }}}
+
+# Vi mode {{{
+
 bindkey -v
 
-# Set mode switching delay in hundredths of a second (default is 40)
+# Mode switching delay in hundredths of a second (default is 40)
 # Making it less then 30 seems to cause problems with surrounds
 KEYTIMEOUT=30
 
-# Bind zle widgets in viins (default) and vicmd mode
+# Bind zle widgets in viins (default) mode
 bindkey '^?' backward-delete-char
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
 bindkey '^U' backward-kill-line
+
+# Bind zle widgets in vicmd mode
 bindkey -M vicmd '^A' beginning-of-line
 bindkey -M vicmd '^E' end-of-line
 bindkey -M vicmd '^U' backward-kill-line
 
-# Background and foreground colors in visual mode
-zle_highlight=(region:bg=$vi_visual_bg,fg=$vi_visual_fg)
-
 # Change cursor shape depending on vi mode
-# zle-keymap-select is executed everytime the mode changes
+# zle-keymap-select() is executed everytime the mode changes
 zle-keymap-select() {
-    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]] || [[ $KEYMAP = '' ]]; then
+    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]]; then
         echo -ne '\e[5 q'
     elif [[ $KEYMAP = vicmd ]]; then
         echo -ne '\e[1 q'
     fi
 }
 zle -N zle-keymap-select
+
+# Background and foreground colors in visual mode
+zle_highlight=(region:bg=$vi_visual_mode_bg_color,fg=$vi_visual_mode_fg_color)
 
 # Enable vim-surround-like functionalities in vi mode
 autoload -U select-bracketed
@@ -76,41 +90,37 @@ bindkey -M vicmd ds delete-surround
 bindkey -M vicmd ys add-surround
 bindkey -M visual S add-surround
 
+# }}}
+
+# Prompt {{{
+
 # Set prompt with support for git infos in directories under version control
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats ' %F{$git_onbr_clr}on %F{$git_main_clr} %b%f'
-PROMPT='%F{$reg_dir_clr}%1~${vcs_info_msg_0_} %F{$reg_div_clr}>%f '
+zstyle ':vcs_info:git:*' formats ' %F{$git_on_color}on %F{$git_branch_color} %b%f'
+PROMPT='%F{$prompt_directory_color}%1~${vcs_info_msg_0_} %F{$prompt_delimiter_color}>%f '
 
 # Get git infos and reset cursor to its insert mode shape
-# precmd is executed before each prompt
+# precmd() is executed before each prompt
 precmd() {
     vcs_info
     printf '\e[5 q'
 }
 
-# Clear the screen automatically when the directory is changed
-# chpwd is executed every time the current directory changes
-chpwd() { printf '\e[H\e[3J' }
+# }}}
 
-# Disable ctrl+s
-stty -ixon
+# ZLE Widgets {{{
 
-# Close window
-close_window() {
+# Close the terminal window
+close-window() {
     yabai -m window --close
 }
-zle -N close_window
-bindkey '^W' close_window
+zle -N close-window
+bindkey '^W' close-window
 
-# Use fd and fzf to edit a file..
-# fc -R adds the command to the history without needing to issue a command
-# (see here https://unix.stackexchange.com/questions/583443/adding-a-string-to-the-zsh-history)
-# however it seems like that alone doesn't save the command across sessions, and
-# that's what print -s is for. Finally, printf '\e[5 q' restores the cursor to be
-# a line, which is needed if you leave (n)vim in normal mode with the block cursor
-function fzf_edit() {
-    filename="$(fzf --height=40%)" \
+# Fuzzy search a file and open in in $EDITOR
+function fz-edit() {
+    filename="$(fzf --height=40% </dev/tty)" \
         && $EDITOR ~/"$filename" \
         && fc -R =(print "$EDITOR ~/$filename") \
         && print -s "$EDITOR ~/$filename"# \
@@ -119,21 +129,21 @@ function fzf_edit() {
         zle reset-prompt
     fi
 }
-zle -N fzf_edit
-bindkey '^X^E' fzf_edit
+zle -N fz-edit
+bindkey '^X^E' fz-edit
 
-# ..search a filename and add it to the line buffer..
-function fzf_search() {
-    filename="$(fzf --height=40%)" && LBUFFER="$LBUFFER~/$filename "
+# Fuzzy search a file and add it to the line buffer
+function fz-search() {
+    filename="$(fzf --height=40% </dev/tty)" && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
     fi
 }
-zle -N fzf_search
-bindkey '^S' fzf_search
+zle -N fz-search
+bindkey '^S' fz-search
 
-# ..or to change directory
-function fzf_cd() {
+# Fuzzy search a directory and cd into it
+function fz-cd() {
     dirname=$(fd . ~ --type d --hidden --color always |
                 sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
                 fzf --height=40%) \
@@ -142,28 +152,59 @@ function fzf_cd() {
         zle reset-prompt
     fi
 }
-zle -N fzf_cd
-bindkey '^X^D' fzf_cd
+zle -N fz-cd
+bindkey '^X^D' fz-cd
 
-# A single 'c' clears the screen without being added to the command history
-# The alias is just so that fast-syntax-highlighting doesn't color it in red
+# }}}
+
+# Tab autocompletion {{{
+
+autoload -Uz compinit
+compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+_comp_options+=(globdots)
+set +o list_types
+
+# }}}
+
+# Aliases {{{
+
+alias ls='ls -Avh --color --quoting-style=literal --group-directories-first'
+alias grep='grep --color=auto'
+alias rm='rm -i'
+
+alias reboot='osascript -e "tell app \"System Events\" to restart"'
+alias shutdown='osascript -e "tell app \"System Events\" to shut down"'
+
+# }}}
+
+# Miscellaneous {{{
+
+# Disable ctrl+s
+stty -ixon
+
+# Custom history file location
+HISTFILE=$HOME/.cache/zsh/zsh_history
+
+# Clear the screen automatically when the directory is changed
+# chpwd() is executed every time the current directory changes
+chpwd() { printf '\e[H\e[3J' }
+
+# Use a single 'c' to clear the screen without adding it to the command history
 accept-line() case $BUFFER in
   (c) printf '\e[H\e[3J'; BUFFER=; zle redisplay;;
   (*) zle .accept-line
 esac
 zle -N accept-line
+# This alias is just so that fast-syntax-highlighting doesn't color it in red
 alias c=''
 
-# Tab autocompletion
-autoload -Uz compinit
-compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-_comp_options+=(globdots)
-set +o list_types # hide trailing /
+# }}}
 
-# git clone https://github.com/Aloxaf/fzf-tab /usr/local/share/fzf-tab
+# Plugins {{{
+
+# git clone https://github.com/Aloxaf/fz-tab /usr/local/share/fz-tab
 source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh
-setopt no_list_types
 
 # git clone https://github.com/zdharma/fast-syntax-highlighting /usr/local/share/fast-syntax-highlighting
 source /usr/local/share/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
@@ -176,3 +217,5 @@ source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
 source /usr/local/share/zsh-autopair/autopair.zsh
+
+# }}}

@@ -1,5 +1,6 @@
 **/.git
 
+.Trash/
 Desktop/
 Movies/
 Music/
@@ -7,10 +8,6 @@ Pictures/
 
 Library/*
 !Library/texmf
-
-!Library/Application\ Support
-Library/Application\ Support/*
-!/Library/Application\ Support/Übersicht
 
 .cache/
 .local/

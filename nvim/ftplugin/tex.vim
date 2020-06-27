@@ -2,19 +2,12 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
-" Open the PDF file on entry and close it on exit
-augroup TeXGroup
-  autocmd BufEnter <buffer> call tex#PDFOpen()
-  autocmd BufUnload <buffer> call tex#PDFClose()
-augroup END
-
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Set the make program and use a file-line error format
 let &makeprg='pdflatex -halt-on-error -file-line-error -synctex=1 %'
 let &errorformat='%f:%l: %m'
-let &shellpipe='2>&1 | tee'
 
 " Automatically insert a matching dollar sign for inline math
 let g:AutoPairs['$']='$'
@@ -27,7 +20,7 @@ nmap <buffer> <silent> <localleader>f :call tex#Skim_forward_search()<cr>
 " Compile a LaTeX document
 function! Make()
   let [_, line, col, _, _] = getcurpos()
-  make!
+  make
   " if make! exit code is 0
   " call cursor(line, col)
   " else
