@@ -118,8 +118,8 @@ close-window() {
 zle -N close-window
 bindkey '^W' close-window
 
-# Fuzzy search a file and open in in $EDITOR
-function fz-edit() {
+# Fuzzy search a file and open it in $EDITOR
+function fuzzy_edit() {
     filename="$(fzf --height=40% </dev/tty)" \
         && $EDITOR ~/"$filename" \
         && fc -R =(print "$EDITOR ~/$filename") \
@@ -129,31 +129,31 @@ function fz-edit() {
         zle reset-prompt
     fi
 }
-zle -N fz-edit
-bindkey '^X^E' fz-edit
+zle -N fuzzy_edit
+bindkey '^X^E' fuzzy_edit
 
 # Fuzzy search a file and add it to the line buffer
-function fz-search() {
+function fuzzy_search() {
     filename="$(fzf --height=40% </dev/tty)" && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
     fi
 }
-zle -N fz-search
-bindkey '^S' fz-search
+zle -N fuzzy_search
+bindkey '^S' fuzzy_search
 
 # Fuzzy search a directory and cd into it
-function fz-cd() {
-    dirname=$(fd . ~ --type d --hidden --color always |
-                sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
-                fzf --height=40%) \
+function fuzzy_cd() {
+    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
+                sed "s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                fzf --height=40%)" \
     && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt
     fi
 }
-zle -N fz-cd
-bindkey '^X^D' fz-cd
+zle -N fuzzy_cd
+bindkey '^X^D' fuzzy_cd
 
 # }}}
 

@@ -1,67 +1,117 @@
-# Boolean valued options
-set ignorecase
-set color256
-set hidden
-set drawbox
+# Filename:   lfrc
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
 
-# String valued options
-set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
-set previewer ~/.config/lf/previewer.sh
-set ratios "1:2:3"
-set filesep " "
-set timefmt ""
-set ifs " "
+# TODO
+# 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
+# 2. put cursor before last dot when renaming file
+# 3. open text files with $ and all others with %
+# 4. new directory with selected files
+
+# Basic settings {{{
+
+# Boolean options
+set color256 true
+set drawbox true
+set hidden true
+
+# Integer options
 set period 1
-set sortby natural
 
-# Custom commands
+# String options
+set previewer ~/.config/lf/previewer.sh
+set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
+set timefmt ''
+
+# }}}
+
+# Custom functions {{{
+
+# Create new files
+cmd touch %touch "$@"
+
+# Create new directories
+cmd mkdir %mkdir -p "$@"
+
+# Opener function
 cmd open ${{
-    for v in "$fx"; do
-        case $(file --mime-type "$v" -b) in
-            text/*) $EDITOR "$v";;
-            *) open "$v" &>/dev/null;;
-        esac
-    done
+    case $(file -b --mime-type "$fx") in
+        text/*) $EDITOR "$fx";;
+        *) open "$fx" &>/dev/null;;
+    esac
 }}
 
-map ej ${{
+# Fuzzy search a file and open it in $EDITOR
+cmd fuzzy_edit ${{
+    clear
+    filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
+}}
+
+# Fuzzy search a directory and cd into it
+cmd fuzzy_cd ${{
+    clear
+    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
+                sed "s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                fzf --height=80%)" \
+    && lf -remote "send $id cd ~/$dirname"
+}}
+
+# Make all the highlighted files executable
+cmd make_executable %{{
+    chmod +x "$fx"
+}}
+
+# Eject all the highlighted disks
+cmd eject_disk %{{
+    terminal-notifier -title lf -message 'Ejecting ${#fx} disks...'
     for v in "$fx"; do
         diskutil eject "$v" &>/dev/null
     done
 }}
 
-map mw ${{
+# Set the highlighted image as wallpaper
+cmd set_wallpaper %{{
     osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
     osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-map s %{{
-    echo $(sudo du -sh "$f" | awk '{ print $1 }')
+cmd new_dir ${{
+    set -f
+    read newd
+    mkdir $newd
+    mv $fx $newd
 }}
 
-cmd fzf_edit ${{
-    clear
-    filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
-}}
+# }}}
 
-cmd fzf_cd ${{
-    clear
-    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
-                sed "s=.*noibe/==g; s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
-                fzf --height=80%)" \
-    && lf -remote "send $id cd ~/$dirname"
-}}
+# Key mappings {{{
 
-# Key mappings
+# Remove some defaults
 map e
 map m
+map n
+map u
+map ,
+map '$'
 
-map <c-w> quit
+# Basic functions
 map <enter> shell
-map <esc> clear
-map <c-x><c-e> fzf_edit
-map <c-x><c-d> fzf_cd
-map d delete
 map x cut
+map d delete
+map <esc> :unselect; clear
 
+# Custom functions
+map ,t push :touch<space>
+map ,d push :mkdir<space>
+
+map <c-x><c-e> fuzzy_edit
+map <c-x><c-d> fuzzy_cd
+map + make_executable
+map ej eject_disk
+map ,w set_wallpaper
+map nd new_dir
+
+# Movement
 map gvl cd "/Volumes"
+
+# }}}
