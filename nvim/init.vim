@@ -58,8 +58,8 @@ set splitbelow
 set foldmethod=marker
 set foldlevel=0
 set foldlevelstart=0
-set foldtext=MyFoldText()
 set fillchars=fold:\ "
+set foldtext=MarkerFoldText()
 
 " Miscellaneous
 set clipboard+=unnamedplus
@@ -118,6 +118,9 @@ noremap <leader>d <C-w><C-l>
 " Toggle 80 and 100 characters columns
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
 
+" Toggle folds with space
+nnoremap <Space> za
+
 " Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <c-u>undo<CR>
 
@@ -151,13 +154,13 @@ function! StripTrailingWhitespaces()
   call cursor(line, col)
 endfunction
 
-" Fold text
-function! MyFoldText()
-  let line = getline(v:foldstart)
-  let folded_line_num = v:foldend - v:foldstart + 1
-  let line_text = substitute(line, '^" ', '', 'g')
-  let fillcharcount = 66 - len(line_text) - len(folded_line_num)
-  return '+-- '.line_text.' '.repeat('·', fillcharcount).' '.folded_line_num.' lines'
+" Fold text by marker
+function! MarkerFoldText()
+  let comment_char = substitute(&commentstring, '\s*%s', '', '')
+  let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
+  let folded_lines = v:foldend - v:foldstart + 1
+  let fillchars = 66 - len(fold_text) - len(folded_lines)
+  return '+-- '.fold_text.' '.repeat('·', fillchars).' '.folded_lines.' lines'
 endfunction
 
 " }}}

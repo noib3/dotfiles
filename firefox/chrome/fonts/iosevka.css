@@ -1,5 +1,7 @@
 * {
   font-family: "Iosevka Nerd Font" !important;
-  /* font-size: 17px !important; */
+  /* for Iosevka with resolution 1440x900 */
+  /* font-size: 18px !important; */
+  /* for Iosevka with resolution 2560x1440 */
   font-size: 21px !important;
 }

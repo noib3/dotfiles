@@ -101,15 +101,15 @@ map d delete
 map <esc> :unselect; clear
 
 # Custom functions
-map ,t push :touch<space>
-map ,d push :mkdir<space>
+map t push :touch<space>
+map k push :mkdir<space>
 
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 map + make_executable
-map ej eject_disk
-map ,w set_wallpaper
-map nd new_dir
+map j eject_disk
+map s set_wallpaper
+map D new_dir
 
 # Movement
 map gvl cd "/Volumes"

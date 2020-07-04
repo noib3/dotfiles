@@ -1,22 +1,33 @@
-# Shell
+# Filename:   alacritty.yml
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
+# Shell {{{
+
 shell:
   program: /usr/local/bin/zsh
   args:
     - --login
 
-# Fonts
+# }}}
+
+# Fonts {{{
+
 font:
   normal:
     family: Iosevka Nerd Font
     style: Regular
-    # style: Light # for SFMono Nerd Font
-  # size: 17.0 # for Iosevka with resolution 2048x1152
-  # size: 19.0 # for SFMono Nerd Font
+  # for Iosevka with resolution 1440x900
+  # size: 17.0
+  # for Iosevka with resolution 2560x1440
   size: 20
   offset:
     y: 1
 
-# Colorschemes
+# }}}
+
+# Colorschemes {{{
+
 schemes:
   # Gruvbox dark
   gruvbox: &gruvbox
@@ -82,14 +93,20 @@ schemes:
 
 colors: *wip
 
-# Window layout
+# }}}
+
+# Window layout {{{
+
 window:
   decorations: buttonless
   padding:
     x: 8
     y: 5
 
-# Bindings
+# }}}
+
+# Key mappings {{{
+
 key_bindings:
   - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
@@ -110,3 +127,5 @@ key_bindings:
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
+
+# }}}

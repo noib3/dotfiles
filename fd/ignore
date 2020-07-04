@@ -19,3 +19,4 @@ scripts/pfetch/
 
 .dropbox/
 Dropbox/.dropbox.cache/
+Dropbox/Fonts/*

@@ -20,7 +20,7 @@ nmap <buffer> <silent> <localleader>f :call tex#Skim_forward_search()<cr>
 " Compile a LaTeX document
 function! Make()
   let [_, line, col, _, _] = getcurpos()
-  make
+  make!
   " if make! exit code is 0
   " call cursor(line, col)
   " else
