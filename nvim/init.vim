@@ -67,7 +67,8 @@ set noshowmode
 set undofile
 set laststatus=0
 set autochdir
-set makeef=/tmp/vim##.err
+set makeef=/tmp/nvim##.err
+set hidden
 
 " }}}
 
@@ -139,8 +140,7 @@ augroup END
 augroup TeXGroup
   autocmd!
   autocmd BufRead *.tex call tex#PDFOpen()
-  autocmd BufDelete *.tex call tex#PDFClose()
-  " autocmd VimLeavePre *.tex call tex#PDFClose()
+  autocmd BufUnload *.tex call tex#PDFClose()
 augroup END
 
 " }}}

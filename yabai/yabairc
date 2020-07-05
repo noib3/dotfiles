@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+# Filename:   yabairc
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
 # New window spawns to the right if vertical split, or bottom if horizontal split
 yabai -m config window_placement second_child
 
@@ -22,14 +26,6 @@ yabai -m config normal_window_border_color  0xff5c6370
 
 # Rules for macOS programs
 yabai -m rule --add app="^Digital Colour Meter$" manage=off sticky=on
-# yabai -m rule --add app="^System Preferences$" manage=off
-# yabai -m rule --add app="^Activity Monitor$" manage=off
-# yabai -m rule --add app="^Keychain Access$" manage=off
-# yabai -m rule --add app="^Disk Utility$" manage=off
-# yabai -m rule --add app="^Logi Options$" manage=off
-# yabai -m rule --add app="^Calculator$" manage=off
-# yabai -m rule --add app="^Font Book$" manage=off
 
 # Rules for my scripts
-yabai -m rule --add title="^fzopnr$" manage=off
-yabai -m rule --add title="^committed$" manage=off sticky=on
+yabai -m rule --add title="^fuzzy_opener$" manage=off

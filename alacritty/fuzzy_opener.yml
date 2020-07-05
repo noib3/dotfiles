@@ -1,13 +1,23 @@
-# Fonts
+# Filename:   fuzzy_opener.yml
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
+# Fonts {{{
+
 font:
   normal:
     family: Iosevka Nerd Font
+  # Iosevka on 1440x900
   # size: 21.0
+  # Iosevka on 2560x1440
   size: 25.0
   offset:
     y: 1
 
-# Colorschemes
+# }}}
+
+# Colorschemes {{{
+
 schemes:
   # Gruvbox dark
   gruvbox: &gruvbox
@@ -73,14 +83,20 @@ schemes:
 
 colors: *wip
 
-# Window layout
+# }}}
+
+# Window layout {{{
+
 window:
   decorations: buttonless
   padding:
     x: 15
     y: 10
 
-# Bindings
+# }}}
+
+# Key mappings {{{
+
 key_bindings:
   - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
@@ -94,3 +110,5 @@ key_bindings:
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
+
+# }}}

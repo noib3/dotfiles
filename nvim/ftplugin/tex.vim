@@ -8,6 +8,7 @@ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 " Set the make program and use a file-line error format
 let &makeprg='pdflatex -halt-on-error -file-line-error -synctex=1 %'
 let &errorformat='%f:%l: %m'
+" let &shellpipe="\b 2>&1 | tee"
 
 " Automatically insert a matching dollar sign for inline math
 let g:AutoPairs['$']='$'
