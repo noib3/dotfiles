@@ -5,12 +5,13 @@
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
-" Set the make program and use a file-line error format
-let &makeprg='pdflatex -halt-on-error -file-line-error -synctex=1 %'
-let &errorformat='%f:%l: %m'
-" let &shellpipe="\b 2>&1 | tee"
+" Use bash for its 'PIPESTATUS' feature
+setlocal shell=bash
 
-" Automatically insert a matching dollar sign for inline math
+" Set the error format
+setlocal errorformat=%f:%l:\ %m
+
+" Autopair dollar signs
 let g:AutoPairs['$']='$'
 
 " Mappings to compile the document, open the PDF file and forward search from the tex to the PDF
@@ -18,12 +19,12 @@ nmap <buffer> <silent> <C-t> :call Make()<CR>
 nmap <buffer> <silent> <localleader>p :call tex#PDFOpen()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#Skim_forward_search()<cr>
 
-" Compile a LaTeX document
+" Compile the LaTeX document
 function! Make()
-  let [_, line, col, _, _] = getcurpos()
-  make!
-  " if make! exit code is 0
-  " call cursor(line, col)
-  " else
-  silent cn
+  let errorfile='/tmp/nvim_tex.err'
+  execute '!pdflatex -halt-on-error -file-line-error -synctex=1 '.expand('%').' 2>&1 | tee '.errorfile.'; exit ${PIPESTATUS[0]}'
+  if v:shell_error
+    execute 'silent cfile '.errorfile
+  endif
+  execute 'silent !sudo rm '.errorfile
 endfunction

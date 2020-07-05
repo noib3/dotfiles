@@ -12,6 +12,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-endwise'
   Plug 'junegunn/fzf'
   Plug 'junegunn/goyo.vim'
+  Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
   Plug 'jiangmiao/auto-pairs'
   Plug 'Yggdroot/indentLine'
@@ -140,7 +141,7 @@ augroup END
 augroup TeXGroup
   autocmd!
   autocmd BufRead *.tex call tex#PDFOpen()
-  autocmd BufUnload *.tex call tex#PDFClose()
+  autocmd BufUnload *.tex call tex#PDFClose(expand('<afile>:p:r').'.pdf', expand('<afile>:t:r').'.pdf')
 augroup END
 
 " }}}
@@ -149,7 +150,7 @@ augroup END
 
 " Remove trailing whitespace without changing cursor position
 function! StripTrailingWhitespaces()
-  let [_, line, col, _, _] = getcurpos()
+  let [_, line, col, _] = getpos('.')
   %s/\s\+$//e
   call cursor(line, col)
 endfunction

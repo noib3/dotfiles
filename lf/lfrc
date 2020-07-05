@@ -5,8 +5,7 @@
 # TODO
 # 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
 # 2. put cursor before last dot when renaming file
-# 3. open text files with $ and all others with %
-# 4. new directory with selected files
+# 3. create new files with % to avoid flickering
 
 # Basic settings {{{
 
@@ -27,18 +26,31 @@ set timefmt ''
 
 # Custom functions {{{
 
-# Create new files
-cmd touch %touch "$@"
-
-# Create new directories
-cmd mkdir %mkdir -p "$@"
-
 # Opener function
 cmd open ${{
     case $(file -b --mime-type "$fx") in
         text/*) $EDITOR "$fx";;
         *) open "$fx" &>/dev/null;;
     esac
+}}
+
+# Create new files
+cmd touch ${{
+    touch "$@"
+    lf -remote "send $id load"$'\n'"send $id select \"$@\""
+}}
+
+# Create new directories
+cmd mkdir ${{
+    mkdir -p "$@"
+    lf -remote "send $id load"$'\n'"send $id select \"$@\""
+}}
+
+# Create new directory and move highlighted files into it
+cmd newdir ${{
+    mkdir -p "$@"
+    mv $fx "$@"
+    lf -remote "send $id load"$'\n'"send $id select \"$@\""
 }}
 
 # Fuzzy search a file and open it in $EDITOR
@@ -63,23 +75,14 @@ cmd make_executable %{{
 
 # Eject all the highlighted disks
 cmd eject_disk %{{
-    terminal-notifier -title lf -message 'Ejecting ${#fx} disks...'
-    for v in "$fx"; do
-        diskutil eject "$v" &>/dev/null
-    done
+    terminal-notifier -title lf -message "Ejecting ${#fx} disks..."
+    diskutil eject "$fx" &>/dev/null
 }}
 
 # Set the highlighted image as wallpaper
 cmd set_wallpaper %{{
     osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
     osascript -e 'quit app "Finder"' &>/dev/null
-}}
-
-cmd new_dir ${{
-    set -f
-    read newd
-    mkdir $newd
-    mv $fx $newd
 }}
 
 # }}}
@@ -94,22 +97,25 @@ map u
 map ,
 map '$'
 
-# Basic functions
+# Mappings for built-in functions
 map <enter> shell
 map x cut
 map d delete
 map <esc> :unselect; clear
 
-# Custom functions
+# Create files or directories
 map t push :touch<space>
 map k push :mkdir<space>
+map D push :newdir<space>
 
+# Fuzzy search files to edit of directories to move to
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
+
+# Others
 map + make_executable
 map j eject_disk
 map s set_wallpaper
-map D new_dir
 
 # Movement
 map gvl cd "/Volumes"

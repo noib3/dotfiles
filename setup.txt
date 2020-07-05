@@ -193,3 +193,4 @@ ssh -T git@github.com
     sudo codesign -f -s - Spotlight
     sudo killall Spotlight
 input password if asked. If it worked 'sudo rm Spotlight-backup'
+86. 'pip3 install neovim' for UltiSnips
