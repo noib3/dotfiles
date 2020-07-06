@@ -1,0 +1,12 @@
+/* https://www.reddit.com/r/FirefoxCSS/comments/f9yhpw/moving_the_navigation_bar_to_the_bottom_of_the/ */
+/* https://www.reddit.com/r/FirefoxCSS/comments/fb54kp/how_can_i_move_the_urlbar_to_the_bottom_of_the/ */
+
+#nav-bar {
+  position: fixed !important;
+  bottom: 0px;
+  display: flex;
+  width: 100%;
+  z-index: 1;
+}
+
+#nav-bar-customization-target { flex-grow: 1; }

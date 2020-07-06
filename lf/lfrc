@@ -4,8 +4,7 @@
 
 # TODO
 # 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
-# 2. put cursor before last dot when renaming file
-# 3. create new files with % to avoid flickering
+# 2. create new files with % to avoid flickering
 
 # Basic settings {{{
 
