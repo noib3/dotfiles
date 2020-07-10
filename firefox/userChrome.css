@@ -15,14 +15,13 @@
 @import url("/Users/noibe/.config/firefox/chrome/tabs/tab_close_button_always_on_hover.css");
 @import url("/Users/noibe/.config/firefox/chrome/tabs/hide_tabs_with_one_tab.css");
 
-/* Navbar */
-@import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_layout.css");
+/* Navbar & urlbar */
+@import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_urlbar_layout.css");
 @import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_on_bottom.css");
 @import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_on_focus.css");
-@import url("/Users/noibe/.config/firefox/chrome/navbar/no_urlbar_enlargement_on_focus.css");
 
-/* Megabar */
-@import url("/Users/noibe/.config/firefox/chrome/megabar/megabar_layout.css");
+/* Search results */
+@import url("/Users/noibe/.config/firefox/chrome/search_results/search_results_layout.css");
 
 /* Sidebar */
 @import url("/Users/noibe/.config/firefox/chrome/sidebar/sidebar_layout.css");

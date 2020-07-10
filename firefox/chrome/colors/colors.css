@@ -25,14 +25,8 @@
   visibility: hidden !important;
 }
 
-/* Urlbar */
-#urlbar {
+/* Search results */
+.urlbarView {
   color: var(--text-color) !important;
-  background-color: var(--urlbar-color) !important;
-}
-
-/* Urlbar search results */
-.urlbarView:not(.megabar) {
-  color: var(--text-color) !important;
-  background-color: var(--urlbar-color) !important;
+  background-color: var(--search-results-color) !important;
 }

@@ -30,20 +30,6 @@ See the above repository for updates as well as full license text. */
   visibility: collapse !important;
 }
 
-/* Button re-styling */
-#tabs-newtab-button:hover,
-#tabbrowser-tabs .tabs-newtab-button:hover{ background-color: var(--toolbarbutton-hover-background) }
-
-#tabs-newtab-button > .toolbarbutton-icon,
-#tabbrowser-tabs .tabs-newtab-button > .toolbarbutton-icon{
-  padding: 0 !important;
-  transform: scale(0.6);
-  background-color: transparent !important;
-}
-/* Extra top padding  in maximized window */
-@media (-moz-os-version: windows-win10){
-  :root[sizemode="maximized"] #navigator-toolbox{ padding-top:7px !important; }
-}
 /* Fix window controls not being clickable */
 :root[tabsintitlebar] #toolbar-menubar[autohide="true"][inactive]{
   transition: height 0ms steps(1) 80ms;

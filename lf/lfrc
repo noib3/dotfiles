@@ -5,6 +5,7 @@
 # TODO
 # 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
 # 2. create new files with % to avoid flickering
+# 3. eject multiple disks at once
 
 # Basic settings {{{
 
@@ -74,7 +75,6 @@ cmd make_executable %{{
 
 # Eject all the highlighted disks
 cmd eject_disk %{{
-    terminal-notifier -title lf -message "Ejecting ${#fx} disks..."
     diskutil eject "$fx" &>/dev/null
 }}
 
