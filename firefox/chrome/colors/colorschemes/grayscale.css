@@ -1,0 +1,10 @@
+/* Filename:   firefox/chrome/colors/colorschemes/grayscale.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
+:root {
+  --text-color: #ebebeb;
+  --focused-tab-color: #626262;
+  --unfocused-tab-color: #393939;
+  --search-results-color: #393939;
+}

@@ -1,4 +1,4 @@
-# Filename:   .zshrc
+# Filename:   zsh/.zshrc
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
@@ -203,19 +203,19 @@ alias c=''
 
 # Plugins {{{
 
-# git clone https://github.com/Aloxaf/fz-tab /usr/local/share/fz-tab
+# Use fzf for tab completion
 source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh
 
-# git clone https://github.com/zdharma/fast-syntax-highlighting /usr/local/share/fast-syntax-highlighting
+# Syntax highlighting
 source /usr/local/share/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
-# brew install zsh-autosuggestions
+# Autosuggestions based on command history
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# git clone https://github.com/kutsan/zsh-system-clipboard /usr/local/share/zsh-system-clipboard
+# Use system clipboard when yanking and pasting in vi mode
 source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
-# git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
+# Autopair for parenthesis and quotation marks
 source /usr/local/share/zsh-autopair/autopair.zsh
 
 # }}}

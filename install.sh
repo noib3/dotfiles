@@ -1,4 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env sh
+
+# Filename:   install.sh
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
 
 # ---------------------------------------------------------------------------
 # nO0bs - Noibe's macOs day-0 Bootstrapping Scripts

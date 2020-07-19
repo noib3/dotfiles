@@ -1,3 +1,7 @@
+/* Filename:   firefox/chrome/remove_bloat.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
 /* Black border line between tabs and page */
 #navigator-toolbox {
   border-width: 0 !important;

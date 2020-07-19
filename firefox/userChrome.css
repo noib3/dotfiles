@@ -1,9 +1,13 @@
+/* Filename:   firefox/userChrome.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
 /* Font */
 @import url("/Users/noibe/.config/firefox/chrome/fonts/iosevka.css");
 
 /* Colorscheme */
 @import url("/Users/noibe/.config/firefox/chrome/colors/colors.css");
-@import url("/Users/noibe/.config/firefox/chrome/colors/colorschemes/grey.css");
+@import url("/Users/noibe/.config/firefox/chrome/colors/colorschemes/grayscale.css");
 
 /* Remove all the unnecessary UI garbage */
 @import url("/Users/noibe/.config/firefox/chrome/remove_bloat.css");

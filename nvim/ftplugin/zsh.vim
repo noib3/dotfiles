@@ -1,4 +1,4 @@
-" Filename:   zsh.vim
+" Filename:   nvim/ftplugin/zsh.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 

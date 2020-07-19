@@ -1,7 +1,11 @@
+/* Filename:   firefox/chrome/fonts/iosevka.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
 * {
   font-family: "Iosevka Nerd Font" !important;
-  /* for 1440x900 */
+  /* on 1440x900 */
   /* font-size: 18px !important; */
-  /* for 2560x1440 */
+  /* on 2560x1440 */
   font-size: 21px !important;
 }

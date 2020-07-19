@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Filename:   previewer.sh
+# Filename:   lf/previewer.sh
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 

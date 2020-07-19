@@ -1,3 +1,7 @@
+/* Filename:   firefox/chrome/colors/color.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
 :root {
   --lwt-accent-color: var(--focused-tab-color) !important;
   --sidebar-text-color: var(--text-color) !important;

@@ -1,9 +1,13 @@
+# Filename:   skhd/skhdrc
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
 # Launch a new Firefox instance
 ctrl - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
 cmd - return : open -na /Applications/Alacritty.app
-cmd - f : $TERMINAL -e sh -c 'printf "\e[5 q" && lf ~/Downloads'
+cmd - f : $TERMINAL -e lf ~/Downloads
 cmd - g : $TERMINAL -e gotop
 cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 

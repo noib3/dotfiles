@@ -1,4 +1,4 @@
-" Filename:   tex.vim
+" Filename:   nvim/autoload/tex.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 

@@ -1,4 +1,4 @@
-" Filename:   python.vim
+" Filename:   nvim/ftplugin/python.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 

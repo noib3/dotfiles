@@ -194,3 +194,9 @@ ssh -T git@github.com
     sudo killall Spotlight
 input password if asked. If it worked 'sudo rm Spotlight-backup'
 86. 'pip3 install neovim' for UltiSnips
+
+# git clone https://github.com/Aloxaf/fz-tab /usr/local/share/fz-tab
+# git clone https://github.com/zdharma/fast-syntax-highlighting /usr/local/share/fast-syntax-highlighting
+# brew install zsh-autosuggestions
+# git clone https://github.com/kutsan/zsh-system-clipboard /usr/local/share/zsh-system-clipboard
+# git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair

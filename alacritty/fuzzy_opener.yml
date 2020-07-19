@@ -1,4 +1,4 @@
-# Filename:   fuzzy_opener.yml
+# Filename:   alacritty/fuzzy_opener.yml
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
@@ -70,7 +70,7 @@ schemes:
       cyan:    '#8fbcbb'
       white:   '#eCeff4'
   # Mostly default
-  wip: &wip
+  wip: &default
     primary:
       background: '#282a36'
       foreground: '#c7c7c7'
@@ -81,7 +81,7 @@ schemes:
       text: '#ffffff'
       background: '#7aa6dA'
 
-colors: *wip
+colors: *default
 
 # }}}
 

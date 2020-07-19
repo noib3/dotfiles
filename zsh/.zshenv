@@ -1,3 +1,7 @@
+# Filename:   zsh/.zshenv
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
 # On macOS, the PATH is built up as described here:
 #   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
 # In particular, you need to 'sudo rm /etc/zprofile'

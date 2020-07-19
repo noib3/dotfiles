@@ -1,4 +1,4 @@
-" Filename:   init.vim
+" Filename:   nvim/init.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
@@ -14,8 +14,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'junegunn/goyo.vim'
   Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
-  Plug 'jiangmiao/auto-pairs'
   Plug 'Yggdroot/indentLine'
+  Plug 'jiangmiao/auto-pairs'
   " Colorschemes
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
@@ -79,13 +79,13 @@ set hidden
 let mapleader=','
 let maplocalleader=','
 
-"
+" Home directory for bookmarks and history
 let g:netrw_home=$HOME.'/.cache/nvim'
 
-"
+" Disable conceal feature for TeX documents
 let g:tex_conceal=''
 
-"
+" Default sh syntax-highlighted to be POSIX
 let g:is_posix=1
 
 " }}}
@@ -155,7 +155,7 @@ function! StripTrailingWhitespaces()
   call cursor(line, col)
 endfunction
 
-" Fold text by marker
+" Fold text for marker folds
 function! MarkerFoldText()
   let comment_char = substitute(&commentstring, '\s*%s', '', '')
   let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
@@ -168,6 +168,7 @@ endfunction
 
 " Colors {{{
 
+" Enable 24bit colors
 set termguicolors
 
 " Colorscheme

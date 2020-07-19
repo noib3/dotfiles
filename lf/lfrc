@@ -1,11 +1,9 @@
-# Filename:   lfrc
+# Filename:   lf/lfrc
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
 # TODO
 # 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
-# 2. create new files with % to avoid flickering
-# 3. eject multiple disks at once
 
 # Basic settings {{{
 
@@ -30,27 +28,28 @@ set timefmt ''
 cmd open ${{
     case $(file -b --mime-type "$fx") in
         text/*) $EDITOR "$fx";;
+        inode/x-empty) $EDITOR "$fx";;
         *) open "$fx" &>/dev/null;;
     esac
 }}
 
 # Create new files
-cmd touch ${{
+cmd touch %{{
     touch "$@"
-    lf -remote "send $id load"$'\n'"send $id select \"$@\""
+    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
 }}
 
 # Create new directories
-cmd mkdir ${{
+cmd mkdir %{{
     mkdir -p "$@"
-    lf -remote "send $id load"$'\n'"send $id select \"$@\""
+    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
 }}
 
 # Create new directory and move highlighted files into it
-cmd newdir ${{
+cmd newdir %{{
     mkdir -p "$@"
     mv $fx "$@"
-    lf -remote "send $id load"$'\n'"send $id select \"$@\""
+    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
 }}
 
 # Fuzzy search a file and open it in $EDITOR
@@ -71,6 +70,7 @@ cmd fuzzy_cd ${{
 # Make all the highlighted files executable
 cmd make_executable %{{
     chmod +x "$fx"
+    lf -remote "send $id load"
 }}
 
 # Eject all the highlighted disks
@@ -88,16 +88,8 @@ cmd set_wallpaper %{{
 
 # Key mappings {{{
 
-# Remove some defaults
-map e
-map m
-map n
-map u
-map ,
-map '$'
-
 # Mappings for built-in functions
-map <enter> shell
+map <enter> push %<space>
 map x cut
 map d delete
 map <esc> :unselect; clear

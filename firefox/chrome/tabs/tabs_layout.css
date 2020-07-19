@@ -1,3 +1,7 @@
+/* Filename:   firefox/chrome/tabs/tabs_layout.css */
+/* Github:     https://github.com/n0ibe/macOS-dotfiles */
+/* Maintainer: Riccardo Mazzarini */
+
 :root {
   --tab-min-height: 1.4em !important;
   --tab-toolbar-navbar-overlap: 0 !important;
