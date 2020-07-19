@@ -2,9 +2,6 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-# TODO
-# 1. select multiple files (even with spaces), make them executable, don't flicker and make them green
-
 # Basic settings {{{
 
 # Boolean options
@@ -16,9 +13,10 @@ set hidden true
 set period 1
 
 # String options
+set ifs "\n"
 set previewer ~/.config/lf/previewer.sh
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
-set timefmt ''
+set timefmt ""
 
 # }}}
 
@@ -26,10 +24,10 @@ set timefmt ''
 
 # Opener function
 cmd open ${{
-    case $(file -b --mime-type "$fx") in
-        text/*) $EDITOR "$fx";;
-        inode/x-empty) $EDITOR "$fx";;
-        *) open "$fx" &>/dev/null;;
+    case $(file -b --mime-type $fx) in
+        text/*) $EDITOR $fx;;
+        inode/x-empty) $EDITOR $fx;;
+        *) open $fx &>/dev/null;;
     esac
 }}
 
@@ -69,13 +67,13 @@ cmd fuzzy_cd ${{
 
 # Make all the highlighted files executable
 cmd make_executable %{{
-    chmod +x "$fx"
-    lf -remote "send $id load"
+    chmod +x $fx
+    lf -remote "send $id reload"
 }}
 
 # Eject all the highlighted disks
 cmd eject_disk %{{
-    diskutil eject "$fx" &>/dev/null
+    diskutil eject $fx &>/dev/null
 }}
 
 # Set the highlighted image as wallpaper
@@ -89,7 +87,7 @@ cmd set_wallpaper %{{
 # Key mappings {{{
 
 # Mappings for built-in functions
-map <enter> push %<space>
+map <enter> push $
 map x cut
 map d delete
 map <esc> :unselect; clear
