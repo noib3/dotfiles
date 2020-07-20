@@ -1,0 +1,48 @@
+# Filename:   nvim/UltiSnips/tex.snippets
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
+snippet be "\begin{<environment>} ... \end{<environment>}"
+\begin{$1}
+  $2
+\end{$1}
+$0
+endsnippet
+
+snippet qq "\[ ... \]" A
+
+%
+\[
+  $1
+\]
+%
+$0
+endsnippet
+
+snippet ,f "\frac{...}{...}" A
+\frac{$1}{$2} $0
+endsnippet
+
+snippet int "\int_{...}^{...}" A
+\int_{$1}^{$2} $0
+endsnippet
+
+snippet ,a "^{}" A
+^{$1} $0
+endsnippet
+
+snippet ,p "^{}" A
+_{$1} $0
+endsnippet
+
+snippet rb "(...)" A
+($1) $0
+endsnippet
+
+snippet .. "\dots" A
+\\dots
+endsnippet
+
+snippet oo "\infty" A
+\\infty
+endsnippet

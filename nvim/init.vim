@@ -29,6 +29,15 @@ let g:fzf_layout={ 'window': { 'width': 0.7, 'height': 0.7, 'highlight': 'Normal
 
 " }}}
 
+" Plugin setting: UltiSnips {{{
+
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+
+" }}}
+
 " Plugin settings: indentLine {{{
 
 let g:indentLine_char='│'
@@ -76,17 +85,17 @@ set hidden
 " Variable assignments {{{
 
 " Leader keys
-let mapleader=','
-let maplocalleader=','
+let mapleader = ','
+let maplocalleader = ','
 
 " Home directory for bookmarks and history
-let g:netrw_home=$HOME.'/.cache/nvim'
+let g:netrw_home = $HOME.'/.cache/nvim'
 
 " Disable conceal feature for TeX documents
-let g:tex_conceal=''
+let g:tex_conceal = ''
 
 " Default sh syntax-highlighted to be POSIX
-let g:is_posix=1
+let g:is_posix = 1
 
 " }}}
 

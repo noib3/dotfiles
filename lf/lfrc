@@ -65,9 +65,15 @@ cmd fuzzy_cd ${{
     && lf -remote "send $id cd ~/$dirname"
 }}
 
-# Make all the highlighted files executable
+# Add execute permissions
 cmd make_executable %{{
     chmod +x $fx
+    lf -remote "send $id reload"
+}}
+
+# Remove execute permissions
+cmd remove_executable %{{
+    chmod -x $fx
     lf -remote "send $id reload"
 }}
 
@@ -103,6 +109,7 @@ map <c-x><c-d> fuzzy_cd
 
 # Others
 map + make_executable
+map - remove_executable
 map j eject_disk
 map s set_wallpaper
 

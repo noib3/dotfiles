@@ -24,8 +24,14 @@ yabai -m config window_border_width         3
 yabai -m config active_window_border_color  0xffc7c7c7
 yabai -m config normal_window_border_color  0xff5c6370
 
-# Rules for macOS programs
+# Rules
 yabai -m rule --add app="^Digital Colour Meter$" manage=off sticky=on
-
-# Rules for my scripts
 yabai -m rule --add title="^fuzzy_opener$" manage=off
+
+# Signals
+read -r -d '' destroy_space_if_empty <<- 'EOF'
+    echo "ciao"
+EOF
+
+yabai -m signal --add event=window_destroyed action="${destroy_space_if_empty}"
+yabai -m signal --add event=application_terminated action="${destroy_space_if_empty}"
