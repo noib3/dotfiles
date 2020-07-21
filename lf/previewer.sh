@@ -7,6 +7,7 @@
 # Needs to be executable
 
 FILE="$1"
+HEIGHT="$1"
 
 text_preview() {
     highlight -O ansi --force "$1"
@@ -33,10 +34,10 @@ fallback_preview() {
 }
 
 case "$(file -b --mime-type "$FILE")" in
-    text/*) text_preview "$1" ;;
-    */pdf) pdf_preview "$1" ;;
-    image/*) image_preview "$1" "$2" ;;
-    video/*) video_preview "$1" ;;
-    audio/*) audio_preview "$1" ;;
-    *) fallback_preview "$1" ;;
+    text/*) text_preview "$FILE" ;;
+    */pdf) pdf_preview "$FILE" ;;
+    image/*) image_preview "$FILE" "$HEIGHT" ;;
+    video/*) video_preview "$FILE" ;;
+    audio/*) audio_preview "$FILE" ;;
+    *) fallback_preview "$FILE" ;;
 esac
