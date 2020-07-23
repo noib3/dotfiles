@@ -33,6 +33,13 @@
 }
 
 /* Disable enlargement on focus */
+#urlbar[breakout] {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
 #urlbar[breakout][breakout-extend] {
   width: 100% !important;
   height: 100% !important;
@@ -43,7 +50,6 @@
 #urlbar[breakout][breakout-extend] > #urlbar-input-container {
   width: 100% !important;
   height: 100% !important;
-  top: 0 !important;
   padding-block: 0 !important;
   padding-inline: 0 !important;
 }

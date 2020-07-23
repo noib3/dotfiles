@@ -200,3 +200,6 @@ input password if asked. If it worked 'sudo rm Spotlight-backup'
 # brew install zsh-autosuggestions
 # git clone https://github.com/kutsan/zsh-system-clipboard /usr/local/share/zsh-system-clipboard
 # git clone https://github.com/hlissner/zsh-autopair /usr/local/share/zsh-autopair
+
+pip3 install buku
+ln -s ~/Dropbox/share/buku/bookmarks.db ~/.local/share/buku/bookmarks.db

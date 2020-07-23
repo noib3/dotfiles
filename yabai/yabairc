@@ -39,6 +39,9 @@ EOF
 yabai -m signal --add event=window_destroyed action="${destroy_space_if_empty}"
 yabai -m signal --add event=application_terminated action="${destroy_space_if_empty}"
 
+# yabai -m signal --add event=window_destroyed action="osascript -e 'display notification \"window_destroyed\"'"
+# yabai -m signal --add event=application_terminated action="osascript -e 'display notification \"application_terminated\"'"
+
 # yabai -m signal --add event=window_destroyed action="$destroy_space_if_empty"
 # yabai -m signal --add event=application_terminated action="$destroy_space_if_empty"
 

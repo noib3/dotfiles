@@ -4,10 +4,34 @@
 
 /* https://www.reddit.com/r/FirefoxCSS/comments/gckdl3/autohiding_navigation_bar_feat_hover_focus_for/ */
 
-#nav-bar {
-  z-index: -100;
-}
+/* #nav-bar { */
+/*   z-index: -100; */
+/* } */
 
-#navigator-toolbox:focus-within > #nav-bar {
-  z-index: 100;
+/* #navigator-toolbox:focus-within > #nav-bar { */
+/*   z-index: 100; */
+/* } */
+
+/* #nav-bar { */
+/*   z-index: -100; */
+/* } */
+
+/* #navigator-toolbox:focus-within > #nav-bar { */
+/*   z-index: 100; */
+/* } */
+
+:root[sessionrestored] #nav-bar:not([customizing]){
+  display: flex;
+  position: fixed !important;
+  top: 0;
+  width: 100vw;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+}
+#nav-bar-customization-target{ flex-grow: 1; }
+#nav-bar:focus-within{
+  z-index:2 !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
