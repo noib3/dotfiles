@@ -2,23 +2,7 @@
 /* Github:     https://github.com/n0ibe/macOS-dotfiles */
 /* Maintainer: Riccardo Mazzarini */
 
-/* https://www.reddit.com/r/FirefoxCSS/comments/gckdl3/autohiding_navigation_bar_feat_hover_focus_for/ */
-
-/* #nav-bar { */
-/*   z-index: -100; */
-/* } */
-
-/* #navigator-toolbox:focus-within > #nav-bar { */
-/*   z-index: 100; */
-/* } */
-
-/* #nav-bar { */
-/*   z-index: -100; */
-/* } */
-
-/* #navigator-toolbox:focus-within > #nav-bar { */
-/*   z-index: 100; */
-/* } */
+/* https://www.reddit.com/r/FirefoxCSS/comments/hw3tbx/showing_the_navbar_in_place_of_the_tabbar_when/ */
 
 :root[sessionrestored] #nav-bar:not([customizing]){
   display: flex;
@@ -29,7 +13,9 @@
   opacity: 0;
   pointer-events: none;
 }
+
 #nav-bar-customization-target{ flex-grow: 1; }
+
 #nav-bar:focus-within{
   z-index:2 !important;
   opacity: 1 !important;

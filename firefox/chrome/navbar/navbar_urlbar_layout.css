@@ -32,7 +32,7 @@
   margin-right: 7px !important;
 }
 
-/* Disable enlargement on focus */
+/* Disable urlbar enlargement on focus */
 #urlbar[breakout] {
   width: 100% !important;
   height: 100% !important;

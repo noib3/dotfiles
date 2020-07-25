@@ -25,7 +25,7 @@ call plug#end()
 
 " Plugin settings: fzf {{{
 
-let g:fzf_layout={ 'window': { 'width': 0.7, 'height': 0.7, 'highlight': 'Normal', 'border': 'sharp' } }
+let g:fzf_layout={ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' } }
 
 " }}}
 
@@ -149,7 +149,7 @@ augroup END
 " Open the PDF file on entry and close it on exit
 augroup TeXGroup
   autocmd!
-  autocmd BufRead *.tex call tex#PDFOpen()
+  " autocmd BufRead *.tex call tex#PDFOpen()
   autocmd BufUnload *.tex call tex#PDFClose(expand('<afile>:p:r').'.pdf', expand('<afile>:t:r').'.pdf')
 augroup END
 

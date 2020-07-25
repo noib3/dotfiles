@@ -2,15 +2,40 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-snippet be "\begin{<environment>} ... \end{<environment>}"
-\begin{$1}
-  $2
-\end{$1}
-$0
+# Some of these snippets were taken from 'https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets'
+
+global !p
+# texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
+
+vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
+texMathZones = [x.strip() for x in vim.eval('@a').split(',')][1:]
+
+texIgnoreMathZones = ['texMathText']
+
+texMathZoneIds = vim.eval('map('+str(texMathZones)+", 'hlID(v:val)')")
+texIgnoreMathZoneIds = vim.eval('map('+str(texIgnoreMathZones)+", 'hlID(v:val)')")
+
+ignore = texIgnoreMathZoneIds[0]
+
+def math():
+    synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+    try:
+        first = next(i for i in reversed(synstackids) if i in texIgnoreMathZoneIds or i in texMathZoneIds)
+        return first != ignore
+    except StopIteration:
+        return False
+endglobal
+
+snippet md "Inline math" wA
+$${1}$`!p
+if t[2] and t[2][0] not in [',', ';', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
 endsnippet
 
-snippet qq "\[ ... \]" A
-
+snippet me "\[ \]" bA
 %
 \[
   $1
@@ -19,30 +44,98 @@ snippet qq "\[ ... \]" A
 $0
 endsnippet
 
-snippet ,f "\frac{...}{...}" A
-\frac{$1}{$2} $0
+# the two & should be aligned -> make spaces the length of $1
+snippet al "align*" bA
+%
+\begin{align*}
+  $1 &= $2 \\\\
+  &= $3
+\end{align*}
+%
+$0
 endsnippet
 
-# snippet int "\int_{...}^{...}" A
-# \int_{$1}^{$2} $0
-# endsnippet
-
-snippet ,a "^{}" A
-^{$1} $0
+# every tab is a new \item, tab after an \item deletes that line and jumps out of the environment
+snippet item "itemize" bA
+%
+\begin{itemize}
+  \item $1
+  \item $2
+\end{itemize}
+%
+$0
 endsnippet
 
-snippet ,p "^{}" A
-_{$1} $0
+snippet enum "itemize" bA
+%
+\begin{enumerate}
+  \item $1
+  \item $2
+\end{enumerate}
+%
+$0
 endsnippet
 
-snippet rb "(...)" A
-($1) $0
+snippet thm "theorem" bA
+%
+\begin{thm}$1
+  $2
+\end{thm}
+%
+$0
 endsnippet
 
+snippet defn "definition" bA
+%
+\begin{defn}$1
+  $2
+\end{defn}
+%
+$0
+endsnippet
+
+snippet table "table" bA
+%
+\begin{table}[${1:htpb}]
+  \centering
+  \begin{tabular}{${2:c}}
+    $3 \\\\
+  \end{tabular}
+  \label{tab:$4}
+  \caption{$5}
+\end{table}
+%
+$0
+endsnippet
+
+snippet fig "figure" bA
+%
+\begin{figure}[${1:h!}]
+  \centering
+  \includegraphics[width=${2:0.8}\\textwidth]{./figures/$3.${4:pdf}}
+  \label{fig:$5}
+  \caption{$6}
+\end{figure}
+%
+$0
+endsnippet
+
+snippet env "<environment>" bA
+%
+\begin{$1}
+  $2
+\end{$1}
+%
+$0
+endsnippet
+
+# should work in $$ too
+# context "math()"
 snippet .. "\dots" A
 \\dots
 endsnippet
 
+# context "math()"
 snippet oo "\infty" A
 \\infty
 endsnippet

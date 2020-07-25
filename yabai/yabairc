@@ -31,23 +31,10 @@ yabai -m rule --add title="^fuzzy_opener$" manage=off
 # Signals
 read -r -d '' destroy_space_if_empty <<- 'EOF'
 active_space_index=$(yabai -m query --spaces --space | jq .index)
-if $(yabai -m query --windows --space ${active_space_index} | jq 'length == 0'); then
-    yabai -m space ${active_space_index} --destroy
+if $(yabai -m query --windows --space $active_space_index | jq 'length == 0'); then
+    yabai -m space $active_space_index --destroy
 fi
 EOF
 
-yabai -m signal --add event=window_destroyed action="${destroy_space_if_empty}"
-yabai -m signal --add event=application_terminated action="${destroy_space_if_empty}"
-
-# yabai -m signal --add event=window_destroyed action="osascript -e 'display notification \"window_destroyed\"'"
-# yabai -m signal --add event=application_terminated action="osascript -e 'display notification \"application_terminated\"'"
-
-# yabai -m signal --add event=window_destroyed action="$destroy_space_if_empty"
-# yabai -m signal --add event=application_terminated action="$destroy_space_if_empty"
-
-# read -r -d '' window <<- 'EOF'
-# echo "$(yabai -m query --spaces --space | jq .index)" >> ~/windows
-# EOF
-
-# yabai -m signal --add event=window_destroyed action="${window}"
-# yabai -m signal --add event=application_terminated action="${window}"
+yabai -m signal --add event=window_destroyed action="$destroy_space_if_empty"
+yabai -m signal --add event=application_terminated action="$destroy_space_if_empty"
