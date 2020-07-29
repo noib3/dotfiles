@@ -17,6 +17,7 @@ cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
                                               ~/scripts \
                                               ~/bin/diet \
                                               $(kpsewhich -var-value TEXMFHOME)
+cmd - j : sh ~/scripts/journaling.sh
 
 # Open downloads sidebar in Firerox
 cmd - d [
@@ -33,8 +34,11 @@ cmd - s [
     "Firefox" : false
 ]
 
-# Disable cmd-h in every program
+# Disable cmd - h in every program
 cmd - h : false
+
+# Go fullscreen
+alt - f : skhd --key "ctrl + cmd - f"
 
 # Focus windows
 alt - up    : yabai -m window --focus north

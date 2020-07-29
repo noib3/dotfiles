@@ -12,7 +12,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-endwise'
   Plug 'junegunn/fzf'
   Plug 'junegunn/goyo.vim'
-  Plug 'SirVer/ultisnips'
+  " Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
   Plug 'Yggdroot/indentLine'
   Plug 'jiangmiao/auto-pairs'
@@ -29,7 +29,24 @@ let g:fzf_layout={ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal
 
 " }}}
 
-" Plugin setting: UltiSnips {{{
+" Plugin settings: Goyo {{{
+
+function! s:goyo_enter()
+  " let color = synIDattr(synIDtrans(hlID('EndOfBuffer')), 'fg')
+  " execute 'hi EndOfBuffer guifg='.color
+  hi EndOfBuffer guifg=#3b4048
+endfunction
+
+function! s:goyo_leave()
+  hi EndOfBuffer guifg=#3b4048
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+" }}}
+
+" Plugin settings: UltiSnips {{{
 
 let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'
@@ -139,6 +156,7 @@ cnoremap 3636 <c-u>undo<CR>
 
 " Autocommands {{{
 
+"
 augroup BaseGroup
   autocmd!
   autocmd FileType    * setlocal formatoptions-=cro
@@ -146,11 +164,22 @@ augroup BaseGroup
   autocmd InsertEnter * norm zz
 augroup END
 
-" Open the PDF file on entry and close it on exit
+"
 augroup TeXGroup
   autocmd!
   " autocmd BufRead *.tex call tex#PDFOpen()
   autocmd BufUnload *.tex call tex#PDFClose(expand('<afile>:p:r').'.pdf', expand('<afile>:t:r').'.pdf')
+  autocmd BufRead *.sty set syntax=tex
+  autocmd BufRead *.cls set syntax=tex
+augroup END
+
+"
+augroup Highlights
+  autocmd!
+  autocmd ColorScheme * hi Normal guibg=NONE
+  autocmd ColorScheme * hi Comment gui=italic
+  autocmd ColorScheme * hi Visual guibg=#7aa6da guifg=#ffffff
+  autocmd ColorScheme * hi VertSplit guibg=#5c6370 guifg=NONE
 augroup END
 
 " }}}
@@ -182,11 +211,5 @@ set termguicolors
 
 " Colorscheme
 colorscheme onedark
-
-" Highlights
-hi Normal guibg=NONE
-hi Comment gui=italic
-hi Visual guibg=#7aa6da guifg=#ffffff
-hi VertSplit guibg=#5c6370 guifg=NONE
 
 " }}}

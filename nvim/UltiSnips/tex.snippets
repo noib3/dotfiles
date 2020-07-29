@@ -57,45 +57,36 @@ endsnippet
 
 # every tab is a new \item, tab after an \item deletes that line and jumps out of the environment
 snippet item "itemize" bA
-%
 \begin{itemize}
   \item $1
   \item $2
 \end{itemize}
-%
 $0
 endsnippet
 
 snippet enum "itemize" bA
-%
 \begin{enumerate}
   \item $1
   \item $2
 \end{enumerate}
-%
 $0
 endsnippet
 
 snippet thm "theorem" bA
-%
 \begin{thm}$1
   $2
 \end{thm}
-%
 $0
 endsnippet
 
 snippet defn "definition" bA
-%
 \begin{defn}$1
   $2
 \end{defn}
-%
 $0
 endsnippet
 
 snippet table "table" bA
-%
 \begin{table}[${1:htpb}]
   \centering
   \begin{tabular}{${2:c}}
@@ -104,38 +95,108 @@ snippet table "table" bA
   \label{tab:$4}
   \caption{$5}
 \end{table}
-%
 $0
 endsnippet
 
 snippet fig "figure" bA
-%
 \begin{figure}[${1:h!}]
   \centering
   \includegraphics[width=${2:0.8}\\textwidth]{./figures/$3.${4:pdf}}
   \label{fig:$5}
   \caption{$6}
 \end{figure}
-%
 $0
 endsnippet
 
+snippet doc "document" bA
+\begin{document}
+
+$0
+
+\end{document}
+endsnippet
+
 snippet env "<environment>" bA
-%
 \begin{$1}
   $2
 \end{$1}
-%
 $0
 endsnippet
 
 # should work in $$ too
 # context "math()"
+# snippet fr "frac" iA
+# \\frac{$1}{$2}$0
+# endsnippet
+
+# snippet sum "sum" iA
+# \sum_{${1:i} = ${2:1}}^{${3:\infty}} $0
+# endsnippet
+
+# snippet int "int" iA
+# \int_{${1:-\infty}}^{${2:\infty}} $3 d${4:x}
+# endsnippet
+
+# snippet lim "lim" iA
+# \lim_{${1:n} \to ${2:\infty}} $0
+# endsnippet
+
+snippet "([A-Za-z])(\d)" "auto subscript" wrA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
+endsnippet
+
+snippet "([a-zA-Z])bar" "bar" riA
+\overline{`!p snip.rv=match.group(1)`}
+endsnippet
+
+snippet "([a-zA-Z])hat" "hat" riA
+\hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+snippet "([a-zA-Z])tilde" "tilde" riA
+\tilde{`!p snip.rv=match.group(1)`}
+endsnippet
+
+snippet lrr "left right" iA
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+snippet lrs "left right" iA
+\left[ ${1:${VISUAL}} \right] $0
+endsnippet
+
+snippet lrc "left right" iA
+\left\\{ ${1:${VISUAL}} \right \\} $0
+endsnippet
+
+snippet sr "square root" iA
+\sqrt{${1:${VISUAL}}}$0
+endsnippet
+
+# snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "ln" rwA
+# \\`!p snip.rv = match.group(1)`
+# endsnippet
+
+# snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "ln" rwA
+# \\`!p snip.rv = match.group(1)`
+# endsnippet
+
+# snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "ln" rwA
+# \\`!p snip.rv = match.group(1)`
+# endsnippet
+
+# snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "ln" rwA
+# \\`!p snip.rv = match.group(1)`
+# endsnippet
+
+snippet sq "^2" iA
+^2
+endsnippet
+
 snippet .. "\dots" A
 \\dots
 endsnippet
 
-# context "math()"
 snippet oo "\infty" A
 \\infty
 endsnippet

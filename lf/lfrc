@@ -5,9 +5,9 @@
 # Basic settings {{{
 
 # Boolean options
-set color256 true
-set drawbox true
-set hidden true
+set color256
+set drawbox
+set hidden
 
 # Integer options
 set period 1
@@ -15,7 +15,7 @@ set period 1
 # String options
 set ifs "\n"
 set previewer ~/.config/lf/previewer.sh
-set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w/\033[0m\033[1m%f\033[0m"
+set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w\033[0m\033[1m%f\033[0m"
 set timefmt ""
 
 # }}}
@@ -34,20 +34,20 @@ cmd open ${{
 # Create new files
 cmd touch %{{
     touch "$@"
-    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
+    lf -remote "send $id select \"$@\""
 }}
 
 # Create new directories
 cmd mkdir %{{
     mkdir -p "$@"
-    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
+    lf -remote "send $id select \"$@\""
 }}
 
 # Create new directory and move highlighted files into it
 cmd newdir %{{
     mkdir -p "$@"
     mv $fx "$@"
-    lf -remote "send $id load" && lf -remote "send $id select \"$@\""
+    lf -remote "send $id select \"$@\""
 }}
 
 # Fuzzy search a file and open it in $EDITOR
@@ -96,7 +96,7 @@ cmd set_wallpaper %{{
 map <enter> push $
 map x cut
 map d delete
-map <esc> :unselect; clear
+map u :unselect; clear
 
 # Create files or directories
 map t push :touch<space>
