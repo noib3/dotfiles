@@ -103,11 +103,7 @@ alt - r : yabai -m space --rotate 270
 alt - b : yabai -m space --balance
 
 # Screenshot the whole screen
-shift + cmd - 3 : \
-    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') && \
-    screencapture ~/Dropbox/Screenshots/$SS_NAME.png
+shift + cmd - 3 : screencapture ~/Dropbox/screenshots/$(date +%F@%T).png
 
 # Screenshot a portion of the screen
-shift + cmd - 4 : \
-    SS_NAME=$(date --rfc-3339=seconds | sed 's/+.*$//;s/ /@/;s/-/:/g') && \
-    screencapture -i ~/Dropbox/Screenshots/$SS_NAME.png
+shift + cmd - 4 : screencapture -i ~/Dropbox/screenshots/$(date +%F@%T).png

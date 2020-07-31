@@ -10,9 +10,10 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-endwise'
-  Plug 'junegunn/fzf'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/goyo.vim'
-  " Plug 'SirVer/ultisnips'
+  Plug 'junegunn/limelight.vim'
+  Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
   Plug 'Yggdroot/indentLine'
   Plug 'jiangmiao/auto-pairs'
@@ -31,18 +32,37 @@ let g:fzf_layout={ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal
 
 " Plugin settings: Goyo {{{
 
+let g:goyo_width = '65%'
+let g:goyo_height = '75%'
+
 function! s:goyo_enter()
-  " let color = synIDattr(synIDtrans(hlID('EndOfBuffer')), 'fg')
-  " execute 'hi EndOfBuffer guifg='.color
-  hi EndOfBuffer guifg=#3b4048
+  Limelight
+  " This matches the terminal background color
+  hi EndOfBuffer guifg=#282a36
 endfunction
 
 function! s:goyo_leave()
+  Limelight!
+  " Color of the EndOfBuffer highlight group defined by the onedark colorscheme
   hi EndOfBuffer guifg=#3b4048
+  call ExitFullscreen()
+endfunction
+
+" Exits fullscreen if window in fullscreen
+function! ExitFullscreen()
+
 endfunction
 
 autocmd! User GoyoEnter nested call <SID>goyo_enter()
 autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+" }}}
+
+" Plugin settings: Limelight {{{
+
+let g:limelight_conceal_guifg = '#282a36'
+let g:limelight_bop = '^\\begin{newday}.*$'
+let g:limelight_eop = '^\\end{newday}$'
 
 " }}}
 
@@ -51,17 +71,17 @@ autocmd! User GoyoLeave nested call <SID>goyo_leave()
 let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
-let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
 
 " }}}
 
 " Plugin settings: indentLine {{{
 
-let g:indentLine_char='│'
-let g:indentLine_first_char='│'
-let g:indentLine_showFirstIndentLevel=1
-let g:indentLine_fileTypeExclude=['text', 'man', 'conf']
-let g:indentLine_defaultGroup='Comment'
+let g:indentLine_char = '│'
+let g:indentLine_first_char = '│'
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
+let g:indentLine_defaultGroup = 'Comment'
 
 " }}}
 
@@ -161,13 +181,13 @@ augroup BaseGroup
   autocmd!
   autocmd FileType    * setlocal formatoptions-=cro
   autocmd BufWritePre * call StripTrailingWhitespaces()
-  autocmd InsertEnter * norm zz
+  " autocmd InsertEnter * norm zz
 augroup END
 
 "
 augroup TeXGroup
   autocmd!
-  " autocmd BufRead *.tex call tex#PDFOpen()
+  autocmd BufRead *.tex call tex#PDFOpen()
   autocmd BufUnload *.tex call tex#PDFClose(expand('<afile>:p:r').'.pdf', expand('<afile>:t:r').'.pdf')
   autocmd BufRead *.sty set syntax=tex
   autocmd BufRead *.cls set syntax=tex

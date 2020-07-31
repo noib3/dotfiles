@@ -5,8 +5,6 @@
 # Some of these snippets were taken from 'https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets'
 
 global !p
-# texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
-
 vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
 texMathZones = [x.strip() for x in vim.eval('@a').split(',')][1:]
 
@@ -123,80 +121,103 @@ snippet env "<environment>" bA
 $0
 endsnippet
 
-# should work in $$ too
-# context "math()"
-# snippet fr "frac" iA
-# \\frac{$1}{$2}$0
-# endsnippet
+snippet newday "<newday>" bA
+\begin{newday}[$1${2:, y}]
+  $0
+\end{newday}
+endsnippet
 
-# snippet sum "sum" iA
-# \sum_{${1:i} = ${2:1}}^{${3:\infty}} $0
-# endsnippet
+context "math()"
+snippet fr "frac" iA
+\\frac{$1}{$2}$0
+endsnippet
 
-# snippet int "int" iA
-# \int_{${1:-\infty}}^{${2:\infty}} $3 d${4:x}
-# endsnippet
+context "math()"
+snippet sum "sum" iA
+\sum_{${1:i} = ${2:1}}^{${3:\infty}} $0
+endsnippet
 
-# snippet lim "lim" iA
-# \lim_{${1:n} \to ${2:\infty}} $0
-# endsnippet
+context "math()"
+snippet int "int" iA
+\int_{${1:-\infty}}^{${2:\infty}} $3 d${4:x}
+endsnippet
 
+context "math()"
+snippet lim "lim" iA
+\lim_{${1:n} \to ${2:\infty}} $0
+endsnippet
+
+context "math()"
 snippet "([A-Za-z])(\d)" "auto subscript" wrA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
+context "math()"
 snippet "([a-zA-Z])bar" "bar" riA
 \overline{`!p snip.rv=match.group(1)`}
 endsnippet
 
+context "math()"
 snippet "([a-zA-Z])hat" "hat" riA
 \hat{`!p snip.rv=match.group(1)`}
 endsnippet
 
+context "math()"
 snippet "([a-zA-Z])tilde" "tilde" riA
 \tilde{`!p snip.rv=match.group(1)`}
 endsnippet
 
+context "math()"
 snippet lrr "left right" iA
 \left( ${1:${VISUAL}} \right) $0
 endsnippet
 
+context "math()"
 snippet lrs "left right" iA
 \left[ ${1:${VISUAL}} \right] $0
 endsnippet
 
+context "math()"
 snippet lrc "left right" iA
 \left\\{ ${1:${VISUAL}} \right \\} $0
 endsnippet
 
+context "math()"
 snippet sr "square root" iA
 \sqrt{${1:${VISUAL}}}$0
 endsnippet
 
-# snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "ln" rwA
-# \\`!p snip.rv = match.group(1)`
-# endsnippet
+context "math()"
+snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
 
-# snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "ln" rwA
-# \\`!p snip.rv = match.group(1)`
-# endsnippet
+context "math()"
+snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
 
-# snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "ln" rwA
-# \\`!p snip.rv = match.group(1)`
-# endsnippet
+context "math()"
+snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
 
-# snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "ln" rwA
-# \\`!p snip.rv = match.group(1)`
-# endsnippet
+context "math()"
+snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
 
+context "math()"
 snippet sq "^2" iA
 ^2
 endsnippet
 
+context "math()"
 snippet .. "\dots" A
 \\dots
 endsnippet
 
+context "math()"
 snippet oo "\infty" A
 \\infty
 endsnippet
