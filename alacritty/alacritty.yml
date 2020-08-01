@@ -21,6 +21,7 @@ font:
   # size: 17.0
   # Iosevka on 2560x1440
   size: 20
+  # size: 16
   offset:
     y: 1
 
