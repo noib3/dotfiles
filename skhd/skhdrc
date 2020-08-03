@@ -11,13 +11,23 @@ cmd - f : $TERMINAL -e lf ~/Downloads
 cmd - g : $TERMINAL -e gotop
 cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
-# Execute personal scripts
+# Open a fuzzy search file opener
 cmd - space : sh ~/scripts/fuzzy_opener.sh
+
+# Commit and push every directory passed to the script
 cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
                                               ~/scripts \
                                               ~/bin/diet \
                                               $(kpsewhich -var-value TEXMFHOME)
-cmd - j : sh ~/scripts/journaling.sh
+
+# Open this year's journal in fullscreen, activate Goyo and place the cursor at the right place
+# 3. after the first cmd - w exit fullscreen mode
+cmd - j : alacritty -t journaling \
+                    -e sh -c "sleep .25 && \
+                              nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex + +Goyo +?newday +:noh \
+                                                                                            +\"normal o\" +\"normal yy\" \
+                                                                                            +\"normal p\" +\"normal zt\" \
+                                                                                            +startinsert"
 
 # Open downloads sidebar in Firerox
 cmd - d [

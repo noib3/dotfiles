@@ -18,10 +18,9 @@ font:
     family: Iosevka Nerd Font
     style: Regular
   # Iosevka on 1440x900
-  # size: 17.0
+  # size: 16.0
   # Iosevka on 2560x1440
   size: 20
-  # size: 16
   offset:
     y: 1
 

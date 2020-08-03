@@ -215,7 +215,7 @@ source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Use system clipboard when yanking and pasting in vi mode
 source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
-# Autopair for parenthesis and quotation marks
+# Autopair parenthesis and quotation marks
 source /usr/local/share/zsh-autopair/autopair.zsh
 
 # }}}

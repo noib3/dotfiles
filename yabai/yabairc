@@ -28,14 +28,3 @@ yabai -m config normal_window_border_color  0xff5c6370
 yabai -m rule --add app="^Digital Colour Meter$" manage=off sticky=on
 yabai -m rule --add title="fuzzy_opener" manage=off
 yabai -m rule --add title="journaling" native-fullscreen=on
-
-# Signals
-read -r -d '' destroy_space_if_empty <<- 'EOF'
-active_space_index=$(yabai -m query --spaces --space | jq .index)
-if $(yabai -m query --windows --space $active_space_index | jq 'length == 0'); then
-    yabai -m space $active_space_index --destroy
-fi
-EOF
-
-yabai -m signal --add event=window_destroyed action="$destroy_space_if_empty"
-yabai -m signal --add event=application_terminated action="$destroy_space_if_empty"
