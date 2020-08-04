@@ -2,7 +2,7 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-# Some of these snippets were taken from 'https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets'
+# Some of these snippets were taken from https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 
 global !p
 vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
@@ -24,67 +24,59 @@ def math():
         return False
 endglobal
 
-snippet md "Inline math" wA
-$${1}$`!p
-if t[2] and t[2][0] not in [',', ';', '.', '?', '-', ' ']:
-    snip.rv = ' '
-else:
-    snip.rv = ''
-`$2
-endsnippet
+snippet template "Basic KOMA-Script article template" bA
+\documentclass[${1:paper=A4,}${2:fontsize=14pt,}${3:parskip=half-,}${4:fleqn}]{scrartcl}
 
-snippet me "\[ \]" bA
-%
-\[
-  $1
-\]
-%
+% Packages {{{
+
+% Input and output encodings
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Math
+${5:\usepackage{amsmath}}
+${6:\usepackage{amssymb}}
+${7:\usepackage{amsthm}}
+
+% References
+${8:\usepackage{hyperref}}
+${9:\usepackage{cleveref}}
+
+% Miscellaneous
+${10:\usepackage{enumitem}}
+${11:\usepackage{microtype}}
+${12:\usepackage{graphicx}}
+${13:\usepackage{xcolor}}
+
+% }}}
+
+% Macros {{{
+
+% Number sets
+${14:\newcommand{\N}{\mathbb{N}}}
+${15:\newcommand{\Z}{\mathbb{Z}}}
+${16:\newcommand{\Q}{\mathbb{Q}}}
+${17:\newcommand{\R}{\mathbb{R}}}
+${18:\newcommand{\C}{\mathbb{C}}}
+
+% }}}
+
+% Title, author and date {{{
+
+\title{$19}
+\author{${20:Riccardo Mazzarini}}
+\date{$20}
+
+% }}}
+
+\begin{document}
+
 $0
+
+\end{document}
 endsnippet
 
-# the two & should be aligned -> make spaces the length of $1
-snippet al "align*" bA
-%
-\begin{align*}
-  $1 &= $2 \\\\
-  &= $3
-\end{align*}
-%
-$0
-endsnippet
-
-# every tab is a new \item, tab after an \item deletes that line and jumps out of the environment
-snippet item "itemize" bA
-\begin{itemize}
-  \item $1
-  \item $2
-\end{itemize}
-$0
-endsnippet
-
-snippet enum "itemize" bA
-\begin{enumerate}
-  \item $1
-  \item $2
-\end{enumerate}
-$0
-endsnippet
-
-snippet thm "theorem" bA
-\begin{thm}$1
-  $2
-\end{thm}
-$0
-endsnippet
-
-snippet defn "definition" bA
-\begin{defn}$1
-  $2
-\end{defn}
-$0
-endsnippet
-
-snippet table "table" bA
+snippet table "Table environment" bA
 \begin{table}[${1:htpb}]
   \centering
   \begin{tabular}{${2:c}}
@@ -96,7 +88,7 @@ snippet table "table" bA
 $0
 endsnippet
 
-snippet fig "figure" bA
+snippet fig "Figure environment" bA
 \begin{figure}[${1:h!}]
   \centering
   \includegraphics[width=${2:0.8}\\textwidth]{./figures/$3.${4:pdf}}
@@ -106,25 +98,108 @@ snippet fig "figure" bA
 $0
 endsnippet
 
-snippet doc "document" bA
-\begin{document}
-
+snippet item "Itemize environment" bA
+\begin{itemize}
+  \item $1
+  \item $2
+\end{itemize}
 $0
-
-\end{document}
 endsnippet
 
-snippet env "<environment>" bA
+snippet enum "Enumerate environment" bA
+\begin{enumerate}
+  \item $1
+  \item $2
+\end{enumerate}
+$0
+endsnippet
+
+snippet thm "Theorem environment" bA
+\begin{thm}$1
+  $2
+\end{thm}
+$0
+endsnippet
+
+snippet defn "Definition environment" bA
+\begin{defn}$1
+  $2
+\end{defn}
+$0
+endsnippet
+
+snippet beg "Generic environment" bA
 \begin{$1}
   $2
 \end{$1}
 $0
 endsnippet
 
-snippet newday "<newday>" bA
+snippet newday "Custom newday environment" bA
 \begin{newday}[$1${2:, y}]
   $0
 \end{newday}
+endsnippet
+
+snippet chap "Chapter" bA
+\chapter{$1}
+
+$0
+endsnippet
+
+snippet sec "Section" bA
+\section{$1}
+
+$0
+endsnippet
+
+snippet ssec "Subsection" bA
+\subsection{$1}
+
+$0
+endsnippet
+
+snippet sssec "Subsubsection" bA
+\subsubsection{$1}
+
+$0
+endsnippet
+
+snippet '(?<!\\)(emph|textit|textbf)' "" rwA
+\\`!p snip.rv = match.group(1)`{$1}`!p
+if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet md "Inline math" wA
+$$1$`!p
+if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet me "Unnumbered equation" bA
+%
+\[
+  $1
+\]
+${2:%}
+$0
+endsnippet
+
+snippet alig "Unnumbered aligned equations" bA
+%
+\begin{align*}
+  $1 &= $2 \\\\
+  &= $3
+\end{align*}
+${2:%}
+$0
 endsnippet
 
 context "math()"
@@ -193,31 +268,26 @@ snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "ln" rwA
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "ln" rwA
+snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "ln" rwA
+snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
+snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "" rwA
+\\`!p snip.rv = match.group(1)` $0
 endsnippet
 
 context "math()"
-snippet sq "^2" iA
-^2
-endsnippet
-
-context "math()"
-snippet .. "\dots" A
+snippet .. "dots" A
 \\dots
 endsnippet
 
 context "math()"
-snippet oo "\infty" A
+snippet oo "infty" A
 \\infty
 endsnippet

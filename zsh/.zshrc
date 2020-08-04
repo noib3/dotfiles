@@ -123,7 +123,7 @@ function fuzzy_edit() {
     filename="$(fzf --height=40% </dev/tty)" \
         && $EDITOR ~/"$filename" \
         && fc -R =(print "$EDITOR ~/$filename") \
-        && print -s "$EDITOR ~/$filename"# \
+        && print -s "$EDITOR ~/$filename" \
         && printf '\e[5 q'
     if zle; then
         zle reset-prompt

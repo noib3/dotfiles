@@ -101,7 +101,7 @@ window:
   decorations: buttonless
   padding:
     x: 8
-    y: 5
+    y: 4
 
 # }}}
 

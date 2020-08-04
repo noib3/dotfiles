@@ -10,9 +10,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-endwise'
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf'
   Plug 'junegunn/goyo.vim'
-  Plug 'junegunn/limelight.vim'
   Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
   Plug 'Yggdroot/indentLine'
@@ -36,33 +35,31 @@ let g:goyo_width = '65%'
 let g:goyo_height = '75%'
 
 function! s:goyo_enter()
-  Limelight
-  " This matches the terminal background color
+  " This should match the terminal background color
   hi EndOfBuffer guifg=#282a36
+  call EnterFullscreen()
 endfunction
 
 function! s:goyo_leave()
-  Limelight!
   " Color of the EndOfBuffer highlight group defined by the onedark colorscheme
   hi EndOfBuffer guifg=#3b4048
   call ExitFullscreen()
 endfunction
 
-" Exits fullscreen if window in fullscreen
-function! ExitFullscreen()
+function! EnterFullscreen()
+  if json_decode(systemlist('yabai -m query --windows --window'))["native-fullscreen"] == 0
+    execute "silent !yabai -m window --toggle native-fullscreen"
+  endif
+endfunction
 
+function! ExitFullscreen()
+  if json_decode(systemlist('yabai -m query --windows --window'))["native-fullscreen"] == 1
+    execute "silent !yabai -m window --toggle native-fullscreen"
+  endif
 endfunction
 
 autocmd! User GoyoEnter nested call <SID>goyo_enter()
 autocmd! User GoyoLeave nested call <SID>goyo_leave()
-
-" }}}
-
-" Plugin settings: Limelight {{{
-
-let g:limelight_conceal_guifg = '#282a36'
-let g:limelight_bop = '^\\begin{newday}.*$'
-let g:limelight_eop = '^\\end{newday}$'
 
 " }}}
 
@@ -156,6 +153,9 @@ nmap ss :%s//g<Left><Left>
 " Open fzf window
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\  ~<CR>
+
+" Toggle Goyo
+noremap <silent> <leader>g :Goyo<CR>
 
 " Navigate splits
 noremap <leader>w <C-w><C-k>

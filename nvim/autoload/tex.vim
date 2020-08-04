@@ -39,7 +39,7 @@ endfunction
 function! tex#SkimForwardSearch()
   let filepath = expand('%:p:r').'.pdf'
   if filereadable(filepath)
-    execute "silent !/Applications/Skim.app/Contents/SharedSupport/displayline ".line(".")." ".shellescape(filepath,1)
+    execute "silent !displayline ".line(".")." ".shellescape(filepath,1)
   else
     echohl ErrorMsg
     echomsg 'No pdf file "'.filepath.'"'
