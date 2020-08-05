@@ -98,12 +98,29 @@ set expandtab
 set splitright
 set splitbelow
 
+" Pattern searching
+set ignorecase
+set smartcase
+
 " Code folding
 set foldmethod=marker
 set foldlevel=0
 set foldlevelstart=0
 set fillchars=fold:\ "
 set foldtext=MarkerFoldText()
+
+" Fold text for marker folds
+function! MarkerFoldText()
+  let comment_char = substitute(&commentstring, '\s*%s', '', '')
+  let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
+  let folded_lines = v:foldend - v:foldstart + 1
+  let fillchars = 66 - len(fold_text) - len(folded_lines)
+  return '+-- '.fold_text.' '.repeat('·', fillchars).' '.folded_lines.' lines'
+endfunction
+
+" Enable 24bit colors and set colorscheme
+set termguicolors
+colorscheme onedark
 
 " Miscellaneous
 set clipboard+=unnamedplus
@@ -113,23 +130,6 @@ set laststatus=0
 set autochdir
 set makeef=/tmp/nvim##.err
 set hidden
-
-" }}}
-
-" Variable assignments {{{
-
-" Leader keys
-let mapleader = ','
-let maplocalleader = ','
-
-" Home directory for bookmarks and history
-let g:netrw_home = $HOME.'/.cache/nvim'
-
-" Disable conceal feature for TeX documents
-let g:tex_conceal = ''
-
-" Default sh syntax-highlighted to be POSIX
-let g:is_posix = 1
 
 " }}}
 
@@ -174,6 +174,23 @@ cnoremap 3636 <c-u>undo<CR>
 
 " }}}
 
+" Variable assignments {{{
+
+" Leader keys
+let mapleader = ','
+let maplocalleader = ','
+
+" Home directory for bookmarks and history
+let g:netrw_home = $HOME.'/.cache/nvim'
+
+" Disable conceal feature for TeX documents
+let g:tex_conceal = ''
+
+" Default sh syntax-highlighting to be POSIX
+let g:is_posix = 1
+
+" }}}
+
 " Autocommands {{{
 
 "
@@ -181,8 +198,15 @@ augroup BaseGroup
   autocmd!
   autocmd FileType    * setlocal formatoptions-=cro
   autocmd BufWritePre * call StripTrailingWhitespaces()
-  " autocmd InsertEnter * norm zz
+  autocmd InsertEnter * norm zz
 augroup END
+
+" Remove trailing whitespace without changing cursor position
+function! StripTrailingWhitespaces()
+  let [_, line, col, _] = getpos('.')
+  %s/\s\+$//e
+  call cursor(line, col)
+endfunction
 
 "
 augroup TeXGroup
@@ -201,35 +225,5 @@ augroup Highlights
   autocmd ColorScheme * hi Visual guibg=#7aa6da guifg=#ffffff
   autocmd ColorScheme * hi VertSplit guibg=#5c6370 guifg=NONE
 augroup END
-
-" }}}
-
-" Functions {{{
-
-" Remove trailing whitespace without changing cursor position
-function! StripTrailingWhitespaces()
-  let [_, line, col, _] = getpos('.')
-  %s/\s\+$//e
-  call cursor(line, col)
-endfunction
-
-" Fold text for marker folds
-function! MarkerFoldText()
-  let comment_char = substitute(&commentstring, '\s*%s', '', '')
-  let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
-  let folded_lines = v:foldend - v:foldstart + 1
-  let fillchars = 66 - len(fold_text) - len(folded_lines)
-  return '+-- '.fold_text.' '.repeat('·', fillchars).' '.folded_lines.' lines'
-endfunction
-
-" }}}
-
-" Colors {{{
-
-" Enable 24bit colors
-set termguicolors
-
-" Colorscheme
-colorscheme onedark
 
 " }}}
