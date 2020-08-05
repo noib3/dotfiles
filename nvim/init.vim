@@ -154,6 +154,9 @@ nmap ss :%s//g<Left><Left>
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\  ~<CR>
 
+" Toggle folds with space
+nnoremap <Space> za
+
 " Toggle Goyo
 noremap <silent> <leader>g :Goyo<CR>
 
@@ -165,9 +168,6 @@ noremap <leader>d <C-w><C-l>
 
 " Toggle 80 and 100 characters columns
 nmap <silent> <leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
-
-" Toggle folds with space
-nnoremap <Space> za
 
 " Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <c-u>undo<CR>
