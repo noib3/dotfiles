@@ -25,7 +25,7 @@ def math():
 endglobal
 
 snippet template "Basic KOMA-Script article template" bA
-\documentclass[${1:paper=A4,}${2:fontsize=14pt,}${3:parskip=half-,}${4:fleqn}]{scrartcl}
+\documentclass[${1:paper=A4,}${2:fontsize=14pt,DIV=calc}${3:parskip=half-,}${4:fleqn}]{scrartcl}
 
 % Packages {{{
 
@@ -44,28 +44,29 @@ ${9:\usepackage{cleveref}}
 
 % Miscellaneous
 ${10:\usepackage{enumitem}}
-${11:\usepackage{microtype}}
-${12:\usepackage{graphicx}}
-${13:\usepackage{xcolor}}
+${11:\usepackage{float}}
+${12:\usepackage{microtype}}
+${13:\usepackage{graphicx}}
+${14:\usepackage{xcolor}}
 
 % }}}
 
 % Macros {{{
 
 % Number sets
-${14:\newcommand{\N}{\mathbb{N}}}
-${15:\newcommand{\Z}{\mathbb{Z}}}
-${16:\newcommand{\Q}{\mathbb{Q}}}
-${17:\newcommand{\R}{\mathbb{R}}}
-${18:\newcommand{\C}{\mathbb{C}}}
+${15:\newcommand{\N}{\mathbb{N}}}
+${16:\newcommand{\Z}{\mathbb{Z}}}
+${17:\newcommand{\Q}{\mathbb{Q}}}
+${18:\newcommand{\R}{\mathbb{R}}}
+${19:\newcommand{\C}{\mathbb{C}}}
 
 % }}}
 
 % Title, author and date {{{
 
-\title{$19}
-\author{${20:Riccardo Mazzarini}}
-\date{$20}
+\title{$20}
+\author{${21:Riccardo Mazzarini}}
+\date{$22}
 
 % }}}
 
@@ -77,7 +78,8 @@ $0
 endsnippet
 
 snippet table "Table environment" bA
-\begin{table}[${1:htpb}]
+\begin{table}[${1:!htbp}]
+  % if loading 'float' package use option H to enforce placement at this point
   \centering
   \begin{tabular}{${2:c}}
     $3 \\\\
@@ -89,11 +91,12 @@ $0
 endsnippet
 
 snippet fig "Figure environment" bA
-\begin{figure}[${1:h!}]
+\begin{figure}[${1:!htbp}]
+  % if loading 'float' package use option H to enforce placement at this point
   \centering
-  \includegraphics[width=${2:0.8}\\textwidth]{./figures/$3.${4:pdf}}
-  \label{fig:$5}
-  \caption{$6}
+  \includegraphics[width=${2:0.8}\\textwidth]{${3:./figures/}$4.${5:pdf}}
+  \label{fig:$6}
+  \caption{$7}
 \end{figure}
 $0
 endsnippet
@@ -135,7 +138,7 @@ snippet beg "Generic environment" bA
 $0
 endsnippet
 
-snippet newday "Custom newday environment" bA
+snippet newday "Newday environment" bA
 \begin{newday}[$1${2:, y}]
   $0
 \end{newday}
@@ -165,7 +168,7 @@ snippet sssec "Subsubsection" bA
 $0
 endsnippet
 
-snippet '(?<!\\)(emph|textit|textbf)' "" rwA
+snippet '(?<!\\)(emph|textit|textbf)' "emph, italic and bold" rwA
 \\`!p snip.rv = match.group(1)`{$1}`!p
 if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
     snip.rv = ' '
@@ -204,7 +207,7 @@ endsnippet
 
 context "math()"
 snippet fr "frac" iA
-\\frac{$1}{$2}$0
+\frac{$1}{$2}$0
 endsnippet
 
 context "math()"
@@ -223,71 +226,71 @@ snippet lim "lim" iA
 endsnippet
 
 context "math()"
-snippet "([A-Za-z])(\d)" "auto subscript" wrA
-`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
-endsnippet
-
-context "math()"
-snippet "([a-zA-Z])bar" "bar" riA
-\overline{`!p snip.rv=match.group(1)`}
-endsnippet
-
-context "math()"
-snippet "([a-zA-Z])hat" "hat" riA
-\hat{`!p snip.rv=match.group(1)`}
-endsnippet
-
-context "math()"
-snippet "([a-zA-Z])tilde" "tilde" riA
-\tilde{`!p snip.rv=match.group(1)`}
-endsnippet
-
-context "math()"
-snippet lrr "left right" iA
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-context "math()"
-snippet lrs "left right" iA
-\left[ ${1:${VISUAL}} \right] $0
-endsnippet
-
-context "math()"
-snippet lrc "left right" iA
-\left\\{ ${1:${VISUAL}} \right \\} $0
-endsnippet
-
-context "math()"
-snippet sr "square root" iA
+snippet sqr "Square root" iA
 \sqrt{${1:${VISUAL}}}$0
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "" rwA
-\\`!p snip.rv = match.group(1)` $0
-endsnippet
-
-context "math()"
-snippet .. "dots" A
-\\dots
+snippet .. "dots" iA
+\dots
 endsnippet
 
 context "math()"
 snippet oo "infty" A
-\\infty
+\infty
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "Math operators" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "Math relations" rwA
+\\`!p snip.rv = match.group(1)` $0
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "Greek alphabet 1st half" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "Greek alphabet 2nd half" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])(\d)" "Auto subscript" wrA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])bar" "Postfix bar" riA
+\overline{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])hat" "Postfix hat" riA
+\hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])tilde" "Postfix tilde" riA
+\tilde{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet lrr "left right round brackets" iA
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+context "math()"
+snippet lrs "left right square brackets" iA
+\left[ ${1:${VISUAL}} \right] $0
+endsnippet
+
+context "math()"
+snippet lrc "left right curly brackets" iA
+\left\\{ ${1:${VISUAL}} \right \\} $0
 endsnippet

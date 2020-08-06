@@ -1,11 +1,11 @@
-" Filename:   nvim/ftplugin/tex.vim
+" Filename:   nvim/ftplugin/tex/tex.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
-" Use bash for its 'PIPESTATUS' feature
+" Use bash for its PIPESTATUS feature
 setlocal shell=bash
 
 " Set the error format
@@ -19,7 +19,8 @@ nmap <buffer> <silent> <C-t> :call Make()<CR>
 nmap <buffer> <silent> <localleader>p :call tex#PDFOpen()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<cr>
 
-" Compile the LaTeX document
+" Compile the document and return pdflatex's exit code through PIPESTATUS
+" If it's non zero read the error file and jump to the first error
 function! Make()
   let errorfile='/tmp/nvim_tex.err'
   execute '!pdflatex -halt-on-error -file-line-error -synctex=1 '.expand('%').' 2>&1 | tee '.errorfile.'; exit ${PIPESTATUS[0]}'

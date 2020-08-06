@@ -54,6 +54,10 @@ cmd newdir %{{
 cmd fuzzy_edit ${{
     clear
     filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
+    # filename="$(fd . --base-directory ~ --type f --hidden --color always |
+    #              sed "s/\[1;34m/\[1;90m/g" |
+    #              fzf --height=80%)" \
+    # && $EDITOR ~/"$filename"
 }}
 
 # Fuzzy search a directory and cd into it

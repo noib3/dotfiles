@@ -203,3 +203,5 @@ input password if asked. If it worked 'sudo rm Spotlight-backup'
 
 pip3 install buku
 ln -s ~/Dropbox/share/buku/bookmarks.db ~/.local/share/buku/bookmarks.db
+
+86. brew cask install qview

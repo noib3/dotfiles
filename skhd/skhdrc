@@ -24,10 +24,11 @@ cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
 # 3. after the first cmd - w exit fullscreen mode
 cmd - j : alacritty -t journaling \
                     -e sh -c "sleep .25 && \
-                              nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex + +Goyo +?newday +:noh \
-                                                                                            +\"normal o\" +\"normal yy\" \
-                                                                                            +\"normal p\" +\"normal zt\" \
-                                                                                            +startinsert"
+                              nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex \
+                                    + +Goyo +?newday +:noh \
+                                    +\"normal o\" +\"normal yy\" \
+                                    +\"normal p\" +\"normal zt\" \
+                                    +startinsert"
 
 # Open downloads sidebar in Firerox
 cmd - d [
@@ -113,7 +114,19 @@ alt - r : yabai -m space --rotate 270
 alt - b : yabai -m space --balance
 
 # Screenshot the whole screen
-shift + cmd - 3 : screencapture ~/Dropbox/screenshots/$(date +%F@%T).png
+shift + cmd - 3 : \
+    ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture "$ss_name" && \
+        terminal-notifier -title "New screenshot" \
+                          -subtitle "$(basename $ss_name)" \
+                          -message "Saved in $(dirname $ss_name)" \
+                          -appIcon ~/.config/skhd/screenshot-icon.png \
+                          -contentImage "$ss_name"
 
 # Screenshot a portion of the screen
-shift + cmd - 4 : screencapture -i ~/Dropbox/screenshots/$(date +%F@%T).png
+shift + cmd - 4 : \
+    ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture -i "$ss_name" && \
+        terminal-notifier -title "New screenshot" \
+                          -subtitle "$(basename $ss_name)" \
+                          -message "Saved in $(dirname $ss_name)" \
+                          -appIcon ~/.config/skhd/screenshot-icon.png \
+                          -contentImage "$ss_name"
