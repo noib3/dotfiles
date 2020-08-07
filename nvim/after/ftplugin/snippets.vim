@@ -1,4 +1,4 @@
-" Filename:   nvim/ftplugin/snippets.vim
+" Filename:   nvim/after/ftplugin/snippets.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 

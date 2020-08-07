@@ -1,4 +1,4 @@
-" Filename:   nvim/ftplugin/css.vim
+" Filename:   nvim/after/ftplugin/css.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 

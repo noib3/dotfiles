@@ -1,4 +1,4 @@
-" Filename:   nvim/ftplugin/context.vim
+" Filename:   nvim/after/ftplugin/context/context.vim
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
