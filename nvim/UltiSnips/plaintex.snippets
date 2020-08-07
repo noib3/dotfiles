@@ -1,0 +1,139 @@
+# Filename:   nvim/UltiSnips/plaintex.snippets
+# Github:     https://github.com/n0ibe/macOS-dotfiles
+# Maintainer: Riccardo Mazzarini
+
+# This file is being used to store snippets to be shared between ConTeXt an LaTeX documents
+# This means the following snippets are not expected to work in Plain TeX documents
+
+# The code for the "math" context was taken from
+#		https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
+# Also, check out the guy's blog for more awesome (La)TeX note-taking tips
+#   https://castel.dev/
+
+global !p
+vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
+texMathZones = [x.strip() for x in vim.eval('@a').split(',')][1:]
+
+texIgnoreMathZones = ['texMathText']
+
+texMathZoneIds = vim.eval('map('+str(texMathZones)+", 'hlID(v:val)')")
+texIgnoreMathZoneIds = vim.eval('map('+str(texIgnoreMathZones)+", 'hlID(v:val)')")
+
+ignore = texIgnoreMathZoneIds[0]
+
+def math():
+    synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+    try:
+        first = next(i for i in reversed(synstackids) if i in texIgnoreMathZoneIds or i in texMathZoneIds)
+        return first != ignore
+    except StopIteration:
+        return False
+endglobal
+
+snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" rwA
+\\`!p snip.rv = match.group(1)`{$1}`!p
+if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet md "Inline math" wA
+$$1$`!p
+if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+context "math()"
+snippet fr "frac" iA
+\frac{$1}{$2}$0
+endsnippet
+
+context "math()"
+snippet sum "sum" iA
+\sum_{${1:i} = ${2:1}}^{${3:\infty}} $0
+endsnippet
+
+context "math()"
+snippet int "int" iA
+\int_{${1:-\infty}}^{${2:\infty}} $3 d${4:x}
+endsnippet
+
+context "math()"
+snippet lim "lim" iA
+\lim_{${1:n} \to ${2:\infty}} $0
+endsnippet
+
+context "math()"
+snippet sqr "Square root" iA
+\sqrt{${1:${VISUAL}}}$0
+endsnippet
+
+context "math()"
+snippet .. "dots" iA
+\dots
+endsnippet
+
+context "math()"
+snippet oo "infty" A
+\infty
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "Math operators" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "Math relations" rwA
+\\`!p snip.rv = match.group(1)` $0
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "Greek alphabet 1st half" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega)' "Greek alphabet 2nd half" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])(\d)" "Auto subscript" wrA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])bar" "Postfix bar" riA
+\overline{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])hat" "Postfix hat" riA
+\hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([a-zA-Z])tilde" "Postfix tilde" riA
+\tilde{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet lrr "left right round brackets" iA
+\left( ${1:${VISUAL}} \right) $0
+endsnippet
+
+context "math()"
+snippet lrs "left right square brackets" iA
+\left[ ${1:${VISUAL}} \right] $0
+endsnippet
+
+context "math()"
+snippet lrc "left right curly brackets" iA
+\left\\{ ${1:${VISUAL}} \right \\} $0
+endsnippet

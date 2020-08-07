@@ -20,7 +20,7 @@ nmap <buffer> <silent> <localleader>p :call tex#PDFOpen()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<cr>
 
 " Compile the document and return pdflatex's exit code through PIPESTATUS
-" If it's non zero read the error file and jump to the first error
+" If it's not zero read the error file and jump to the first error
 function! Make()
   let errorfile='/tmp/nvim_tex.err'
   execute '!pdflatex -halt-on-error -file-line-error -synctex=1 '.expand('%').' 2>&1 | tee '.errorfile.'; exit ${PIPESTATUS[0]}'

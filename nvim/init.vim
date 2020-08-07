@@ -104,13 +104,13 @@ set smartcase
 
 " Code folding
 set foldmethod=marker
+set foldtext=MarkerFoldsText()
 set foldlevel=0
 set foldlevelstart=0
 set fillchars=fold:\ "
-set foldtext=MarkerFoldText()
 
 " Fold text for marker folds
-function! MarkerFoldText()
+function! MarkerFoldsText()
   let comment_char = substitute(&commentstring, '\s*%s', '', '')
   let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
   let folded_lines = v:foldend - v:foldstart + 1
@@ -178,10 +178,10 @@ nnoremap <Space> za
 noremap <silent> <Leader>g :Goyo<CR>
 
 " Navigate splits
-noremap <Leader>w <C-w><C-k>
-noremap <Leader>a <C-w><C-h>
-noremap <Leader>s <C-w><C-j>
-noremap <Leader>d <C-w><C-l>
+nnoremap <Leader>w <C-w>k
+nnoremap <Leader>a <C-w>h
+nnoremap <Leader>s <C-w>j
+nnoremap <Leader>d <C-w>l
 
 " Toggle 80 and 100 characters columns
 nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
@@ -211,7 +211,7 @@ endfunction
 " Autocommands for TeX related files
 augroup TeXGroup
   autocmd!
-  autocmd BufRead *.tex call tex#PDFOpen()
+  " autocmd BufRead *.tex call tex#PDFOpen()
   autocmd BufUnload *.tex call tex#PDFClose(expand("<afile>:p:r").".pdf", expand("<afile>:t:r").".pdf")
   autocmd BufRead *.sty set syntax=tex
   autocmd BufRead *.cls set syntax=tex
