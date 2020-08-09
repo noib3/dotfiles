@@ -139,7 +139,7 @@ let maplocalleader = ","
 " Home directory for bookmarks and history
 let g:netrw_home = $HOME."/.cache/nvim"
 
-" Set .tex file's default file type to LaTex
+" Set default file type to LaTeX for .tex files
 let g:tex_flavor = "latex"
 
 " Disable conceal feature for TeX documents

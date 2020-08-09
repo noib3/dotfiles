@@ -21,7 +21,6 @@ cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
                                               $(kpsewhich -var-value TEXMFHOME)
 
 # Open this year's journal in fullscreen, activate Goyo and place the cursor at the right place
-# 3. after the first cmd - w exit fullscreen mode
 cmd - j : alacritty -t journaling \
                     -e sh -c "sleep .25 && \
                               nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex \
@@ -105,13 +104,14 @@ ctrl + cmd - 3 : yabai -m space --move 3
 ctrl + cmd - 4 : yabai -m space --move 4
 ctrl + cmd - 5 : yabai -m space --move 5
 
-# Create, destroy, mirror, rotate, balance spaces
+# Create, destroy, mirror, balance, rotate spaces
 alt - n : yabai -m space --create && yabai -m space --focus last
 alt - w : yabai -m space --destroy
 alt - x : yabai -m space --mirror x-axis
 alt - y : yabai -m space --mirror y-axis
-alt - r : yabai -m space --rotate 270
 alt - b : yabai -m space --balance
+alt - r : yabai -m space --rotate 270
+shift + alt - r : yabai -m space --rotate 90
 
 # Screenshot the whole screen
 shift + cmd - 3 : \

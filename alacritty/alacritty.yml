@@ -19,8 +19,10 @@ font:
     style: Regular
   # Iosevka on 1440x900
   # size: 16.0
+  # Iosevka on 2048x1152
+  size: 18.0
   # Iosevka on 2560x1440
-  size: 20
+  # size: 20
   offset:
     y: 1
 

@@ -11,7 +11,7 @@
 
 setlocal foldmethod=expr
 setlocal foldexpr=LaTeXFolds()
-setlocal foldtext=LaTeXFoldsText()
+" setlocal foldtext=LaTeXFoldsText()
 
 " The folding function used ignores \frontmatter, \mainmatter, \backmatter and \appendix
 
@@ -60,17 +60,34 @@ endfunction
 "
 let b:LaTeXFolds_fold_sections = s:ParseFoldSections()
 
+"
+let s:folded = '^\s*\\\(part\|chapter\|section\|subsection\|subsubsection\|end{document}\)'
+
 function! LaTeXFolds()
 
   let this_line = getline(v:lnum)
   let next_line = getline(v:lnum + 1)
 
-  let s:folded = '^\s*\\\(part\|chapter\|section\|subsection\|end{document}\)'
-
   " Check for normal lines first
   if this_line !~# s:folded
-    if this_line =~ '^\s*$' && next_line =~ s:folded " && (next_line =~ '^\s*\end{document}\s*$' || next_line_fold_level >= current_fold_level)
-      return 0
+    " A blank line before \end{document} or before a fold level less then or equal to the
+    " current one is left unfolded
+    if this_line =~ '^\s*$' && next_line =~# s:folded
+      if next_line =~# '^\s*\end{document}\s*$'
+        return 0
+      else
+        for [section, level] in b:LaTeXFolds_fold_sections
+          if next_line =~# '^\s*\\'.section.'{.*}\s*$'
+            " I don't understand why I get the wanted result with <= instead of >=
+            " Even < without the = works, it doesn't make sense
+            if foldlevel(v:lnum - 1) <= level
+              return level - 1
+            else
+              return "="
+            endif
+          endif
+        endfor
+      endif
     else
       return "="
     endif
