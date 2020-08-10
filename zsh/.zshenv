@@ -44,6 +44,9 @@ export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
 
+# Export socket address for nvr
+export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
+
 # Don't update Homebrew automatically every time it's launched
 export HOMEBREW_NO_AUTO_UPDATE=1
 

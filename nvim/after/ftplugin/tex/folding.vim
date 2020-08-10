@@ -2,48 +2,47 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
-" TODO
-" 1. return 0 on blank line preceding section only if that section has a higher
-" 2. first level takes 1 space to expand, second one takes 2, third one takes 3 etc, understand why and how to avoid it
-
-" Taken from
-"   https://github.com/petobens/dotfiles/blob/master/vim/ftplugin/tex/folding.vim
+" In the following comments and definitions a section is a generic sectioning
+" command like \part{} or \subsection{}, not just a literal \section{}
 
 setlocal foldmethod=expr
-setlocal foldexpr=LaTeXFolds()
-" setlocal foldtext=LaTeXFoldsText()
-
-" The folding function used ignores \frontmatter, \mainmatter, \backmatter and \appendix
-
-" In the following comments and definitions a 'section' is a generic sectioning
-" command like '\part{}' or '\subsection{}', not just a '\section{}'
+setlocal foldexpr=LaTeXFoldsExpr(v:lnum)
+setlocal foldtext=LaTeXFoldsText()
 
 " Sections to be folded
-let g:fold_sections = [
-  \ 'part',
-  \ 'chapter',
-  \ 'section',
-  \ 'subsection',
-  \ 'subsubsection'
-  \ ]
+if !exists('g:LaTeXFolds_fold_sections')
+  let g:LaTeXFolds_fold_sections = [
+    \ 'part',
+    \ 'chapter',
+    \ 'section',
+    \ 'subsection',
+    \ 'subsubsection'
+    \ ]
+endif
+
+" LaTeXFoldsExpr helper function {{{
 
 " This function returns the sections that are to be folded and their corresponding fold level
 function! s:ParseFoldSections()
+  " Initialize
   let fold_sections = []
   let fold_level = 1
 
-  " Parse the file looking for the sections in g:fold_sections ignoring unused
-  " section commands: if there's no 'part' then 'chapter' should have the highest level,
-  " if there's no 'chapter' then 'section' should have the highest level, and so on
+  " If this variable is set to 1 don't search the section in the file and just
+  " add it to fold_sections
   let dont_search_add_section = 0
-  for section in g:fold_sections
+
+  " Ignore unused section commands: if there's no 'part' then 'chapter' should
+  " have the highest fold level, if there's no 'chapter' then 'section' should
+  " have the highest fold level, and so on
+  for section in g:LaTeXFolds_fold_sections
     if dont_search_add_section
       call insert(fold_sections, [section, fold_level])
       let fold_level += 1
     else
       let i = 1
       while i < line('$')
-        if getline(i) =~# '^\s*\\'.section.'{.*}\s*$'
+        if getline(i) =~# '^\s*\\' . section . '{.*}\s*$'
           call insert(fold_sections, [section, fold_level])
           let fold_level += 1
           let dont_search_add_section = 1
@@ -57,16 +56,20 @@ function! s:ParseFoldSections()
   return fold_sections
 endfunction
 
-"
-let b:LaTeXFolds_fold_sections = s:ParseFoldSections()
+" }}}
 
-"
-let s:folded = '^\s*\\\(part\|chapter\|section\|subsection\|subsubsection\|end{document}\)'
+" LaTeXFoldsExpr {{{
 
-function! LaTeXFolds()
+function! LaTeXFoldsExpr(lnum)
 
-  let this_line = getline(v:lnum)
-  let next_line = getline(v:lnum + 1)
+  "
+  let b:LaTeXFolds_fold_sections = s:ParseFoldSections()
+
+  "
+  let s:folded = '^\s*\\\(part\|chapter\|section\|subsection\|subsubsection\|end{document}\)'
+
+  let this_line = getline(a:lnum)
+  let next_line = getline(a:lnum + 1)
 
   " Check for normal lines first
   if this_line !~# s:folded
@@ -80,7 +83,7 @@ function! LaTeXFolds()
           if next_line =~# '^\s*\\'.section.'{.*}\s*$'
             " I don't understand why I get the wanted result with <= instead of >=
             " Even < without the = works, it doesn't make sense
-            if foldlevel(v:lnum - 1) <= level
+            if foldlevel(a:lnum - 1) <= level
               return level - 1
             else
               return "="
@@ -103,9 +106,18 @@ function! LaTeXFolds()
   " return "="
 endfunction
 
+" }}}
+
+" LaTeXFoldText {{{
+
 function! LaTeXFoldText()
   return getline(v:foldstart)
 endfunction
+
+" }}}
+
+
+
 
 " Taken from
 "   https://github.com/petobens/dotfiles/blob/master/vim/ftplugin/tex/folding.vim

@@ -205,3 +205,4 @@ pip3 install buku
 ln -s ~/Dropbox/share/buku/bookmarks.db ~/.local/share/buku/bookmarks.db
 
 86. brew cask install qview
+87. to get skim to do backward search you first need to 'pip3 install pynvim neovim-remote', then open Skim -> Preferences -> Sync -> Preset: Custom, Command: nvr, Arguments: --remote +"%line" "%file". It doesn't work too well since it triggers the BufUnload event so with the way I have things set up the pdf file closes, but the backward search also doesn't expand folds so it's kinda useless
