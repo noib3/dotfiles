@@ -3,19 +3,19 @@
 " Maintainer: Riccardo Mazzarini
 
 " Open the PDF file created by a TeX document
-function! tex#PDFOpen()
-  let filepath = expand('%:p:r').'.pdf'
+function! tex#PdfOpen()
+  let filepath = expand('%:p:r') . '.pdf'
   if filereadable(filepath)
-    execute 'silent !open '.shellescape(filepath,1).' -g'
+    execute 'silent !open ' . shellescape(filepath,1) . ' -g'
   else
     echohl ErrorMsg
-    echomsg 'No pdf file "'.filepath.'"'
+    echomsg 'No pdf file "' . filepath . '"'
     echohl None
   endif
 endfunction
 
 " Close the PDF file created by a TeX document
-function! tex#PDFClose(filepath, filename)
+function! tex#PdfClose(filepath, filename)
   if filereadable(a:filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
@@ -28,7 +28,7 @@ function! tex#PDFClose(filepath, filename)
     elseif len(Skim_windows) > 1
       for window in Skim_windows
         if system("sed 's/\.pdf.*/.pdf/'", window.title) == a:filename
-          execute "silent !yabai -m window ".shellescape(window.id,1)." --close"
+          execute 'silent !yabai -m window ' . shellescape(window.id,1) . ' --close'
         endif
       endfor
     endif
@@ -37,12 +37,12 @@ endfunction
 
 " Use Skim's displayline to jump from a line in a TeX document to its PDF output
 function! tex#SkimForwardSearch()
-  let filepath = expand('%:p:r').'.pdf'
+  let filepath = expand('%:p:r') . '.pdf'
   if filereadable(filepath)
-    execute "silent !displayline ".line(".")." ".shellescape(filepath,1)
+    execute 'silent !displayline ' . line('.') . ' ' . shellescape(filepath,1)
   else
     echohl ErrorMsg
-    echomsg 'No pdf file "'.filepath.'"'
+    echomsg 'No pdf file "' . filepath . '"'
     echohl None
   endif
 endfunction

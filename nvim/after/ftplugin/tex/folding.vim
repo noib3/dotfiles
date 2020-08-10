@@ -72,7 +72,6 @@ endfunction
 let s:found_sections_levels = s:ParseFoldSections()
 
 function! LaTeXFoldsExpr(lnum)
-
   " Get this line and the next one
   let this_line = getline(a:lnum)
   let next_line = getline(a:lnum + 1)

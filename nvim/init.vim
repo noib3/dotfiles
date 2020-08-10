@@ -240,8 +240,8 @@ endfunction
 " Autocommands for TeX related files
 augroup tex_group
   autocmd!
-  " autocmd BufRead *.tex call tex#PDFOpen()
-  autocmd BufUnload *.tex call tex#PDFClose(expand('<afile>:p:r') . '.pdf', expand('<afile>:t:r') . '.pdf')
+  " autocmd BufRead *.tex call tex#PdfOpen()
+  autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf', expand('<afile>:t:r') . '.pdf')
   autocmd BufRead *.sty set syntax=tex
   autocmd BufRead *.cls set syntax=tex
 augroup END
