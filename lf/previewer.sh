@@ -7,7 +7,7 @@
 # Needs to be executable
 
 FILE="$1"
-HEIGHT="$1"
+HEIGHT="$2"
 
 text_preview() {
     highlight -O ansi --force "$1"

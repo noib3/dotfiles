@@ -8,6 +8,8 @@
 " In the following comments and definitions a section is a generic term for any
 " sectioning command (\part{}, \subsection{}, etc.), not just a literal \section{}
 
+" create b:did_plugin variable to be able to turn this file off from tex.vim in after
+
 setlocal foldmethod=expr
 setlocal foldexpr=LaTeXFoldsExpr(v:lnum)
 setlocal foldtext=LaTeXFoldsText()
@@ -81,7 +83,7 @@ function! LaTeXFoldsExpr(lnum)
     " A blank line before \end{document} or before a fold level less then or
     " equal to the current one is left unfolded
     if this_line =~# '^\s*$' && next_line =~# s:folded
-      if next_line =~# '^\s*\end{document}\s*$'
+      if next_line =~# '^\s*\\end{document}\s*$'
         return 0
       else
         for [section_pattern, fold_level] in s:found_sections_levels
@@ -108,8 +110,8 @@ function! LaTeXFoldsExpr(lnum)
     endif
   endfor
 
-  " Return foldlevel of previous line. Only the line with \end{document} should
-  " get this far.
+  " Return foldlevel of previous line. Only the last line with \end{document}
+  " should get this far.
   return "="
 endfunction
 

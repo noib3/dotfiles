@@ -44,14 +44,12 @@ export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
 
-# Export socket address for nvr
-export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
-
 # Don't update Homebrew automatically every time it's launched
 export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Export fzf's default find command and options
 export FZF_DEFAULT_COMMAND='fd . --base-directory ~ --type f --hidden --color always | sed "s/\[1;34m/\[1;90m/g"'
+# export FZF_DEFAULT_COMMAND='fd'
 export FZF_DEFAULT_OPTS='--reverse --info=inline --ansi --color="hl:-1,hl+:-1" --hscroll-off=50'
 
 # Build LS_COLORS variable for ls and other programs that support it

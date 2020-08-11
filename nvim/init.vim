@@ -48,18 +48,18 @@ let g:fzf_layout={ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal
 
 " Goyo {{{
 
-let g:goyo_width = '65%'
-let g:goyo_height = '75%'
+" let g:goyo_width = '65%'
+" let g:goyo_height = '75%'
 
 function! s:goyo_enter()
   " This should match the terminal background color
-  hi EndOfBuffer guifg=#282a36
+  " hi EndOfBuffer guifg=#282a36
   call EnterFullscreen()
 endfunction
 
 function! s:goyo_leave()
   " Color of the EndOfBuffer highlight group defined by the onedark colorscheme
-  hi EndOfBuffer guifg=#3b4048
+  " hi EndOfBuffer guifg=#3b4048
   call ExitFullscreen()
 endfunction
 

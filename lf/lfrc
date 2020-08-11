@@ -107,7 +107,7 @@ map t push :touch<space>
 map k push :mkdir<space>
 map D push :newdir<space>
 
-# Fuzzy search files to edit of directories to move to
+# Fuzzy search files to edit or directories to move to
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 
