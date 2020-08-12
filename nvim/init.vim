@@ -6,17 +6,18 @@
 
 call plug#begin('~/.config/nvim/plugged')
   " Functionality
-  Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-endwise'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'junegunn/goyo.vim'
-  Plug 'lervag/vimtex'
+  Plug 'Yggdroot/indentLine'
   Plug 'SirVer/ultisnips'
   Plug 'farmergreg/vim-lastplace'
-  Plug 'Yggdroot/indentLine'
-  Plug 'jiangmiao/auto-pairs'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-endwise'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-surround'
+  Plug 'lervag/vimtex'
   " Colorschemes
   Plug 'morhetz/gruvbox'
   Plug 'joshdick/onedark.vim'
@@ -26,23 +27,23 @@ call plug#end()
 
 " Plugin settings {{{
 
-" vimtex {{{
+" CoC {{{
 
-" Disable the compiler and viewer interfaces
-let g:vimtex_compiler_enabled = 0
-let g:vimtex_view_enabled = 0
-
-" Don't show the help text and bump up max sectioning depth to 6
-let g:vimtex_toc_config = {
-    \ 'show_help': 0,
-    \ 'tocdepth': 6,
+" Check out this section of the wiki for more infos on completion sources
+"   https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#completion-sources
+let g:coc_sources_disable_map = {
+    \ 'markdown': ['around', 'buffer'],
+    \ 'tex': ['around', 'buffer'],
+    \ 'vim': ['around', 'buffer'],
     \ }
 
 " }}}
 
 " fzf {{{
 
-let g:fzf_layout={ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' } }
+let g:fzf_layout = {
+    \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
+    \ }
 
 " }}}
 
@@ -80,6 +81,16 @@ autocmd! User GoyoLeave nested call <SID>goyo_leave()
 
 " }}}
 
+" indentLine {{{
+
+let g:indentLine_char = '│'
+let g:indentLine_first_char = '│'
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
+let g:indentLine_defaultGroup = 'Comment'
+
+" }}}
+
 " UltiSnips {{{
 
 let g:UltiSnipsExpandTrigger = '<tab>'
@@ -89,13 +100,17 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " }}}
 
-" indentLine {{{
+" vimtex {{{
 
-let g:indentLine_char = '│'
-let g:indentLine_first_char = '│'
-let g:indentLine_showFirstIndentLevel = 1
-let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
-let g:indentLine_defaultGroup = 'Comment'
+" Disable the compiler and viewer interfaces
+let g:vimtex_compiler_enabled = 0
+let g:vimtex_view_enabled = 0
+
+" Don't show the help text and bump up max depth to 6
+let g:vimtex_toc_config = {
+    \ 'show_help': 0,
+    \ 'tocdepth': 6,
+    \ }
 
 " }}}
 

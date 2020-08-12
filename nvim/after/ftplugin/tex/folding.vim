@@ -8,7 +8,11 @@
 " In the following comments and definitions a section is a generic term for any
 " sectioning command (\part{}, \subsection{}, etc.), not just a literal \section{}
 
-" create b:did_plugin variable to be able to turn this file off from tex.vim in after
+" Define (re)inclusion guard
+if exists('b:LaTeXFolds_loaded')
+  finish
+endif
+let b:LaTeXFolds_loaded = 1
 
 setlocal foldmethod=expr
 setlocal foldexpr=LaTeXFoldsExpr(v:lnum)
@@ -26,7 +30,7 @@ if !exists('g:LaTeXFolds_fold_sections')
 endif
 
 " Optimize by predefining common patterns
-let s:folded = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\|end{document}\)'
+let s:folded = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\(\*\)\?\|end{document}\)'
 
 " LaTeXFoldsExpr helper function {{{
 
@@ -44,8 +48,10 @@ function! s:ParseFoldSections()
   " have the highest fold level, if there's no 'chapter' then 'section' should
   " have the highest fold level, and so on
   for section in g:LaTeXFolds_fold_sections
-    " This is the pattern that we look for and the one we add to the fold_sections list
-    let section_pattern = '^\s*\\' . section . '{.*}\s*$'
+    " This is the pattern that we look for and the one we add to the
+    " fold_sections list. We also match 0 or 1 occurences of an asterisk after
+    " a section (\chapter{} or \chapter*{}) with \(\*\)\?
+    let section_pattern = '^\s*\\' . section . '\(\*\)\?{.*}\s*$'
     if dont_search_add_section
       call insert(fold_sections, [section_pattern, fold_level])
       let fold_level += 1
@@ -110,17 +116,26 @@ function! LaTeXFoldsExpr(lnum)
     endif
   endfor
 
-  " Return foldlevel of previous line. Only the last line with \end{document}
-  " should get this far.
+  " Return the fold level of the previous line
+  " Only the last line with \end{document} should get this far
   return "="
 endfunction
 
 " }}}
 
-" LaTeXFoldText {{{
+" LaTeXFoldsText {{{
 
-function! LaTeXFoldText()
-  return getline(v:foldstart)
+function! LaTeXFoldsText()
+
+  let section = substitute(getline(v:foldstart), '.*\\\(.*\){.*', '\u\1', '')
+  let section_title = substitute(getline(v:foldstart), '.*{\(.*\)}.*', '\1', '')
+  let dashes = repeat(v:folddashes, 2)
+  let fold_size = v:foldend - v:foldstart + 1
+
+  let fill_num = 66 - len(dashes . section . section_title . fold_size)
+
+  return '+' . dashes . ' ' . section . ': ' . section_title . ' '
+          \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'
 endfunction
 
 " }}}
