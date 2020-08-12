@@ -160,8 +160,9 @@ bindkey '^X^D' fuzzy_cd
 # Tab autocompletion {{{
 
 autoload -Uz compinit
-compinit -d ~/.cache/zsh/zcompdump-$ZSH_VERSION
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} \
+                       cache-path $HOME/.cache/zsh/.zcompcache
 _comp_options+=(globdots)
 set +o list_types
 

@@ -12,7 +12,7 @@ setlocal shell=bash
 setlocal errorformat=%f:%l:\ %m
 
 " Autopair dollar signs
-let g:AutoPairs['$']='$'
+let b:coc_pairs = [["$", "$"]]
 
 " Mappings to compile the document, open the PDF file and forward search from
 " the .tex to the PDF in Skim

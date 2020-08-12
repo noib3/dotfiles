@@ -6,13 +6,14 @@
 
 call plug#begin('~/.config/nvim/plugged')
   " Functionality
-  Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'junegunn/goyo.vim'
   Plug 'Yggdroot/indentLine'
   Plug 'SirVer/ultisnips'
+  Plug 'easymotion/vim-easymotion'
   Plug 'farmergreg/vim-lastplace'
+  Plug 'romainl/vim-cool'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-endwise'
   Plug 'tpope/vim-repeat'
@@ -29,21 +30,31 @@ call plug#end()
 
 " CoC {{{
 
+" Extensions to install if not already installed
+let g:coc_global_extensions = [
+  \ 'coc-pairs',
+  \ 'coc-python',
+  \ 'coc-vimtex',
+  \ ]
+
 " Check out this section of the wiki for more infos on completion sources
 "   https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#completion-sources
 let g:coc_sources_disable_map = {
-    \ 'markdown': ['around', 'buffer'],
-    \ 'tex': ['around', 'buffer'],
-    \ 'vim': ['around', 'buffer'],
-    \ }
+  \ 'conf': ['around', 'buffer'],
+  \ 'markdown': ['around', 'buffer'],
+  \ 'tex': ['around', 'buffer'],
+  \ 'text': ['around', 'buffer'],
+  \ 'vim': ['around', 'buffer'],
+  \ 'zsh': ['around', 'buffer'],
+  \ }
 
 " }}}
 
 " fzf {{{
 
 let g:fzf_layout = {
-    \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
-    \ }
+  \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
+  \ }
 
 " }}}
 
@@ -108,9 +119,9 @@ let g:vimtex_view_enabled = 0
 
 " Don't show the help text and bump up max depth to 6
 let g:vimtex_toc_config = {
-    \ 'show_help': 0,
-    \ 'tocdepth': 6,
-    \ }
+  \ 'show_help': 0,
+  \ 'tocdepth': 6,
+  \ }
 
 " }}}
 
@@ -146,10 +157,18 @@ set fillchars=fold:\ "
 " Fold text for marker folds
 function! MarkerFoldsText()
   let comment_char = substitute(&commentstring, '\s*%s', '', '')
-  let fold_text = substitute(getline(v:foldstart), comment_char.' *\(.*\) {\{3}', '\1', '')
-  let folded_lines = v:foldend - v:foldstart + 1
-  let fillchars = 66 - len(fold_text) - len(folded_lines)
-  return '+-- ' . fold_text . ' ' . repeat('·', fillchars) . ' ' . folded_lines . ' lines'
+  " The first substitute extracts the text between the commentstring and the
+  " markers without leading spaces, the second one removes trailing spaces. It
+  " could probably be done with a single substitute but idk how.
+  let fold_title = substitute(getline(v:foldstart), comment_char.'\s*\(.*\){\{3}', '\1', '')
+  let fold_title = substitute(fold_title, '\s*$', '', '')
+  let dashes = repeat(v:folddashes, 2)
+  let fold_size = v:foldend - v:foldstart + 1
+
+  let fill_num = 68 - len(dashes . fold_title . fold_size)
+
+  return '+' . dashes . ' ' . fold_title . ' ' . repeat('·', fill_num)
+          \ . ' ' . fold_size . ' lines'
 endfunction
 
 " Miscellaneous
@@ -188,9 +207,10 @@ let g:is_posix = 1
 
 " Go to beginning/end of line
 map  <C-a> ^
+cmap <C-a> <C-b>
 map  <C-e> $
-imap <C-a> <esc>^i
-imap <C-e> <esc>$a
+imap <C-a> <esc>I
+imap <C-e> <esc>A
 
 " Save and quit
 map  <silent> <C-s> :w<CR>
@@ -218,18 +238,20 @@ cnoremap 3636 <c-u>undo<CR>
 
 " Plugin mappings {{{
 
-" Open the ToC window
-nmap <silent> <Leader>t <plug>(vimtex-toc-open)
-
-" Open documentation for LaTeX package on CTAN
-" nmap <Leader>d :VimtexDocPackage<Space>
-
-" Open fzf window
+" fzf
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\  ~<CR>
 
-" Toggle Goyo
+" Goyo
 noremap <silent> <Leader>g :Goyo<CR>
+
+" EasyMotion
+nmap f <Plug>(easymotion-overwin-w)
+nmap l <Plug>(easymotion-overwin-line)
+
+" vimtex
+nmap <silent> <Leader>t <plug>(vimtex-toc-open)
+" nmap <Leader>d :VimtexDocPackage<Space>
 
 " }}}
 
