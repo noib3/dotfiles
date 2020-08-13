@@ -208,3 +208,10 @@ ln -s ~/Dropbox/share/buku/bookmarks.db ~/.local/share/buku/bookmarks.db
 87. to get skim to do backward search you first need to 'pip3 install pynvim neovim-remote', then open Skim -> Preferences -> Sync -> Preset: Custom, Command: nvr, Arguments: --remote +"%line" "%file". It doesn't work too well since it triggers the BufUnload event so with the way I have things set up the pdf file closes, but the backward search also doesn't expand folds so it's kinda useless
 88. install vimtex for coc via
     :CocInstall coc-vimtex
+89. SQUARE BORDERS
+
+Place DarkAquaAppearance.car file found here (https://github.com/tsujp/custom-macos-gui/tree/master/DarkAquaAppearance/Edited) in /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/DarkAquaAppearance.car. Will have to unmount the filesystem first with
+
+sudo mount -uw /
+
+then move the file there replacing the one that's already there, then reboot. (https://www.reddit.com/r/unixporn/comments/i7s3t1/yabaiwm_monokai_machintosh/g16gnck?utm_source=share&utm_medium=web2x)

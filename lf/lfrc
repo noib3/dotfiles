@@ -2,12 +2,11 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-# Basic settings {{{
-
 # Boolean options
 set color256
 set drawbox
 set hidden
+set shell /usr/local/bin/zsh
 
 # Integer options
 set period 1
@@ -17,10 +16,6 @@ set ifs "\n"
 set previewer ~/.config/lf/previewer.sh
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w\033[0m\033[1m%f\033[0m"
 set timefmt ""
-
-# }}}
-
-# Custom functions {{{
 
 # Opener function
 cmd open ${{
@@ -54,10 +49,6 @@ cmd newdir %{{
 cmd fuzzy_edit ${{
     clear
     filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
-    # filename="$(fd . --base-directory ~ --type f --hidden --color always |
-    #              sed "s/\[1;34m/\[1;90m/g" |
-    #              fzf --height=80%)" \
-    # && $EDITOR ~/"$filename"
 }}
 
 # Fuzzy search a directory and cd into it
@@ -92,10 +83,6 @@ cmd set_wallpaper %{{
     osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-# }}}
-
-# Key mappings {{{
-
 # Mappings for built-in functions
 map <enter> push $
 map x cut
@@ -119,5 +106,3 @@ map s set_wallpaper
 
 # Movement
 map gvl cd "/Volumes"
-
-# }}}

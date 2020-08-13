@@ -2,20 +2,14 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-# Shell options {{{
-
+# Shell options
 setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE
 setopt PROMPT_SUBST
 setopt IGNORE_EOF
 setopt AUTO_CD
-
 unsetopt CASE_GLOB
 unsetopt BEEP
-
-# }}}
-
-# Colorscheme {{{
 
 # Directory and delimiter colors in prompt
 prompt_directory_color=#e1e1e1
@@ -29,10 +23,7 @@ git_branch_color=#ede845
 vi_visual_mode_bg_color=#7aa6da
 vi_visual_mode_fg_color=#ffffff
 
-# }}}
-
-# Vi mode {{{
-
+# Vi mode
 bindkey -v
 
 # Mode switching delay in hundredths of a second (default is 40)
@@ -90,10 +81,6 @@ bindkey -M vicmd ds delete-surround
 bindkey -M vicmd ys add-surround
 bindkey -M visual S add-surround
 
-# }}}
-
-# Prompt {{{
-
 # Set prompt with support for git infos in directories under version control
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
@@ -106,10 +93,6 @@ precmd() {
     vcs_info
     printf '\e[5 q'
 }
-
-# }}}
-
-# ZLE Widgets {{{
 
 # Close the terminal window
 close-window() {
@@ -155,9 +138,7 @@ function fuzzy_cd() {
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
-# }}}
-
-# Tab autocompletion {{{
+# Tab autocompletion
 
 autoload -Uz compinit
 compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
@@ -166,20 +147,12 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} \
 _comp_options+=(globdots)
 set +o list_types
 
-# }}}
-
-# Aliases {{{
-
+# Aliases
 alias ls='ls -Avh --color --quoting-style=literal --group-directories-first'
 alias grep='grep --color=auto'
 alias rm='rm -i'
-
 alias reboot='osascript -e "tell app \"System Events\" to restart"'
 alias shutdown='osascript -e "tell app \"System Events\" to shut down"'
-
-# }}}
-
-# Miscellaneous {{{
 
 # Disable ctrl+s
 stty -ixon
@@ -200,10 +173,6 @@ zle -N accept-line
 # This alias is just so that fast-syntax-highlighting doesn't color it in red
 alias c=''
 
-# }}}
-
-# Plugins {{{
-
 # Use fzf for tab completion
 source /usr/local/share/fzf-tab/fzf-tab.plugin.zsh
 
@@ -218,5 +187,3 @@ source /usr/local/share/zsh-system-clipboard/zsh-system-clipboard.zsh
 
 # Autopair parenthesis and quotation marks
 source /usr/local/share/zsh-autopair/autopair.zsh
-
-# }}}

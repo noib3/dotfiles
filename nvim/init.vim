@@ -206,17 +206,17 @@ let g:is_posix = 1
 " Key mappings {{{
 
 " Go to beginning/end of line
-map  <C-a> ^
+map <C-a> ^
 cmap <C-a> <C-b>
-map  <C-e> $
-imap <C-a> <esc>I
-imap <C-e> <esc>A
+map <C-e> $
+imap <C-a> <C-o>I
+imap <C-e> <C-o>A
 
 " Save and quit
-map  <silent> <C-s> :w<CR>
-map  <silent> <C-w> :q<CR>
-imap <silent> <C-s> <esc>:w<CR>a
-imap <silent> <C-w> <esc>:q<CR>
+map <silent> <C-s> :w<CR>
+map <silent> <C-w> :q<CR>
+imap <silent> <C-s> <C-o>:w<CR>
+imap <silent> <C-w> <C-o>:q<CR>
 
 " Replace string globally
 nmap ss :%s//g<Left><Left>
@@ -234,24 +234,20 @@ nnoremap <Leader>d <C-w>l
 nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
 
 " Fix for https://github.com/neovim/neovim/issues/11393
-cnoremap 3636 <c-u>undo<CR>
+cnoremap 3636 <C-u>undo<CR>
 
 " Plugin mappings {{{
 
 " fzf
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-imap <silent> <C-x><C-e> <esc>:FZF --prompt=>\  ~<CR>
+imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
 
 " Goyo
-noremap <silent> <Leader>g :Goyo<CR>
+nmap <silent> <Leader>g :Goyo<CR>
 
 " EasyMotion
 nmap f <Plug>(easymotion-overwin-w)
 nmap l <Plug>(easymotion-overwin-line)
-
-" vimtex
-nmap <silent> <Leader>t <plug>(vimtex-toc-open)
-" nmap <Leader>d :VimtexDocPackage<Space>
 
 " }}}
 
@@ -262,7 +258,7 @@ nmap <silent> <Leader>t <plug>(vimtex-toc-open)
 " Autocommands for all file types
 augroup all_group
   autocmd!
-  autocmd FileType    * setlocal formatoptions-=cro
+  autocmd FileType * setlocal formatoptions-=cro
   autocmd BufWritePre * call StripTrailingWhitespaces()
   autocmd InsertEnter * norm zz
 augroup END
@@ -278,7 +274,8 @@ endfunction
 augroup tex_group
   autocmd!
   " autocmd BufRead *.tex call tex#PdfOpen()
-  autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf', expand('<afile>:t:r') . '.pdf')
+  autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
+                                            \ expand('<afile>:t:r') . '.pdf')
   autocmd BufRead *.sty set syntax=tex
   autocmd BufRead *.cls set syntax=tex
 augroup END

@@ -21,6 +21,9 @@ PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
 
+# Export shell
+export SHELL=zsh
+
 # Export editor and man pager
 export VISUAL=nvim
 export EDITOR=$VISUAL
