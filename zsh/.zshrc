@@ -117,13 +117,24 @@ bindkey '^X^E' fuzzy_edit
 
 # Fuzzy search a file and add it to the line buffer
 function fuzzy_search() {
-    filename="$(fzf --height=40% </dev/tty)" && LBUFFER="$LBUFFER~/$filename "
+    filename="$(fzf --height=40% </dev/tty | sed 's/ /\\ /g')" && LBUFFER="$LBUFFER~/$filename "
     if zle; then
         zle reset-prompt
     fi
 }
 zle -N fuzzy_search
 bindkey '^S' fuzzy_search
+
+# Fuzzy search a command from the history and add it to the line buffer
+function fuzzy_history() {
+    command="$(fc -l 1 | fzf --height=40%)" && LBUFFER="$command "
+    if zle; then
+        zle reset-prompt
+    fi
+}
+zle -N fuzzy_history
+bindkey -r "^H"
+bindkey '^H' fuzzy_history
 
 # Fuzzy search a directory and cd into it
 function fuzzy_cd() {
@@ -139,7 +150,6 @@ zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd
 
 # Tab autocompletion
-
 autoload -Uz compinit
 compinit -d $HOME/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} \

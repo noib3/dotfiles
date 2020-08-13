@@ -20,7 +20,8 @@ nmap <buffer> <silent> <localleader>p :call tex#PdfOpen()<cr>
 nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<cr>
 
 " Open the ToC in a floating window and open documentation on CTAN
-nmap <silent> <Leader>t <plug>(vimtex-toc-open)
+" nmap <silent> <Leader>t <plug>(vimtex-toc-open)
+nmap <silent> <Leader>t :call vimtex#fzf#run('ctli', g:fzf_layout)<CR>
 nmap <Leader>a :VimtexDocPackage<Space>
 
 " Compile the document and return pdflatex's exit code through PIPESTATUS. If

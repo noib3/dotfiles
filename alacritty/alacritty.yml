@@ -109,8 +109,9 @@ key_bindings:
   - { key: S, mods: Super, chars: "\x13" } # ctrl-s
   - { key: W, mods: Super, chars: "\x17" } # ctrl-w
   - { key: T, mods: Super, chars: "\x14" } # ctrl-t
-  - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
   - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
+  - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
+  - { key: H, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d

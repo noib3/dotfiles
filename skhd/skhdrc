@@ -44,8 +44,11 @@ cmd - s [
     "Firefox" : false
 ]
 
-# Disable cmd - h in every program
-cmd - h : false
+# Disable cmd - h everywhere except for alacritty
+cmd - h [
+    "Alacritty" ~
+    *           : false
+]
 
 # Go fullscreen
 alt - f : skhd --key "ctrl + cmd - f"
