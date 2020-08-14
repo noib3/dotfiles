@@ -97,6 +97,8 @@ window:
 
 # Key mappings
 key_bindings:
+  # To get the 'chars' values use xxd: enter the character sequence, hit return
+  # and ctrl-d to get its hex dump.
   - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
@@ -111,7 +113,7 @@ key_bindings:
   - { key: T, mods: Super, chars: "\x14" } # ctrl-t
   - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
   - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
-  - { key: H, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
+  - { key: H, mods: Super, chars: "\x18\x07" } # ctrl-x ctrl-g
   - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # ctrl-d

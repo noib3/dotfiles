@@ -20,13 +20,12 @@ cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
                                               ~/bin/diet \
                                               $(kpsewhich -var-value TEXMFHOME)
 
-# Open this year's journal in fullscreen, activate Goyo and place the cursor at the right place
+# Open this year's journal in fullscreen and place the cursor at the right place
 cmd - j : alacritty -t journaling \
                     -e sh -c "sleep .25 && \
                               nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex \
-                                    + +Goyo +?newday +:noh \
-                                    +\"normal o\" +\"normal yy\" \
-                                    +\"normal p\" +\"normal zt\" \
+                                    + +?newday +:noh \
+                                    +\"normal o\" +\"normal yy\" +\"normal p\"  \
                                     +startinsert"
 
 # Open downloads sidebar in Firerox

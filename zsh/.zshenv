@@ -2,10 +2,9 @@
 # Github:     https://github.com/n0ibe/macOS-dotfiles
 # Maintainer: Riccardo Mazzarini
 
-# On macOS, the PATH is built up as described here:
-# https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
-# TLDR: you should to 'sudo rm /etc/zprofile'
-
+# On macOS, the PATH variable is built up as described here:
+#   https://unix.stackexchange.com/questions/246751/how-to-know-why-and-where-the-path-env-variable-is-set
+# In short, you should just 'sudo rm /etc/zprofile'
 PATH=/usr/local/opt/coreutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/findutils/libexec/gnubin
 PATH=$PATH:/usr/local/opt/gnu-sed/libexec/gnubin
@@ -21,15 +20,10 @@ PATH=$PATH:/Users/noibe/scripts/pfetch
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
 
-# Export shell
-export SHELL=zsh
-
-# Export editor and man pager
+# Editor, manpager and terminal
 export VISUAL=nvim
 export EDITOR=$VISUAL
 export MANPAGER="nvim -c 'set ft=man' -"
-
-# Export terminal
 export TERMINAL=alacritty
 
 # Locale settings
@@ -42,7 +36,7 @@ export LC_NUMERIC=en_US.UTF-8
 export LC_TIME=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Custom history/cache files locations
+# History/cache files locations
 export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
@@ -50,11 +44,11 @@ export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
 # Don't update Homebrew automatically every time it's launched
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-# Export fzf's default find command and options
+# Fzf's default find command and options
 export FZF_DEFAULT_COMMAND='fd . --base-directory ~ --type f --hidden --color always | sed "s/\[1;34m/\[1;90m/g"'
 export FZF_DEFAULT_OPTS='--reverse --info=inline --ansi --color="hl:-1,hl+:-1" --hscroll-off=50'
 
-# Build LS_COLORS variable for ls and other programs that support it
+# Build LS_COLORS one block at a time
 LS_COLORS="rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32"
 
 # Archives or compressed files

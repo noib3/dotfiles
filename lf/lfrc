@@ -55,7 +55,7 @@ cmd fuzzy_edit ${{
 cmd fuzzy_cd ${{
     clear
     dirname="$(fd . --base-directory ~ --type d --hidden --color always |
-                sed "s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
                 fzf --height=80%)" \
     && lf -remote "send $id cd ~/$dirname"
 }}

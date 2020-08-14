@@ -103,6 +103,7 @@ bindkey '^W' close-window
 
 # Fuzzy search a file and open it in $EDITOR
 function fuzzy_edit() {
+    local filename
     filename="$(fzf --height=40% </dev/tty)" \
         && $EDITOR ~/"$filename" \
         && fc -R =(print "$EDITOR ~/$filename") \
@@ -117,7 +118,9 @@ bindkey '^X^E' fuzzy_edit
 
 # Fuzzy search a file and add it to the line buffer
 function fuzzy_search() {
-    filename="$(fzf --height=40% </dev/tty | sed 's/ /\\ /g')" && LBUFFER="$LBUFFER~/$filename "
+    local filename
+    filename="$(fzf --height=40% </dev/tty)" \
+        && LBUFFER="$LBUFFER~/$(echo $filename | sed 's/ /\\ /g')"
     if zle; then
         zle reset-prompt
     fi
@@ -125,23 +128,31 @@ function fuzzy_search() {
 zle -N fuzzy_search
 bindkey '^S' fuzzy_search
 
-# Fuzzy search a command from the history and add it to the line buffer
+# Fuzzy search a command from the history and add it to the line buffer and to
+# the clipboard. I can't bind it to '^H' because that's already assigned to a
+# window resize command in skhd.
 function fuzzy_history() {
-    command="$(fc -l 1 | fzf --height=40%)" && LBUFFER="$command "
+    local command
+    command="$(fc -l -1 -99 |
+                sed 's/^\s*[0-9]*\s*//g' |
+                fzf --height=50% --color=dark --preview='echo {}' \
+                    --preview-window=down:2:wrap)" \
+        && LBUFFER="$command" \
+        && echo -n "$command" | pbcopy
     if zle; then
         zle reset-prompt
     fi
 }
 zle -N fuzzy_history
-bindkey -r "^H"
-bindkey '^H' fuzzy_history
+bindkey '^X^G' fuzzy_history
 
 # Fuzzy search a directory and cd into it
 function fuzzy_cd() {
+    local dirname
     dirname="$(fd . --base-directory ~ --type d --hidden --color always |
-                sed "s/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/" |
+                sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
                 fzf --height=40%)" \
-    && cd ~/$dirname && precmd
+        && cd ~/$dirname && precmd
     if zle; then
         zle reset-prompt
     fi

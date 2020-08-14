@@ -5,24 +5,58 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
-  " Functionality
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
-  Plug 'junegunn/goyo.vim'
+  Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
+  Plug 'norcalli/nvim-colorizer.lua'
+  Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
+  Plug 'tpope/vim-commentary'
+  Plug 'romainl/vim-cool'
+  Plug 'tpope/vim-endwise'
   Plug 'easymotion/vim-easymotion'
   Plug 'farmergreg/vim-lastplace'
-  Plug 'romainl/vim-cool'
-  Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-endwise'
+  Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-surround'
   Plug 'lervag/vimtex'
-  " Colorschemes
-  Plug 'morhetz/gruvbox'
-  Plug 'joshdick/onedark.vim'
 call plug#end()
+
+" }}}
+
+" Nvim settings {{{
+
+" Tab handling
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+
+" Line numbering
+set number
+set relativenumber
+
+" Window splitting
+set splitright
+set splitbelow
+
+" Pattern searching
+set ignorecase
+set smartcase
+
+" Code folding
+set foldlevelstart=0
+set fillchars=fold:\ "
+
+" Miscellaneous
+set autochdir
+set clipboard+=unnamedplus
+set hidden
+set laststatus=0
+set noshowmode
+set termguicolors
+set undofile
 
 " }}}
 
@@ -34,6 +68,7 @@ call plug#end()
 let g:coc_global_extensions = [
   \ 'coc-pairs',
   \ 'coc-python',
+  \ 'coc-vimlsp',
   \ 'coc-vimtex',
   \ ]
 
@@ -45,8 +80,15 @@ let g:coc_sources_disable_map = {
   \ 'tex': ['around', 'buffer'],
   \ 'text': ['around', 'buffer'],
   \ 'vim': ['around', 'buffer'],
+  \ 'yaml': ['around', 'buffer'],
   \ 'zsh': ['around', 'buffer'],
   \ }
+
+" }}}
+
+" colorizer.lua {{{
+
+lua require'colorizer'.setup()
 
 " }}}
 
@@ -55,40 +97,6 @@ let g:coc_sources_disable_map = {
 let g:fzf_layout = {
   \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
   \ }
-
-" }}}
-
-" Goyo {{{
-
-" let g:goyo_width = '65%'
-" let g:goyo_height = '75%'
-
-function! s:goyo_enter()
-  " This should match the terminal background color
-  " hi EndOfBuffer guifg=#282a36
-  call EnterFullscreen()
-endfunction
-
-function! s:goyo_leave()
-  " Color of the EndOfBuffer highlight group defined by the onedark colorscheme
-  " hi EndOfBuffer guifg=#3b4048
-  call ExitFullscreen()
-endfunction
-
-function! EnterFullscreen()
-  if json_decode(systemlist('yabai -m query --windows --window'))['native-fullscreen'] == 0
-    execute 'silent !yabai -m window --toggle native-fullscreen'
-  endif
-endfunction
-
-function! ExitFullscreen()
-  if json_decode(systemlist('yabai -m query --windows --window'))['native-fullscreen'] == 1
-    execute 'silent !yabai -m window --toggle native-fullscreen'
-  endif
-endfunction
-
-autocmd! User GoyoEnter nested call <SID>goyo_enter()
-autocmd! User GoyoLeave nested call <SID>goyo_leave()
 
 " }}}
 
@@ -127,62 +135,6 @@ let g:vimtex_toc_config = {
 
 " }}}
 
-" Basic settings {{{
-
-" Line numbering
-set number
-set relativenumber
-
-" Tab handling
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set expandtab
-
-" Window splitting
-set splitright
-set splitbelow
-
-" Pattern searching
-set ignorecase
-set smartcase
-
-" Code folding
-set foldmethod=marker
-set foldtext=MarkerFoldsText()
-set foldlevel=0
-set foldlevelstart=0
-set fillchars=fold:\ "
-
-" Fold text for marker folds
-function! MarkerFoldsText()
-  let comment_char = substitute(&commentstring, '\s*%s', '', '')
-  " The first substitute extracts the text between the commentstring and the
-  " markers without leading spaces, the second one removes trailing spaces. It
-  " could probably be done with a single substitute but idk how.
-  let fold_title = substitute(getline(v:foldstart), comment_char.'\s*\(.*\){\{3}', '\1', '')
-  let fold_title = substitute(fold_title, '\s*$', '', '')
-  let dashes = repeat(v:folddashes, 2)
-  let fold_size = v:foldend - v:foldstart + 1
-
-  let fill_num = 68 - len(dashes . fold_title . fold_size)
-
-  return '+' . dashes . ' ' . fold_title . ' ' . repeat('·', fill_num)
-          \ . ' ' . fold_size . ' lines'
-endfunction
-
-" Miscellaneous
-set termguicolors
-set clipboard+=unnamedplus
-set noshowmode
-set undofile
-set laststatus=0
-set autochdir
-set makeef=/tmp/nvim##.err
-set hidden
-
-" }}}
-
 " Variable assignments {{{
 
 " Leader keys
@@ -195,8 +147,11 @@ let g:netrw_home = $HOME . '/.cache/nvim'
 " Set default file type to LaTeX for .tex files
 let g:tex_flavor = 'latex'
 
-" Disable conceal feature for TeX documents
+" Disable conceal across multiple filetypes
 let g:tex_conceal = ''
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_json_syntax_conceal = 0
 
 " Default sh syntax-highlighting to be POSIX
 let g:is_posix = 1
@@ -242,9 +197,6 @@ cnoremap 3636 <C-u>undo<CR>
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
 
-" Goyo
-nmap <silent> <Leader>g :Goyo<CR>
-
 " EasyMotion
 nmap f <Plug>(easymotion-overwin-w)
 nmap l <Plug>(easymotion-overwin-line)
@@ -259,25 +211,20 @@ nmap l <Plug>(easymotion-overwin-line)
 augroup all_group
   autocmd!
   autocmd FileType * setlocal formatoptions-=cro
-  autocmd BufWritePre * call StripTrailingWhitespaces()
   autocmd InsertEnter * norm zz
+  autocmd BufWritePre * let curr_pos = getpos('.')
+                        \ | %s/\s*$//
+                        \ | call setpos ('.', curr_pos)
 augroup END
-
-" Remove trailing whitespace without changing cursor position
-function! StripTrailingWhitespaces()
-  let [_, line, col, _] = getpos('.')
-  %s/\s\+$//e
-  call cursor(line, col)
-endfunction
 
 " Autocommands for TeX related files
 augroup tex_group
   autocmd!
-  " autocmd BufRead *.tex call tex#PdfOpen()
-  autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
-                                            \ expand('<afile>:t:r') . '.pdf')
   autocmd BufRead *.sty set syntax=tex
   autocmd BufRead *.cls set syntax=tex
+  autocmd BufRead *.tex call tex#PdfOpen()
+  autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
+                                            \ expand('<afile>:t:r') . '.pdf')
 augroup END
 
 " Autocommands to set/override some highlight groups
@@ -297,3 +244,5 @@ augroup END
 colorscheme onedark
 
 " }}}
+
+" vim: set foldmethod=marker:

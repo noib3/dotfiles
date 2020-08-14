@@ -139,3 +139,5 @@ function! LaTeXFoldsText()
 endfunction
 
 " }}}
+
+" vim: set foldmethod=marker:
