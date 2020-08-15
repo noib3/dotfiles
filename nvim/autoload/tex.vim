@@ -2,6 +2,18 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
+" Compile the document and return pdflatex's exit code through PIPESTATUS. If
+" it's not zero read the error file and jump to the first error.
+function! tex#Compile()
+  let errorfile='/tmp/nvim_tex.err'
+  execute '!pdflatex -halt-on-error -file-line-error -synctex=1 ' . expand('%')
+          \ . ' 2>&1 | tee ' . errorfile . '; exit ${PIPESTATUS[0]}'
+  if v:shell_error
+    execute 'silent cfile ' . errorfile
+  endif
+  execute 'silent !sudo rm ' . errorfile
+endfunction
+
 " Open the PDF file created by a TeX document
 function! tex#PdfOpen()
   let filepath = expand('%:p:r') . '.pdf'

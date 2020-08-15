@@ -132,7 +132,7 @@ function! LaTeXFoldsText()
   let dashes = repeat(v:folddashes, 2)
   let fold_size = v:foldend - v:foldstart + 1
 
-  let fill_num = 66 - len(dashes . section . section_title . fold_size)
+  let fill_num = 66 - strchars(dashes . section . section_title . fold_size)
 
   return '+' . dashes . ' ' . section . ': ' . section_title . ' '
           \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'

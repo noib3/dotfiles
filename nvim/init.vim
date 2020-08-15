@@ -12,10 +12,11 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
+  Plug 'pacha/vem-tabline'
   Plug 'tpope/vim-commentary'
   Plug 'romainl/vim-cool'
+  Plug 'ryanoasis/vim-devicons'
   Plug 'tpope/vim-endwise'
-  Plug 'easymotion/vim-easymotion'
   Plug 'farmergreg/vim-lastplace'
   Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-repeat'
@@ -173,6 +174,23 @@ map <silent> <C-w> :q<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 imap <silent> <C-w> <C-o>:q<CR>
 
+" Cycle through and delete buffers
+nmap <Tab> <Plug>vem_next_buffer-
+nmap <silent> <Leader>x :call DeleteCurrentBuffer()<CR>
+
+function! DeleteCurrentBuffer() abort
+  let current_buffer = bufnr('%')
+  let next_buffer = g:vem_tabline#tabline.get_replacement_buffer()
+  try
+    exec 'confirm ' . current_buffer . 'bdelete'
+    if next_buffer != 0
+      exec next_buffer . 'buffer'
+    endif
+  catch /E516:/
+    " If the operation is cancelled, do nothing
+  endtry
+endfunction
+
 " Replace string globally
 nmap ss :%s//g<Left><Left>
 
@@ -191,17 +209,9 @@ nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
 " Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <C-u>undo<CR>
 
-" Plugin mappings {{{
-
 " fzf
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
-
-" EasyMotion
-nmap f <Plug>(easymotion-overwin-w)
-nmap l <Plug>(easymotion-overwin-line)
-
-" }}}
 
 " }}}
 
@@ -220,8 +230,8 @@ augroup END
 " Autocommands for TeX related files
 augroup tex_group
   autocmd!
-  autocmd BufRead *.sty set syntax=tex
-  autocmd BufRead *.cls set syntax=tex
+  autocmd BufRead *.sty setlocal syntax=tex
+  autocmd BufRead *.cls setlocal syntax=tex
   autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
