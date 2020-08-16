@@ -81,25 +81,6 @@ snippet fig "Figure environment" bA
 $0
 endsnippet
 
-post_jump "if not vim.current.line or vim.current.line.isspace(): snip.expand_anon('\\item $1\n')"
-snippet ii "method declaration" b
-\begin{itemize}
-	\item $1
-	$2
-\end{itemize}
-$0
-endsnippet
-
-# global !p
-# def new_tabstop_or_exit(item):
-# 		# returns True if item has some non-whitespace chars
-# 		if not item.isspace:
-# 				# insert '\item' on the next line followed by a new tabstop
-# 		else:
-# 				# delete the current line and go to $0
-# endglobal
-
-post_jump "if snip.tabstop == 0: new_tabstop_or_exit(snip.tabstops[1].current_text)"
 snippet item "Itemize environment" bA
 \begin{itemize}
   \item $1
@@ -107,18 +88,9 @@ snippet item "Itemize environment" bA
 $0
 endsnippet
 
-# snippet item "Itemize environment" bA
-# \begin{itemize}
-#   \item $1
-#   \item $2
-# \end{itemize}
-# $0
-# endsnippet
-
 snippet enum "Enumerate environment" bA
 \begin{enumerate}
   \item $1
-  \item $2
 \end{enumerate}
 $0
 endsnippet
@@ -148,30 +120,6 @@ snippet newday "Newday environment" bA
 \begin{newday}[$1${2:, y}]
   $0
 \end{newday}
-endsnippet
-
-snippet chap "Chapter" bA
-\chapter{$1}
-
-$0
-endsnippet
-
-snippet sec "Section" bA
-\section{$1}
-
-$0
-endsnippet
-
-snippet ssec "Subsection" bA
-\subsection{$1}
-
-$0
-endsnippet
-
-snippet sssec "Subsubsection" bA
-\subsubsection{$1}
-
-$0
 endsnippet
 
 snippet me "Unnumbered equation" bA

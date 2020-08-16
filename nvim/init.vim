@@ -126,9 +126,12 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 let g:vimtex_compiler_enabled = 0
 let g:vimtex_view_enabled = 0
 
-" Don't show the help text and bump up max depth to 6
+" Options for the ToC window
+let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {
+  \ 'layers' : ['content', 'include'],
   \ 'show_help': 0,
+  \ 'split_pos': 'vert rightbelow',
   \ 'tocdepth': 6,
   \ }
 
@@ -235,6 +238,11 @@ augroup tex_group
   autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
+  autocmd ColorScheme * hi VimtexTocSec0 guifg=#e5c077 gui=bold
+  autocmd ColorScheme * hi VimtexTocSec1 guifg=#e06c75 gui=bolditalic
+  autocmd ColorScheme * hi VimtexTocSec2 guifg=NONE
+  autocmd ColorScheme * hi VimtexTocSec3 guifg=NONE gui=italic
+  autocmd ColorScheme * hi VimtexTocSec4 guifg=NONE gui=italic
 augroup END
 
 " Autocommands to set/override some highlight groups

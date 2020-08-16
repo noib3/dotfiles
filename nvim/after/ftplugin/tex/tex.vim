@@ -16,10 +16,15 @@ let b:coc_pairs = [["$", "$"]]
 
 " Compile the document, open the PDF file and forward search from nvim to Skim
 nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>
-nmap <buffer> <silent> <localleader>p :call tex#PdfOpen()<cr>
-nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<cr>
+nmap <buffer> <silent> <localleader>p :call tex#PdfOpen()<CR>
+nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<CR>
 
-" Open the ToC in a floating window and open documentation on CTAN
-" nmap <silent> <Leader>t <plug>(vimtex-toc-open)
-nmap <silent> <Leader>t :call vimtex#fzf#run('ctli', g:fzf_layout)
-nmap <Leader>a :VimtexDocPackage<Space>
+" Open vimtex's ToC window
+nmap <silent> <Leader><Leader> <plug>(vimtex-toc-open)
+
+" Autoinsert '\item ' on the next line if the current line has '\item' in it
+" Inspired by the following Stack Overflow answer
+"   https://stackoverflow.com/a/2554770/10786411:
+inoremap <expr> <buffer> <CR> "\r".tex#AutoInsertItem()
+nmap <expr> <buffer> o "o".tex#AutoInsertItem()
+nmap <expr> <buffer> O "O".tex#AutoInsertItem()

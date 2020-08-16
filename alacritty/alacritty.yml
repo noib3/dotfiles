@@ -98,7 +98,7 @@ window:
 # Key mappings
 key_bindings:
   # To get the 'chars' values use xxd: enter the character sequence, hit return
-  # and ctrl-d to get its hex dump.
+  # then ctrl-d to get its hex dump.
   - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }

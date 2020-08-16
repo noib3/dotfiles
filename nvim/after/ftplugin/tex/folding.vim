@@ -2,7 +2,7 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
 
-" The following file was taken as a starting point for this one
+" The following file was taken as a starting point for this one:
 "   https://github.com/petobens/dotfiles/blob/master/vim/ftplugin/tex/folding.vim
 
 " In the following comments and definitions a section is a generic term for any

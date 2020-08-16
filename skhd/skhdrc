@@ -124,9 +124,11 @@ shift + cmd - 3 : \
                           -appIcon ~/.config/skhd/screenshot-icon.png \
                           -contentImage "$ss_name"
 
-# Screenshot a portion of the screen
+# Screenshot a portion of the screen, then send a notification if the screenshot
+# wasn't cancelled.
 shift + cmd - 4 : \
     ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture -i "$ss_name" && \
+        ls "$ss_name" && \
         terminal-notifier -title "New screenshot" \
                           -subtitle "$(basename $ss_name)" \
                           -message "Saved in $(dirname $ss_name)" \

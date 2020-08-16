@@ -33,13 +33,14 @@ function! tex#PdfClose(filepath, filename)
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
     " if there is just one Skim window and its title matches the filename of
     " the file in the buffer, quit Skim
-    if len(Skim_windows) == 1 && system("sed 's/\.pdf.*/.pdf/'", Skim_windows[0].title) == a:filename
+    if len(Skim_windows) == 1
+          \ && substitute(Skim_windows[0].title, '\.pdf.*', '.pdf', '') == a:filename
       execute "silent !osascript -e \'quit app \"Skim\"\'"
     " if there are more Skim windows look for the one whose title matches the
     " filename of the file in the buffer and close it
     elseif len(Skim_windows) > 1
       for window in Skim_windows
-        if system("sed 's/\.pdf.*/.pdf/'", window.title) == a:filename
+        if substitute(window.title, '\.pdf.*', '.pdf', '') == a:filename
           execute 'silent !yabai -m window ' . shellescape(window.id,1) . ' --close'
         endif
       endfor
@@ -57,4 +58,12 @@ function! tex#SkimForwardSearch()
     echomsg 'No pdf file "' . filepath . '"'
     echohl None
   endif
+endfunction
+
+" Autoinsert '\item ' on the next line if the current line has '\item' in it
+function tex#AutoInsertItem()
+  if getline('.') =~# '\item'
+    return '\item '
+  endif
+  return ''
 endfunction
