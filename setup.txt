@@ -215,3 +215,5 @@ Place DarkAquaAppearance.car file found here (https://github.com/tsujp/custom-ma
 sudo mount -uw /
 
 then move the file there replacing the one that's already there, then reboot. (https://www.reddit.com/r/unixporn/comments/i7s3t1/yabaiwm_monokai_machintosh/g16gnck?utm_source=share&utm_medium=web2x)
+
+90. pip3 install jedi if coc-python gives problems

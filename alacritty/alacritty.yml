@@ -108,14 +108,15 @@ key_bindings:
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
-  - { key: S, mods: Super, chars: "\x13" } # ctrl-s
-  - { key: W, mods: Super, chars: "\x17" } # ctrl-w
-  - { key: T, mods: Super, chars: "\x14" } # ctrl-t
-  - { key: D, mods: Super, chars: "\x18\x04" } # ctrl-x ctrl-d
-  - { key: E, mods: Super, chars: "\x18\x05" } # ctrl-x ctrl-e
-  - { key: H, mods: Super, chars: "\x18\x07" } # ctrl-x ctrl-g
-  - { key: Back, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: Up, mods: Super, chars: "\x15" } # ctrl-u
-  - { key: Down, mods: Super, chars: "\x04" } # ctrl-d
-  - { key: Left, mods: Super, chars: "\x01" } # ctrl-a
-  - { key: Right, mods: Super, chars: "\x05" } # ctrl-e
+  - { key: P, mods: Super, chars: "\x10" } # Ctrl-p
+  - { key: S, mods: Super, chars: "\x13" } # Ctrl-s
+  - { key: T, mods: Super, chars: "\x14" } # Ctrl-t
+  - { key: W, mods: Super, chars: "\x17" } # Ctrl-w
+  - { key: D, mods: Super, chars: "\x18\x04" } # Ctrl-x Ctrl-d
+  - { key: E, mods: Super, chars: "\x18\x05" } # Ctrl-x Ctrl-e
+  - { key: H, mods: Super, chars: "\x18\x07" } # Ctrl-x Ctrl-g
+  - { key: Back, mods: Super, chars: "\x15" } # Ctrl-u
+  - { key: Up, mods: Super, chars: "\x15" } # Ctrl-u
+  - { key: Down, mods: Super, chars: "\x04" } # Ctrl-d
+  - { key: Left, mods: Super, chars: "\x01" } # Ctrl-a
+  - { key: Right, mods: Super, chars: "\x05" } # Ctrl-e

@@ -46,9 +46,15 @@ set splitbelow
 set ignorecase
 set smartcase
 
+" Line breaking
+set linebreak
+set textwidth=79
+set formatoptions-=t
+let &showbreak="\u21aa "
+
 " Code folding
 set foldlevelstart=0
-set fillchars=fold:\ "
+let &fillchars='fold: '
 
 " Miscellaneous
 set autochdir
@@ -56,6 +62,7 @@ set clipboard+=unnamedplus
 set hidden
 set laststatus=0
 set noshowmode
+set scrolloff=1
 set termguicolors
 set undofile
 
@@ -77,6 +84,7 @@ let g:coc_global_extensions = [
 "   https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#completion-sources
 let g:coc_sources_disable_map = {
   \ 'conf': ['around', 'buffer'],
+  \ 'context': ['around', 'buffer'],
   \ 'markdown': ['around', 'buffer'],
   \ 'tex': ['around', 'buffer'],
   \ 'text': ['around', 'buffer'],
@@ -139,7 +147,7 @@ let g:vimtex_toc_config = {
 
 " }}}
 
-" Variable assignments {{{
+" Assign variables {{{
 
 " Leader keys
 let mapleader = ','
@@ -148,7 +156,7 @@ let maplocalleader = ','
 " Home directory for bookmarks and history
 let g:netrw_home = $HOME . '/.cache/nvim'
 
-" Set default file type to LaTeX for .tex files
+" Set default .tex's files filetype to LaTeX
 let g:tex_flavor = 'latex'
 
 " Disable conceal across multiple filetypes
@@ -157,12 +165,12 @@ let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_json_syntax_conceal = 0
 
-" Default sh syntax-highlighting to be POSIX
+" Set default shell syntax highlighting to POSIX
 let g:is_posix = 1
 
 " }}}
 
-" Key mappings {{{
+" Mappings {{{
 
 " Go to beginning/end of line
 map <C-a> ^
@@ -176,6 +184,32 @@ map <silent> <C-s> :w<CR>
 map <silent> <C-w> :q<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 imap <silent> <C-w> <C-o>:q<CR>
+
+" Navigate wrapped lines
+nnoremap <Up> gk
+nnoremap <Down> gj
+
+" Replace string globally
+nmap ss :%s//g<Left><Left>
+
+" Toggle folds with space
+nmap <Space> za
+
+" Navigate splits
+nnoremap <Leader>w <C-w>k
+nnoremap <Leader>a <C-w>h
+nnoremap <Leader>s <C-w>j
+nnoremap <Leader>d <C-w>l
+
+" Toggle 80 and 100 characters columns
+nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
+
+" Fix for https://github.com/neovim/neovim/issues/11393
+cnoremap 3636 <C-u>undo<CR>
+
+" fzf
+map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
+imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
 
 " Cycle through and delete buffers
 nmap <Tab> <Plug>vem_next_buffer-
@@ -194,36 +228,14 @@ function! DeleteCurrentBuffer() abort
   endtry
 endfunction
 
-" Replace string globally
-nmap ss :%s//g<Left><Left>
-
-" Toggle folds with space
-nnoremap <Space> za
-
-" Navigate splits
-nnoremap <Leader>w <C-w>k
-nnoremap <Leader>a <C-w>h
-nnoremap <Leader>s <C-w>j
-nnoremap <Leader>d <C-w>l
-
-" Toggle 80 and 100 characters columns
-nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
-
-" Fix for https://github.com/neovim/neovim/issues/11393
-cnoremap 3636 <C-u>undo<CR>
-
-" fzf
-map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
-
 " }}}
 
-" Autocommands {{{
+" Autogroups {{{
 
 " Autocommands for all file types
 augroup all_group
   autocmd!
-  autocmd FileType * setlocal formatoptions-=cro
+  " autocmd FileType * setlocal formatoptions-=cro
   autocmd InsertEnter * norm zz
   autocmd BufWritePre * let curr_pos = getpos('.')
                         \ | %s/\s*$//
@@ -235,14 +247,10 @@ augroup tex_group
   autocmd!
   autocmd BufRead *.sty setlocal syntax=tex
   autocmd BufRead *.cls setlocal syntax=tex
-  autocmd BufRead *.tex call tex#PdfOpen()
+  " autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
-  autocmd ColorScheme * hi VimtexTocSec0 guifg=#e5c077 gui=bold
-  autocmd ColorScheme * hi VimtexTocSec1 guifg=#e06c75 gui=bolditalic
-  autocmd ColorScheme * hi VimtexTocSec2 guifg=NONE
-  autocmd ColorScheme * hi VimtexTocSec3 guifg=NONE gui=italic
-  autocmd ColorScheme * hi VimtexTocSec4 guifg=NONE gui=italic
+  autocmd User VimtexEventTocActivated norm zt
 augroup END
 
 " Autocommands to set/override some highlight groups
