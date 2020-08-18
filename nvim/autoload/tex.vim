@@ -1,9 +1,11 @@
-" Filename:   nvim/autoload/tex.vim
-" Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
+" Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Compile the document and return pdflatex's exit code through PIPESTATUS. If
 " it's not zero read the error file and jump to the first error.
+" Unfortunately pdflatex doesn't pass the errors' column numbers to quickfix,
+" so the best we can do if there's an error is to jump to the corresponding
+" line.
 function! tex#Compile()
   let errorfile='/tmp/nvim_tex.err'
   execute '!pdflatex -halt-on-error -file-line-error -synctex=1 ' . expand('%')
@@ -27,17 +29,18 @@ function! tex#PdfOpen()
 endfunction
 
 " Close the PDF file created by a TeX document
+" It only works with yabai + Skim
 function! tex#PdfClose(filepath, filename)
   if filereadable(a:filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
-    " if there is just one Skim window and its title matches the filename of
-    " the file in the buffer, quit Skim
+    " If there is just one Skim window and its title matches the filename of
+    " the file in the buffer, quit Skim.
     if len(Skim_windows) == 1
           \ && substitute(Skim_windows[0].title, '\.pdf.*', '.pdf', '') == a:filename
       execute "silent !osascript -e \'quit app \"Skim\"\'"
-    " if there are more Skim windows look for the one whose title matches the
-    " filename of the file in the buffer and close it
+    " If there are more Skim windows look for the one whose title matches the
+    " filename of the file in the buffer and close it.
     elseif len(Skim_windows) > 1
       for window in Skim_windows
         if substitute(window.title, '\.pdf.*', '.pdf', '') == a:filename
@@ -62,7 +65,7 @@ endfunction
 
 " Autoinsert '\item ' on the next line if the current line has '\item' in it
 function tex#AutoInsertItem()
-  if getline('.') =~# '\item'
+  if getline('.') =~# '\item' && pumvisible() == 0
     return '\item '
   endif
   return ''

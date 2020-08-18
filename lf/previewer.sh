@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-# Filename:   lf/previewer.sh
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
 # Needs to be executable
 
 FILE="$1"

@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-# Filename:   yabai/yabairc
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
 # New window spawns to the right if vertical split, or bottom if horizontal split
 yabai -m config window_placement second_child
 

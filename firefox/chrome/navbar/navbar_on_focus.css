@@ -1,7 +1,3 @@
-/* Filename:   firefox/chrome/navbar/navbar_on_focus.css */
-/* Github:     https://github.com/n0ibe/macOS-dotfiles */
-/* Maintainer: Riccardo Mazzarini */
-
 /* https://www.reddit.com/r/FirefoxCSS/comments/hw3tbx/showing_the_navbar_in_place_of_the_tabbar_when/ */
 
 :root[sessionrestored] #nav-bar:not([customizing]){

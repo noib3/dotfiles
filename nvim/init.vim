@@ -1,10 +1,10 @@
-" Filename:   nvim/init.vim
-" Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
+" Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
+  Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
@@ -20,6 +20,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'farmergreg/vim-lastplace'
   Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
   Plug 'lervag/vimtex'
 call plug#end()
@@ -49,7 +50,7 @@ set smartcase
 " Line breaking
 set linebreak
 set textwidth=79
-set formatoptions-=t
+set formatoptions+=c
 let &showbreak="\u21aa "
 
 " Code folding
@@ -74,7 +75,6 @@ set undofile
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
-  \ 'coc-pairs',
   \ 'coc-python',
   \ 'coc-vimlsp',
   \ 'coc-vimtex',
@@ -238,7 +238,7 @@ augroup all_group
   " autocmd FileType * setlocal formatoptions-=cro
   autocmd InsertEnter * norm zz
   autocmd BufWritePre * let curr_pos = getpos('.')
-                        \ | %s/\s*$//
+                        \ | %s/\s\+$//e
                         \ | call setpos ('.', curr_pos)
 augroup END
 

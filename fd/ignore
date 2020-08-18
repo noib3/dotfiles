@@ -1,26 +1,16 @@
-# Filename:   fd/ignore
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
 **/.git
-
 .Trash/
 Desktop/
 Movies/
 Music/
 Pictures/
-
 Library/*
 !Library/texmf
-
+Dropbox/.dropbox.cache/
+Dropbox/Fonts/*
+scripts/pfetch/
+.dropbox/
 .cache/
 .local/
 .ssh/
-
 .config/nvim/plugged/
-
-scripts/pfetch/
-
-.dropbox/
-Dropbox/.dropbox.cache/
-Dropbox/Fonts/*

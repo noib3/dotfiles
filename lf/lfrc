@@ -1,17 +1,9 @@
-# Filename:   lf/lfrc
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
-# Boolean options
+# Settings
 set color256
 set drawbox
 set hidden
-set shell /usr/local/bin/zsh
-
-# Integer options
+set shell zsh
 set period 1
-
-# String options
 set ifs "\n"
 set previewer ~/.config/lf/previewer.sh
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w\033[0m\033[1m%f\033[0m"
@@ -22,7 +14,7 @@ cmd open ${{
     case $(file -b --mime-type $fx) in
         text/*) $EDITOR $fx;;
         inode/x-empty) $EDITOR $fx;;
-        *) open $fx &>/dev/null;;
+        *) for f in $fx; do open $f &>/dev/null done;;
     esac
 }}
 
@@ -83,26 +75,18 @@ cmd set_wallpaper %{{
     osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-# Mappings for built-in functions
+# Mappings
 map <enter> push $
 map x cut
 map d delete
 map u :unselect; clear
-
-# Create files or directories
 map t push :touch<space>
 map k push :mkdir<space>
 map D push :newdir<space>
-
-# Fuzzy search files to edit or directories to move to
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
-
-# Others
 map + make_executable
 map - remove_executable
 map j eject_disk
 map s set_wallpaper
-
-# Movement
 map gvl cd "/Volumes"

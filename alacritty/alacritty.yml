@@ -1,14 +1,8 @@
-# Filename:   alacritty/alacritty.yml
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
-# Shell
 shell:
   program: /usr/local/bin/zsh
   args:
     - --login
 
-# Fonts
 font:
   normal:
     family: Iosevka Nerd Font
@@ -22,7 +16,6 @@ font:
   offset:
     y: 1
 
-# Colorschemes
 schemes:
   # Gruvbox dark
   gruvbox: &gruvbox
@@ -88,14 +81,12 @@ schemes:
 
 colors: *default
 
-# Window layout
 window:
   decorations: buttonless
   padding:
     x: 8
     y: 4
 
-# Key mappings
 key_bindings:
   # To get the 'chars' values use xxd: enter the character sequence, hit return
   # then ctrl-d to get its hex dump.

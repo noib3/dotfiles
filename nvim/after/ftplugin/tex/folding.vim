@@ -1,6 +1,5 @@
-" Filename:   nvim/after/ftplugin/tex/folding.vim
-" Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
+" Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " The following file was taken as a starting point for this one:
 "   https://github.com/petobens/dotfiles/blob/master/vim/ftplugin/tex/folding.vim

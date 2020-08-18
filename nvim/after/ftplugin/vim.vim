@@ -1,6 +1,5 @@
-" Filename:   nvim/after/ftplugin/vim.vim
-" Github:     https://github.com/n0ibe/macOS-dotfiles
 " Maintainer: Riccardo Mazzarini
+" Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
@@ -17,7 +16,10 @@ function! MarkerFoldsText()
   " The first substitute extracts the text between the commentstring and the
   " markers without leading spaces, the second one removes trailing spaces. It
   " could probably be done with a single substitute but idk how.
-  let fold_title = substitute(getline(v:foldstart), comment_char.'\s*\(.*\){\{3}', '\1', '')
+  let fold_title = substitute(getline(v:foldstart),
+                              \ comment_char.'\s*\(.*\){\{3}\d*',
+                              \ '\1',
+                              \ '')
   let fold_title = substitute(fold_title, '\s*$', '', '')
   let dashes = repeat(v:folddashes, 2)
   let fold_size = v:foldend - v:foldstart + 1

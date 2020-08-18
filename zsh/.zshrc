@@ -1,8 +1,4 @@
-# Filename:   zsh/.zshrc
-# Github:     https://github.com/n0ibe/macOS-dotfiles
-# Maintainer: Riccardo Mazzarini
-
-# Shell options
+# Set/unset options
 setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE
 setopt PROMPT_SUBST
