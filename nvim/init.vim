@@ -131,6 +131,7 @@ let g:vimtex_view_enabled = 0
 " Options for the ToC window
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {
+  \ 'indent_levels': 1,
   \ 'layers' : ['content', 'include'],
   \ 'show_help': 0,
   \ 'split_pos': 'vert rightbelow',
@@ -154,7 +155,7 @@ let g:netrw_home = $HOME . '/.cache/nvim'
 let g:tex_flavor = 'latex'
 
 " Disable conceal across multiple filetypes
-let g:tex_conceal = ''
+" let g:tex_conceal = ''
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_json_syntax_conceal = 0

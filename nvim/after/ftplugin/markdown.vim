@@ -3,3 +3,4 @@
 
 " Formatting
 set formatoptions-=t
+set formatoptions-=r
