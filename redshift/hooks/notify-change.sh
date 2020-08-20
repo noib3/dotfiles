@@ -13,6 +13,6 @@ case $1 in
             /usr/local/bin/terminal-notifier -title "Redshift" \
                                              -subtitle "Switching temps..." \
                                              -message "$period" \
-                                             -appIcon $(dirname "$0")/Redshift-logo.png
+                                             -appIcon $(dirname "$0")/Redshift_logo.png
         fi
 esac

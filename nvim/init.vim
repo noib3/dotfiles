@@ -29,12 +29,6 @@ call plug#end()
 
 " Nvim settings {{{
 
-" Tab handling
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set expandtab
-
 " Line numbering
 set number
 set relativenumber
@@ -50,7 +44,6 @@ set smartcase
 " Line breaking
 set linebreak
 set textwidth=79
-set formatoptions+=c
 let &showbreak="\u21aa "
 
 " Code folding
@@ -60,6 +53,7 @@ let &fillchars='fold: '
 " Miscellaneous
 set autochdir
 set clipboard+=unnamedplus
+set expandtab
 set hidden
 set laststatus=0
 set noshowmode
@@ -247,7 +241,7 @@ augroup tex_group
   autocmd!
   autocmd BufRead *.sty setlocal syntax=tex
   autocmd BufRead *.cls setlocal syntax=tex
-  " autocmd BufRead *.tex call tex#PdfOpen()
+  autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
   autocmd User VimtexEventTocActivated norm zt

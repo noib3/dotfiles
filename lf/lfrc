@@ -2,19 +2,18 @@
 set color256
 set drawbox
 set hidden
-set shell zsh
 set period 1
 set ifs "\n"
 set previewer ~/.config/lf/previewer.sh
 set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w\033[0m\033[1m%f\033[0m"
-set timefmt ""
+set timefmt ''
 
 # Opener function
 cmd open ${{
     case $(file -b --mime-type $fx) in
         text/*) $EDITOR $fx;;
         inode/x-empty) $EDITOR $fx;;
-        *) for f in $fx; do open $f &>/dev/null done;;
+        *) for f in $fx; do open "$f" &>/dev/null; done;;
     esac
 }}
 
@@ -37,21 +36,6 @@ cmd newdir %{{
     lf -remote "send $id select \"$@\""
 }}
 
-# Fuzzy search a file and open it in $EDITOR
-cmd fuzzy_edit ${{
-    clear
-    filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
-}}
-
-# Fuzzy search a directory and cd into it
-cmd fuzzy_cd ${{
-    clear
-    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
-                sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
-                fzf --height=80%)" \
-    && lf -remote "send $id cd ~/$dirname"
-}}
-
 # Add execute permissions
 cmd make_executable %{{
     chmod +x $fx
@@ -64,15 +48,39 @@ cmd remove_executable %{{
     lf -remote "send $id reload"
 }}
 
-# Eject all the highlighted disks
-cmd eject_disk %{{
-    diskutil eject $fx &>/dev/null
+# Set the wallpaper
+cmd set_wallpaper %{{
+    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$fx\"" &>/dev/null
+    osascript -e 'quit app "Finder"' &>/dev/null
 }}
 
-# Set the highlighted image as wallpaper
-cmd set_wallpaper %{{
-    osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$f\""
-    osascript -e 'quit app "Finder"' &>/dev/null
+# Eject a disk and send a notification
+cmd eject_disk %{{
+    for f in $fx; do
+        space_left=$(diskutil info "$f" 2>/dev/null |
+                      sed -n 's/.*Volume Free Space:\s*//p' |
+                      awk '{print $1, $2}')
+        diskutil eject "$f" &>/dev/null && \
+            terminal-notifier -title "Disk ejected" \
+                              -subtitle "\'$(basename $f)' has been ejected" \
+                              -message "There are $space_left left on disk" \
+                              -appIcon ~/.config/lf/hard-disk_icon.png
+    done
+}}
+
+# Fuzzy search a file and open it in $EDITOR
+cmd fuzzy_edit ${{
+    clear
+    filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
+}}
+
+# Fuzzy search a directory and cd into it
+cmd fuzzy_cd ${{
+    clear
+    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
+                sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
+                fzf --height=80%)" \
+        && lf -remote "send $id cd ~/$dirname"
 }}
 
 # Mappings
@@ -83,10 +91,10 @@ map u :unselect; clear
 map t push :touch<space>
 map k push :mkdir<space>
 map D push :newdir<space>
-map <c-x><c-e> fuzzy_edit
-map <c-x><c-d> fuzzy_cd
 map + make_executable
 map - remove_executable
-map j eject_disk
 map s set_wallpaper
+map j eject_disk
+map <c-x><c-e> fuzzy_edit
+map <c-x><c-d> fuzzy_cd
 map gvl cd "/Volumes"

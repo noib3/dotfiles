@@ -117,7 +117,7 @@ shift + cmd - 3 : \
         terminal-notifier -title "New screenshot" \
                           -subtitle "$(basename $ss_name)" \
                           -message "Saved in $(dirname $ss_name)" \
-                          -appIcon ~/.config/skhd/screenshot-icon.png \
+                          -appIcon ~/.config/skhd/screenshot_icon.png \
                           -contentImage "$ss_name"
 
 # Screenshot a portion of the screen, then send a notification if the screenshot
@@ -128,5 +128,5 @@ shift + cmd - 4 : \
         terminal-notifier -title "New screenshot" \
                           -subtitle "$(basename $ss_name)" \
                           -message "Saved in $(dirname $ss_name)" \
-                          -appIcon ~/.config/skhd/screenshot-icon.png \
+                          -appIcon ~/.config/skhd/screenshot_icon.png \
                           -contentImage "$ss_name"
