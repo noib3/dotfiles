@@ -1,58 +1,5 @@
 extends plaintex
 
-snippet template "Basic KOMA-Script article template" bA
-\documentclass[${1:paper=A4,}${2:fontsize=14pt,DIV=calc}${3:parskip=half-,}${4:fleqn}]{scrartcl}
-
-% Packages {{{
-
-% Input and output encodings
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-
-% Math
-${5:\usepackage{amsmath}}
-${6:\usepackage{amssymb}}
-${7:\usepackage{amsthm}}
-
-% References
-${8:\usepackage{hyperref}}
-${9:\usepackage{cleveref}}
-
-% Miscellaneous
-${10:\usepackage{enumitem}}
-${11:\usepackage{float}}
-${12:\usepackage{microtype}}
-${13:\usepackage{graphicx}}
-${14:\usepackage{xcolor}}
-
-% }}}
-
-% Macros {{{
-
-% Number sets
-${15:\newcommand{\N}{\mathbb{N}}}
-${16:\newcommand{\Z}{\mathbb{Z}}}
-${17:\newcommand{\Q}{\mathbb{Q}}}
-${18:\newcommand{\R}{\mathbb{R}}}
-${19:\newcommand{\C}{\mathbb{C}}}
-
-% }}}
-
-% Title, author and date {{{
-
-\title{$20}
-\author{${21:Riccardo Mazzarini}}
-\date{$22}
-
-% }}}
-
-\begin{document}
-
-$0
-
-\end{document}
-endsnippet
-
 snippet table "Table environment" bA
 \begin{table}[${1:!htbp}]
   % if loading 'float' package use option H to enforce placement at this point
@@ -105,34 +52,85 @@ snippet defn "Definition environment" bA
 $0
 endsnippet
 
-snippet beg "Generic environment" bA
-\begin{$1}
-  $2
-\end{$1}
-$0
-endsnippet
-
-snippet newday "Newday environment" bA
-\begin{newday}[$1${2:, y}]
-  $0
-\end{newday}
-endsnippet
-
 snippet me "Unnumbered equation" bA
-%
 \[
   $1
 \]
-${2:%}
+$0
+endsnippet
+
+snippet mne "Numbered equation" bA
+\begin{equation}
+  $1
+\end{equation}
 $0
 endsnippet
 
 snippet alig "Unnumbered aligned equations" bA
-%
 \begin{align*}
   $1 &= $2 \\\\
   &= $3
 \end{align*}
-${2:%}
 $0
 endsnippet
+
+# helpers
+
+# global !p
+# def delline_exititemize(snip):
+#     cursorline = snip.cursor[0]
+#     del snip.buffer[cursorline]
+
+#     # add blank line after \end{itemize}
+#     snip.buffer.append("\n", cursorline + 1 + 1)
+#     # cursorline+1 is the linenr (1-based)
+
+#     # place cursor on blank line after \end{itemize}
+#     snip.cursor.set(cursorline+1, 0)
+
+# def in_itemize(snip):
+#     # find using searchpairpos('\begin{itemize}','','\end{itemize}','bnWz')
+#     beginpos = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}','bnWz')")
+#     endpos   = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}', 'nWz')")
+#     curpos   = snip.cursor.to_vim_cursor()
+#     if beginpos == ['0','0'] or endpos == ['0','0']: return False
+#     if posCompare(beginpos, curpos) < 0 and posCompare(curpos, endpos) < 0:
+#         return True
+#     else:
+#         return False
+
+# def posCompare(cur1, cur2):
+#     """ returns -1 if cur1 is before cur2, +1 if after, and 0 if cur1==cur2
+#         cur1, cur2 are required to be lists of the form [row,col]
+#     """
+#     cur1r = int(cur1[0])
+#     cur1c = int(cur1[1])
+#     cur2r = int(cur2[0])
+#     cur2c = int(cur2[1])
+#     if   cur1r < cur2r: return -1
+#     elif cur1r > cur2r: return  1
+#     else:
+#         if   cur1c < cur2c: return -1
+#         elif cur1c > cur2c: return  1
+#         else: return 0
+# endglobal
+
+# # snippets
+
+# context "not in_itemize(snip)"
+# snippet item "start list of items" bA
+# \begin{itemize}
+#   \item $1
+# \end{itemize}
+# endsnippet
+
+# context "in_itemize(snip)"
+# snippet "(^\s*)\\item\s*\S+.*$" "create next item" r
+# `!p snip.rv=match.group(0)`
+# `!p snip.rv=match.group(1)`\item $0
+# endsnippet
+
+# context "in_itemize(snip)"
+# post_jump "delline_exititemize(snip)"
+# snippet "^\s*\\item\s*" "exit itemize" r
+# endsnippet

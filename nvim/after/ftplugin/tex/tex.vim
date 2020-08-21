@@ -17,8 +17,16 @@ setlocal shell=bash
 " Set the error format
 setlocal errorformat=%f:%l:\ %m
 
-" Autopair dollar signs
-let g:AutoPairs['$']='$'
+" Autopair dollar signs and typographic quotes
+" call lexima#add_rule({'char': '$', 'input_after': '$', 'filetype': 'tex'})
+" call lexima#add_rule({'char': '$', 'at': '\%#\$', 'leave': 1, 'filetype': 'tex'})
+" call lexima#add_rule({'char': '<BS>', 'at': '\$\%#\$', 'delete': 1, 'filetype': 'tex'})
+" call lexima#add_rule({'char': "'", 'input_after': '`', 'filetype': 'tex'})
+" call lexima#add_rule({'char': '$', 'at': '\%#\$', 'leave': 1, 'filetype': 'tex'})
+" call lexima#add_rule({'char': '<BS>', 'at': "`\%#'", 'delete': 1, 'filetype': 'tex'})
+" let b:coc_pairs = [["$", "$"], ["`", "'"]]
+" let g:AutoPairs['$'] = '$'
+" let g:AutoPairs['`'] = "'"
 
 " Compile the document, open the PDF file and forward search from nvim to Skim
 nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>
@@ -29,8 +37,8 @@ nmap <buffer> <silent> <localleader>f :call tex#SkimForwardSearch()<CR>
 nmap <silent> <Leader><Leader> <plug>(vimtex-toc-open)
 
 " Autoinsert '\item ' on the next line if the current line has '\item' in it
-" Inspired by the following Stack Overflow answer
+" Inspired by the following Stack Overflow answer:
 "   https://stackoverflow.com/a/2554770/10786411:
 imap <buffer> <expr> <CR> "\r".tex#AutoInsertItem()
-nmap <buffer> <expr> o "o".tex#AutoInsertItem()
-nmap <buffer> <expr> O "O".tex#AutoInsertItem()
+" nmap <buffer> <expr> o "o".tex#AutoInsertItem()
+" nmap <buffer> <expr> O "O".tex#AutoInsertItem()

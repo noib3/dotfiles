@@ -14,6 +14,9 @@ setlocal foldtext=MarkerFoldsText()
 " Display vertical columns at 80 and 100 characters
 execute "set cc=" . (&cc == "" ? "80,100" : "")
 
+" Autopair less-than with greater-than signs
+" let g:AutoPairs['<']='>'
+
 " Fold text for marker folds
 function! MarkerFoldsText()
   let comment_char = substitute(&commentstring, '\s*%s', '', '')

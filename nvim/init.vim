@@ -4,11 +4,12 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
-  Plug 'jiangmiao/auto-pairs'
+  " Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
+  Plug 'cohama/lexima.vim'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
@@ -155,7 +156,7 @@ let g:netrw_home = $HOME . '/.cache/nvim'
 let g:tex_flavor = 'latex'
 
 " Disable conceal across multiple filetypes
-" let g:tex_conceal = ''
+let g:tex_conceal = ''
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_json_syntax_conceal = 0
@@ -180,9 +181,15 @@ map <silent> <C-w> :q<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 imap <silent> <C-w> <C-o>:q<CR>
 
+iabbrev ‘ ‘’<Left>
+
 " Navigate wrapped lines
-nnoremap <Up> gk
-nnoremap <Down> gj
+" nmap <Up> gk
+" nmap <Down> gj
+" These following two don't play nicely with coc menus, probably need a <expr>
+" mapping if I want to use them.
+" imap <Up> <C-o>gk
+" imap <Down> <C-o>gj
 
 " Replace string globally
 nmap ss :%s//g<Left><Left>
@@ -228,9 +235,8 @@ endfunction
 " Autogroups {{{
 
 " Autocommands for all file types
-augroup all_group
+augroup all
   autocmd!
-  " autocmd FileType * setlocal formatoptions-=cro
   autocmd InsertEnter * norm zz
   autocmd BufWritePre * let curr_pos = getpos('.')
                         \ | %s/\s\+$//e
@@ -238,18 +244,18 @@ augroup all_group
 augroup END
 
 " Autocommands for TeX related files
-augroup tex_group
+augroup tex
   autocmd!
   autocmd BufRead *.sty setlocal syntax=tex
   autocmd BufRead *.cls setlocal syntax=tex
-  autocmd BufRead *.tex call tex#PdfOpen()
+  " autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
   autocmd User VimtexEventTocActivated norm zt
 augroup END
 
 " Autocommands to set/override some highlight groups
-augroup highlight_group
+augroup highlights
   autocmd!
   autocmd ColorScheme * hi Normal guibg=NONE
   autocmd ColorScheme * hi Comment gui=italic
