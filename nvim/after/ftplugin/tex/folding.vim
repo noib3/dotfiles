@@ -35,13 +35,13 @@ endif
 " Optimize by predefining common patterns
 let s:folded = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\(\*\)\?\|end{document}\)'
 
-" Find all the sections and their fold level
-let s:found_sections_levels = s:ParseFoldSections()
-
 function! LaTeXFoldsExpr(lnum) " {{{1
   " Get this line and the next one
   let this_line = getline(a:lnum)
   let next_line = getline(a:lnum + 1)
+
+  " Find all the sections and their fold level
+  let found_sections_levels = s:ParseFoldSections()
 
   " Check for normal lines first
   if this_line !~# s:folded
@@ -51,7 +51,7 @@ function! LaTeXFoldsExpr(lnum) " {{{1
       if next_line =~# '^\s*\\end{document}\s*$'
         return 0
       else
-        for [section_pattern, fold_level] in s:found_sections_levels
+        for [section_pattern, fold_level] in found_sections_levels
           if next_line =~# section_pattern
             " I don't understand why I get what I want with <= instead of >=
             " Even < without the = works, it doesn't make sense
@@ -69,7 +69,7 @@ function! LaTeXFoldsExpr(lnum) " {{{1
   endif
 
   " Fold sections
-  for [section_pattern, fold_level] in s:found_sections_levels
+  for [section_pattern, fold_level] in found_sections_levels
     if this_line =~# section_pattern
       return ">".fold_level
     endif
