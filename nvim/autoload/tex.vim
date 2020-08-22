@@ -65,7 +65,7 @@ endfunction
 
 " Autoinsert '\item ' on the next line if the current line has '\item' in it
 function tex#AutoInsertItem()
-  if getline('.') =~# '\item' && pumvisible() == 0
+  if getline('.') =~# '\\item' && pumvisible() == 0
     return '\item '
   endif
   return ''

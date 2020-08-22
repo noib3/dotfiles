@@ -4,12 +4,10 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
-  " Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
-  Plug 'cohama/lexima.vim'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
@@ -70,6 +68,7 @@ set undofile
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
+  \ 'coc-pairs',
   \ 'coc-python',
   \ 'coc-vimlsp',
   \ 'coc-vimtex',
@@ -129,6 +128,9 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 let g:vimtex_compiler_enabled = 0
 let g:vimtex_view_enabled = 0
 
+" Disable all insert mode mappings
+let g:vimtex_imaps_enabled = 0
+
 " Options for the ToC window
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {
@@ -180,8 +182,6 @@ map <silent> <C-s> :w<CR>
 map <silent> <C-w> :q<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 imap <silent> <C-w> <C-o>:q<CR>
-
-iabbrev ‘ ‘’<Left>
 
 " Navigate wrapped lines
 " nmap <Up> gk
@@ -267,7 +267,7 @@ augroup END
 
 " Colorscheme {{{
 
-" Has to be after highlight_group augroup definition
+" Has to be after the highlights augroup definition
 colorscheme onedark
 
 " }}}

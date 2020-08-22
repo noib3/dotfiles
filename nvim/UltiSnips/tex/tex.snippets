@@ -1,0 +1,103 @@
+extends plaintex
+
+snippet table "Table environment"
+%
+\begin{table}[${1:!htbp}]
+  % if loading 'float' package use option H to enforce placement at this point
+  \centering
+  \begin{tabular}{${2:c}}
+    $3 \\\\
+  \end{tabular}
+  \label{tab:$4}
+  \caption{$5}
+\end{table}
+${2:%}
+$0
+endsnippet
+
+snippet fig "Figure environment"
+%
+\begin{figure}[${1:!htbp}]
+  % if loading 'float' package use option H to enforce placement at this point
+  \centering
+  \includegraphics[width=${2:0.8}\\textwidth]{${3:./figures/}$4.${5:pdf}}
+  \label{fig:$6}
+  \caption{$7}
+\end{figure}
+${8:%}
+$0
+endsnippet
+
+snippet item "Itemize environment" bA
+%
+\begin{itemize}
+  \item $1
+\end{itemize}
+${2:%}
+$0
+endsnippet
+
+snippet enum "Enumerate environment" bA
+%
+\begin{enumerate}
+  \item $1
+\end{enumerate}
+${2:%}
+$0
+endsnippet
+
+snippet tm "\item " bA
+\item $0
+endsnippet
+
+snippet thm "Theorem environment"
+%
+\begin{thm}$1
+  $2
+\end{thm}
+${3:%}
+$0
+endsnippet
+
+snippet defn "Definition environment"
+%
+\begin{defn}$1
+  $2
+\end{defn}
+${3:%}
+$0
+endsnippet
+
+snippet me "Unnumbered equation"
+%
+\[
+  $1
+\]
+${2:%}
+$0
+endsnippet
+
+# ciao {{{
+
+snippet mne "Numbered equation"
+%
+\begin{equation}
+  $1
+\end{equation}
+${2:%}
+$0
+endsnippet
+
+snippet alig "Unnumbered aligned equations"
+%
+\begin{align*}
+  $1 &= $2 \\\\
+  &= $3
+\end{align*}
+${4:%}
+$0
+endsnippet
+
+# }}}
+
+# vim: set foldmethod=marker:

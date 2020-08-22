@@ -6,6 +6,8 @@
 # Check out the guy's blog for more awesome (La)TeX note-taking tips:
 #   https://castel.dev/
 
+# Math context {{{
+
 global !p
 vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
 texMathZones = [x.strip() for x in vim.eval('@a').split(',')][1:]
@@ -26,6 +28,8 @@ def math():
         return False
 endglobal
 
+# }}}
+
 snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" rwA
 \\`!p snip.rv = match.group(1)`{$1}`!p
 if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
@@ -34,6 +38,8 @@ else:
     snip.rv = ''
 `$2
 endsnippet
+
+# Math snippets {{{
 
 snippet md "Inline math" wA
 $$1$`!p
@@ -133,3 +139,7 @@ context "math()"
 snippet lrc "left right curly brackets" iA
 \left\\{ ${1:${VISUAL}} \right \\} $0
 endsnippet
+
+# }}}
+
+# vim: set foldmethod=marker:

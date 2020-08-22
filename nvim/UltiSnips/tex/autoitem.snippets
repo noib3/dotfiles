@@ -1,0 +1,53 @@
+# helpers
+
+global !p
+def delline_exititemize(snip):
+    cursorline = snip.cursor[0]
+    del snip.buffer[cursorline]
+
+    # add blank line after \end{itemize}
+    snip.buffer.append("\n", cursorline + 1 + 1)
+    # cursorline+1 is the linenr (1-based)
+
+    # place cursor on blank line after \end{itemize}
+    snip.cursor.set(cursorline+1, 0)
+
+def in_itemize(snip):
+    # find using searchpairpos('\begin{itemize}','','\end{itemize}','bnWz')
+    beginpos = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}','bnWz')")
+    endpos   = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}', 'nWz')")
+    curpos   = snip.cursor.to_vim_cursor()
+    if beginpos == ['0','0'] or endpos == ['0','0']: return False
+    if posCompare(beginpos, curpos) < 0 and posCompare(curpos, endpos) < 0:
+        return True
+    else:
+        return False
+
+def posCompare(cur1, cur2):
+    """ returns -1 if cur1 is before cur2, +1 if after, and 0 if cur1==cur2
+        cur1, cur2 are required to be lists of the form [row,col]
+    """
+    cur1r = int(cur1[0])
+    cur1c = int(cur1[1])
+    cur2r = int(cur2[0])
+    cur2c = int(cur2[1])
+    if   cur1r < cur2r: return -1
+    elif cur1r > cur2r: return  1
+    else:
+        if   cur1c < cur2c: return -1
+        elif cur1c > cur2c: return  1
+        else: return 0
+endglobal
+
+# snippets
+
+context "in_itemize(snip)"
+snippet "(^\s*)\\item\s*\S+.*$" "create next item" r
+`!p snip.rv=match.group(0)`
+`!p snip.rv=match.group(1)`\item $0
+endsnippet
+
+context "in_itemize(snip)"
+post_jump "delline_exititemize(snip)"
+snippet "^\s*\\item\s*" "exit itemize" r
+endsnippet
