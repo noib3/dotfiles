@@ -18,7 +18,8 @@ setlocal shell=bash
 setlocal errorformat=%f:%l:\ %m
 
 " Autopair dollar signs and quotes
-let b:coc_pairs = [["$", "$"], ["`", "'"]]
+let g:AutoPairs['$'] = '$'
+let g:AutoPairs['`'] = "'"
 
 " Compile the document, open the PDF file and forward search from nvim to Skim
 nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>

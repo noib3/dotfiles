@@ -29,6 +29,11 @@ if !exists('g:LaTeXFolds_fold_sections')
     \ ]
 endif
 
+" Option to fold preamble
+if !exists('g:LaTeXFolds_fold_preamble')
+  let g:LaTeXFolds_fold_preamble = 1
+endif
+
 " Join all section names in a single regex, including potential asterisks for
 " starred sections (e.g. \chapter*{..}).
 let s:sections_regex = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\)\(\*\)\?{.*'
@@ -64,7 +69,17 @@ function! LaTeXFoldsExpr(lnum) " {{{1
   let current_line = getline(a:lnum)
   let next_line = getline(a:lnum + 1)
 
-  " Try to match 'regular' lines first
+  " TODO: Maybe just return '-1' if the line is blank?
+
+  " Fold the preamble, leaving \documentclass{...} and any blank line after it
+  "and \begin{document} and any blank lines before it unfolded.
+  if g:LaTeXFolds_fold_preamble == 1
+    if current_line =~# '\\documentclass' | return '>1' | endif
+    if current_line =~# '\\begin{document}' | return '0' | endif
+    if current_line =~ '^\s*$' | return '-1' | endif
+  endif
+
+  " Fold 'regular lines' in the document
   if current_line !~# s:sections_regex
     " If this line contains \end{document} return 0
     if current_line =~# '\\end{document}' | return '0' | endif
@@ -80,17 +95,9 @@ function! LaTeXFoldsExpr(lnum) " {{{1
     if next_line =~# '\\end{document}' | return '0' | endif
 
     " If I get here it means the current line is blank and the next one
-    " contains a sectioning command.
-    " If the fold level of the next line is greater than or equal to the one of
-    " the previous line, return the latter.
-    " If instead it's less than the one of the previous line, return the fold
-    " level of the next line.
-    let next_line_section = substitute(next_line, s:sections_regex, '\1', '')
-    if s:fold_levels[next_line_section] >= foldlevel(a:lnum - 1)
-      return '='
-    else
-      return s:fold_levels[next_line_section]
-    endif
+    " contains a sectioning command. Return the fold level of the previous line
+    " or the next line, whichever is the lowest.
+    return '-1'
   endif
 
   let current_line_section = substitute(current_line, s:sections_regex, '\1', '')

@@ -4,6 +4,7 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
+  Plug 'jiangmiao/auto-pairs'
   Plug 'rbgrouleff/bclose.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
@@ -86,10 +87,8 @@ imap <silent> <C-w> <C-o>:q<CR>
 " Navigate wrapped lines
 nmap <Up> gk
 nmap <Down> gj
-" These following two don't play nicely with coc menus, probably need a <expr>
-" mapping if I want to use them.
-" imap <Up> <C-o>gk
-" imap <Down> <C-o>gj
+imap <expr> <Up> pumvisible() == 0 ? '<C-o>gk' : '<Up>'
+imap <expr> <Down> pumvisible() == 0 ? '<C-o>gj' : '<Down>'
 
 " Replace string globally
 nmap ss :%s//g<Left><Left>
@@ -117,7 +116,8 @@ cnoremap 3636 <C-u>undo<CR>
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
-  \ 'coc-pairs',
+  \ 'coc-explorer',
+  \ 'coc-json',
   \ 'coc-python',
   \ 'coc-vimlsp',
   \ 'coc-vimtex',
@@ -135,6 +135,8 @@ let g:coc_sources_disable_map = {
   \ 'yaml': ['around', 'buffer'],
   \ 'zsh': ['around', 'buffer'],
   \ }
+
+nmap <silent> <Leader>e :CocCommand explorer<CR>
 
 " }}}
 

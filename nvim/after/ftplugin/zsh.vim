@@ -2,6 +2,7 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Formatting
+set formatoptions+=a
 set formatoptions-=r
 set formatoptions-=o
 

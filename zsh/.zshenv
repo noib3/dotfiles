@@ -36,6 +36,7 @@ export LC_ALL=en_US.UTF-8
 export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
 export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
+export npm_config_cache=$HOME/.cache/npm
 
 # Don't update Homebrew automatically every time it's launched
 export HOMEBREW_NO_AUTO_UPDATE=1
