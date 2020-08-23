@@ -1,12 +1,12 @@
 " Maintainer: Riccardo Mazzarini
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
-" Compile the document and return pdflatex's exit code through PIPESTATUS. If
-" it's not zero read the error file and jump to the first error.
-" Unfortunately pdflatex doesn't pass the errors' column numbers to quickfix,
-" so the best we can do if there's an error is to jump to the corresponding
-" line.
-function! tex#Compile()
+function! tex#Compile() " {{{1
+  " Compile the document and return pdflatex's exit code through PIPESTATUS. If
+  " it's not zero read the error file and jump to the first error.
+  " Unfortunately pdflatex doesn't pass the errors' column numbers to quickfix,
+  " so the best we can do if there's an error is to jump to the corresponding
+  " line.
   let errorfile='/tmp/nvim_tex.err'
   execute '!pdflatex -halt-on-error -file-line-error -synctex=1 ' . expand('%')
           \ . ' 2>&1 | tee ' . errorfile . '; exit ${PIPESTATUS[0]}'
@@ -14,10 +14,10 @@ function! tex#Compile()
     execute 'silent cfile ' . errorfile
   endif
   execute 'silent !sudo rm ' . errorfile
-endfunction
+endfunction " }}}1
 
-" Open the PDF file created by a TeX document
-function! tex#PdfOpen()
+function! tex#PdfOpen() " {{{1
+  " Open the PDF file created by a TeX document
   let filepath = expand('%:p:r') . '.pdf'
   if filereadable(filepath)
     execute 'silent !open ' . shellescape(filepath,1) . ' -g'
@@ -26,11 +26,11 @@ function! tex#PdfOpen()
     echomsg 'No pdf file "' . filepath . '"'
     echohl None
   endif
-endfunction
+endfunction " }}}1
 
-" Close the PDF file created by a TeX document
-" It only works with yabai + Skim
-function! tex#PdfClose(filepath, filename)
+function! tex#PdfClose(filepath, filename) " {{{1
+  " Close the PDF file created by a TeX document
+  " It only works with yabai + Skim
   if filereadable(a:filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
@@ -49,10 +49,10 @@ function! tex#PdfClose(filepath, filename)
       endfor
     endif
   endif
-endfunction
+endfunction " }}}1
 
-" Use Skim's displayline to jump from a line in a TeX document to its PDF output
-function! tex#SkimForwardSearch()
+function! tex#SkimForwardSearch() " {{{1
+  " Use Skim's displayline to jump from a line in a TeX document to its PDF output
   let filepath = expand('%:p:r') . '.pdf'
   if filereadable(filepath)
     execute 'silent !displayline ' . line('.') . ' ' . shellescape(filepath,1)
@@ -61,12 +61,14 @@ function! tex#SkimForwardSearch()
     echomsg 'No pdf file "' . filepath . '"'
     echohl None
   endif
-endfunction
+endfunction " }}}1
 
-" Autoinsert '\item ' on the next line if the current line has '\item' in it
-function tex#AutoInsertItem()
+function! tex#AutoInsertItem() " {{{1
+  " Autoinsert '\item ' on the next line if the current line has '\item' in it
   if getline('.') =~# '\\item' && pumvisible() == 0
     return '\item '
   endif
   return ''
-endfunction
+endfunction " }}}1
+
+" vim: set foldmethod=marker:

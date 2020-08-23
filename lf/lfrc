@@ -98,3 +98,5 @@ map j eject_disk
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 map gvl cd "/Volumes"
+cmap <up> cmd-history-prev
+cmap <down> cmd-history-next

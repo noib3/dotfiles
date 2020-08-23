@@ -4,10 +4,12 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
+  Plug 'rbgrouleff/bclose.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
+  Plug 'ptzz/lf.vim'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
@@ -62,7 +64,54 @@ set undofile
 
 " }}}
 
-" Plugin settings {{{
+" Nvim mappings {{{
+
+" Leader keys
+let mapleader = ','
+let maplocalleader = ','
+
+" Go to beginning/end of line
+map <C-a> ^
+cmap <C-a> <C-b>
+map <C-e> $
+imap <C-a> <C-o>I
+imap <C-e> <C-o>A
+
+" Save and quit
+map <silent> <C-s> :w<CR>
+map <silent> <C-w> :q<CR>
+imap <silent> <C-s> <C-o>:w<CR>
+imap <silent> <C-w> <C-o>:q<CR>
+
+" Navigate wrapped lines
+nmap <Up> gk
+nmap <Down> gj
+" These following two don't play nicely with coc menus, probably need a <expr>
+" mapping if I want to use them.
+" imap <Up> <C-o>gk
+" imap <Down> <C-o>gj
+
+" Replace string globally
+nmap ss :%s//g<Left><Left>
+
+" Toggle folds with space
+nmap <Space> za
+
+" Navigate splits
+nnoremap <Leader>w <C-w>k
+nnoremap <Leader>a <C-w>h
+nnoremap <Leader>s <C-w>j
+nnoremap <Leader>d <C-w>l
+
+" Toggle 80 and 100 characters columns
+nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
+
+" Fix for https://github.com/neovim/neovim/issues/11393
+cnoremap 3636 <C-u>undo<CR>
+
+" }}}
+
+" Plugin settings and mappings {{{
 
 " CoC {{{
 
@@ -101,6 +150,9 @@ let g:fzf_layout = {
   \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
   \ }
 
+map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
+imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
+
 " }}}
 
 " indentLine {{{
@@ -113,6 +165,13 @@ let g:indentLine_defaultGroup = 'Comment'
 
 " }}}
 
+" lf {{{
+
+" let g:lf_map_keys = 0
+nmap <silent> <Leader>l :Lf<CR>
+
+" }}}
+
 " UltiSnips {{{
 
 let g:UltiSnipsExpandTrigger = '<tab>'
@@ -122,96 +181,7 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " }}}
 
-" vimtex {{{
-
-" Disable the compiler and viewer interfaces
-let g:vimtex_compiler_enabled = 0
-let g:vimtex_view_enabled = 0
-
-" Disable all insert mode mappings
-let g:vimtex_imaps_enabled = 0
-
-" Options for the ToC window
-let g:vimtex_toc_show_preamble = 0
-let g:vimtex_toc_config = {
-  \ 'indent_levels': 1,
-  \ 'layers' : ['content', 'include'],
-  \ 'show_help': 0,
-  \ 'split_pos': 'vert rightbelow',
-  \ 'tocdepth': 6,
-  \ }
-
-" }}}
-
-" }}}
-
-" Assign variables {{{
-
-" Leader keys
-let mapleader = ','
-let maplocalleader = ','
-
-" Home directory for bookmarks and history
-let g:netrw_home = $HOME . '/.cache/nvim'
-
-" Set default .tex's files filetype to LaTeX
-let g:tex_flavor = 'latex'
-
-" Disable conceal across multiple filetypes
-let g:tex_conceal = ''
-let g:vim_markdown_conceal = 0
-let g:vim_markdown_conceal_code_blocks = 0
-let g:vim_json_syntax_conceal = 0
-
-" Set default shell syntax highlighting to POSIX
-let g:is_posix = 1
-
-" }}}
-
-" Mappings {{{
-
-" Go to beginning/end of line
-map <C-a> ^
-cmap <C-a> <C-b>
-map <C-e> $
-imap <C-a> <C-o>I
-imap <C-e> <C-o>A
-
-" Save and quit
-map <silent> <C-s> :w<CR>
-map <silent> <C-w> :q<CR>
-imap <silent> <C-s> <C-o>:w<CR>
-imap <silent> <C-w> <C-o>:q<CR>
-
-" Navigate wrapped lines
-" nmap <Up> gk
-" nmap <Down> gj
-" These following two don't play nicely with coc menus, probably need a <expr>
-" mapping if I want to use them.
-" imap <Up> <C-o>gk
-" imap <Down> <C-o>gj
-
-" Replace string globally
-nmap ss :%s//g<Left><Left>
-
-" Toggle folds with space
-nmap <Space> za
-
-" Navigate splits
-nnoremap <Leader>w <C-w>k
-nnoremap <Leader>a <C-w>h
-nnoremap <Leader>s <C-w>j
-nnoremap <Leader>d <C-w>l
-
-" Toggle 80 and 100 characters columns
-nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
-
-" Fix for https://github.com/neovim/neovim/issues/11393
-cnoremap 3636 <C-u>undo<CR>
-
-" fzf
-map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
+" Vem Tabline {{{
 
 " Cycle through and delete buffers
 nmap <Tab> <Plug>vem_next_buffer-
@@ -229,6 +199,29 @@ function! DeleteCurrentBuffer() abort
     " If the operation is cancelled, do nothing
   endtry
 endfunction
+
+" }}}
+
+" vimtex {{{
+
+" Disable all insert mode mappings
+let g:vimtex_imaps_enabled = 0
+
+" Disable the compiler and viewer interfaces
+let g:vimtex_compiler_enabled = 0
+let g:vimtex_view_enabled = 0
+
+" Options for the ToC window
+let g:vimtex_toc_show_preamble = 0
+let g:vimtex_toc_config = {
+  \ 'indent_levels': 1,
+  \ 'layers' : ['content', 'include'],
+  \ 'show_help': 0,
+  \ 'split_pos': 'vert rightbelow',
+  \ 'tocdepth': 6,
+  \ }
+
+" }}}
 
 " }}}
 
@@ -262,6 +255,25 @@ augroup highlights
   autocmd ColorScheme * hi Visual guibg=#7aa6da guifg=#ffffff
   autocmd ColorScheme * hi VertSplit guibg=#5c6370 guifg=NONE
 augroup END
+
+" }}}
+
+" Global variables {{{
+
+" Home directory for bookmarks and history
+let g:netrw_home = $HOME . '/.cache/nvim'
+
+" Set default .tex's files filetype to LaTeX
+let g:tex_flavor = 'latex'
+
+" Disable conceal across multiple filetypes
+let g:tex_conceal = ''
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_json_syntax_conceal = 0
+
+" Set default shell syntax highlighting to POSIX
+let g:is_posix = 1
 
 " }}}
 

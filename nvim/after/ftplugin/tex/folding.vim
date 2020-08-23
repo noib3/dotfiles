@@ -1,15 +1,12 @@
 " Maintainer: Riccardo Mazzarini
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
-" The following file was taken as a starting point for this one:
-"   https://github.com/petobens/dotfiles/blob/master/vim/ftplugin/tex/folding.vim
-"
-" Also, the two functions s:clear_texorpdfstring() and s:find_closing() were
-" taken from the vimtex's plugin, specifically from autoload/vimtex/parser/toc.vim
-"
 " In the following comments and definitions a section is a generic term for any
-" sectioning command like \part{} or \subsection{}, not just a literal
-" \section{}.
+" sectioning command like \part{..} or \subsection{..}, not just a literal
+" \section{..}.
+
+" The two functions s:clear_texorpdfstring() and s:find_closing() were taken
+" from the vimtex's plugin, specifically from autoload/vimtex/parser/toc.vim
 
 " Define (re)inclusion guard
 if exists('b:LaTeXFolds_loaded')
@@ -32,65 +29,81 @@ if !exists('g:LaTeXFolds_fold_sections')
     \ ]
 endif
 
-" Optimize by predefining common patterns
-let s:folded = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\(\*\)\?\|end{document}\)'
+" Join all section names in a single regex, including potential asterisks for
+" starred sections (e.g. \chapter*{..}).
+let s:sections_regex = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\)\(\*\)\?{.*'
+
+function! s:find_sections() " {{{1
+  " This function finds which sections in g:LaTeXFolds_fold_sections are
+  " actually present in the document, and returns a dictionary where the keys
+  " are the section names and the values are their foldlevel in the document.
+
+  let fold_levels = {}
+
+  let level = 1
+  for section in g:LaTeXFolds_fold_sections
+    let i = 1
+    while i <= line('$')
+      if getline(i) =~# '^\s*\\' . section . '\(\*\)\?{.*'
+        let fold_levels[section] = level
+        let level += 1
+        break
+      endif
+      let i += 1
+    endwhile
+  endfor
+
+  return fold_levels
+endfunction " }}}1
+
+" s:find_sections() returns a dictionary where the keys are the section names
+" and the values are their foldlevel in the document.
+let s:fold_levels = s:find_sections()
 
 function! LaTeXFoldsExpr(lnum) " {{{1
-  " Get this line and the next one
-  let this_line = getline(a:lnum)
+  let current_line = getline(a:lnum)
   let next_line = getline(a:lnum + 1)
 
-  " Find all the sections and their fold level
-  let found_sections_levels = s:ParseFoldSections()
+  " Try to match 'regular' lines first
+  if current_line !~# s:sections_regex
+    " If this line contains \end{document} return 0
+    if current_line =~# '\\end{document}' | return '0' | endif
 
-  " Check for normal lines first
-  if this_line !~# s:folded
-    " A blank line before \end{document} or before a fold level less then or
-    " equal to the current one is left unfolded
-    if this_line =~# '^\s*$' && next_line =~# s:folded
-      if next_line =~# '^\s*\\end{document}\s*$'
-        return 0
-      else
-        for [section_pattern, fold_level] in found_sections_levels
-          if next_line =~# section_pattern
-            " I don't understand why I get what I want with <= instead of >=
-            " Even < without the = works, it doesn't make sense
-            if foldlevel(a:lnum - 1) <= fold_level
-              return fold_level - 1
-            else
-              return "="
-            endif
-          endif
-        endfor
-      endif
+    " If this line isn't blank return the fold level of the previous line
+    if current_line !~ '^\s*$' | return '=' | endif
+
+    " If the next line doesn't contain any sectioning commands or a
+    " \end{document}, return the fold level of the previous line.
+    if next_line !~# s:sections_regex && next_line !~# '\\end{document}' | return '=' | endif
+
+    " If the next line contains \end{document} return 0
+    if next_line =~# '\\end{document}' | return '0' | endif
+
+    " If I get here it means the current line is blank and the next one
+    " contains a sectioning command.
+    " If the fold level of the next line is greater than or equal to the one of
+    " the previous line, return the latter.
+    " If instead it's less than the one of the previous line, return the fold
+    " level of the next line.
+    let next_line_section = substitute(next_line, s:sections_regex, '\1', '')
+    if s:fold_levels[next_line_section] >= foldlevel(a:lnum - 1)
+      return '='
     else
-      return "="
+      return s:fold_levels[next_line_section]
     endif
   endif
 
-  " Fold sections
-  for [section_pattern, fold_level] in found_sections_levels
-    if this_line =~# section_pattern
-      return ">".fold_level
-    endif
-  endfor
-
-  " Return the fold level of the previous line
-  " Only the last line with \end{document} should get this far
-  return "="
-endfunction
-" }}}1
+  let current_line_section = substitute(current_line, s:sections_regex, '\1', '')
+  return '>' . s:fold_levels[current_line_section]
+endfunction " }}}1
 
 function! LaTeXFoldsText() "{{{1
-  " Extract the section, making sure that starred sections are handled
-  " correctly, and capitalize the first letter (chapter -> Chapter).
-  let section = substitute(getline(v:foldstart),
-                           \ '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\(\*\)\?\|') . '\){.*',
-                           \ '\u\1',
-                           \ '')
+  " Get the section name of the given line, capitalizing the first letter and
+  " including potential asterisks for starred sections (e.g. \chapter*{...}).
+  let section_name = substitute(getline(v:foldstart), s:sections_regex, '\u\1\2', '')
 
   " Escape possible asterisks in the section before using it as a regex
-  let escaped_section = substitute(section, '\*', '\\\*', '')
+  let escaped_section = substitute(section_name, '\*', '\\\*', '')
   let section_title = substitute(getline(v:foldstart),
                                  \ '^\s*\\' . escaped_section . '{\(.*\)}\s*$',
                                  \ '\1',
@@ -104,53 +117,13 @@ function! LaTeXFoldsText() "{{{1
 
   let dashes = repeat(v:folddashes, 2)
   let fold_size = v:foldend - v:foldstart + 1
-  let fill_num = 66 - strchars(dashes . section . section_title . fold_size)
+  let fill_num = 66 - strchars(dashes . section_name . section_title . fold_size)
 
-  return '+' . dashes . ' ' . section . ': ' . section_title . ' '
+  return '+' . dashes . ' ' . section_name . ': ' . section_title . ' '
           \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'
-endfunction
-" }}}1
+endfunction " }}}1
 
 " Helper functions {{{1
-
-function! s:ParseFoldSections() " {{{2
-  " This function returns the sections that are to be folded and their
-  " corresponding fold level.
-  let fold_sections = []
-  let fold_level = 1
-
-  " If this variable is set to 1 don't search the section in the file and just
-  " add it to fold_sections
-  let dont_search_add_section = 0
-
-  " Ignore unused section commands: if there's no 'part' then 'chapter' should
-  " have the highest fold level, if there's no 'chapter' then 'section' should
-  " have the highest fold level, and so on
-  for section in g:LaTeXFolds_fold_sections
-    " This is the pattern that we look for and the one we add to the
-    " fold_sections list. We also match 0 or 1 occurences of an asterisk after
-    " a section (\chapter{} or \chapter*{}) with \(\*\)\?
-    let section_pattern = '^\s*\\' . section . '\(\*\)\?{.*}\s*$'
-    if dont_search_add_section
-      call insert(fold_sections, [section_pattern, fold_level])
-      let fold_level += 1
-    else
-      let i = 1
-      while i < line('$')
-        if getline(i) =~# section_pattern
-          call insert(fold_sections, [section_pattern, fold_level])
-          let fold_level += 1
-          let dont_search_add_section = 1
-          break
-        endif
-        let i += 1
-      endwhile
-    endif
-  endfor
-
-  return fold_sections
-endfunction
-" }}}2
 
 function! s:clear_texorpdfstring(title) abort " {{{2
   " We only want the TeX string:
@@ -176,8 +149,7 @@ function! s:clear_texorpdfstring(title) abort " {{{2
   return strpart(a:title, 0, l:i1)
         \ . strpart(a:title, l:i2+1, l:i3-l:i2-1)
         \ . s:clear_texorpdfstring(strpart(a:title, l:i4+1))
-endfunction
-" }}}2
+endfunction " }}}2
 
 function! s:find_closing(start, string, count, type) abort " {{{2
   if a:type ==# '{'
@@ -201,8 +173,7 @@ function! s:find_closing(start, string, count, type) abort " {{{2
   endwhile
 
   return [l:i2, l:count]
-endfunction
-" }}}2
+endfunction " }}}2
 
 " }}}1
 
