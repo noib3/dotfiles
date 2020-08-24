@@ -7,4 +7,4 @@ set formatoptions-=r
 set formatoptions-=o
 
 " Display vertical columns at 80 and 100 characters
-execute "set cc=" . (&cc == "" ? "80,100" : "")
+execute 'set cc=' . (&cc == '' ? '80,100' : '')

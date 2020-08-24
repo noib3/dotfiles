@@ -63,12 +63,4 @@ function! tex#SkimForwardSearch() " {{{1
   endif
 endfunction " }}}1
 
-function! tex#AutoInsertItem() " {{{1
-  " Autoinsert '\item ' on the next line if the current line has '\item' in it
-  if getline('.') =~# '\\item' && pumvisible() == 0
-    return '\item '
-  endif
-  return ''
-endfunction " }}}1
-
 " vim: set foldmethod=marker:

@@ -1,4 +1,5 @@
 extends plaintex
+extends tex_placeitem
 
 snippet table "Table environment"
 %
@@ -46,10 +47,6 @@ ${2:%}
 $0
 endsnippet
 
-snippet tm "\item " bA
-\item $0
-endsnippet
-
 snippet thm "Theorem environment"
 %
 \begin{thm}$1
@@ -77,8 +74,6 @@ ${2:%}
 $0
 endsnippet
 
-# ciao {{{
-
 snippet mne "Numbered equation"
 %
 \begin{equation}
@@ -97,7 +92,3 @@ snippet alig "Unnumbered aligned equations"
 ${4:%}
 $0
 endsnippet
-
-# }}}
-
-# vim: set foldmethod=marker:

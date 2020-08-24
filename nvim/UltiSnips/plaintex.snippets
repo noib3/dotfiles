@@ -30,15 +30,6 @@ endglobal
 
 # }}}
 
-snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" rwA
-\\`!p snip.rv = match.group(1)`{$1}`!p
-if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
-    snip.rv = ' '
-else:
-    snip.rv = ''
-`$2
-endsnippet
-
 # Math snippets {{{
 
 snippet md "Inline math" wA
@@ -68,11 +59,6 @@ endsnippet
 context "math()"
 snippet lim "lim" iA
 \lim_{${1:n} \to ${2:\infty}} $0
-endsnippet
-
-context "math()"
-snippet sqr "Square root" iA
-\sqrt{${1:${VISUAL}}}$0
 endsnippet
 
 context "math()"
@@ -141,5 +127,14 @@ snippet lrc "left right curly brackets" iA
 endsnippet
 
 # }}}
+
+snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" rwA
+\\`!p snip.rv = match.group(1)`{$1}`!p
+if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
 
 # vim: set foldmethod=marker:

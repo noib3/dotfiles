@@ -3,10 +3,11 @@
 
 " Formatting
 set formatoptions-=t
+set formatoptions-=a
 set formatoptions-=r
 
 " Autopair asterisks
-let b:coc_pairs = [["*", "*"]]
+let g:AutoPairs['*'] = '*'
 
 " Compile the document, open the PDF file and forward search from nvim to Skim
 nmap <buffer> <silent> <C-t> :!pandoc % -o %:r.pdf<CR>

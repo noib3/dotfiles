@@ -36,7 +36,8 @@ endif
 
 " Join all section names in a single regex, including potential asterisks for
 " starred sections (e.g. \chapter*{..}).
-let s:sections_regex = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\)\(\*\)\?{.*'
+let s:sections_regex = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\)'
+                                \ . '\s*\(\*\)\?\s*{\(.*\)}\s*$'
 
 function! s:find_sections() " {{{1
   " This function finds which sections in g:LaTeXFolds_fold_sections are
@@ -49,7 +50,7 @@ function! s:find_sections() " {{{1
   for section in g:LaTeXFolds_fold_sections
     let i = 1
     while i <= line('$')
-      if getline(i) =~# '^\s*\\' . section . '\(\*\)\?{.*'
+      if getline(i) =~# '^\s*\\' . section . '\s*\(\*\)\?\s*{.*'
         let fold_levels[section] = level
         let level += 1
         break
@@ -66,55 +67,37 @@ endfunction " }}}1
 let s:fold_levels = s:find_sections()
 
 function! LaTeXFoldsExpr(lnum) " {{{1
-  let current_line = getline(a:lnum)
-  let next_line = getline(a:lnum + 1)
+  let line = getline(a:lnum)
 
-  " TODO: Maybe just return '-1' if the line is blank?
+  " If the line is blank return the fold level of the previous or the next
+  " line, whichever is the lowest.
+  if line =~ '^\s*$' | return '-1' | endif
 
-  " Fold the preamble, leaving \documentclass{...} and any blank line after it
-  "and \begin{document} and any blank lines before it unfolded.
-  if g:LaTeXFolds_fold_preamble == 1
-    if current_line =~# '\\documentclass' | return '>1' | endif
-    if current_line =~# '\\begin{document}' | return '0' | endif
-    if current_line =~ '^\s*$' | return '-1' | endif
+  " Let \begin{document} and \end{document} remain unfolded
+  if line =~# '^\s*\\\(begin\|end\)\s*{document}' | return '0' | endif
+
+  " Fold the preamble
+  if g:LaTeXFolds_fold_preamble == 1 && line =~# '^\s*\\documentclass'
+    return '>1'
   endif
 
-  " Fold 'regular lines' in the document
-  if current_line !~# s:sections_regex
-    " If this line contains \end{document} return 0
-    if current_line =~# '\\end{document}' | return '0' | endif
+  " If this is a 'regular' line, return the fold level of the previous line
+  if line !~# s:sections_regex | return '=' | endif
 
-    " If this line isn't blank return the fold level of the previous line
-    if current_line !~ '^\s*$' | return '=' | endif
-
-    " If the next line doesn't contain any sectioning commands or a
-    " \end{document}, return the fold level of the previous line.
-    if next_line !~# s:sections_regex && next_line !~# '\\end{document}' | return '=' | endif
-
-    " If the next line contains \end{document} return 0
-    if next_line =~# '\\end{document}' | return '0' | endif
-
-    " If I get here it means the current line is blank and the next one
-    " contains a sectioning command. Return the fold level of the previous line
-    " or the next line, whichever is the lowest.
-    return '-1'
-  endif
-
-  let current_line_section = substitute(current_line, s:sections_regex, '\1', '')
-  return '>' . s:fold_levels[current_line_section]
+  " If I get here it means the line contains a sectioning command. Find which
+  " one it is and return its fold level.
+  let line_section = substitute(line, s:sections_regex, '\1', '')
+  return '>' . s:fold_levels[line_section]
 endfunction " }}}1
 
 function! LaTeXFoldsText() "{{{1
-  " Get the section name of the given line, capitalizing the first letter and
-  " including potential asterisks for starred sections (e.g. \chapter*{...}).
-  let section_name = substitute(getline(v:foldstart), s:sections_regex, '\u\1\2', '')
+  let line = getline(v:foldstart)
 
-  " Escape possible asterisks in the section before using it as a regex
-  let escaped_section = substitute(section_name, '\*', '\\\*', '')
-  let section_title = substitute(getline(v:foldstart),
-                                 \ '^\s*\\' . escaped_section . '{\(.*\)}\s*$',
-                                 \ '\1',
-                                 \ '')
+  " Get the section name and its title, capitalizing the first letter of the
+  " name and including potential asterisks for starred sections (e.g.
+  " \chapter*{...}).
+  let section_name = substitute(line, s:sections_regex, '\u\1\2', '')
+  let section_title = substitute(line, s:sections_regex, '\3', '')
 
   " Check if the section title contains one or more \texorpdfstring commands.
   " If it does, extract their first argument.
@@ -122,12 +105,21 @@ function! LaTeXFoldsText() "{{{1
     let section_title = s:clear_texorpdfstring(section_title)
   endif
 
+  " Join the section name and its title in a single variable
+  let fold_title = section_name . ': ' . section_title
+
+  " If I'm folding the preamble and the line contains a \documentclass, just
+  " set fold_title to 'Preamble'.
+  if g:LaTeXFolds_fold_preamble == 1 && line =~# '^\s*\\documentclass'
+    let fold_title = 'Preamble'
+  endif
+
   let dashes = repeat(v:folddashes, 2)
   let fold_size = v:foldend - v:foldstart + 1
-  let fill_num = 66 - strchars(dashes . section_name . section_title . fold_size)
+  let fill_num = 68 - strchars(dashes . fold_title . fold_size)
 
-  return '+' . dashes . ' ' . section_name . ': ' . section_title . ' '
-          \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'
+  return '+' . dashes . ' ' . fold_title . ' '
+           \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'
 endfunction " }}}1
 
 " Helper functions {{{1

@@ -1,3 +1,5 @@
+# Taken from https://vi.stackexchange.com/a/26882/26480
+
 # helpers
 
 global !p
@@ -14,8 +16,8 @@ def delline_exititemize(snip):
 
 def in_itemize(snip):
     # find using searchpairpos('\begin{itemize}','','\end{itemize}','bnWz')
-    beginpos = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}','bnWz')")
-    endpos   = vim.eval("searchpairpos('\\\\begin{itemize}','','\\\\end{itemize}', 'nWz')")
+    beginpos = vim.eval("searchpairpos('\\\\begin{itemize\|enumerate}','','\\\\end{itemize\|enumerate}','bnWz')")
+    endpos   = vim.eval("searchpairpos('\\\\begin{itemize\|enumerate}','','\\\\end{itemize\|enumerate}', 'nWz')")
     curpos   = snip.cursor.to_vim_cursor()
     if beginpos == ['0','0'] or endpos == ['0','0']: return False
     if posCompare(beginpos, curpos) < 0 and posCompare(curpos, endpos) < 0:

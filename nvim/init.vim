@@ -5,24 +5,20 @@
 
 call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
-  Plug 'rbgrouleff/bclose.vim'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
-  Plug 'ptzz/lf.vim'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
   Plug 'pacha/vem-tabline'
-  Plug 'tpope/vim-commentary'
   Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
-  Plug 'tpope/vim-endwise'
+  Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
   Plug 'sheerun/vim-polyglot'
+  Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
   Plug 'lervag/vimtex'
 call plug#end()
@@ -74,15 +70,19 @@ let maplocalleader = ','
 " Go to beginning/end of line
 map <C-a> ^
 cmap <C-a> <C-b>
-map <C-e> $
 imap <C-a> <C-o>I
+map <C-e> $
 imap <C-e> <C-o>A
 
 " Save and quit
 map <silent> <C-s> :w<CR>
-map <silent> <C-w> :q<CR>
 imap <silent> <C-s> <C-o>:w<CR>
-imap <silent> <C-w> <C-o>:q<CR>
+map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+                          \ ':q<CR>' :
+                          \ ':call DeleteCurrentBuffer()<CR>'
+imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+                           \ '<C-o>:q<CR>' :
+                           \ '<C-o>:call DeleteCurrentBuffer()<CR>'
 
 " Navigate wrapped lines
 nmap <Up> gk
@@ -103,7 +103,7 @@ nnoremap <Leader>s <C-w>j
 nnoremap <Leader>d <C-w>l
 
 " Toggle 80 and 100 characters columns
-nmap <silent> <Leader>c :execute "set cc=" . (&cc == "" ? "80,100" : "")<CR>
+nmap <silent> <Leader>c :execute 'set cc=' . (&cc == '' ? '80,100' : '')<CR>
 
 " Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <C-u>undo<CR>
@@ -116,7 +116,6 @@ cnoremap 3636 <C-u>undo<CR>
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
-  \ 'coc-explorer',
   \ 'coc-json',
   \ 'coc-python',
   \ 'coc-vimlsp',
@@ -136,8 +135,6 @@ let g:coc_sources_disable_map = {
   \ 'zsh': ['around', 'buffer'],
   \ }
 
-nmap <silent> <Leader>e :CocCommand explorer<CR>
-
 " }}}
 
 " colorizer.lua {{{
@@ -146,14 +143,16 @@ lua require'colorizer'.setup()
 
 " }}}
 
-" fzf {{{
+" Floaterm {{{
 
-let g:fzf_layout = {
-  \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
-  \ }
+let g:floaterm_wintitle = v:false
+let g:floaterm_autoclose = 2
 
-map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
+nmap <silent> <Leader>l :FloatermNew --height=0.8 --width=0.8 lf<CR>
+nmap <silent> <C-x><C-e> :FloatermNew fzf<CR>
+imap <silent> <C-x><C-e> <C-o>:FloatermNew fzf<CR>
+
+command! Py3 FloatermNew python3
 
 " }}}
 
@@ -164,13 +163,6 @@ let g:indentLine_first_char = '│'
 let g:indentLine_showFirstIndentLevel = 1
 let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
 let g:indentLine_defaultGroup = 'Comment'
-
-" }}}
-
-" lf {{{
-
-" let g:lf_map_keys = 0
-nmap <silent> <Leader>l :Lf<CR>
 
 " }}}
 
@@ -185,9 +177,8 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " Vem Tabline {{{
 
-" Cycle through and delete buffers
+" Cycle through buffers
 nmap <Tab> <Plug>vem_next_buffer-
-nmap <silent> <Leader>x :call DeleteCurrentBuffer()<CR>
 
 function! DeleteCurrentBuffer() abort
   let current_buffer = bufnr('%')

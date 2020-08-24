@@ -1,14 +1,13 @@
 " Maintainer: Riccardo Mazzarini
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
-" Fold text for marker folds
 function! vim#MarkerFoldsText()
   let comment_char = substitute(&commentstring, '\s*%s', '', '')
   " The first substitute extracts the text between the commentstring and the
   " markers without leading spaces, the second one removes trailing spaces. It
   " could probably be done with a single substitute but idk how.
   let fold_title = substitute(getline(v:foldstart),
-                              \ comment_char.'\s*\(.*\){\{3}\d*',
+                              \ comment_char.'\s*\(.*\){\{3}\d*\s*',
                               \ '\1',
                               \ '')
   let fold_title = substitute(fold_title, '\s*$', '', '')
