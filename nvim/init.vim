@@ -6,6 +6,7 @@
 call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'junegunn/fzf'
   Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
@@ -149,10 +150,21 @@ let g:floaterm_wintitle = v:false
 let g:floaterm_autoclose = 2
 
 nmap <silent> <Leader>l :FloatermNew --height=0.8 --width=0.8 lf<CR>
-nmap <silent> <C-x><C-e> :FloatermNew fzf<CR>
-imap <silent> <C-x><C-e> <C-o>:FloatermNew fzf<CR>
+" nmap <silent> <C-x><C-e> :FloatermNew fzf<CR>
+" imap <silent> <C-x><C-e> <C-o>:FloatermNew fzf<CR>
 
-command! Py3 FloatermNew python3
+command! Py3 FloatermNew --height=0.8 --width=0.8 python3
+
+" }}}
+
+" fzf {{{
+
+let g:fzf_layout = {
+  \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
+  \ }
+
+map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
+imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
 
 " }}}
 

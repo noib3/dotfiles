@@ -42,7 +42,6 @@ export npm_config_cache=$HOME/.cache/npm
 export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Fzf's default find command and options
-# export FZF_DEFAULT_COMMAND='fd . --base-directory ~ --type f --hidden'
 export FZF_DEFAULT_COMMAND='fd . --base-directory ~ --type f --hidden --color always | sed "s/\[1;34m/\[1;90m/g"'
 export FZF_DEFAULT_OPTS='--reverse --info=inline --ansi --color="hl:-1,hl+:-1" --hscroll-off=50 --bind=ctrl-d:half-page-down,ctrl-u:half-page-up'
 
