@@ -21,7 +21,6 @@ font:
     y: 1
 
 schemes:
-  # Gruvbox dark
   gruvbox: &gruvbox
     primary:
       # background: '#1d2021'
@@ -45,7 +44,6 @@ schemes:
       magenta: '#d3869b'
       cyan:    '#8ec07c'
       white:   '#ebdbb2'
-  # Nord
   nord: &nord
     primary:
       background: '#2e3440'
@@ -71,7 +69,6 @@ schemes:
       magenta: '#b48ead'
       cyan:    '#8fbcbb'
       white:   '#eCeff4'
-  # Mostly default
   wip: &default
     primary:
       background: '#282a36'

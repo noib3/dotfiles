@@ -1,0 +1,23 @@
+/* Trackers shield button */
+#tracking-protection-icon-container { display: none; }
+
+/* Verified identity lock button */
+#identity-box { display: none; }
+
+/* Page actions button */
+#pageActionButton { display: none; }
+
+/* Save to pocket button */
+#pocket-button { display: none; }
+
+/* Bookmark this page button */
+#star-button { display: none; }
+
+/* Zoom level button */
+#urlbar-zoom-button { display: none; }
+
+/* Go to arrow button at the end of the urlbar when searching */
+#urlbar-go-button { display: none; }
+
+/* Bottom left page loading status or url preview */
+#statuspanel { display: none !important; }

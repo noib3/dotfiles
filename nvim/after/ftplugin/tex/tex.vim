@@ -18,7 +18,7 @@ setlocal shell=bash
 " Set the error format
 setlocal errorformat=%f:%l:\ %m
 
-" Autopair dollar signs and quotes
+" Autopair back quotes and dollar signs, don't pair upright single quotes
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', '`': "'", '$': '$'}
 
 " Compile the document, open the PDF file and forward search from nvim to Skim

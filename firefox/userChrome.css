@@ -5,23 +5,23 @@
 @import "/Users/noibe/.config/firefox/colors/colors.css";
 @import "/Users/noibe/.config/firefox/colors/colorschemes/grayscale.css";
 
-/* Tabs */
-@import "/Users/noibe/.config/firefox/tabs/tabs_debloat.css";
-@import "/Users/noibe/.config/firefox/tabs/tabs_layout.css";
-@import "/Users/noibe/.config/firefox/tabs/tabs_fill_available_width.css";
-@import "/Users/noibe/.config/firefox/tabs/numbered_tabs.css";
-@import "/Users/noibe/.config/firefox/tabs/tab_close_button_always_on_hover.css";
-@import "/Users/noibe/.config/firefox/tabs/hide_tabs_with_one_tab.css";
+/* Tab bar */
+@import "/Users/noibe/.config/firefox/tab_bar/debloat_tab_bar.css";
+@import "/Users/noibe/.config/firefox/tab_bar/tabs_layout.css";
+@import "/Users/noibe/.config/firefox/tab_bar/tabs_fill_available_width.css";
+@import "/Users/noibe/.config/firefox/tab_bar/numbered_tabs.css";
+@import "/Users/noibe/.config/firefox/tab_bar/tab_close_button_always_on_hover.css";
+@import "/Users/noibe/.config/firefox/tab_bar/hide_tabs_with_one_tab.css";
 
-/* Navbar & urlbar */
-@import "/Users/noibe/.config/firefox/navbar/navbar_debloat.css";
-@import "/Users/noibe/.config/firefox/navbar/navbar_urlbar_layout.css";
+/* Navbar */
+@import "/Users/noibe/.config/firefox/navbar/debloat_navbar.css";
+@import "/Users/noibe/.config/firefox/navbar/navbar_layout.css";
 @import "/Users/noibe/.config/firefox/navbar/navbar_on_focus.css";
 
-/* Search results */
-@import "/Users/noibe/.config/firefox/search_results/search_results_debloat.css";
-@import "/Users/noibe/.config/firefox/search_results/search_results_layout.css";
+/* Urlbar */
+@import "/Users/noibe/.config/firefox/urlbar/debloat_urlbar.css";
+@import "/Users/noibe/.config/firefox/urlbar/urlbar_layout.css";
 
 /* Sidebar */
-@import "/Users/noibe/.config/firefox/sidebar/sidebar_debloat.css";
+@import "/Users/noibe/.config/firefox/sidebar/debloat_sidebar.css";
 @import "/Users/noibe/.config/firefox/sidebar/sidebar_layout.css";

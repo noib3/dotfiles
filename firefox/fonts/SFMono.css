@@ -1,8 +1,4 @@
 * {
   font-family: "SFMono Nerd Font";
+  font-size: 18px;
 }
-
-@media (min-width: 901px) and (max-width: 1152px) {
-  * { font-size: 19px; }
-}
-

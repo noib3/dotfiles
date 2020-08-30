@@ -1,5 +1,5 @@
 extends plaintex
-extends tex_placeitem
+extends tex_autoitem
 
 snippet table "Table environment"
 \begin{table}[${1:!htbp}]
@@ -39,20 +39,6 @@ snippet enum "Enumerate environment" bA
 $0
 endsnippet
 
-snippet thm "Theorem environment"
-\begin{thm}$1
-  $2
-\end{thm}
-$0
-endsnippet
-
-snippet defn "Definition environment"
-\begin{defn}$1
-  $2
-\end{defn}
-$0
-endsnippet
-
 snippet mue "Unnumbered equation" bA
 \[
   $1
@@ -67,10 +53,24 @@ snippet mne "Numbered equation" bA
 $0
 endsnippet
 
-snippet alig "Unnumbered aligned equations"
+snippet alig "Unnumbered aligned equations" bA
 \begin{align*}
   $1 &= $2 \\\\
   $3 &= $4
 \end{align*}
+$0
+endsnippet
+
+snippet thm "Theorem environment" bA
+\begin{thm}$1
+  $2
+\end{thm}
+$0
+endsnippet
+
+snippet defn "Definition environment" bA
+\begin{defn}$1
+  $2
+\end{defn}
 $0
 endsnippet

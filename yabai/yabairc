@@ -21,6 +21,5 @@ yabai -m config active_window_border_color  0xffc7c7c7
 yabai -m config normal_window_border_color  0xff5c6370
 
 # Rules
-yabai -m rule --add app="Digital Colour Meter" manage=off sticky=on
+yabai -m rule --add app="Digital Colour Meter" manage=off
 yabai -m rule --add title="fuzzy_opener" manage=off
-yabai -m rule --add title="journaling" native-fullscreen=on

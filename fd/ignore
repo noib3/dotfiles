@@ -7,10 +7,8 @@ Pictures/
 Library/*
 !Library/texmf
 Dropbox/.dropbox.cache/
-Dropbox/Fonts/*
 scripts/pfetch/
 .dropbox/
 .cache/
 .local/
 .ssh/
-.config/nvim/plugged/

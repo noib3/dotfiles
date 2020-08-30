@@ -35,3 +35,7 @@ See the above repository for updates as well as full license text. */
 #nav-bar{
   border-inline: var(--uc-window-drag-space-width) solid var(--toolbar-bgcolor);
 }
+
+toolbar {
+  min-height: 0 !important;
+}

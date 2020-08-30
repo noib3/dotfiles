@@ -1,17 +1,18 @@
 font:
   normal:
-    family: SFMono Nerd Font
+    family: JetBrainsMono Nerd Font
   # Iosevka on 1440x900
   # size: 21.0
   # Iosevka on 2560x1440
   # size: 25.0
   # SFmono on 2048x1152
+  # size: 22
+  # JetBrainsMono on 2048x1152
   size: 22
   offset:
     y: 1
 
 schemes:
-  # Gruvbox dark
   gruvbox: &gruvbox
     primary:
       # background: '#1d2021'
@@ -35,7 +36,6 @@ schemes:
       magenta: '#d3869b'
       cyan:    '#8ec07c'
       white:   '#ebdbb2'
-  # Nord
   nord: &nord
     primary:
       background: '#2e3440'
@@ -61,7 +61,6 @@ schemes:
       magenta: '#b48ead'
       cyan:    '#8fbcbb'
       white:   '#eCeff4'
-  # Mostly default
   wip: &default
     primary:
       background: '#282a36'

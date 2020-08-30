@@ -80,10 +80,10 @@ map <silent> <C-s> :w<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                           \ ':q<CR>' :
-                          \ ':call DeleteCurrentBuffer()<CR>'
+                          \ '<Plug>vem_delete_buffer-'
 imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                            \ '<C-o>:q<CR>' :
-                           \ '<C-o>:call DeleteCurrentBuffer()<CR>'
+                           \ '<C-o><Plug>vem_delete_buffer-'
 
 " Navigate wrapped lines
 nmap <Up> gk
@@ -129,6 +129,7 @@ let g:coc_global_extensions = [
 let g:coc_sources_disable_map = {
   \ 'conf': ['around', 'buffer'],
   \ 'context': ['around', 'buffer'],
+  \ 'css': ['around', 'buffer'],
   \ 'markdown': ['around', 'buffer'],
   \ 'tex': ['around', 'buffer'],
   \ 'text': ['around', 'buffer'],
@@ -153,8 +154,6 @@ let g:floaterm_wintitle = v:false
 let g:floaterm_autoclose = 2
 
 nmap <silent> <Leader>l :FloatermNew lf<CR>
-" nmap <silent> <C-x><C-e> :FloatermNew fzf<CR>
-" imap <silent> <C-x><C-e> <C-o>:FloatermNew fzf<CR>
 
 command! Py3 FloatermNew python3
 
@@ -192,21 +191,7 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " Vem Tabline {{{
 
-" Cycle through buffers
 nmap <Tab> <Plug>vem_next_buffer-
-
-function! DeleteCurrentBuffer() abort
-  let current_buffer = bufnr('%')
-  let next_buffer = g:vem_tabline#tabline.get_replacement_buffer()
-  try
-    exec 'confirm ' . current_buffer . 'bdelete'
-    if next_buffer != 0
-      exec next_buffer . 'buffer'
-    endif
-  catch /E516:/
-    " If the operation is cancelled, do nothing
-  endtry
-endfunction
 
 " }}}
 
@@ -249,7 +234,7 @@ augroup tex
   autocmd!
   autocmd BufRead *.sty setlocal syntax=tex
   autocmd BufRead *.cls setlocal syntax=tex
-  " autocmd BufRead *.tex call tex#PdfOpen()
+  autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
   autocmd User VimtexEventTocActivated norm zt

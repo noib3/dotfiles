@@ -1,32 +1,31 @@
-:root {
-  --lwt-accent-color: var(--focused-tab-color) !important;
-  --sidebar-text-color: var(--text-color) !important;
-}
-
-/* Unfocused tab */
-.tab-content {
-  color: var(--text-color) !important;
-  background-color: var(--unfocused-tab-color) !important;
-}
-
-/* Focused tab */
+/* Focused tabs */
 .tab-content[selected="true"] {
-  color: var(--text-color) !important;
-  background-color: var(--focused-tab-color) !important;
+  color: var(--color-text);
+  background-color: var(--color-focused-tabs);
 }
 
-/* Tab divider lines */
+/* Unfocused tabs */
+.tab-content {
+  color: var(--color-text);
+  background-color: var(--color-unfocused-tabs);
+}
+
+/* Tab dividers */
 /* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
-#navigator-toolbox {
-  --tabs-border-color: var(--focused-tab-color) !important;
+:root { --lwt-accent-color: var(--color-focused-tabs) !important; }
+.tabbrowser-tab::after { visibility: hidden }
+
+/* Urlbar */
+#urlbar,
+.urlbarView-row-inner {
+  color: var(--color-text) !important;
+}
+#urlbar-background {
+  background-color: var(--color-urlbar) !important;
 }
 
-.tabbrowser-tab::after {
-  visibility: hidden !important;
-}
-
-/* Search results */
-.urlbarView {
-  color: var(--text-color) !important;
-  background-color: var(--search-results-color) !important;
+/* Sidebar */
+.sidebar-placesTreechildren {
+  color: var(--color-text) !important;
+  background-color: var(--color-sidebar) !important;
 }

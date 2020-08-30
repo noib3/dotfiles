@@ -14,15 +14,6 @@ cmd - space : sh ~/scripts/fuzzy_opener.sh
 cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
                                               ~/scripts \
                                               ~/bin/diet \
-                                              $(kpsewhich -var-value TEXMFHOME)
-
-# Open this year's journal in fullscreen and place the cursor at the right place
-cmd - j : alacritty -t journaling \
-                    -e sh -c "sleep .25 && \
-                              nvim ~/Dropbox/memories/$(date +%Y)/journal/$(date +%Y).tex \
-                                    + +?newday +:noh \
-                                    +\"normal o\" +\"normal yy\" +\"normal p\"  \
-                                    +startinsert"
 
 # Open downloads sidebar in Firerox
 cmd - d [
@@ -34,15 +25,16 @@ cmd - e [
     "Firefox" : skhd --key "shift + alt - y"
 ]
 
-# Disable cmd-s in Firefox
+# Disable Cmd-s in Firefox
 cmd - s [
     "Firefox" : false
 ]
 
-# Disable cmd - h everywhere except for alacritty
+# Disable Cmd-h everywhere except for Alacritty and Firefox
 cmd - h [
     "Alacritty" ~
-    *           : false
+    "Firefox" : skhd --key "shift + cmd - h"
+    * : false
 ]
 
 # Go fullscreen
@@ -120,8 +112,8 @@ shift + cmd - 3 : \
                           -appIcon ~/.config/skhd/screenshot_icon.png \
                           -contentImage "$ss_name"
 
-# Screenshot a portion of the screen, then send a notification if the screenshot
-# wasn't cancelled.
+# Screenshot a portion of the screen, then send a notification if the
+# screenshot wasn't cancelled.
 shift + cmd - 4 : \
     ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture -i "$ss_name" && \
         ls "$ss_name" && \

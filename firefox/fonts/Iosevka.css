@@ -1,15 +1,4 @@
 * {
   font-family: "Iosevka Nerd Font";
-}
-
-@media (max-width: 900px) {
-  * { font-size: 18px; }
-}
-
-@media (min-width: 901px) and (max-width: 1152px) {
-  * { font-size: 19px; }
-}
-
-@media (min-width: 1153px) and (max-width: 1440px) {
-  * { font-size: 21px; }
+  font-size: 19px;
 }

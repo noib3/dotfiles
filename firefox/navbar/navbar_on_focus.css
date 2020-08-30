@@ -1,6 +1,6 @@
-/* https://www.reddit.com/r/FirefoxCSS/comments/hw3tbx/showing_the_navbar_in_place_of_the_tabbar_when/ */
+/* https://www.reddit.com/r/FirefoxCSS/comments/hw3tbxs/howing_the_navbar_in_place_of_the_tabbar_when/ */
 
-:root[sessionrestored] #nav-bar:not([customizing]){
+:root[sessionrestored] #nav-bar:not([customizing]) {
   display: flex;
   position: fixed !important;
   top: 0;
@@ -10,10 +10,10 @@
   pointer-events: none;
 }
 
-#nav-bar-customization-target{ flex-grow: 1; }
+#nav-bar-customization-target { flex-grow: 1; }
 
-#nav-bar:focus-within{
-  z-index:2 !important;
+#nav-bar:focus-within {
+  z-index: 2 !important;
   opacity: 1 !important;
   pointer-events: auto !important;
 }

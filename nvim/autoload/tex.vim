@@ -52,7 +52,8 @@ function! tex#PdfClose(filepath, filename) " {{{1
 endfunction " }}}1
 
 function! tex#SkimForwardSearch() " {{{1
-  " Use Skim's displayline to jump from a line in a TeX document to its PDF output
+  " Use Skim's displayline to jump from a line in a TeX document to its PDF
+  " output.
   let filepath = expand('%:p:r') . '.pdf'
   if filereadable(filepath)
     execute 'silent !displayline ' . line('.') . ' ' . shellescape(filepath,1)

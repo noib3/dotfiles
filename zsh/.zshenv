@@ -45,7 +45,7 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 export FZF_DEFAULT_COMMAND='fd . --base-directory ~ --type f --hidden --color always | sed "s/\[1;34m/\[1;90m/g"'
 export FZF_DEFAULT_OPTS='--reverse --info=inline --ansi --color="hl:-1,hl+:-1" --hscroll-off=50 --bind=ctrl-d:half-page-down,ctrl-u:half-page-up'
 
-# Build LS_COLORS one block at a time
+# Build LS_COLORS one file format at a time
 LS_COLORS="rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32"
 
 # Archives or compressed files

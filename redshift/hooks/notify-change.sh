@@ -3,8 +3,8 @@
 # The first parameter indicates the event
 case $1 in
     period-changed)
-        # The second and third parameters are the old and the new periods. The
-        # values can be 'night', 'daytime' and 'transition'.
+        # The second and third parameters are the old and the new periods.
+        # Their values can be 'night', 'daytime' and 'transition'.
         if [ ! "$3" = "none" ]; then
             # Capitalize the period, then use sed to convert 'Night' and
             # 'Daytime' into 'Night time' and 'Day time'.
