@@ -1,26 +1,27 @@
 /* Font */
-@import url("/Users/noibe/.config/firefox/chrome/fonts/iosevka.css");
+@import "/Users/noibe/.config/firefox/fonts/JetBrainsMono.css";
 
 /* Colorscheme */
-@import url("/Users/noibe/.config/firefox/chrome/colors/colors.css");
-@import url("/Users/noibe/.config/firefox/chrome/colors/colorschemes/grayscale.css");
-
-/* Remove all the unnecessary UI garbage */
-@import url("/Users/noibe/.config/firefox/chrome/remove_bloat.css");
+@import "/Users/noibe/.config/firefox/colors/colors.css";
+@import "/Users/noibe/.config/firefox/colors/colorschemes/grayscale.css";
 
 /* Tabs */
-@import url("/Users/noibe/.config/firefox/chrome/tabs/tabs_layout.css");
-@import url("/Users/noibe/.config/firefox/chrome/tabs/tabs_fill_available_width.css");
-@import url("/Users/noibe/.config/firefox/chrome/tabs/numbered_tabs.css");
-@import url("/Users/noibe/.config/firefox/chrome/tabs/tab_close_button_always_on_hover.css");
-@import url("/Users/noibe/.config/firefox/chrome/tabs/hide_tabs_with_one_tab.css");
+@import "/Users/noibe/.config/firefox/tabs/tabs_debloat.css";
+@import "/Users/noibe/.config/firefox/tabs/tabs_layout.css";
+@import "/Users/noibe/.config/firefox/tabs/tabs_fill_available_width.css";
+@import "/Users/noibe/.config/firefox/tabs/numbered_tabs.css";
+@import "/Users/noibe/.config/firefox/tabs/tab_close_button_always_on_hover.css";
+@import "/Users/noibe/.config/firefox/tabs/hide_tabs_with_one_tab.css";
 
 /* Navbar & urlbar */
-@import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_urlbar_layout.css");
-@import url("/Users/noibe/.config/firefox/chrome/navbar/navbar_on_focus.css");
+@import "/Users/noibe/.config/firefox/navbar/navbar_debloat.css";
+@import "/Users/noibe/.config/firefox/navbar/navbar_urlbar_layout.css";
+@import "/Users/noibe/.config/firefox/navbar/navbar_on_focus.css";
 
 /* Search results */
-@import url("/Users/noibe/.config/firefox/chrome/search_results/search_results_layout.css");
+@import "/Users/noibe/.config/firefox/search_results/search_results_debloat.css";
+@import "/Users/noibe/.config/firefox/search_results/search_results_layout.css";
 
 /* Sidebar */
-@import url("/Users/noibe/.config/firefox/chrome/sidebar/sidebar_layout.css");
+@import "/Users/noibe/.config/firefox/sidebar/sidebar_debloat.css";
+@import "/Users/noibe/.config/firefox/sidebar/sidebar_layout.css";

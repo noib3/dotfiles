@@ -1,0 +1,236 @@
+/* Black border line between tabs and page */
+#navigator-toolbox {
+  border-width: 0 !important;
+}
+
+/* Go back button */
+#back-button {
+  display: none !important;
+}
+
+/* Go forward button */
+#forward-button {
+  display: none !important;
+}
+
+/* Open new tab button */
+#tabs-newtab-button {
+  display: none !important;
+}
+
+/* Downloads button */
+#downloads-button {
+  display: none !important;
+}
+
+/* Overflow button */
+#nav-bar-overflow-button {
+  display: none !important;
+}
+
+/* Reload page button */
+#reload-button {
+  display: none !important;
+}
+
+/* Go to home page button */
+#home-button {
+  display: none !important;
+}
+
+/* Stop loading page button */
+#stop-button {
+  display: none !important;
+}
+
+/* Empty space before the urlbar */
+#customizableui-special-spring1 {
+  display: none !important;
+}
+
+/* Empty space after the urlbar */
+#customizableui-special-spring2 {
+  display: none !important;
+}
+
+/* Save to pocket button in urlbar */
+#pocket-button {
+  display: none !important;
+}
+
+/* 'Bookmark this page' button in urlbar */
+#star-button {
+  display: none !important;
+}
+
+/* Zoom level button */
+#urlbar-zoom-button {
+  display: none !important;
+}
+
+/* Library button */
+#library-button {
+  display: none !important;
+}
+
+/* Open sidebar button */
+#sidebar-button {
+  display: none !important;
+}
+
+/* Firefox account button */
+#fxa-toolbar-menu-button {
+  display: none !important;
+}
+
+/* Recommended extensions button in urlbar */
+#cfr-button {
+  display: none !important;
+}
+
+/* Page actions button in urlbar */
+#pageActionButton {
+  display: none !important;
+}
+
+/* 'Toggle reader view' button in urlbar */
+#reader-mode-button {
+  display: none !important;
+}
+
+/* Shield icon in urlbar */
+#tracking-protection-icon-container {
+  display: none !important;
+}
+
+/* 'Go to..' arrow button in urlbar when searching */
+#urlbar-go-button {
+  display: none !important;
+}
+
+/* Downloads history button */
+#downloadsHistory {
+  display: none !important;
+}
+
+/* 'Customize Toolbar' button at bottom of overflow menu */
+#overflowMenu-customize-button {
+  display: none !important;
+}
+
+/* Magnifying glass icon in search results when searching */
+#identity-box {
+  visibility: collapse !important;
+}
+
+/* General Firefox menu button */
+#PanelUI-button {
+  display: none !important;
+}
+
+/* General Firefox menu button */
+#PanelUI-menu-button {
+  display: none !important;
+}
+
+/* White vertical line at end of urlbar */
+#pageActionSeparator {
+  display: none !important;
+}
+
+/* New tab button when more tabs are open then you can show at once */
+#new-tab-button {
+  display: none !important;
+}
+
+/* All tab button when more tabs are open then you can show at once */
+#alltabs-button {
+  display: none !important;
+}
+
+/* Scroll button on the left when closing a tab */
+#scrollbutton-up {
+  display: none !important;
+}
+
+/* Scroll button on the right when closing a tab */
+#scrollbutton-down {
+  display: none !important;
+}
+
+/* Bookmarks toolbar under navbar */
+#PersonalToolbar {
+  display: none !important;
+}
+
+/* Search bar in sidebar */
+#sidebar-search-container {
+  display: none !important;
+}
+
+/* Bottom left loading status when loading a page */
+#statuspanel[type="status"] {
+  display: none !important;
+}
+
+/* Bottom left url preview when hovering over a link */
+#statuspanel[type="overLink"] {
+  display: none !important;
+}
+
+/* Site information icon in urlbar */
+#identity-box[pageproxystate="valid"] {
+  display: none !important;
+}
+
+/* Private window icon */
+#TabsToolbar .private-browsing-indicator {
+  display: none !important;
+}
+
+/* Empty box before search results */
+#PopupAutoCompleteRichResult .autocomplete-richlistitem .ac-type-icon,
+.urlbarView-row .urlbarView-type-icon {
+  display: none !important;
+}
+
+/* Show history button in urlbar */
+.urlbar-history-dropmarker,
+#urlbar:hover > .urlbar-textbox-container > .urlbar-history-dropmarker {
+  display: none !important;
+}
+
+/* Scroll left button when more tabs are open then you can show at once */
+.scrollbutton-up {
+  display: none !important;
+}
+
+/* Scroll left button when more tabs are open then you can show at once */
+.scrollbutton-down {
+  display: none !important;
+}
+
+/* Search bar in sidebar */
+.sidebar-search-container {
+  display: none !important;
+}
+
+/* Close, minizime and maximize window buttons */
+.titlebar-buttonbox-container {
+  display: none !important;
+}
+
+/* Focused tab highlight line */
+.tab-line[selected="true"] {
+  display: none !important;
+}
+
+/* Empty space before the tab bar */
+.titlebar-spacer[type="pre-tabs"] {
+  display: none !important;
+}
+
+/* Empty space after the tab bar */
+.titlebar-spacer[type="post-tabs"] {
+  display: none !important;
+}

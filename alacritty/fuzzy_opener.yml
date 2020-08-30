@@ -1,10 +1,12 @@
 font:
   normal:
-    family: Iosevka Nerd Font
+    family: SFMono Nerd Font
   # Iosevka on 1440x900
   # size: 21.0
   # Iosevka on 2560x1440
-  size: 25.0
+  # size: 25.0
+  # SFmono on 2048x1152
+  size: 22
   offset:
     y: 1
 

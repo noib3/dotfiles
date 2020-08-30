@@ -117,6 +117,7 @@ cnoremap 3636 <C-u>undo<CR>
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
+  \ 'coc-css',
   \ 'coc-json',
   \ 'coc-python',
   \ 'coc-vimlsp',
@@ -140,20 +141,22 @@ let g:coc_sources_disable_map = {
 
 " colorizer.lua {{{
 
-lua require'colorizer'.setup()
+lua require 'colorizer'.setup({'*'}, {names = false})
 
 " }}}
 
 " Floaterm {{{
 
+let g:floaterm_width = 0.8
+let g:floaterm_height = 0.8
 let g:floaterm_wintitle = v:false
 let g:floaterm_autoclose = 2
 
-nmap <silent> <Leader>l :FloatermNew --height=0.8 --width=0.8 lf<CR>
+nmap <silent> <Leader>l :FloatermNew lf<CR>
 " nmap <silent> <C-x><C-e> :FloatermNew fzf<CR>
 " imap <silent> <C-x><C-e> <C-o>:FloatermNew fzf<CR>
 
-command! Py3 FloatermNew --height=0.8 --width=0.8 python3
+command! Py3 FloatermNew python3
 
 " }}}
 
@@ -222,7 +225,7 @@ let g:vimtex_toc_config = {
   \ 'indent_levels': 1,
   \ 'layers' : ['content', 'include'],
   \ 'show_help': 0,
-  \ 'split_pos': 'vert rightbelow',
+  \ 'split_width' : 40,
   \ 'tocdepth': 6,
   \ }
 

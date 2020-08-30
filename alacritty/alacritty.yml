@@ -5,14 +5,18 @@ shell:
 
 font:
   normal:
-    family: Iosevka Nerd Font
+    family: JetBrainsMono Nerd Font
     style: Regular
   # Iosevka on 1440x900
   # size: 16.0
   # Iosevka on 2048x1152
-  size: 18.0
+  # size: 18.0
   # Iosevka on 2560x1440
   # size: 20
+  # SFmono on 2048x1152
+  # size: 16
+  # JetBrainsMono on 2048x1152
+  size: 16
   offset:
     y: 1
 
