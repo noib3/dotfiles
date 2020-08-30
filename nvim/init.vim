@@ -54,6 +54,7 @@ set autochdir
 set clipboard+=unnamedplus
 set expandtab
 set hidden
+set iskeyword-=_
 set laststatus=0
 set noshowmode
 set scrolloff=1
@@ -148,9 +149,9 @@ lua require 'colorizer'.setup({'*'}, {names = false})
 
 " Floaterm {{{
 
+let g:floaterm_title = ''
 let g:floaterm_width = 0.8
 let g:floaterm_height = 0.8
-let g:floaterm_wintitle = v:false
 let g:floaterm_autoclose = 2
 
 nmap <silent> <Leader>l :FloatermNew lf<CR>
@@ -277,4 +278,4 @@ colorscheme onedark
 
 " }}}
 
-" vim: set foldmethod=marker:
+" vim: foldmethod=marker

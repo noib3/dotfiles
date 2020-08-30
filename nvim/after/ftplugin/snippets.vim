@@ -4,8 +4,10 @@
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
-" Set the fold method to manual (default value is syntax)
-set foldmethod=manual
+" Override some options set by UltiSnips in ultisnips/ftplugin/snippets.vim
+setlocal expandtab
+setlocal foldmethod=manual
+setlocal foldlevel=0
 
 " Text displayed on folded lines
 setlocal foldtext=vim#MarkerFoldsText()

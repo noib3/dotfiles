@@ -2,9 +2,9 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Formatting
-set formatoptions-=t
-set formatoptions-=t
-set formatoptions-=r
+setlocal formatoptions-=t
+setlocal formatoptions-=t
+setlocal formatoptions-=r
 
 " Autopair asterisks
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', "'": "'", '*': '*'}

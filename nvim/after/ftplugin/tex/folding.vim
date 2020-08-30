@@ -176,4 +176,4 @@ endfunction " }}}2
 
 " }}}1
 
-" vim: set foldmethod=marker:
+" vim: foldmethod=marker

@@ -21,4 +21,4 @@ function! vim#MarkerFoldsText() " {{{1
            \ . repeat('·', fill_num) . ' ' . fold_size . ' lines'
 endfunction " }}}1
 
-" vim: set foldmethod=marker:
+" vim: foldmethod=marker
