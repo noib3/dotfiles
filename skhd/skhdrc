@@ -3,7 +3,7 @@ ctrl - w : open -na /Applications/Firefox.app
 
 # Launch terminal programs
 cmd - return : open -na /Applications/Alacritty.app
-cmd - f : $TERMINAL -e sh -c "lf ~/Downloads"
+cmd - f : $TERMINAL -e zsh -c "lf ~/Downloads"
 cmd - g : $TERMINAL -e gotop
 cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
 
@@ -11,51 +11,49 @@ cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurs
 cmd - space : sh ~/scripts/fuzzy_opener.sh
 
 # Commit and push every directory passed to the script
-cmd - m : sh ~/scripts/committed/committed.sh ~/.config \
-                                              ~/scripts \
-                                              ~/bin/diet \
+cmd - m : sh ~/scripts/committed/committed.sh ~/.config ~/scripts ~/bin/diet
 
 # Open downloads sidebar in Firerox
 cmd - d [
-    "Firefox" : skhd --key "f4"
+  "Firefox" : skhd --key "f4"
 ]
 
 # Open Bitwarden sidebar in Firerox
 cmd - e [
-    "Firefox" : skhd --key "shift + alt - y"
+  "Firefox" : skhd --key "shift + alt - y"
 ]
 
 # Disable Cmd-s in Firefox
 cmd - s [
-    "Firefox" : false
+  "Firefox" : false
 ]
 
 # Disable Cmd-h everywhere except for Alacritty and Firefox
 cmd - h [
-    "Alacritty" ~
-    "Firefox" : skhd --key "shift + cmd - h"
-    * : false
+  "Alacritty" ~
+  "Firefox" : skhd --key "shift + cmd - h"
+  * : false
 ]
 
 # Go fullscreen
 alt - f : skhd --key "ctrl + cmd - f"
 
 # Focus windows
-alt - up    : yabai -m window --focus north
-alt - down  : yabai -m window --focus south
-alt - left  : yabai -m window --focus west
+alt - up : yabai -m window --focus north
+alt - down : yabai -m window --focus south
+alt - left : yabai -m window --focus west
 alt - right : yabai -m window --focus east
 
 # Swap windows
-ctrl - up    : yabai -m window --swap north
-ctrl - down  : yabai -m window --swap south
-ctrl - left  : yabai -m window --swap west
+ctrl - up : yabai -m window --swap north
+ctrl - down : yabai -m window --swap south
+ctrl - left : yabai -m window --swap west
 ctrl - right : yabai -m window --swap east
 
 # Warp windows
-cmd + shift - up    : yabai -m window --warp north
-cmd + shift - down  : yabai -m window --warp south
-cmd + shift - left  : yabai -m window --warp west
+cmd + shift - up : yabai -m window --warp north
+cmd + shift - down : yabai -m window --warp south
+cmd + shift - left : yabai -m window --warp west
 cmd + shift - right : yabai -m window --warp east
 
 # Make windows larger
@@ -71,9 +69,9 @@ ctrl - k : yabai -m window --resize bottom:0:-25
 ctrl - l : yabai -m window --resize left:25:0
 
 # Move windows to spaces and follow focus
-alt + cmd - n : yabai -m space --create && \
-                yabai -m window --space last && \
-                yabai -m space --focus last
+alt + cmd - n : yabai -m space --create \
+                && yabai -m window --space last \
+                && yabai -m space --focus last
 alt + cmd - w : yabai -m window --close && yabai -m space --destroy
 alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
 alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2
@@ -105,20 +103,22 @@ shift + alt - r : yabai -m space --rotate 90
 
 # Screenshot the whole screen
 shift + cmd - 3 : \
-    ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture "$ss_name" && \
-        terminal-notifier -title "New screenshot" \
-                          -subtitle "$(basename $ss_name)" \
-                          -message "Saved in $(dirname $ss_name)" \
-                          -appIcon ~/.config/skhd/screenshot_icon.png \
-                          -contentImage "$ss_name"
+  ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png \
+  && screencapture "$ss_name" \
+  && terminal-notifier -title "New screenshot" \
+                       -subtitle "$(basename $ss_name)" \
+                       -message "Saved in $(dirname $ss_name)" \
+                       -appIcon ~/.config/skhd/screenshot_icon.png \
+                       -contentImage "$ss_name"
 
 # Screenshot a portion of the screen, then send a notification if the
 # screenshot wasn't cancelled.
 shift + cmd - 4 : \
-    ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png && screencapture -i "$ss_name" && \
-        ls "$ss_name" && \
-        terminal-notifier -title "New screenshot" \
-                          -subtitle "$(basename $ss_name)" \
-                          -message "Saved in $(dirname $ss_name)" \
-                          -appIcon ~/.config/skhd/screenshot_icon.png \
-                          -contentImage "$ss_name"
+  ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png \
+  && screencapture -i "$ss_name" \
+  && ls "$ss_name" \
+  && terminal-notifier -title "New screenshot" \
+                       -subtitle "$(basename $ss_name)" \
+                       -message "Saved in $(dirname $ss_name)" \
+                       -appIcon ~/.config/skhd/screenshot_icon.png \
+                       -contentImage "$ss_name"

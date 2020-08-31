@@ -40,11 +40,11 @@ bindkey -M vicmd '^U' backward-kill-line
 # Change cursor shape depending on vi mode
 # zle-keymap-select() is executed everytime the mode changes
 zle-keymap-select() {
-    if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]]; then
-        echo -ne '\e[5 q'
-    elif [[ $KEYMAP = vicmd ]]; then
-        echo -ne '\e[1 q'
-    fi
+  if [[ $KEYMAP = viins ]] || [[ $KEYMAP = main ]]; then
+    echo -ne '\e[5 q'
+  elif [[ $KEYMAP = vicmd ]]; then
+    echo -ne '\e[1 q'
+  fi
 }
 zle -N zle-keymap-select
 
@@ -55,17 +55,17 @@ zle_highlight=(region:bg=$vi_visual_mode_bg_color,fg=$vi_visual_mode_fg_color)
 autoload -U select-bracketed
 zle -N select-bracketed
 for m in visual viopp; do
-    for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
-        bindkey -M $m $c select-bracketed
-    done
+  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
+    bindkey -M $m $c select-bracketed
+  done
 done
 
 autoload -U select-quoted
 zle -N select-quoted
 for m in visual viopp; do
-    for c in {a,i}{\',\",\`}; do
-        bindkey -M $m $c select-quoted
-    done
+  for c in {a,i}{\',\",\`}; do
+    bindkey -M $m $c select-quoted
+  done
 done
 
 autoload -Uz surround
@@ -86,40 +86,36 @@ PROMPT='%F{$prompt_directory_color}%1~${vcs_info_msg_0_} %F{$prompt_delimiter_co
 # Get git infos and reset cursor to its insert mode shape
 # precmd() is executed before each prompt
 precmd() {
-    vcs_info
-    printf '\e[5 q'
+  vcs_info
+  printf '\e[5 q'
 }
 
 # Close the terminal window
 close-window() {
-    yabai -m window --close
+  yabai -m window --close
 }
 zle -N close-window
 bindkey '^W' close-window
 
 # Fuzzy search a file and open it in $EDITOR
 function fuzzy_edit() {
-    local filename
-    filename="$(fzf --height=40% </dev/tty)" \
-        && $EDITOR ~/"$filename" \
-        && fc -R =(print "$EDITOR ~/$filename") \
-        && print -s "$EDITOR ~/$filename" \
-        && printf '\e[5 q'
-    if zle; then
-        zle reset-prompt
-    fi
+  local filename
+  filename="$(fzf --height=40% </dev/tty)" \
+  && $EDITOR ~/"$filename" \
+  && fc -R =(print "$EDITOR ~/$filename") \
+  && print -s "$EDITOR ~/$filename" \
+  && printf '\e[5 q'
+  zle && zle reset-prompt
 }
 zle -N fuzzy_edit
 bindkey '^X^E' fuzzy_edit
 
 # Fuzzy search a file and add it to the line buffer
 function fuzzy_search() {
-    local filename
-    filename="$(fzf --height=40% </dev/tty)" \
-        && LBUFFER="$LBUFFER~/$(echo $filename | sed 's/ /\\ /g')"
-    if zle; then
-        zle reset-prompt
-    fi
+  local filename
+  filename="$(fzf --height=40% </dev/tty)" \
+  && LBUFFER="$LBUFFER~/$(echo $filename | sed 's/ /\\ /g')"
+  zle && zle reset-prompt
 }
 zle -N fuzzy_search
 bindkey '^S' fuzzy_search
@@ -128,30 +124,27 @@ bindkey '^S' fuzzy_search
 # the clipboard. I can't bind it to '^H' because that's already assigned to a
 # window resize command in skhd.
 function fuzzy_history() {
-    local command
-    command="$(fc -l -1 -99 |
-                sed 's/^\s*[0-9]*\s*//g' |
-                fzf --height=50% --color=dark --preview='echo {}' \
-                    --preview-window=down:2:wrap)" \
-        && LBUFFER="$command" \
-        && echo -n "$command" | pbcopy
-    if zle; then
-        zle reset-prompt
-    fi
+  local command
+  command="$(fc -l -1 -99 |
+             sed 's/^\s*[0-9]*\s*//g' |
+             fzf --height=50% --color=dark --preview='echo {}' \
+                 --preview-window=down:2:wrap)" \
+  && LBUFFER="$command" \
+  && echo -n "$command" | pbcopy
+  zle && zle reset-prompt
 }
 zle -N fuzzy_history
 bindkey '^X^G' fuzzy_history
 
 # Fuzzy search a directory and cd into it
 function fuzzy_cd() {
-    local dirname
-    dirname="$(fd . --base-directory ~ --type d --hidden --color always |
-                sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
-                fzf --height=40%)" \
-        && cd ~/$dirname && precmd
-    if zle; then
-        zle reset-prompt
-    fi
+  local dirname
+  dirname="$(fd . --base-directory ~ --type d --hidden --color always |
+             sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
+             fzf --height=40%)" \
+  && cd ~/$dirname \
+  && precmd
+  zle && zle reset-prompt
 }
 zle -N fuzzy_cd
 bindkey '^X^D' fuzzy_cd

@@ -1,5 +1,7 @@
-**/.git
 .Trash/
+.cache/
+.local/
+.ssh/
 Desktop/
 Movies/
 Music/
@@ -7,8 +9,7 @@ Pictures/
 Library/*
 !Library/texmf
 Dropbox/.dropbox.cache/
-scripts/pfetch/
 .dropbox/
-.cache/
-.local/
-.ssh/
+.config/nvim/plugged/
+scripts/pfetch/
+**/.git

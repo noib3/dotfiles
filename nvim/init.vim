@@ -21,6 +21,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-surround'
+  Plug 'kana/vim-textobj-user'
   Plug 'lervag/vimtex'
 call plug#end()
 
@@ -118,26 +119,26 @@ cnoremap 3636 <C-u>undo<CR>
 
 " Extensions to install if not already installed
 let g:coc_global_extensions = [
-  \ 'coc-css',
-  \ 'coc-json',
-  \ 'coc-python',
-  \ 'coc-vimlsp',
-  \ 'coc-vimtex',
-  \ ]
+\   'coc-css',
+\   'coc-json',
+\   'coc-python',
+\   'coc-vimlsp',
+\   'coc-vimtex',
+\ ]
 
 " Check out this section of the wiki for more infos on completion sources
 "   https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#completion-sources
 let g:coc_sources_disable_map = {
-  \ 'conf': ['around', 'buffer'],
-  \ 'context': ['around', 'buffer'],
-  \ 'css': ['around', 'buffer'],
-  \ 'markdown': ['around', 'buffer'],
-  \ 'tex': ['around', 'buffer'],
-  \ 'text': ['around', 'buffer'],
-  \ 'vim': ['around', 'buffer'],
-  \ 'yaml': ['around', 'buffer'],
-  \ 'zsh': ['around', 'buffer'],
-  \ }
+\   'conf': ['around', 'buffer'],
+\   'context': ['around', 'buffer'],
+\   'css': ['around', 'buffer'],
+\   'markdown': ['around', 'buffer'],
+\   'tex': ['around', 'buffer'],
+\   'text': ['around', 'buffer'],
+\   'vim': ['around', 'buffer'],
+\   'yaml': ['around', 'buffer'],
+\   'zsh': ['around', 'buffer'],
+\ }
 
 " }}}
 
@@ -163,8 +164,8 @@ command! Py3 FloatermNew python3
 " fzf {{{
 
 let g:fzf_layout = {
-  \ 'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
-  \ }
+\   'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
+\ }
 
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
@@ -192,14 +193,31 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " Vem Tabline {{{
 
-nmap <Tab> <Plug>vem_next_buffer-
+nmap <expr> <Tab> len(getbufinfo({'buflisted':1})) > 1 ?
+                  \ '<Plug>vem_next_buffer-' :
+                  \ ''
+
+" }}}
+
+" vim-textobj-user {{{
+
+call textobj#user#plugin('markdown', {
+\   'asterisks-a': {
+\     'pattern': '[\*][^$]*[\*]',
+\     'select': [],
+\   },
+\   'asterisks-i': {
+\     'pattern': '[\*]\zs[^$]*\ze[\*]',
+\     'select': [],
+\   },
+\ })
 
 " }}}
 
 " vimtex {{{
 
 " Disable all insert mode mappings
-let g:vimtex_imaps_enabled = 0
+" let g:vimtex_imaps_enabled = 0
 
 " Disable the compiler and viewer interfaces
 let g:vimtex_compiler_enabled = 0
@@ -208,12 +226,12 @@ let g:vimtex_view_enabled = 0
 " Options for the ToC window
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {
-  \ 'indent_levels': 1,
-  \ 'layers' : ['content', 'include'],
-  \ 'show_help': 0,
-  \ 'split_width' : 40,
-  \ 'tocdepth': 6,
-  \ }
+\   'indent_levels': 1,
+\   'layers' : ['content', 'include'],
+\   'show_help': 0,
+\   'split_width' : 40,
+\   'tocdepth': 6,
+\ }
 
 " }}}
 
@@ -221,16 +239,13 @@ let g:vimtex_toc_config = {
 
 " Autogroups {{{
 
-" Autocommands for all file types
 augroup all
   autocmd!
   autocmd InsertEnter * norm zz
-  autocmd BufWritePre * let curr_pos = getpos('.')
-                        \ | %s/\s\+$//e
+  autocmd BufWritePre * let curr_pos = getpos('.') | %s/\s\+$//e
                         \ | call setpos ('.', curr_pos)
 augroup END
 
-" Autocommands for TeX related files
 augroup tex
   autocmd!
   autocmd BufRead *.sty setlocal syntax=tex
@@ -241,7 +256,18 @@ augroup tex
   autocmd User VimtexEventTocActivated norm zt
 augroup END
 
-" Autocommands to set/override some highlight groups
+augroup markdown_textobjs
+  autocmd!
+  autocmd FileType markdown call textobj#user#map('markdown', {
+  \   'asterisks-a': {
+  \     'select': '<buffer> a*',
+  \   },
+  \   'asterisks-i': {
+  \     'select': '<buffer> i*',
+  \   },
+  \ })
+augroup END
+
 augroup highlights
   autocmd!
   autocmd ColorScheme * hi Normal guibg=NONE

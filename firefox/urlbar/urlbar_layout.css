@@ -26,8 +26,8 @@
 }
 
 .urlbarView-row-inner {
-  padding-top: 0.3cm !important;
-  padding-bottom: 0.3cm !important;
+  padding-top: 0.3em !important;
+  padding-bottom: 0.3em !important;
   height: var(--tab-min-height) !important;
 }
 
