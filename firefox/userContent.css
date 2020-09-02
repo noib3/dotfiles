@@ -1,3 +1,9 @@
+:root {
+  --color-about-blank: #1a1a1a;
+}
+
 @-moz-document url-prefix(about:blank) {
-  * { background-color: #2a2a2e; }
+  * {
+    background-color: var(--color-about-blank);
+  }
 }

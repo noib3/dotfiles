@@ -1,9 +1,9 @@
 /* Font */
-@import "/Users/noibe/.config/firefox/fonts/JetBrainsMono.css";
+@import "/Users/noibe/.config/firefox/fonts/SFMono.css";
 
 /* Colorscheme */
 @import "/Users/noibe/.config/firefox/colors/colors.css";
-@import "/Users/noibe/.config/firefox/colors/colorschemes/grayscale.css";
+@import "/Users/noibe/.config/firefox/colors/colorschemes/afterglow.css";
 
 /* Tab bar */
 @import "/Users/noibe/.config/firefox/tab_bar/debloat_tab_bar.css";

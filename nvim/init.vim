@@ -7,12 +7,12 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
-  Plug 'morhetz/gruvbox'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
   Plug 'pacha/vem-tabline'
+  Plug 'danilo-augusto/vim-afterglow'
   Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
@@ -46,14 +46,11 @@ set linebreak
 set textwidth=79
 let &showbreak="\u21aa "
 
-" Code folding
-set foldlevelstart=0
-let &fillchars='fold: '
-
 " Miscellaneous
 set autochdir
 set clipboard+=unnamedplus
 set expandtab
+let &fillchars='fold: '
 set hidden
 set iskeyword-=_
 set laststatus=0
@@ -77,15 +74,9 @@ imap <C-a> <C-o>I
 map <C-e> $
 imap <C-e> <C-o>A
 
-" Save and quit
+" Save buffer
 map <silent> <C-s> :w<CR>
 imap <silent> <C-s> <C-o>:w<CR>
-map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
-                          \ ':q<CR>' :
-                          \ '<Plug>vem_delete_buffer-'
-imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
-                           \ '<C-o>:q<CR>' :
-                           \ '<C-o><Plug>vem_delete_buffer-'
 
 " Navigate wrapped lines
 nmap <Up> gk
@@ -193,9 +184,29 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " Vem Tabline {{{
 
-nmap <expr> <Tab> len(getbufinfo({'buflisted':1})) > 1 ?
-                  \ '<Plug>vem_next_buffer-' :
-                  \ ''
+let g:vem_tabline_show_number = 'index'
+let g:vem_tabline_number_symbol = ': '
+
+" Switch to the i-th buffer with <Fi>, i = 1,...,9, only if there are at least
+" i buffers open.
+for i in range(1, 9)
+  execute 'nmap <expr> <silent> <F' . i . '> '
+          \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
+          \ . "':VemTablineGo " . i . "<CR>' :"
+          \ . "''"
+  execute 'imap <expr> <silent> <F' . i . '> '
+          \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
+          \ . "'<C-o>:VemTablineGo " . i . "<CR>' :"
+          \ . "''"
+endfor
+
+" If there are multiple buffers open close the current one, else quit neovim
+map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+                          \ ':q<CR>' :
+                          \ '<Plug>vem_delete_buffer-'
+imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+                           \ '<C-o>:q<CR>' :
+                           \ '<C-o><Plug>vem_delete_buffer-'
 
 " }}}
 
@@ -217,7 +228,7 @@ call textobj#user#plugin('markdown', {
 " vimtex {{{
 
 " Disable all insert mode mappings
-" let g:vimtex_imaps_enabled = 0
+let g:vimtex_imaps_enabled = 0
 
 " Disable the compiler and viewer interfaces
 let g:vimtex_compiler_enabled = 0
@@ -237,23 +248,43 @@ let g:vimtex_toc_config = {
 
 " }}}
 
+" Global variables {{{
+
+" Home directory for bookmarks and history
+let g:netrw_home = $HOME . '/.cache/nvim'
+
+" Set default .tex's files filetype to LaTeX
+let g:tex_flavor = 'latex'
+
+" Disable conceal across multiple filetypes
+let g:tex_conceal = ''
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_json_syntax_conceal = 0
+
+" Set default shell syntax highlighting to POSIX
+let g:is_posix = 1
+
+" }}}
+
 " Autogroups {{{
 
 augroup all
   autocmd!
   autocmd InsertEnter * norm zz
-  autocmd BufWritePre * let curr_pos = getpos('.') | %s/\s\+$//e
-                        \ | call setpos ('.', curr_pos)
+  autocmd BufWritePre * call StripTrailingWhiteSpace()
+  autocmd BufLeave * call AutoSaveWinView()
+  autocmd BufEnter * call AutoRestoreWinView()
 augroup END
 
 augroup tex
   autocmd!
-  autocmd BufRead *.sty setlocal syntax=tex
-  autocmd BufRead *.cls setlocal syntax=tex
   autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
   autocmd User VimtexEventTocActivated norm zt
+  autocmd BufRead *.sty setlocal syntax=tex
+  autocmd BufRead *.cls setlocal syntax=tex
 augroup END
 
 augroup markdown_textobjs
@@ -278,29 +309,45 @@ augroup END
 
 " }}}
 
-" Global variables {{{
-
-" Home directory for bookmarks and history
-let g:netrw_home = $HOME . '/.cache/nvim'
-
-" Set default .tex's files filetype to LaTeX
-let g:tex_flavor = 'latex'
-
-" Disable conceal across multiple filetypes
-let g:tex_conceal = ''
-let g:vim_markdown_conceal = 0
-let g:vim_markdown_conceal_code_blocks = 0
-let g:vim_json_syntax_conceal = 0
-
-" Set default shell syntax highlighting to POSIX
-let g:is_posix = 1
-
-" }}}
-
 " Colorscheme {{{
 
 " Has to be after the highlights augroup definition
-colorscheme onedark
+colorscheme afterglow
+
+" }}}
+
+" Functions {{{
+
+function! StripTrailingWhiteSpace()
+  let curr_pos = getpos('.')
+  %s/\s\+$//e
+  call setpos ('.', curr_pos)
+endfunction
+
+" https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{
+
+" Save current view settings on a per-window, per-buffer basis.
+function! AutoSaveWinView()
+  if !exists("w:SavedBufView")
+    let w:SavedBufView = {}
+  endif
+  let w:SavedBufView[bufnr("%")] = winsaveview()
+endfunction
+
+" Restore current view settings.
+function! AutoRestoreWinView()
+  let buf = bufnr("%")
+  if exists("w:SavedBufView") && has_key(w:SavedBufView, buf)
+    let v = winsaveview()
+    let atStartOfFile = v.lnum == 1 && v.col == 0
+    if atStartOfFile && !&diff
+      call winrestview(w:SavedBufView[buf])
+    endif
+    unlet w:SavedBufView[buf]
+  endif
+endfunction
+
+" }}}
 
 " }}}
 

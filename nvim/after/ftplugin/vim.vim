@@ -13,7 +13,7 @@ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 execute 'set cc=' . (&cc == '' ? '80,100' : '')
 
 " Autopair less-than with greater-than signs
-let g:AutoPairs['<'] = '>'
+let b:AutoPairs = {'(': ')', '[': ']', '{': '}', "'": "'", '<': '>'}
 
 " Text displayed on folded lines
 setlocal foldtext=vim#MarkerFoldsText()

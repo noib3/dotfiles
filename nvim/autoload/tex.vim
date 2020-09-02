@@ -29,15 +29,15 @@ function! tex#PdfOpen() " {{{1
 endfunction " }}}1
 
 function! tex#PdfClose(filepath, filename) " {{{1
-  " Close the PDF file created by a TeX document
-  " It only works with yabai + Skim
+  " Close the PDF file created by a TeX document. It only works with yabai +
+  " Skim.
   if filereadable(a:filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
     " If there is just one Skim window and its title matches the filename of
     " the file in the buffer, quit Skim.
     if len(Skim_windows) == 1
-          \ && substitute(Skim_windows[0].title, '\.pdf.*', '.pdf', '') == a:filename
+       \ && substitute(Skim_windows[0].title, '\.pdf.*', '.pdf', '') == a:filename
       execute "silent !osascript -e \'quit app \"Skim\"\'"
     " If there are more Skim windows look for the one whose title matches the
     " filename of the file in the buffer and close it.

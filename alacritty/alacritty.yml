@@ -5,7 +5,7 @@ shell:
 
 font:
   normal:
-    family: JetBrainsMono Nerd Font
+    family: SFMono Nerd Font
     style: Regular
   # Iosevka on 1440x900
   # size: 16.0
@@ -14,79 +14,31 @@ font:
   # Iosevka on 2560x1440
   # size: 20
   # SFmono on 2048x1152
-  # size: 16
-  # JetBrainsMono on 2048x1152
   size: 16
+  # JetBrainsMono on 2048x1152
+  # size: 16
   offset:
     y: 1
 
 schemes:
-  gruvbox: &gruvbox
+  grayscale: &grayscale
     primary:
-      # background: '#1d2021'
-      background: '#282828'
-      foreground: '#ebdbb2'
-    normal:
-      black:   '#282828'
-      red:     '#cc241d'
-      green:   '#98971a'
-      yellow:  '#d79921'
-      blue:    '#458588'
-      magenta: '#b16286'
-      cyan:    '#689d6a'
-      white:   '#a89984'
-    bright:
-      black:   '#928374'
-      red:     '#fb4934'
-      green:   '#b8bb26'
-      yellow:  '#fabd2f'
-      blue:    '#83a598'
-      magenta: '#d3869b'
-      cyan:    '#8ec07c'
-      white:   '#ebdbb2'
-  nord: &nord
-    primary:
-      background: '#2e3440'
-      foreground: '#d8dee9'
-    cursor:
-      text:    '#2e3440'
-      cursor:  '#d8dee9'
-    normal:
-      black:   '#3b4252'
-      red:     '#BF616a'
-      green:   '#a3be8c'
-      yellow:  '#ebcb8b'
-      blue:    '#81a1c1'
-      magenta: '#b48ead'
-      cyan:    '#88c0d0'
-      white:   '#e5e9f0'
-    bright:
-      black:   '#4c566a'
-      red:     '#bf616A'
-      green:   '#a3be8c'
-      yellow:  '#ebcb8b'
-      blue:    '#81a1c1'
-      magenta: '#b48ead'
-      cyan:    '#8fbcbb'
-      white:   '#eCeff4'
-  wip: &default
-    primary:
-      background: '#282a36'
+      background: '#1a1a1a'
       foreground: '#c7c7c7'
     cursor:
-      text: '#feffff'
+      text: '#ffffff'
       cursor: '#c7C7c7'
     selection:
       text: '#ffffff'
       background: '#7aa6dA'
 
-colors: *default
+colors: *grayscale
 
 window:
   decorations: buttonless
   padding:
-    x: 8
-    y: 4
+    x: 7
+    y: 2
 
 key_bindings:
   # To get the 'chars' values use xxd: enter the character sequence, hit return
@@ -112,3 +64,12 @@ key_bindings:
   - { key: Down, mods: Super, chars: "\x04" } # Ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # Ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # Ctrl-e
+  - { key: Key1, mods: Super, chars: "\x1b\x4f\x50" } # F1
+  - { key: Key2, mods: Super, chars: "\x1b\x4f\x51" } # F2
+  - { key: Key3, mods: Super, chars: "\x1b\x4f\x52" } # F3
+  - { key: Key4, mods: Super, chars: "\x1b\x4f\x53" } # F4
+  - { key: Key5, mods: Super, chars: "\x1b\x5b\x31\x35\x7e" } # F5
+  - { key: Key6, mods: Super, chars: "\x1b\x5b\x31\x37\x7e" } # F6
+  - { key: Key7, mods: Super, chars: "\x1b\x5b\x31\x38\x7e" } # F7
+  - { key: Key8, mods: Super, chars: "\x1b\x5b\x31\x39\x7e" } # F8
+  - { key: Key9, mods: Super, chars: "\x1b\x5b\x32\x30\x7e" } # F9

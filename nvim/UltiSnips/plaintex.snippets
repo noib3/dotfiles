@@ -1,5 +1,6 @@
-# This file is being used to store snippets to be shared between ConTeXt and LaTeX documents
-# This means the code in the following snippets is not expected to compile in Plain TeX
+# This file is being used to store snippets to be shared between ConTeXt and
+# LaTeX documents. This means the code in the following snippets is not
+# expected to compile in Plain TeX documents.
 
 # The code for the "math" context was taken from:
 #		https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
@@ -38,7 +39,7 @@ if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
     snip.rv = ' '
 else:
     snip.rv = ''
-`$2
+`$0
 endsnippet
 
 context "math()"
@@ -67,8 +68,23 @@ snippet .. "dots" iA
 endsnippet
 
 context "math()"
-snippet oo "infty" A
+snippet oo "infty" iA
 \infty
+endsnippet
+
+context "math()"
+snippet part "partial" iA
+\partial $0
+endsnippet
+
+context "math()"
+snippet sq "squared" iA
+^2
+endsnippet
+
+context "math()"
+snippet cb "cubed" iA
+^3
 endsnippet
 
 context "math()"
@@ -92,22 +108,22 @@ snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega|zeta)' "Greek alphabet 2n
 endsnippet
 
 context "math()"
-snippet "([A-Za-z])(\d)" "Auto subscript" wrA
+snippet "([A-Za-z])(\d)" "Auto subscript" riA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
 context "math()"
-snippet "([a-zA-Z])bar" "Postfix bar" riA
+snippet "([A-Za-z])bar" "Postfix bar" riA
 \overline{`!p snip.rv=match.group(1)`}
 endsnippet
 
 context "math()"
-snippet "([a-zA-Z])hat" "Postfix hat" riA
+snippet "([A-Za-z])hat" "Postfix hat" riA
 \hat{`!p snip.rv=match.group(1)`}
 endsnippet
 
 context "math()"
-snippet "([a-zA-Z])tilde" "Postfix tilde" riA
+snippet "([A-Za-z])tilde" "Postfix tilde" riA
 \tilde{`!p snip.rv=match.group(1)`}
 endsnippet
 
@@ -128,7 +144,7 @@ endsnippet
 
 # }}}
 
-snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" rwA
+snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" riA
 \\`!p snip.rv = match.group(1)`{$1}`!p
 if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
     snip.rv = ' '
