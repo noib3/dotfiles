@@ -21,18 +21,27 @@ font:
     y: 1
 
 schemes:
-  grayscale: &grayscale
+  afterglow: &afterglow
     primary:
       background: '#1a1a1a'
-      foreground: '#c7c7c7'
+      foreground: '#d6d6d6'
+    normal:
+      black: '#1a1a1a'
+      red: '#ac4142'
+      green: '#b4c973'
+      yellow: '#e5b567'
+      blue: '#6c99bb'
+      magenta: '#b05279'
+      cyan: '#9e86c8'
+      white: '#d6d6d6'
     cursor:
       text: '#ffffff'
-      cursor: '#c7C7c7'
+      cursor: '#d6d6d6'
     selection:
-      text: '#ffffff'
-      background: '#7aa6dA'
+      text: '#d6d6d6'
+      background: '#5a647e'
 
-colors: *grayscale
+colors: *afterglow
 
 window:
   decorations: buttonless

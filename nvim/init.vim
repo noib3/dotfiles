@@ -271,10 +271,11 @@ let g:is_posix = 1
 
 augroup all
   autocmd!
-  autocmd InsertEnter * norm zz
   autocmd BufWritePre * call StripTrailingWhiteSpace()
   autocmd BufLeave * call AutoSaveWinView()
   autocmd BufEnter * call AutoRestoreWinView()
+  autocmd ColorScheme * hi Normal guibg=NONE
+  autocmd ColorScheme * hi Comment gui=italic
 augroup END
 
 augroup tex
@@ -299,20 +300,22 @@ augroup markdown_textobjs
   \ })
 augroup END
 
-augroup highlights
-  autocmd!
-  autocmd ColorScheme * hi Normal guibg=NONE
-  autocmd ColorScheme * hi Comment gui=italic
-  autocmd ColorScheme * hi Visual guibg=#7aa6da guifg=#ffffff
-  autocmd ColorScheme * hi VertSplit guibg=#5c6370 guifg=NONE
-augroup END
-
 " }}}
 
 " Colorscheme {{{
 
-" Has to be after the highlights augroup definition
+augroup afterglow
+  autocmd!
+  autocmd ColorScheme * hi Visual guifg=#d6d6d6 guibg=#5a647e
+  autocmd ColorScheme * hi VertSplit guifg=NONE guibg=#5a647e
+  autocmd ColorScheme * hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
+  autocmd ColorScheme * hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
+  autocmd ColorScheme * hi VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  autocmd ColorScheme * hi VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+augroup END
+
 colorscheme afterglow
+
 
 " }}}
 

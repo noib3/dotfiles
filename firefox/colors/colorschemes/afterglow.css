@@ -1,7 +1,15 @@
 :root {
-  --color-text: #ebebeb;
-  --color-focused-tabs: #494c52;
-  --color-unfocused-tabs: #1a1a1a;
-  --color-urlbar: #1a1a1a;
-  --color-sidebar: #494c52;
+  --color-focused-tabs-fg: #d6d6d6;
+  --color-focused-tabs-bg: #797979;
+  --color-unfocused-tabs-fg: #d6d6d6;
+  --color-unfocused-tabs-bg: #393939;
+  --color-urlbar-fg: #d6d6d6;
+  --color-urlbar-bg: #5a647e;
+  --color-urlbar-separator: #5a647e;
+  --color-urlbar-popup-url: #6c99bb;
+  --color-urlbar-selected-fg: #5a647e;
+  --color-urlbar-selected-bg: #d6d6d6;
+  --color-urlbar-selected-popup-url: #6c99bb;
+  --color-sidebar-fg: #d6d6d6;
+  --color-sidebar-bg: #4d5057;
 }
