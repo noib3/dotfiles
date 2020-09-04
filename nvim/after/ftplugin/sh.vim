@@ -5,4 +5,4 @@
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Display vertical columns at 80 and 100 characters
-execute 'set cc=' . (&cc == '' ? '80,100' : '')
+setlocal cc=80,100

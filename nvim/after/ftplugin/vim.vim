@@ -10,10 +10,10 @@ setlocal formatoptions-=o
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Count asterisk as word separator
-set iskeyword-=#
+setlocal iskeyword-=#
 
 " Display vertical columns at 80 and 100 characters
-execute 'set cc=' . (&cc == '' ? '80,100' : '')
+setlocal cc=80,100
 
 " Autopair less-than with greater-than signs
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', "'": "'", '<': '>'}

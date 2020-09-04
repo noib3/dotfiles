@@ -1,4 +1,2 @@
-#!/usr/bin/env sh
-
-active_window_border_color='d6d6d6'
-normal_window_border_color='393939'
+active_window_border_color='#797979'
+normal_window_border_color='#393939'

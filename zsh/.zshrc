@@ -3,21 +3,11 @@ setopt HISTIGNOREDUPS
 setopt MENU_COMPLETE
 setopt PROMPT_SUBST
 setopt IGNORE_EOF
-setopt AUTO_CD
 unsetopt CASE_GLOB
 unsetopt BEEP
 
-# Directory and delimiter colors in prompt
-prompt_directory_color=#e1e1e1
-prompt_delimiter_color=#e69ab7
-
-# Git info colors
-git_on_color=#bbbbbb
-git_branch_color=#ede845
-
-# Visual mode colors
-vi_visual_mode_bg_color=#7aa6da
-vi_visual_mode_fg_color=#ffffff
+# Source the current theme
+source $ZDOTDIR/themes/afterglow.sh
 
 # Vi mode
 bindkey -v
@@ -49,7 +39,7 @@ zle-keymap-select() {
 zle -N zle-keymap-select
 
 # Background and foreground colors in visual mode
-zle_highlight=(region:bg=$vi_visual_mode_bg_color,fg=$vi_visual_mode_fg_color)
+zle_highlight=(region:bg=$color_selection_bg,fg=$color_selection_fg)
 
 # Enable vim-surround-like functionalities in vi mode
 autoload -U select-bracketed
@@ -80,8 +70,8 @@ bindkey -M visual S add-surround
 # Set prompt with support for git infos in directories under version control
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats ' %F{$git_on_color}on %F{$git_branch_color} %b%f'
-PROMPT='%F{$prompt_directory_color}%1~${vcs_info_msg_0_} %F{$prompt_delimiter_color}>%f '
+zstyle ':vcs_info:git:*' formats ' on %F{$color_git_branch} %b%f'
+PROMPT='%F{$color_prompt_directory}%1~${vcs_info_msg_0_} %F{$color_prompt_separator}>%f '
 
 # Get git infos and reset cursor to its insert mode shape
 # precmd() is executed before each prompt
@@ -100,7 +90,7 @@ bindkey '^W' close-window
 # Fuzzy search a file and open it in $EDITOR
 function fuzzy_edit() {
   local filename
-  filename="$(fzf --height=40% </dev/tty)" \
+  filename="$(fzf --height=10 </dev/tty)" \
   && $EDITOR ~/"$filename" \
   && fc -R =(print "$EDITOR ~/$filename") \
   && print -s "$EDITOR ~/$filename" \
@@ -113,7 +103,7 @@ bindkey '^X^E' fuzzy_edit
 # Fuzzy search a file and add it to the line buffer
 function fuzzy_search() {
   local filename
-  filename="$(fzf --height=40% </dev/tty)" \
+  filename="$(fzf --height=10 </dev/tty)" \
   && LBUFFER="$LBUFFER~/$(echo $filename | sed 's/ /\\ /g')"
   zle && zle reset-prompt
 }
@@ -125,23 +115,22 @@ bindkey '^S' fuzzy_search
 # window resize command in skhd.
 function fuzzy_history() {
   local command
-  command="$(fc -l -1 -99 |
+  command="$(fc -l -1 -999 |
              sed 's/^\s*[0-9]*\s*//g' |
-             fzf --height=50% --color=dark --preview='echo {}' \
-                 --preview-window=down:2:wrap)" \
+             fzf --height=10 --color=dark)" \
   && LBUFFER="$command" \
   && echo -n "$command" | pbcopy
   zle && zle reset-prompt
 }
 zle -N fuzzy_history
-bindkey '^X^G' fuzzy_history
+bindkey '^X^F' fuzzy_history
 
 # Fuzzy search a directory and cd into it
 function fuzzy_cd() {
   local dirname
   dirname="$(fd . --base-directory ~ --type d --hidden --color always |
              sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
-             fzf --height=40%)" \
+             fzf --height=10)" \
   && cd ~/$dirname \
   && precmd
   zle && zle reset-prompt

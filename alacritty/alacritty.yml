@@ -25,6 +25,12 @@ schemes:
     primary:
       background: '#1a1a1a'
       foreground: '#d6d6d6'
+    cursor:
+      text: '#ffffff'
+      cursor: '#d6d6d6'
+    selection:
+      text: '#d6d6d6'
+      background: '#5a647e'
     normal:
       black: '#1a1a1a'
       red: '#ac4142'
@@ -34,12 +40,6 @@ schemes:
       magenta: '#b05279'
       cyan: '#9e86c8'
       white: '#d6d6d6'
-    cursor:
-      text: '#ffffff'
-      cursor: '#d6d6d6'
-    selection:
-      text: '#d6d6d6'
-      background: '#5a647e'
 
 colors: *afterglow
 
@@ -61,18 +61,17 @@ key_bindings:
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
-  - { key: P, mods: Super, chars: "\x10" } # Ctrl-p
   - { key: S, mods: Super, chars: "\x13" } # Ctrl-s
-  - { key: T, mods: Super, chars: "\x14" } # Ctrl-t
   - { key: W, mods: Super, chars: "\x17" } # Ctrl-w
-  - { key: D, mods: Super, chars: "\x18\x04" } # Ctrl-x Ctrl-d
+  - { key: T, mods: Super, chars: "\x14" } # Ctrl-t
   - { key: E, mods: Super, chars: "\x18\x05" } # Ctrl-x Ctrl-e
-  - { key: H, mods: Super, chars: "\x18\x07" } # Ctrl-x Ctrl-g
-  - { key: Back, mods: Super, chars: "\x15" } # Ctrl-u
+  - { key: D, mods: Super, chars: "\x18\x04" } # Ctrl-x Ctrl-d
+  - { key: H, mods: Super, chars: "\x18\x06" } # Ctrl-x Ctrl-f
   - { key: Up, mods: Super, chars: "\x15" } # Ctrl-u
   - { key: Down, mods: Super, chars: "\x04" } # Ctrl-d
   - { key: Left, mods: Super, chars: "\x01" } # Ctrl-a
   - { key: Right, mods: Super, chars: "\x05" } # Ctrl-e
+  - { key: Back, mods: Super, chars: "\x15" } # Ctrl-u
   - { key: Key1, mods: Super, chars: "\x1b\x4f\x50" } # F1
   - { key: Key2, mods: Super, chars: "\x1b\x4f\x51" } # F2
   - { key: Key3, mods: Super, chars: "\x1b\x4f\x52" } # F3

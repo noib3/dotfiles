@@ -7,10 +7,13 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
+  Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
+  " Plug 'itchyny/lightline.vim'
+  " Plug 'mengelbrecht/lightline-bufferline'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
-  Plug 'SirVer/ultisnips'
+  " Plug 'SirVer/ultisnips'
   Plug 'pacha/vem-tabline'
   Plug 'danilo-augusto/vim-afterglow'
   Plug 'romainl/vim-cool'
@@ -50,7 +53,7 @@ let &showbreak="\u21aa "
 set autochdir
 set clipboard+=unnamedplus
 set expandtab
-let &fillchars='fold: '
+let &fillchars='fold: ,vert: '
 set hidden
 set iskeyword-=_
 set laststatus=0
@@ -97,7 +100,7 @@ nnoremap <Leader>s <C-w>j
 nnoremap <Leader>d <C-w>l
 
 " Toggle 80 and 100 characters columns
-nmap <silent> <Leader>c :execute 'set cc=' . (&cc == '' ? '80,100' : '')<CR>
+nmap <silent> <Leader>c :execute 'setlocal cc=' . (&cc == '' ? '80,100' : '')<CR>
 
 " Fix for https://github.com/neovim/neovim/issues/11393
 cnoremap 3636 <C-u>undo<CR>
@@ -154,9 +157,9 @@ command! Py3 FloatermNew python3
 
 " fzf {{{
 
-let g:fzf_layout = {
-\   'window': { 'width': 0.6, 'height': 0.6, 'highlight': 'Normal', 'border': 'sharp' }
-\ }
+" let g:fzf_layout = {
+" \   'window': { 'width': 1, 'height': 0.2, 'yoffset': 0, 'highlight': 'Comment', 'border': 'sharp' }
+" \ }
 
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
@@ -246,6 +249,29 @@ let g:vimtex_toc_config = {
 
 " }}}
 
+" set showtabline=2
+
+" let g:lightline = {
+"       \ 'colorscheme': 'one',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'filename', 'modified' ] ]
+"       \ },
+"       \ 'tabline': {
+"       \   'left': [ ['buffers'] ],
+"       \   'right': [ [] ]
+"       \ },
+"       \ 'component_expand': {
+"       \   'buffers': 'lightline#bufferline#buffers'
+"       \ },
+"       \ 'component_type': {
+"       \   'buffers': 'tabsel'
+"       \ }
+"       \ }
+
+" let g:lightline#bufferline#show_number = 2
+" let g:lightline#bufferline#number_separator = ': '
+" let g:lightline#bufferline#enable_devicons = 1
+
 " }}}
 
 " Global variables {{{
@@ -306,6 +332,14 @@ augroup END
 
 augroup afterglow
   autocmd!
+  autocmd Colorscheme * let g:terminal_color_0 = '#1a1a1a'
+  autocmd Colorscheme * let g:terminal_color_1 = '#ac4142'
+  autocmd Colorscheme * let g:terminal_color_2 = '#b4c973'
+  autocmd Colorscheme * let g:terminal_color_3 = '#e5b567'
+  autocmd Colorscheme * let g:terminal_color_4 = '#6c99bb'
+  autocmd Colorscheme * let g:terminal_color_5 = '#b05279'
+  autocmd Colorscheme * let g:terminal_color_6 = '#9e86c8'
+  autocmd Colorscheme * let g:terminal_color_7 = '#d6d6d6'
   autocmd ColorScheme * hi Visual guifg=#d6d6d6 guibg=#5a647e
   autocmd ColorScheme * hi VertSplit guifg=NONE guibg=#5a647e
   autocmd ColorScheme * hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
@@ -315,7 +349,6 @@ augroup afterglow
 augroup END
 
 colorscheme afterglow
-
 
 " }}}
 
