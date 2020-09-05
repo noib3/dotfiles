@@ -32,10 +32,13 @@ export LC_NUMERIC=en_US.UTF-8
 export LC_TIME=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+# Custom directory locations
+export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
+export IPYTHONDIR=$HOME/.local/share/ipython
+
 # History/cache files locations
 export LESSHISTFILE=$HOME/.cache/less/lesshst
 export MPLCONFIGDIR=$HOME/.cache/matplotlib
-export PYTHONSTARTUP=$HOME/.local/share/python/python-startup.py
 export npm_config_cache=$HOME/.cache/npm
 
 # Don't update Homebrew automatically every time it's launched

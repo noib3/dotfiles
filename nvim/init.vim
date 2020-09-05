@@ -7,13 +7,12 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
-  Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
   " Plug 'itchyny/lightline.vim'
   " Plug 'mengelbrecht/lightline-bufferline'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
-  " Plug 'SirVer/ultisnips'
+  Plug 'SirVer/ultisnips'
   Plug 'pacha/vem-tabline'
   Plug 'danilo-augusto/vim-afterglow'
   Plug 'romainl/vim-cool'
@@ -107,7 +106,7 @@ cnoremap 3636 <C-u>undo<CR>
 
 " }}}
 
-" Plugin settings and mappings {{{
+" Plugin settings & mappings {{{
 
 " CoC {{{
 
@@ -151,15 +150,16 @@ let g:floaterm_autoclose = 2
 
 nmap <silent> <Leader>l :FloatermNew lf<CR>
 
-command! Py3 FloatermNew python3
+command! Ipython FloatermNew ipython
 
 " }}}
 
 " fzf {{{
 
-" let g:fzf_layout = {
-" \   'window': { 'width': 1, 'height': 0.2, 'yoffset': 0, 'highlight': 'Comment', 'border': 'sharp' }
-" \ }
+let g:fzf_layout = {
+\   'window': { 'width': 1, 'height': 0.3, 'yoffset': 0,
+\               'highlight': 'FzfBorder', 'border': 'bottom' }
+\ }
 
 map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
@@ -172,9 +172,38 @@ let g:indentLine_char = '│'
 let g:indentLine_first_char = '│'
 let g:indentLine_showFirstIndentLevel = 1
 let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
-let g:indentLine_defaultGroup = 'Comment'
+" let g:indentLine_defaultGroup = 'Comment'
 
 " }}}
+
+" " lightline-bufferline {{{
+
+" set showtabline=2
+
+" let g:lightline = {}
+" let g:lightline.tabline = {'left': [['buffers']], 'right': [[]] }
+" let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+" let g:lightline.component_type = {'buffers': 'tabsel'}
+
+" let g:lightline#bufferline#show_number = 2
+" let g:lightline#bufferline#number_separator = ': '
+" let g:lightline#bufferline#enable_devicons = 1
+
+" " Switch to the i-th buffer with <Fi>, i = 1,...,9.
+" for i in range(1, 9)
+"   execute 'nmap <silent> <F' . i . '> <Plug>lightline#bufferline#go(' . i . ')'
+"   execute 'imap <silent> <F' . i . '> <C-o><Plug>lightline#bufferline#go(' . i . ')'
+" endfor
+
+" " If there are multiple buffers open delete the current one, else quit neovim
+" map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+"                           \ ':q<CR>' :
+"                           \ ':bwipeout<CR>'
+" imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+"                            \ '<C-o>:q<CR>' :
+"                            \ '<C-o>:bwipeout<CR>'
+
+" " }}}
 
 " UltiSnips {{{
 
@@ -203,7 +232,7 @@ for i in range(1, 9)
           \ . "''"
 endfor
 
-" If there are multiple buffers open close the current one, else quit neovim
+" If there are multiple buffers open delete the current one, else quit neovim
 map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                           \ ':q<CR>' :
                           \ '<Plug>vem_delete_buffer-'
@@ -249,29 +278,6 @@ let g:vimtex_toc_config = {
 
 " }}}
 
-" set showtabline=2
-
-" let g:lightline = {
-"       \ 'colorscheme': 'one',
-"       \ 'active': {
-"       \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'filename', 'modified' ] ]
-"       \ },
-"       \ 'tabline': {
-"       \   'left': [ ['buffers'] ],
-"       \   'right': [ [] ]
-"       \ },
-"       \ 'component_expand': {
-"       \   'buffers': 'lightline#bufferline#buffers'
-"       \ },
-"       \ 'component_type': {
-"       \   'buffers': 'tabsel'
-"       \ }
-"       \ }
-
-" let g:lightline#bufferline#show_number = 2
-" let g:lightline#bufferline#number_separator = ': '
-" let g:lightline#bufferline#enable_devicons = 1
-
 " }}}
 
 " Global variables {{{
@@ -293,7 +299,7 @@ let g:is_posix = 1
 
 " }}}
 
-" Autogroups {{{
+" Autogroups & functions {{{
 
 augroup all
   autocmd!
@@ -326,34 +332,6 @@ augroup markdown_textobjs
   \ })
 augroup END
 
-" }}}
-
-" Colorscheme {{{
-
-augroup afterglow
-  autocmd!
-  autocmd Colorscheme * let g:terminal_color_0 = '#1a1a1a'
-  autocmd Colorscheme * let g:terminal_color_1 = '#ac4142'
-  autocmd Colorscheme * let g:terminal_color_2 = '#b4c973'
-  autocmd Colorscheme * let g:terminal_color_3 = '#e5b567'
-  autocmd Colorscheme * let g:terminal_color_4 = '#6c99bb'
-  autocmd Colorscheme * let g:terminal_color_5 = '#b05279'
-  autocmd Colorscheme * let g:terminal_color_6 = '#9e86c8'
-  autocmd Colorscheme * let g:terminal_color_7 = '#d6d6d6'
-  autocmd ColorScheme * hi Visual guifg=#d6d6d6 guibg=#5a647e
-  autocmd ColorScheme * hi VertSplit guifg=NONE guibg=#5a647e
-  autocmd ColorScheme * hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
-  autocmd ColorScheme * hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
-  autocmd ColorScheme * hi VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  autocmd ColorScheme * hi VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-augroup END
-
-colorscheme afterglow
-
-" }}}
-
-" Functions {{{
-
 function! StripTrailingWhiteSpace()
   let curr_pos = getpos('.')
   %s/\s\+$//e
@@ -384,6 +362,36 @@ function! AutoRestoreWinView()
 endfunction
 
 " }}}
+
+" }}}
+
+" Colorscheme {{{
+
+augroup patch_colors
+  autocmd!
+  autocmd ColorScheme afterglow call s:patch_afterglow_colors()
+augroup END
+
+function! s:patch_afterglow_colors()
+  let g:terminal_color_0 = '#1a1a1a'
+  let g:terminal_color_1 = '#ac4142'
+  let g:terminal_color_2 = '#b4c973'
+  let g:terminal_color_3 = '#e5b567'
+  let g:terminal_color_4 = '#6c99bb'
+  let g:terminal_color_5 = '#b05279'
+  let g:terminal_color_6 = '#9e86c8'
+  let g:terminal_color_7 = '#d6d6d6'
+  hi Visual guifg=#d6d6d6 guibg=#5a647e
+  hi VertSplit guifg=NONE guibg=#5a647e
+  hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
+  hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
+  hi VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  hi VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  hi FloatermBorder guifg=#797979
+  hi FzfBorder guifg=#797979
+endfunction
+
+colorscheme afterglow
 
 " }}}
 
