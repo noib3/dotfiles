@@ -8,8 +8,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'Yggdroot/indentLine'
-  " Plug 'itchyny/lightline.vim'
-  " Plug 'mengelbrecht/lightline-bufferline'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
@@ -110,7 +108,6 @@ cnoremap 3636 <C-u>undo<CR>
 
 " CoC {{{
 
-" Extensions to install if not already installed
 let g:coc_global_extensions = [
 \   'coc-css',
 \   'coc-json',
@@ -118,20 +115,6 @@ let g:coc_global_extensions = [
 \   'coc-vimlsp',
 \   'coc-vimtex',
 \ ]
-
-" Check out this section of the wiki for more infos on completion sources
-"   https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#completion-sources
-let g:coc_sources_disable_map = {
-\   'conf': ['around', 'buffer'],
-\   'context': ['around', 'buffer'],
-\   'css': ['around', 'buffer'],
-\   'markdown': ['around', 'buffer'],
-\   'tex': ['around', 'buffer'],
-\   'text': ['around', 'buffer'],
-\   'vim': ['around', 'buffer'],
-\   'yaml': ['around', 'buffer'],
-\   'zsh': ['around', 'buffer'],
-\ }
 
 " }}}
 
@@ -157,7 +140,7 @@ command! Ipython FloatermNew ipython
 " fzf {{{
 
 let g:fzf_layout = {
-\   'window': { 'width': 1, 'height': 0.3, 'yoffset': 0,
+\   'window': { 'width': 1, 'height': 9, 'yoffset': 0,
 \               'highlight': 'FzfBorder', 'border': 'bottom' }
 \ }
 
@@ -172,38 +155,9 @@ let g:indentLine_char = '│'
 let g:indentLine_first_char = '│'
 let g:indentLine_showFirstIndentLevel = 1
 let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
-" let g:indentLine_defaultGroup = 'Comment'
+let g:indentLine_defaultGroup = 'Comment'
 
 " }}}
-
-" " lightline-bufferline {{{
-
-" set showtabline=2
-
-" let g:lightline = {}
-" let g:lightline.tabline = {'left': [['buffers']], 'right': [[]] }
-" let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-" let g:lightline.component_type = {'buffers': 'tabsel'}
-
-" let g:lightline#bufferline#show_number = 2
-" let g:lightline#bufferline#number_separator = ': '
-" let g:lightline#bufferline#enable_devicons = 1
-
-" " Switch to the i-th buffer with <Fi>, i = 1,...,9.
-" for i in range(1, 9)
-"   execute 'nmap <silent> <F' . i . '> <Plug>lightline#bufferline#go(' . i . ')'
-"   execute 'imap <silent> <F' . i . '> <C-o><Plug>lightline#bufferline#go(' . i . ')'
-" endfor
-
-" " If there are multiple buffers open delete the current one, else quit neovim
-" map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
-"                           \ ':q<CR>' :
-"                           \ ':bwipeout<CR>'
-" imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
-"                            \ '<C-o>:q<CR>' :
-"                            \ '<C-o>:bwipeout<CR>'
-
-" " }}}
 
 " UltiSnips {{{
 
@@ -338,6 +292,11 @@ function! StripTrailingWhiteSpace()
   call setpos ('.', curr_pos)
 endfunction
 
+" autocmd FileType fzf setlocal guicursor+=n:ver25
+"   \ | autocmd BufLeave <buffer> setlocal guicursor-=n:ver25
+
+" autocmd FileType fzf let &t_SI.="\e[6 q"
+
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{
 
 " Save current view settings on a per-window, per-buffer basis.
@@ -384,8 +343,10 @@ function! s:patch_afterglow_colors()
   hi Visual guifg=#d6d6d6 guibg=#5a647e
   hi VertSplit guifg=NONE guibg=#5a647e
   hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
+  hi VemTabLineLocation guifg=#a1a1a1 guibg=#393939
   hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
   hi VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  hi VemTabLineLocationSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
   hi VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
   hi FloatermBorder guifg=#797979
   hi FzfBorder guifg=#797979
@@ -395,4 +356,4 @@ colorscheme afterglow
 
 " }}}
 
-" vim: foldmethod=marker
+" vim:fdm=marker

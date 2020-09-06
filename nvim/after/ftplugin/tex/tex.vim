@@ -3,7 +3,6 @@
 
 " Formatting
 setlocal formatoptions-=t
-setlocal formatoptions+=a
 
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2

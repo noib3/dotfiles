@@ -27,8 +27,8 @@ function! vim#MarkerFoldsText() " {{{1
                  \ - strchars('+' . dashes . ' ' . fold_title . ' ' . fold_size . ' lines')
                  \ - 1
 
-  " If the fold text is too long, cut the fold title short adding three dots at
-  " the end of it. If not, append another space.
+  " If the fold title isn't too long append a space. If it is, cut the fold
+  " title short and add three dots at the end of it.
   if fill_num >= 0
     let fold_title .= ' '
   elseif fill_num < -1
@@ -41,4 +41,4 @@ function! vim#MarkerFoldsText() " {{{1
   return '+' . dashes . ' ' . fold_title . repeat('·', fill_num) . ' ' . fold_size . ' lines'
 endfunction " }}}1
 
-" vim: foldmethod=marker
+" vim:fdm=marker

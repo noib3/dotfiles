@@ -2,7 +2,6 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Formatting
-setlocal formatoptions+=a
 setlocal formatoptions-=r
 setlocal formatoptions-=o
 

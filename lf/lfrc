@@ -75,7 +75,7 @@ cmd eject_disk ${{
 # Fuzzy search a file and open it in $EDITOR
 cmd fuzzy_edit ${{
   clear
-  filename="$(fzf --height=80%)" && $EDITOR ~/"$filename"
+  filename="$(fzf --height=80%)" && $EDITOR ~/"$filename" || true
 }}
 
 # Fuzzy search a directory and cd into it
@@ -84,7 +84,7 @@ cmd fuzzy_cd ${{
   dirname="$(fd . --base-directory ~ --type d --hidden --color always |
              sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
              fzf --height=80%)" \
-  && lf -remote "send $id cd ~/$dirname"
+  && lf -remote "send $id cd ~/$dirname" || true
 }}
 
 # Mappings

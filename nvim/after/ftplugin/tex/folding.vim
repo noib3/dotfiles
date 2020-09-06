@@ -25,13 +25,19 @@ if !exists('g:LaTeXFolds_fold_sections')
     \ 'chapter',
     \ 'section',
     \ 'subsection',
-    \ 'subsubsection'
+    \ 'subsubsection',
     \ ]
 endif
 
 " Option to fold preamble
 if !exists('g:LaTeXFolds_fold_preamble')
   let g:LaTeXFolds_fold_preamble = 1
+endif
+
+" Option to use the section numbers from the vimtex's plugin in the section
+" title.
+if !exists('g:LaTeXFolds_use_vimtex_section_numbers')
+  let g:LaTeXFolds_use_vimtex_section_numbers = 1
 endif
 
 " Join all section names in a single regex, including potential asterisks for
@@ -93,20 +99,35 @@ endfunction " }}}1
 function! LaTeXFoldsText() "{{{1
   let line = getline(v:foldstart)
 
-  " Get the section name and its title, capitalizing the first letter of the
-  " name and including potential asterisks for starred sections (e.g.
-  " \chapter*{...}).
-  let section_name = substitute(line, s:sections_regex, '\u\1\2', '')
+  " Get the section title, and if it contains any \texorpdfstring's extract
+  " their first argument.
   let section_title = substitute(line, s:sections_regex, '\3', '')
-
-  " Check if the section title contains one or more \texorpdfstring commands.
-  " If it does, extract their first argument.
   if section_title =~# '\\texorpdfstring'
     let section_title = s:clear_texorpdfstring(section_title)
   endif
 
-  " Join the section name and its title in a single variable
-  let fold_title = section_name . ': ' . section_title
+  if g:LaTeXFolds_use_vimtex_section_numbers == 1
+    " If the vimtex plugin is loaded use it to get the section numbers, if not
+    " display an error message and use two question marks as the section
+    " numbers.
+    if exists('*vimtex#toc#new')
+      let section_num = s:get_section_num(v:foldstart)
+    else
+      echohl ErrorMsg
+      echomsg '[folding.vim] vimtex not loaded'
+      echohl None
+      let section_num = '??'
+    endif
+    " If the section number isn't empty insert two spaces before the title
+    let fold_title = empty(section_num)
+                     \ ? section_title
+                     \ : section_num . '  ' . section_title
+  else
+    " Get the section name, capitalizing its first letter and including
+    " potential asterisks for starred sections (e.g. \chapter*{...}).
+    let section_name = substitute(line, s:sections_regex, '\u\1\2', '')
+    let fold_title = section_name . ': ' . section_title
+  endif
 
   " If I'm folding the preamble and the line contains a \documentclass, just
   " set fold_title to 'Preamble'.
@@ -126,8 +147,8 @@ function! LaTeXFoldsText() "{{{1
                  \ - strchars('+' . dashes . ' ' . fold_title . ' ' . fold_size . ' lines')
                  \ - 1
 
-  " If the fold text is too long, cut the fold title short adding three dots at
-  " the end of it. If not, append another space.
+  " If the fold title isn't too long append a space. If it is, cut the fold
+  " title short and add three dots at the end of it.
   if fill_num >= 0
     let fold_title .= ' '
   elseif fill_num < -1
@@ -192,6 +213,44 @@ function! s:find_closing(start, string, count, type) abort " {{{2
   return [l:i2, l:count]
 endfunction " }}}2
 
+" https://github.com/lervag/vimtex/issues/1776#issuecomment-687820220 {{{2
+
+let s:cache = {
+      \ 'toc_updated': 0,
+      \ 'file_updated': {},
+      \ }
+
+function! s:get_section_num(lnum) abort
+  if !has_key(s:cache, 'toc')
+    let s:cache.toc = vimtex#toc#new({
+        \ 'name' : 'Fold text ToC',
+        \ 'layers' : ['content'],
+        \ 'refresh_always' : 0,
+        \ })
+  endif
+
+  let l:file = expand('%')
+  let l:ftime = getftime(l:file)
+
+  if l:ftime > get(s:cache.file_updated, l:file) || localtime() > s:cache.toc_updated + 300
+    call s:cache.toc.get_entries(1)
+    let s:cache.toc_entries = filter(
+          \ s:cache.toc.get_visible_entries(),
+          \ '!empty(v:val.number)')
+    let s:cache.file_updated[l:file] = l:ftime
+    let s:cache.toc_updated = localtime()
+  endif
+
+  let l:entries = filter(deepcopy(s:cache.toc_entries), 'v:val.line == a:lnum')
+  if len(l:entries) > 1
+    call filter(l:entries, "v:val.file ==# expand('%:p')")
+  endif
+
+  return empty(l:entries) ? '' : s:cache.toc.print_number(l:entries[0].number)
+endfunction
+
+" }}}2
+
 " }}}1
 
-" vim: foldmethod=marker
+" vim:fdm=marker

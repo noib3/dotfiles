@@ -90,7 +90,7 @@ bindkey '^W' close-window
 # Fuzzy search a file and open it in $EDITOR
 function fuzzy_edit() {
   local filename
-  filename="$(fzf --height=10 </dev/tty)" \
+  filename="$(fzf --height=8 </dev/tty)" \
   && $EDITOR ~/"$filename" \
   && fc -R =(print "$EDITOR ~/$filename") \
   && print -s "$EDITOR ~/$filename" \
@@ -103,7 +103,7 @@ bindkey '^X^E' fuzzy_edit
 # Fuzzy search a file and add it to the line buffer
 function fuzzy_search() {
   local filename
-  filename="$(fzf --height=10 </dev/tty)" \
+  filename="$(fzf --height=8 </dev/tty)" \
   && LBUFFER="$LBUFFER~/$(echo $filename | sed 's/ /\\ /g')"
   zle && zle reset-prompt
 }
@@ -117,7 +117,7 @@ function fuzzy_history() {
   local command
   command="$(fc -l -1 -999 |
              sed 's/^\s*[0-9]*\s*//g' |
-             fzf --height=10 --color=dark)" \
+             fzf --height=8 --color=dark)" \
   && LBUFFER="$command" \
   && echo -n "$command" | pbcopy
   zle && zle reset-prompt
@@ -130,7 +130,7 @@ function fuzzy_cd() {
   local dirname
   dirname="$(fd . --base-directory ~ --type d --hidden --color always |
              sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
-             fzf --height=10)" \
+             fzf --height=8)" \
   && cd ~/$dirname \
   && precmd
   zle && zle reset-prompt

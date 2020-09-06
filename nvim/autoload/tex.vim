@@ -64,4 +64,4 @@ function! tex#SkimForwardSearch() " {{{1
   endif
 endfunction " }}}1
 
-" vim: foldmethod=marker
+" vim:fdm=marker
