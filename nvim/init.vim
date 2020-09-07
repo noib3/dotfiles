@@ -213,14 +213,21 @@ call textobj#user#plugin('markdown', {
 
 " vimtex {{{
 
-" Disable all insert mode mappings
-let g:vimtex_imaps_enabled = 0
-
-" Disable the compiler and viewer interfaces
 let g:vimtex_compiler_enabled = 0
 let g:vimtex_view_enabled = 0
 
-" Options for the ToC window
+let g:vimtex_imaps_enabled = 0
+let g:vimtex_mappings_disable = {
+\   'n': ['<localleader>li',
+\         '<localleader>lI',
+\         '<localleader>lt',
+\         '<localleader>lT',
+\         '<localleader>lq',
+\         '<localleader>lx',
+\         '<localleader>lX',
+\         '<localleader>ls'],
+\ }
+
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {
 \   'indent_levels': 1,

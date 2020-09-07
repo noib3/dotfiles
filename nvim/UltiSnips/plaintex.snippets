@@ -33,13 +33,8 @@ endglobal
 
 # Math snippets {{{
 
-snippet md "Inline math" wA
-$$1$`!p
-if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
-    snip.rv = ' '
-else:
-    snip.rv = ''
-`$0
+snippet md "Inline math" A
+$$1$$0
 endsnippet
 
 context "math()"
@@ -63,7 +58,7 @@ snippet lim "lim" iA
 endsnippet
 
 context "math()"
-snippet .. "dots" iA
+snippet .. "dots" A
 \dots
 endsnippet
 
@@ -88,22 +83,22 @@ snippet cb "cubed" iA
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "Math operators" rwA
+snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "Math operators" riA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "Math relations" rwA
+snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "Math relations" rA
 \\`!p snip.rv = match.group(1)` $0
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "Greek alphabet 1st half" rwA
+snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "Greek alphabet 1st half" riA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega|zeta)' "Greek alphabet 2nd half" rwA
+snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega|zeta)' "Greek alphabet 2nd half" riA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -128,29 +123,24 @@ snippet "([A-Za-z])tilde" "Postfix tilde" riA
 endsnippet
 
 context "math()"
-snippet lrr "left right round brackets" iA
+snippet lrr "left right round brackets" A
 \left( ${1:${VISUAL}} \right) $0
 endsnippet
 
 context "math()"
-snippet lrs "left right square brackets" iA
+snippet lrs "left right square brackets" A
 \left[ ${1:${VISUAL}} \right] $0
 endsnippet
 
 context "math()"
-snippet lrc "left right curly brackets" iA
+snippet lrc "left right curly brackets" A
 \left\\{ ${1:${VISUAL}} \right \\} $0
 endsnippet
 
 # }}}
 
-snippet '(?<!\\)(emph|textit|textbf)' "Emphatic, italic and bold" riA
-\\`!p snip.rv = match.group(1)`{$1}`!p
-if t[2] and t[2][0] not in [' ', '-', ',', ';', '.', '?', '!']:
-    snip.rv = ' '
-else:
-    snip.rv = ''
-`$2
+snippet mph "Emphatic" A
+\\emph{$1}$0
 endsnippet
 
 # vim:fdm=marker
