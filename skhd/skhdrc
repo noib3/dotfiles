@@ -38,6 +38,10 @@ cmd - h [
 # Go fullscreen
 alt - f : skhd --key "ctrl + cmd - f"
 
+# Float/unfloat window and center on screen
+alt + shift - f : yabai -m window --toggle float \
+                  && yabai -m window --grid 4:4:1:1:2:2
+
 # Focus windows
 alt - up : yabai -m window --focus north
 alt - down : yabai -m window --focus south
@@ -99,7 +103,7 @@ alt - x : yabai -m space --mirror x-axis
 alt - y : yabai -m space --mirror y-axis
 alt - b : yabai -m space --balance
 alt - r : yabai -m space --rotate 270
-shift + alt - r : yabai -m space --rotate 90
+alt + shift - r : yabai -m space --rotate 90
 
 # Screenshot the whole screen
 shift + cmd - 3 : \

@@ -4,6 +4,9 @@
 /* Verified identity lock button */
 #identity-box { display: none; }
 
+/* Toggle reader view button */
+#reader-mode-button { display: none; }
+
 /* Page actions button */
 #pageActionButton { display: none; }
 

@@ -55,6 +55,7 @@ set hidden
 set iskeyword-=_
 set laststatus=0
 set noshowmode
+set noswapfile
 set scrolloff=1
 set termguicolors
 set undofile
@@ -176,20 +177,22 @@ let g:vem_tabline_number_symbol = ': '
 " Switch to the i-th buffer with <Fi>, i = 1,...,9, only if there are at least
 " i buffers open.
 for i in range(1, 9)
-  execute 'nmap <expr> <silent> <F' . i . '> '
-          \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
-          \ . "':VemTablineGo " . i . "<CR>' :"
-          \ . "''"
-  execute 'imap <expr> <silent> <F' . i . '> '
-          \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
-          \ . "'<C-o>:VemTablineGo " . i . "<CR>' :"
-          \ . "''"
+  " execute 'nmap <expr> <silent> <F' . i . '> '
+  "         \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
+  "         \ . "':VemTablineGo " . i . "<CR>' :"
+  "         \ . "''"
+  " execute 'imap <expr> <silent> <F' . i . '> '
+  "         \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
+  "         \ . "'<C-o>:VemTablineGo " . i . "<CR>' :"
+  "         \ . "''"
+  execute 'nmap <silent> <F' . i . '> :silent! VemTablineGo ' . i . '<CR>'
+  execute 'imap <silent> <F' . i . '> <C-o>:silent! VemTablineGo ' . i . '<CR>'
 endfor
 
 " If there are multiple buffers open delete the current one, else quit neovim
-map <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
-                          \ ':q<CR>' :
-                          \ '<Plug>vem_delete_buffer-'
+nmap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
+                           \ ':q<CR>' :
+                           \ '<Plug>vem_delete_buffer-'
 imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                            \ '<C-o>:q<CR>' :
                            \ '<C-o><Plug>vem_delete_buffer-'
