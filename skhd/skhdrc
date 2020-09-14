@@ -72,6 +72,12 @@ ctrl - j : yabai -m window --resize top:0:25
 ctrl - k : yabai -m window --resize bottom:0:-25
 ctrl - l : yabai -m window --resize left:25:0
 
+# Move floating windows
+alt + cmd - up : yabai -m window --move rel:0:-25
+alt + cmd - down : yabai -m window --move rel:0:25
+alt + cmd - left : yabai -m window --move rel:-25:0
+alt + cmd - right : yabai -m window --move rel:25:0
+
 # Move windows to spaces and follow focus
 alt + cmd - n : yabai -m space --create \
                 && yabai -m window --space last \

@@ -20,6 +20,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
   Plug 'kana/vim-textobj-user'
   Plug 'lervag/vimtex'
@@ -174,22 +175,11 @@ let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 let g:vem_tabline_show_number = 'index'
 let g:vem_tabline_number_symbol = ': '
 
-" Switch to the i-th buffer with <Fi>, i = 1,...,9, only if there are at least
-" i buffers open.
 for i in range(1, 9)
-  " execute 'nmap <expr> <silent> <F' . i . '> '
-  "         \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
-  "         \ . "':VemTablineGo " . i . "<CR>' :"
-  "         \ . "''"
-  " execute 'imap <expr> <silent> <F' . i . '> '
-  "         \ . "len(getbufinfo({'buflisted':1})) >= " . i . ' ?'
-  "         \ . "'<C-o>:VemTablineGo " . i . "<CR>' :"
-  "         \ . "''"
   execute 'nmap <silent> <F' . i . '> :silent! VemTablineGo ' . i . '<CR>'
   execute 'imap <silent> <F' . i . '> <C-o>:silent! VemTablineGo ' . i . '<CR>'
 endfor
 
-" If there are multiple buffers open delete the current one, else quit neovim
 nmap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                            \ ':q<CR>' :
                            \ '<Plug>vem_delete_buffer-'
@@ -352,6 +342,8 @@ function! s:patch_afterglow_colors()
   let g:terminal_color_7 = '#d6d6d6'
   hi Visual guifg=#d6d6d6 guibg=#5a647e
   hi VertSplit guifg=NONE guibg=#5a647e
+  hi htmlItalic guifg=#9e86c8 gui=italic
+  hi htmlBold guifg=#e87d3e gui=bold
   hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
   hi VemTabLineLocation guifg=#a1a1a1 guibg=#393939
   hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
