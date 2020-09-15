@@ -1,11 +1,11 @@
 #nav-bar {
-  height: var(--tab-min-height);
+  /* height: var(--tab-min-height); */
   border-width: 0;
 }
 
-#nav-bar-customization-target {
-  min-height: var(--tab-min-height);
-  max-height: var(--tab-min-height);
-}
+/* #nav-bar-customization-target { */
+/*   min-height: var(--tab-min-height); */
+/*   max-height: var(--tab-min-height); */
+/* } */
 
 #navigator-toolbox { border-width: 0 !important; }

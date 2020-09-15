@@ -1,8 +1,15 @@
 #urlbar-container {
+  --urlbar-container-height: var(--tab-min-height) !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+}
+
+#urlbar {
+  --urlbar-height: var(--tab-min-height) !important;
+  --urlbar-toolbar-height: var(--tab-min-height) !important;
+  min-height: var(--tab-min-height) !important;
 }
 
 #urlbar-background {
@@ -22,13 +29,13 @@
 .urlbarView-row {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  line-height: var(--tab-min-height) !important;
+  line-height: var(--urlbar-height) !important;
 }
 
 .urlbarView-row-inner {
   padding-top: 0.3em !important;
   padding-bottom: 0.3em !important;
-  height: var(--tab-min-height) !important;
+  height: var(--urlbar-height) !important;
 }
 
 .urlbarView-favicon {

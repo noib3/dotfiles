@@ -21,6 +21,7 @@
 /* Urlbar */
 @import "/Users/noibe/.config/firefox/urlbar/debloat_urlbar.css";
 @import "/Users/noibe/.config/firefox/urlbar/urlbar_layout.css";
+@import "/Users/noibe/.config/firefox/urlbar/remove_megabar.css";
 
 /* Sidebar */
 @import "/Users/noibe/.config/firefox/sidebar/debloat_sidebar.css";

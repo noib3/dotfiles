@@ -1,0 +1,22 @@
+/* https://github.com/WesleyBranton/Remove-Firefox-Megabar/blob/master/remove_megabar.css */
+
+/* REMOVE MEGABAR START
+ * VERSION 1.0.4
+ * CODE AT: http://userchrome.wesleybranton.com/megabar
+ * RELEASE NOTES: http://userchrome.wesleybranton.com/notes/megabar */
+@-moz-document url(chrome://browser/content/browser.xhtml) {
+    /* DISABLE EXPANDING START */
+    #urlbar[breakout][breakout-extend] {
+        top: calc((var(--urlbar-toolbar-height) - var(--urlbar-height)) / 2) !important;
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    #urlbar[breakout][breakout-extend] > #urlbar-input-container {
+        height: var(--urlbar-height) !important;
+        padding-block: 0 !important;
+        padding-inline: 0 !important;
+    }
+    /* DISABLE EXPANDING END */
+}
+/* REMOVE MEGABAR END */
