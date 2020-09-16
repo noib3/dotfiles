@@ -34,27 +34,27 @@ endglobal
 # Math snippets {{{
 
 snippet md "Inline math" A
-$$1$$0
+$$1$
 endsnippet
 
 context "math()"
 snippet fr "frac" iA
-\frac{$1}{$2}$0
+\frac{$1}{$2}
 endsnippet
 
 context "math()"
 snippet sum "sum" iA
-\sum_{${1:i} = ${2:1}}^{${3:\infty}} $0
+\sum_{$1}^{$2}
 endsnippet
 
 context "math()"
 snippet int "int" iA
-\int_{${1:-\infty}}^{${2:\infty}} $3 d${4:x}
+\int_{$1}^{$2}
 endsnippet
 
 context "math()"
 snippet lim "lim" iA
-\lim_{${1:n} \to ${2:\infty}} $0
+\lim_{$1}
 endsnippet
 
 context "math()"
@@ -68,38 +68,8 @@ snippet oo "infty" iA
 endsnippet
 
 context "math()"
-snippet part "partial" iA
-\partial $0
-endsnippet
-
-context "math()"
-snippet sq "squared" iA
-^2
-endsnippet
-
-context "math()"
-snippet cb "cubed" iA
-^3
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(sin|cos|tan|ln|log|exp)' "Math operators" riA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(ge|le|gg|ll|simeq|times|cdot|pm)' "Math relations" rA
-\\`!p snip.rv = match.group(1)` $0
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(alpha|beta|gamma|delta|epsilon|eta|theta|lambda|mu)' "Greek alphabet 1st half" riA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-context "math()"
-snippet '(?<!\\)(nu|pi|rho|sigma|tau|phi|chi|psi|omega|zeta)' "Greek alphabet 2nd half" riA
-\\`!p snip.rv = match.group(1)`
+snippet prt "partial" iA
+\partial
 endsnippet
 
 context "math()"
@@ -124,23 +94,19 @@ endsnippet
 
 context "math()"
 snippet lrr "left right round brackets" A
-\left( ${1:${VISUAL}} \right) $0
+\left( ${1:${VISUAL}} \right)
 endsnippet
 
 context "math()"
 snippet lrs "left right square brackets" A
-\left[ ${1:${VISUAL}} \right] $0
+\left[ ${1:${VISUAL}} \right]
 endsnippet
 
 context "math()"
 snippet lrc "left right curly brackets" A
-\left\\{ ${1:${VISUAL}} \right \\} $0
+\left\\{ ${1:${VISUAL}} \right \\}
 endsnippet
 
 # }}}
-
-snippet mph "Emphatic" A
-\\emph{$1}$0
-endsnippet
 
 # vim:fdm=marker

@@ -163,9 +163,9 @@ let g:indentLine_defaultGroup = 'Comment'
 
 " UltiSnips {{{
 
-let g:UltiSnipsExpandTrigger = '<tab>'
-let g:UltiSnipsJumpForwardTrigger = '<tab>'
-let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+let g:UltiSnipsExpandTrigger = '<Tab>'
+let g:UltiSnipsJumpForwardTrigger = '<Tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<S-Tab>'
 let g:UltiSnipsSnippetDirectories = ['UltiSnips']
 
 " }}}
@@ -186,6 +186,16 @@ nmap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
 imap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?
                            \ '<C-o>:q<CR>' :
                            \ '<C-o><Plug>vem_delete_buffer-'
+
+" }}}
+
+" SnipMate {{{
+
+let g:snipMate = {}
+let g:snipMate.scope_aliases = {}
+let g:snipMate.scope_aliases['tex'] = 'tex,plaintex'
+let g:snipMate.scope_aliases['context'] = 'context,plaintex'
+let g:snipMate.snippet_version = 1
 
 " }}}
 
@@ -260,8 +270,8 @@ augroup all
   autocmd BufWritePre * call StripTrailingWhiteSpace()
   autocmd BufLeave * call AutoSaveWinView()
   autocmd BufEnter * call AutoRestoreWinView()
-  autocmd ColorScheme * hi Normal guibg=NONE
-  autocmd ColorScheme * hi Comment gui=italic
+  autocmd ColorScheme * highlight Normal guibg=NONE
+  autocmd ColorScheme * highlight Comment gui=italic
 augroup END
 
 augroup tex
@@ -292,8 +302,8 @@ function! StripTrailingWhiteSpace()
   call setpos ('.', curr_pos)
 endfunction
 
-" autocmd FileType fzf setlocal guicursor+=n:ver25
-"   \ | autocmd BufLeave <buffer> setlocal guicursor-=n:ver25
+autocmd FileType fzf setlocal guicursor+=n:ver25
+  \ | autocmd BufLeave <buffer> setlocal guicursor-=n:ver25
 
 " autocmd FileType fzf let &t_SI.="\e[6 q"
 
@@ -340,18 +350,18 @@ function! s:patch_afterglow_colors()
   let g:terminal_color_5 = '#b05279'
   let g:terminal_color_6 = '#9e86c8'
   let g:terminal_color_7 = '#d6d6d6'
-  hi Visual guifg=#d6d6d6 guibg=#5a647e
-  hi VertSplit guifg=NONE guibg=#5a647e
-  hi htmlItalic guifg=#9e86c8 gui=italic
-  hi htmlBold guifg=#e87d3e gui=bold
-  hi VemTabLineNormal guifg=#a1a1a1 guibg=#393939
-  hi VemTabLineLocation guifg=#a1a1a1 guibg=#393939
-  hi VemTabLineNumber guifg=#a1a1a1 guibg=#393939
-  hi VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  hi VemTabLineLocationSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  hi VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  hi FloatermBorder guifg=#797979
-  hi FzfBorder guifg=#797979
+  highlight Visual guifg=#d6d6d6 guibg=#5a647e
+  highlight VertSplit guifg=NONE guibg=#5a647e
+  highlight htmlItalic guifg=#9e86c8 gui=italic
+  highlight htmlBold guifg=#e87d3e gui=bold
+  highlight VemTabLineNormal guifg=#a1a1a1 guibg=#393939
+  highlight VemTabLineLocation guifg=#a1a1a1 guibg=#393939
+  highlight VemTabLineNumber guifg=#a1a1a1 guibg=#393939
+  highlight VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  highlight VemTabLineLocationSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  highlight VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
+  highlight FloatermBorder guifg=#797979
+  highlight FzfBorder guifg=#797979
 endfunction
 
 colorscheme afterglow

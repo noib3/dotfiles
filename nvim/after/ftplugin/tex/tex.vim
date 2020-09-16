@@ -1,9 +1,6 @@
 " Maintainer: Riccardo Mazzarini
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
-" Formatting
-setlocal formatoptions-=t
-
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
@@ -11,10 +8,13 @@ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 setlocal spell
 setlocal spelllang=en_us,it
 
+" Display vertical columns at 80 and 100 characters
+setlocal cc=80
+
 " Use bash for its PIPESTATUS feature
 setlocal shell=bash
 
-" setlocal the error format
+" Set the error format
 setlocal errorformat=%f:%l:\ %m
 
 " Autopair back quotes and dollar signs, don't pair upright single quotes

@@ -2,8 +2,6 @@
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
 " Formatting
-setlocal formatoptions-=t
-setlocal formatoptions-=t
 setlocal formatoptions-=r
 
 " Autopair asterisks
