@@ -8,9 +8,8 @@ setlocal formatoptions-=r
 setlocal cc=80,100
 
 " Compile the document
-nmap <buffer> <silent> <C-t> :call PyComp()<CR>
-" nmap <buffer> <silent> <C-t> :!python3 % <CR>
+nmap <buffer> <silent> <C-t> :call PyCompile()<CR>
 
-function! PyComp()
+function! PyCompile()
   execute '!python3 ' . expand('%')
 endfunction

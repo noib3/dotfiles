@@ -4,6 +4,9 @@
 " Formatting
 setlocal formatoptions-=r
 
+" Display vertical columns at 80 characters
+setlocal cc=80
+
 " Autopair asterisks
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', "'": "'", '*': '*'}
 

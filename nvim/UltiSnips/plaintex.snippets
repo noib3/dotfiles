@@ -10,8 +10,7 @@
 # Math context {{{
 
 global !p
-vim.command('redir @a | silent exe "syntax list @texMathZones" | redir END')
-texMathZones = [x.strip() for x in vim.eval('@a').split(',')][1:]
+texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
 
 texIgnoreMathZones = ['texMathText']
 
