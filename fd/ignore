@@ -9,6 +9,7 @@ Pictures/
 Library/*
 !Library/texmf
 Dropbox/.dropbox.cache/
+Dropbox/university/bachelor
 .dropbox/
 .config/nvim/plugged/
 scripts/pfetch/

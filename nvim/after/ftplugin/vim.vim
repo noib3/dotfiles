@@ -18,4 +18,4 @@ setlocal cc=80,100
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', "'": "'", '<': '>'}
 
 " Text displayed on folded lines
-setlocal foldtext=vim#MarkerFoldsText()
+setlocal foldtext=folding#MarkerFoldsText()

@@ -12,4 +12,4 @@ setlocal foldmethod=manual
 setlocal foldlevel=0
 
 " Text displayed on folded lines
-setlocal foldtext=vim#MarkerFoldsText()
+setlocal foldtext=folding#MarkerFoldsText()

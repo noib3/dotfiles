@@ -1,7 +1,7 @@
 " Maintainer: Riccardo Mazzarini
 " Github:     https://github.com/n0ibe/macOS-dotfiles
 
-function! vim#MarkerFoldsText() " {{{1
+function! folding#MarkerFoldsText() " {{{1
   let line = getline(v:foldstart)
   let comment_char = substitute(&commentstring, '\s*%s', '', '')
 
@@ -15,6 +15,12 @@ function! vim#MarkerFoldsText() " {{{1
                               \ '')
   let fold_title = substitute(fold_title, '\s*$', '', '')
 
+  return folding#FoldsTextFormat(fold_title)
+endfunction " }}}1
+
+function! folding#FoldsTextFormat(fold_title) " {{{1
+  let fold_title = a:fold_title
+
   " Set the column where the last character of the fold's text should be
   let last_foldtext_column = 78
   " Add two dashes for every fold level
@@ -24,21 +30,22 @@ function! vim#MarkerFoldsText() " {{{1
 
   " Calculate how many filler characters should be displayed
   let fill_num = last_foldtext_column
-                 \ - strchars('+' . dashes . ' ' . fold_title . ' ' . fold_size . ' lines')
-                 \ - 1
+                 \ - strchars('+' . dashes . ' ' . fold_title .
+                              \ ' ' . ' ' . fold_size . ' lines')
 
   " If the fold title isn't too long append a space. If it is, cut the fold
   " title short and add three dots at the end of it.
   if fill_num >= 0
     let fold_title .= ' '
-  elseif fill_num < -1
+  else
     let fold_title = substitute(fold_title,
                                 \ '\(.*\)\(.\{' . (abs(fill_num) + 2) . '\}\)',
                                 \ '\1...',
                                 \ '')
   endif
 
-  return '+' . dashes . ' ' . fold_title . repeat('·', fill_num) . ' ' . fold_size . ' lines'
+  return '+' . dashes . ' ' . fold_title .
+          \ repeat('·', fill_num) . ' ' . fold_size . ' lines'
 endfunction " }}}1
 
 " vim:fdm=marker

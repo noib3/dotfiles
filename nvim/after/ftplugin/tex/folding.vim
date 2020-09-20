@@ -9,18 +9,18 @@
 " from the vimtex's plugin, specifically from autoload/vimtex/parser/toc.vim
 
 " Define (re)inclusion guard
-if exists('b:LaTeXFolds_loaded')
+if exists('b:LaTeX_folds_loaded')
   finish
 endif
-let b:LaTeXFolds_loaded = 1
+let b:LaTeX_folds_loaded = 1
 
 setlocal foldmethod=expr
 setlocal foldexpr=LaTeXFoldsExpr(v:lnum)
 setlocal foldtext=LaTeXFoldsText()
 
 " Sections to be folded
-if !exists('g:LaTeXFolds_fold_sections')
-  let g:LaTeXFolds_fold_sections = [
+if !exists('g:LaTeX_folds_sections')
+  let g:LaTeX_folds_sections = [
     \ 'part',
     \ 'chapter',
     \ 'section',
@@ -30,30 +30,30 @@ if !exists('g:LaTeXFolds_fold_sections')
 endif
 
 " Option to fold preamble
-if !exists('g:LaTeXFolds_fold_preamble')
-  let g:LaTeXFolds_fold_preamble = 1
+if !exists('g:LaTeX_folds_preamble')
+  let g:LaTeX_folds_preamble = 1
 endif
 
 " Option to use the section numbers from the vimtex's plugin in the section
 " title.
-if !exists('g:LaTeXFolds_use_vimtex_section_numbers')
-  let g:LaTeXFolds_use_vimtex_section_numbers = 1
+if !exists('g:LaTeX_folds_vimtex_sec_nums')
+  let g:LaTeX_folds_vimtex_sec_nums = 1
 endif
 
 " Join all section names in a single regex, including potential asterisks for
 " starred sections (e.g. \chapter*{..}).
-let s:sections_regex = '^\s*\\\(' . join(g:LaTeXFolds_fold_sections, '\|') . '\)'
+let s:sections_regex = '^\s*\\\(' . join(g:LaTeX_folds_sections, '\|') . '\)'
                                 \ . '\s*\(\*\)\?\s*{\(.*\)}\s*$'
 
 function! s:find_sections() " {{{1
-  " This function finds which sections in g:LaTeXFolds_fold_sections are
+  " This function finds which sections in g:LaTeX_folds_sections are
   " actually present in the document, and returns a dictionary where the keys
   " are the section names and the values are their foldlevel in the document.
 
   let fold_levels = {}
 
   let level = 1
-  for section in g:LaTeXFolds_fold_sections
+  for section in g:LaTeX_folds_sections
     let i = 1
     while i <= line('$')
       if getline(i) =~# '^\s*\\' . section . '\s*\(\*\)\?\s*{.*'
@@ -83,7 +83,7 @@ function! LaTeXFoldsExpr(lnum) " {{{1
   if line =~# '^\s*\\\(begin\|end\)\s*{document}' | return '0' | endif
 
   " Fold the preamble
-  if g:LaTeXFolds_fold_preamble == 1 && line =~# '^\s*\\documentclass'
+  if g:LaTeX_folds_preamble == 1 && line =~# '^\s*\\documentclass'
     return '>1'
   endif
 
@@ -106,7 +106,7 @@ function! LaTeXFoldsText() "{{{1
     let section_title = s:clear_texorpdfstring(section_title)
   endif
 
-  if g:LaTeXFolds_use_vimtex_section_numbers == 1
+  if g:LaTeX_folds_vimtex_sec_nums == 1
     " If the vimtex plugin is loaded use it to get the section numbers, if not
     " display an error message and use two question marks as the section
     " numbers.
@@ -131,34 +131,11 @@ function! LaTeXFoldsText() "{{{1
 
   " If I'm folding the preamble and the line contains a \documentclass, just
   " set fold_title to 'Preamble'.
-  if g:LaTeXFolds_fold_preamble == 1 && line =~# '^\s*\\documentclass'
+  if g:LaTeX_folds_preamble == 1 && line =~# '^\s*\\documentclass'
     let fold_title = 'Preamble'
   endif
 
-  " Set the column where the last character of the fold's text should be
-  let last_foldtext_column = 78
-  " Add two dashes for every fold level
-  let dashes = repeat(v:folddashes, 2)
-  " Calculate how many lines there are in the fold
-  let fold_size = v:foldend - v:foldstart + 1
-
-  " Calculate how many filler characters should be displayed
-  let fill_num = last_foldtext_column
-                 \ - strchars('+' . dashes . ' ' . fold_title . ' ' . fold_size . ' lines')
-                 \ - 1
-
-  " If the fold title isn't too long append a space. If it is, cut the fold
-  " title short and add three dots at the end of it.
-  if fill_num >= 0
-    let fold_title .= ' '
-  elseif fill_num < -1
-    let fold_title = substitute(fold_title,
-                                \ '\(.*\)\(.\{' . (abs(fill_num) + 2) . '\}\)',
-                                \ '\1...',
-                                \ '')
-  endif
-
-  return '+' . dashes . ' ' . fold_title . repeat('·', fill_num) . ' ' . fold_size . ' lines'
+  return folding#FoldsTextFormat(fold_title)
 endfunction " }}}1
 
 " Helper functions {{{1
