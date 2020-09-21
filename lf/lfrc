@@ -64,7 +64,7 @@ cmd eject_disk ${{
                  sed -n 's/.*Volume Free Space:\s*//p' |
                  awk '{print $1, $2}')
     diskutil eject "$f" &>/dev/null \
-    && lf -remote "send $id echo \"\033[32m\'$(basename $f)' has been properly ejected\033[0m\"" \
+    && lf -remote "send $id echo \"\033[32m'$(basename $f)' has been properly ejected\033[0m\"" \
     && terminal-notifier -title "Disk ejected" \
                          -subtitle "\'$(basename $f)' has been ejected" \
                          -message "There are $space_left left on disk" \

@@ -7,7 +7,7 @@ unsetopt CASE_GLOB
 unsetopt BEEP
 
 # Source the current theme
-source $ZDOTDIR/themes/afterglow.sh
+source $ZDOTDIR/themes/afterglow
 
 # Vi mode
 bindkey -v
