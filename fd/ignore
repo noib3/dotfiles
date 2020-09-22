@@ -10,6 +10,7 @@ Library/*
 !Library/texmf
 Dropbox/.dropbox.cache/
 Dropbox/university/bachelor
+Dropbox/zother
 .dropbox/
 .config/nvim/plugged/
 scripts/pfetch/
