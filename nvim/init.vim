@@ -47,6 +47,14 @@ set linebreak
 set textwidth=79
 let &showbreak="\u21aa "
 
+" Show tab characters as ⇥
+set list
+set listchars=tab:\⇥\ ,
+
+" Enable project specific config files
+set exrc
+set secure
+
 " Miscellaneous
 set autochdir
 set clipboard+=unnamedplus
@@ -58,6 +66,7 @@ set laststatus=0
 set noshowmode
 set noswapfile
 set scrolloff=1
+set spellfile=~/Dropbox/share/nvim/spell/en.utf-8.add
 set termguicolors
 set undofile
 
@@ -279,9 +288,8 @@ augroup tex
   autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
+  autocmd BufRead *.sty,*.cls setlocal syntax=tex
   autocmd User VimtexEventTocActivated norm zt
-  autocmd BufRead *.sty setlocal syntax=tex
-  autocmd BufRead *.cls setlocal syntax=tex
 augroup END
 
 augroup markdown_textobjs
@@ -352,6 +360,8 @@ function! s:patch_afterglow_colors()
   let g:terminal_color_7 = '#d6d6d6'
   highlight Visual guifg=#d6d6d6 guibg=#5a647e
   highlight VertSplit guifg=NONE guibg=#5a647e
+  highlight SpellBad guifg=#ac4142 gui=underline
+  highlight SpellCap guifg=#e87d3e gui=NONE
   highlight htmlItalic guifg=#9e86c8 gui=italic
   highlight htmlBold guifg=#e87d3e gui=bold
   highlight VemTabLineNormal guifg=#a1a1a1 guibg=#393939

@@ -8,6 +8,11 @@
 " The two functions s:clear_texorpdfstring() and s:find_closing() were taken
 " from the vimtex's plugin, specifically from autoload/vimtex/parser/toc.vim
 
+" Finish early if the file's extension isn't .tex (e.g. *.sty or *.cls files)
+if expand('%:e') !=# 'tex'
+  finish
+endif
+
 " Define (re)inclusion guard
 if exists('b:LaTeX_folds_loaded')
   finish
