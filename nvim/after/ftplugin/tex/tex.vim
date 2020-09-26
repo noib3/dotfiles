@@ -8,7 +8,7 @@ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 setlocal spell
 setlocal spelllang=en_us,it
 
-" Display vertical columns at 80 characters
+" Display color column at 80 characters
 setlocal cc=80
 
 " Use bash for its PIPESTATUS feature
