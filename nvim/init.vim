@@ -90,12 +90,6 @@ imap <C-e> <C-o>A
 map <silent> <C-s> :w<CR>
 imap <silent> <C-s> <C-o>:w<CR>
 
-" Navigate wrapped lines
-nmap <Up> gk
-nmap <Down> gj
-imap <expr> <Up> pumvisible() == 0 ? '<C-o>gk' : '<Up>'
-imap <expr> <Down> pumvisible() == 0 ? '<C-o>gj' : '<Down>'
-
 " Replace string globally
 nmap ss :%s//g<Left><Left>
 
@@ -144,8 +138,8 @@ let g:floaterm_height = 0.8
 let g:floaterm_autoclose = 2
 
 nmap <silent> <Leader>l :FloatermNew lf<CR>
-
-command! Ipython FloatermNew ipython
+nmap <silent> <Leader>i :FloatermNew ipython<CR>
+nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 
 " }}}
 
