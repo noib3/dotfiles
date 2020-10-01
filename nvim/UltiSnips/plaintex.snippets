@@ -37,23 +37,23 @@ $$1$
 endsnippet
 
 context "math()"
-snippet fr "frac" iA
-\frac{$1}{$2}
+snippet "( +)fr" "frac" riA
+`!p snip.rv=match.group(1)`\frac{$1}{$2}
 endsnippet
 
 context "math()"
-snippet sum "sum" iA
-\sum_{$1}^{$2}
+snippet "( +)sum" "sum" riA
+`!p snip.rv=match.group(1)`\sum_{$1}^{$2}
 endsnippet
 
 context "math()"
-snippet int "int" iA
-\int_{$1}^{$2}
+snippet "( +)int" "int" riA
+`!p snip.rv=match.group(1)`\int_{$1}^{$2}
 endsnippet
 
 context "math()"
-snippet lim "lim" iA
-\lim_{$1}
+snippet "( +)lim" "lim" riA
+`!p snip.rv=match.group(1)`\lim_{$1}
 endsnippet
 
 context "math()"
@@ -103,7 +103,7 @@ endsnippet
 
 context "math()"
 snippet lrc "left right curly brackets" A
-\left\\{ ${1:${VISUAL}} \right \\}
+\left\\{ ${1:${VISUAL}} \right\\}
 endsnippet
 
 # }}}

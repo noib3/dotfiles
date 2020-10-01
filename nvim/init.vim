@@ -53,7 +53,7 @@ set listchars=tab:\⇥\ ,
 
 " Enable project specific config files
 set exrc
-set secure
+" set secure
 
 " Miscellaneous
 set autochdir

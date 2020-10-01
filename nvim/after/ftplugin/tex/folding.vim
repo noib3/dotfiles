@@ -15,6 +15,7 @@ endif
 
 " Define (re)inclusion guard
 if exists('b:LaTeX_folds_loaded')
+  setlocal foldtext=folding#MarkerFoldsText()
   finish
 endif
 let b:LaTeX_folds_loaded = 1

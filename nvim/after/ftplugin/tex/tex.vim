@@ -4,13 +4,12 @@
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
-" Enable spell checking
-setlocal spell
-setlocal spelllang=en_us,it
-
 if expand('%:e') ==# 'tex'
   " Display a single color column at 80 characters for *.tex files
   setlocal cc=80
+  " Enable spell checking
+  setlocal spell
+  setlocal spelllang=en_us,it
 else
   " Display two color columns at 80 and 100 characters for all other extensions
   " (e.g. *.sty or *.cls)
