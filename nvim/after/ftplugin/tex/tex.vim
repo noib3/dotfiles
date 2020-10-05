@@ -14,6 +14,9 @@ else
   " Display two color columns at 80 and 100 characters for all other extensions
   " (e.g. *.sty or *.cls)
   setlocal cc=80,100
+  " Clear the texOnlyMath syntax group to stop highlighting underscores in
+  " bright red
+  syn clear texOnlyMath
 endif
 
 " Use bash for its PIPESTATUS feature

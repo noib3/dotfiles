@@ -10,12 +10,12 @@
 
 " Finish early if the file's extension isn't .tex (e.g. *.sty or *.cls files)
 if expand('%:e') !=# 'tex'
+  setlocal foldtext=folding#MarkerFoldsText()
   finish
 endif
 
 " Define (re)inclusion guard
 if exists('b:LaTeX_folds_loaded')
-  setlocal foldtext=folding#MarkerFoldsText()
   finish
 endif
 let b:LaTeX_folds_loaded = 1
