@@ -4,19 +4,23 @@
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
+" Enable spell checking
+setlocal spell
+setlocal spelllang=en_us,it
+
 if expand('%:e') ==# 'tex'
   " Display a single color column at 80 characters for *.tex files
   setlocal cc=80
-  " Enable spell checking
-  setlocal spell
-  setlocal spelllang=en_us,it
 else
+  setlocal formatoptions-=t
   " Display two color columns at 80 and 100 characters for all other extensions
   " (e.g. *.sty or *.cls)
   setlocal cc=80,100
   " Clear the texOnlyMath syntax group to stop highlighting underscores in
   " bright red
-  syn clear texOnlyMath
+  syntax clear texOnlyMath
+  " Enable spellcheck in comments only
+  syntax spell notoplevel
 endif
 
 " Use bash for its PIPESTATUS feature
