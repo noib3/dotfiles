@@ -181,7 +181,6 @@ let g:vem_tabline_number_symbol = ': '
 
 for i in range(1, 9)
   execute 'nmap <silent> <F' . i . '> :silent! VemTablineGo ' . i . '<CR>'
-  execute 'imap <silent> <F' . i . '> <C-o>:silent! VemTablineGo ' . i . '<CR>'
 endfor
 
 nmap <expr> <silent> <C-w> len(getbufinfo({'buflisted':1})) == 1 ?

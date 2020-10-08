@@ -8,20 +8,8 @@ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 setlocal spell
 setlocal spelllang=en_us,it
 
-if expand('%:e') ==# 'tex'
-  " Display a single color column at 80 characters for *.tex files
-  setlocal cc=80
-else
-  setlocal formatoptions-=t
-  " Display two color columns at 80 and 100 characters for all other extensions
-  " (e.g. *.sty or *.cls)
-  setlocal cc=80,100
-  " Clear the texOnlyMath syntax group to stop highlighting underscores in
-  " bright red
-  syntax clear texOnlyMath
-  " Enable spellcheck in comments only
-  syntax spell notoplevel
-endif
+" Make colon a word delimiter
+setlocal iskeyword-=:
 
 " Use bash for its PIPESTATUS feature
 setlocal shell=bash
@@ -34,8 +22,17 @@ let b:AutoPairs = {'(': ')', '[': ']', '{': '}', '`': "'", '$': '$'}
 
 " Only use these mappings in *.tex files
 if expand('%:e') ==# 'tex'
+  setlocal cc=80
   nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>
   nmap <buffer> <silent> <LocalLeader>p :call tex#PdfOpen()<CR>
   nmap <buffer> <silent> <LocalLeader>f :call tex#SkimForwardSearch()<CR>
   nmap <buffer> <silent> <LocalLeader><LocalLeader> <plug>(vimtex-toc-open)
+else
+  setlocal cc=80,100
+  setlocal formatoptions-=t
+  " Clear the texOnlyMath syntax group to stop highlighting underscores in
+  " bright red
+  syntax clear texOnlyMath
+  " Enable spellcheck in comments only
+  syntax spell notoplevel
 endif
