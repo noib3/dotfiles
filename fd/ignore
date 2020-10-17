@@ -9,6 +9,10 @@ Pictures/
 Library/*
 !Library/texmf
 Dropbox/.dropbox.cache/
+Dropbox/finances/2017
+Dropbox/finances/2018
+Dropbox/finances/2019
+Dropbox/fitness/logs/2019
 Dropbox/university/bachelor
 Dropbox/zother
 .dropbox/

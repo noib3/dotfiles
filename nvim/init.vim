@@ -17,13 +17,13 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
-  Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
   Plug 'kana/vim-textobj-user'
   Plug 'lervag/vimtex'
+  Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 " }}}
