@@ -105,9 +105,6 @@ nnoremap <Leader>d <C-w>l
 " Toggle 80 and 100 characters columns
 nmap <silent> <Leader>c :execute 'setlocal cc=' . (&cc == '' ? '80,100' : '')<CR>
 
-" Fix for https://github.com/neovim/neovim/issues/11393
-cnoremap 3636 <C-u>undo<CR>
-
 " }}}
 
 " Plugin settings & mappings {{{
@@ -137,7 +134,7 @@ let g:floaterm_width = 0.8
 let g:floaterm_height = 0.8
 let g:floaterm_autoclose = 2
 
-nmap <silent> <Leader>l :FloatermNew lf<CR>
+nmap <silent> ll :FloatermNew lf<CR>
 nmap <silent> <Leader>i :FloatermNew ipython<CR>
 nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 
@@ -221,18 +218,6 @@ call textobj#user#plugin('markdown', {
 
 let g:vimtex_compiler_enabled = 0
 let g:vimtex_view_enabled = 0
-
-let g:vimtex_imaps_enabled = 0
-let g:vimtex_mappings_disable = {
-\   'n': ['<localleader>li',
-\         '<localleader>lI',
-\         '<localleader>lt',
-\         '<localleader>lT',
-\         '<localleader>lq',
-\         '<localleader>lx',
-\         '<localleader>lX',
-\         '<localleader>ls'],
-\ }
 
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {

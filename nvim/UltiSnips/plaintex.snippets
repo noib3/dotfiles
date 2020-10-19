@@ -3,7 +3,7 @@
 # expected to compile in Plain TeX documents.
 
 # The code for the "math" context was taken from:
-#		https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
+#   https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 # Check out the guy's blog for more awesome (La)TeX note-taking tips:
 #   https://castel.dev/
 
@@ -37,23 +37,28 @@ $$1$
 endsnippet
 
 context "math()"
-snippet "(( |$)+)fr" "frac" riA
+snippet "([^\\])fr" "frac" riA
 `!p snip.rv=match.group(1)`\frac{$1}{$2}
 endsnippet
 
 context "math()"
-snippet "( +)sum" "sum" riA
+snippet "([^\\])sum" "sum" riA
 `!p snip.rv=match.group(1)`\sum_{$1}^{$2}
 endsnippet
 
 context "math()"
-snippet "( +)int" "int" riA
+snippet "([^\\])int" "int" riA
 `!p snip.rv=match.group(1)`\int_{$1}^{$2}
 endsnippet
 
 context "math()"
-snippet "( +)lim" "lim" riA
-`!p snip.rv=match.group(1)`\lim_{$1}
+snippet ^^ "superscript" iA
+^{$1}$0
+endsnippet
+
+context "math()"
+snippet __ "subscript" iA
+_{$1}$0
 endsnippet
 
 context "math()"
@@ -64,11 +69,6 @@ endsnippet
 context "math()"
 snippet oo "infty" iA
 \infty
-endsnippet
-
-context "math()"
-snippet prt "partial" iA
-\partial
 endsnippet
 
 context "math()"
@@ -92,17 +92,17 @@ snippet "([A-Za-z])tilde" "Postfix tilde" riA
 endsnippet
 
 context "math()"
-snippet lrr "left right round brackets" A
+snippet lrr "left right round brackets" iA
 \left( ${1:${VISUAL}} \right)
 endsnippet
 
 context "math()"
-snippet lrs "left right square brackets" A
+snippet lrs "left right square brackets" iA
 \left[ ${1:${VISUAL}} \right]
 endsnippet
 
 context "math()"
-snippet lrc "left right curly brackets" A
+snippet lrc "left right curly brackets" iA
 \left\\{ ${1:${VISUAL}} \right\\}
 endsnippet
 

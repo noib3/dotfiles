@@ -6,12 +6,6 @@ snippet mue "Unnumbered equation" bA
 \]
 endsnippet
 
-snippet alig "Unnumbered aligned equations" b
-\begin{align*}
-	$1 &= $2 \\\\
-\end{align*}
-endsnippet
-
 snippet item "Itemize environment" b
 \begin{itemize}
 	\item $1
@@ -22,6 +16,48 @@ snippet enum "Enumerate environment" b
 \begin{enumerate}
 	\item $1
 \end{enumerate}
+endsnippet
+
+snippet thm "Theorem" b
+\begin{theorem}$1
+	$2
+\end{theorem}
+endsnippet
+
+snippet lemma "Lemma" b
+\begin{lemma}$1
+	$2
+\end{lemma}
+endsnippet
+
+snippet prop "Proposition" b
+\begin{proposition}$1
+	$2
+\end{proposition}
+endsnippet
+
+snippet cor "Corollary" b
+\begin{corollary}$1
+	$2
+\end{corollary}
+endsnippet
+
+snippet definition "Definition" b
+\begin{definition}[name={$1}]
+	$2
+\end{definition}
+endsnippet
+
+snippet rem "Remark" b
+\begin{remark}
+	$1
+\end{remark}
+endsnippet
+
+snippet proof "Proof" b
+\begin{proof}
+	$1
+\end{proof}
 endsnippet
 
 snippet env "Generic environment" b

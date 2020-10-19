@@ -20,6 +20,11 @@ setlocal errorformat=%f:%l:\ %m
 " Autopair back quotes and dollar signs, don't pair upright single quotes
 let b:AutoPairs = {'(': ')', '[': ']', '{': '}', '`': "'", '$': '$'}
 
+" Add ys<text-object>e and ys<text-object-c> capabilities for easily embedding
+" <text-object> in a new command/environment
+let b:surround_{char2nr('e')} = "\n\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}\n"
+let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
+
 " Only use these mappings in *.tex files
 if expand('%:e') ==# 'tex'
   setlocal cc=80
