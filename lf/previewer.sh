@@ -14,7 +14,7 @@ pdf_preview() {
 }
 
 image_preview() {
-    chafa --fill=block --symbols=block -c 256 -s 80x"$2" "$1"
+    chafa --fill=block --symbols=block --colors=full --size=80x"$2" "$1"
 }
 
 video_preview() {
