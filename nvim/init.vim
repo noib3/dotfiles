@@ -4,15 +4,14 @@
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
+ " Functionality
   Plug 'jiangmiao/auto-pairs'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
-  Plug 'joshdick/onedark.vim'
   Plug 'SirVer/ultisnips'
   Plug 'pacha/vem-tabline'
-  Plug 'danilo-augusto/vim-afterglow'
   Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
@@ -23,7 +22,13 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-surround'
   Plug 'kana/vim-textobj-user'
   Plug 'lervag/vimtex'
-  Plug 'sheerun/vim-polyglot'
+  " Syntax
+  Plug 'godlygeek/tabular'
+  Plug 'plasticboy/vim-markdown'
+  Plug 'elzr/vim-json'
+  " Color schemes
+  Plug 'joshdick/onedark.vim'
+  Plug 'danilo-augusto/vim-afterglow'
 call plug#end()
 
 " }}}
@@ -248,6 +253,14 @@ let g:vim_json_syntax_conceal = 0
 
 " Set default shell syntax highlighting to POSIX
 let g:is_posix = 1
+
+if exists('python_highlight_all')
+  unlet python_highlight_all
+endif
+
+if exists('python_space_error_highlight')
+  unlet python_space_error_highlight
+endif
 
 " }}}
 

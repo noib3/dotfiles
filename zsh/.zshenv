@@ -38,7 +38,7 @@ export IPYTHONDIR=$HOME/.local/share/ipython
 
 # History/cache files locations
 export LESSHISTFILE=$HOME/.cache/less/lesshst
-export MPLCONFIGDIR=$HOME/.config/matplotlib
+export MPLCONFIGDIR=$HOME/.local/share/matplotlib
 export npm_config_cache=$HOME/.cache/npm
 
 # Don't update Homebrew automatically every time it's launched

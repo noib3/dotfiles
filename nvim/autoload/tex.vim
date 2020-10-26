@@ -34,6 +34,11 @@ function! tex#PdfClose(filepath, filename) " {{{1
   if filereadable(a:filepath)
     let yabai_windows = json_decode(join(systemlist('yabai -m query --windows')))
     let Skim_windows = filter(yabai_windows, 'v:val.app=="Skim"')
+    " macOS interprets every ':' character as a '/', so we need to do the
+    " opposite substitution in every window title.
+    for window in Skim_windows
+      let window.title = substitute(window.title, '/', ':', 'g')
+    endfor
     " If there is just one Skim window and its title matches the filename of
     " the file in the buffer, quit Skim.
     if len(Skim_windows) == 1
