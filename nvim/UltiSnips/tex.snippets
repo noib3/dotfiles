@@ -32,16 +32,6 @@ snippet md "Make dollar" iA
 \$$1\$
 endsnippet
 
-# This one gives problems. Try typing 'md\mathrmmca<Tab><Tab>', expected output
-# is '$\mathrm{a}$|', where '|' is the cursor. Instead I get '$\m|athrm{a}$'.
-# However 'mdmathrmmca<Tab><Tab>' correctly results in '$mathrm{a}$|', so maybe
-# it's the backslash that gives problems. Also, changing the keyword from 'mc'
-# to, for example, 'fc', solves the issue. Idk what's going on here.
-context "math()"
-snippet mc "Make curly" iA
-{$1}
-endsnippet
-
 context "math()"
 snippet ^^ "superscript" iA
 ^{$1}
@@ -183,6 +173,15 @@ snippet env "Generic environment" b
 endsnippet
 
 # }}}
+
+# This one gives problems. Try typing 'md\mathrmmca<Tab><Tab>', expected output
+# is '$\mathrm{a}$|', where '|' is the cursor. Instead I get '$\m|athrm{a}$'.
+# However 'mdmathrmmca<Tab><Tab>' correctly results in '$mathrm{a}$|', so maybe
+# it's the backslash that gives problems. Also, changing the keyword from 'mc'
+# to, for example, 'fc', solves the issue. Idk what's going on here.
+snippet mc "Make curly" iA
+{$1}
+endsnippet
 
 snippet mwe "mwe" b
 \documentclass{article}

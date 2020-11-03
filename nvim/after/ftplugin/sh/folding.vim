@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 " Define (re)inclusion guard
 if exists('b:shell_folds_loaded')
   finish

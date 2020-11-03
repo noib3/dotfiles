@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 function! tex#Compile() " {{{1
   " Compile the document and return pdflatex's exit code through PIPESTATUS. If
   " it's not zero read the error file and jump to the first error.

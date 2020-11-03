@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 function! folding#MarkerFoldsText() " {{{1
   let line = getline(v:foldstart)
   let comment_char = substitute(&commentstring, '\s*%s', '', '')

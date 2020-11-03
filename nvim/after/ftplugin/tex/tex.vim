@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 " Use two spaces for indentation
 setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
@@ -22,7 +19,7 @@ let b:AutoPairs = {'(': ')', '[': ']', '{': '}', '`': "'", '$': '$'}
 
 " Add ys<text-object>e and ys<text-object-c> capabilities for easily embedding
 " <text-object> in a new command/environment
-let b:surround_{char2nr('e')} = "\n\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}\n"
+let b:surround_{char2nr('e')} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
 
 " Only use these mappings in *.tex files
@@ -36,7 +33,7 @@ else
   setlocal cc=80,100
   setlocal formatoptions-=t
   " Clear the texOnlyMath syntax group to stop highlighting underscores in
-  " bright red
+  " bright red.
   syntax clear texOnlyMath
   " Enable spellcheck in comments only
   syntax spell notoplevel

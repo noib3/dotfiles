@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 " Plugins {{{
 
 call plug#begin('~/.config/nvim/plugged')
@@ -16,6 +13,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
+  Plug 'embear/vim-localvimrc'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-scriptease'
@@ -55,10 +53,6 @@ let &showbreak="\u21aa "
 " Show tab characters as ⇥
 set list
 set listchars=tab:\⇥\ ,
-
-" Enable project specific config files
-set exrc
-" set secure
 
 " Miscellaneous
 set autochdir
@@ -164,6 +158,14 @@ let g:indentLine_first_char = '│'
 let g:indentLine_showFirstIndentLevel = 1
 let g:indentLine_fileTypeExclude = ['text', 'man', 'conf']
 let g:indentLine_defaultGroup = 'Comment'
+
+" }}}
+
+" Localvimrc {{{
+
+let g:localvimrc_file_directory_only = 1
+let g:localvimrc_sandbox = 0
+let g:localvimrc_ask = 0
 
 " }}}
 
@@ -280,7 +282,7 @@ augroup tex
   autocmd BufRead *.tex call tex#PdfOpen()
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
-  autocmd BufRead *.sty,*.cls setlocal syntax=tex
+  autocmd BufRead *.cls setlocal filetype=tex
   autocmd User VimtexEventTocActivated norm zt
 augroup END
 
@@ -301,11 +303,6 @@ function! StripTrailingWhiteSpace()
   %s/\s\+$//e
   call setpos ('.', curr_pos)
 endfunction
-
-autocmd FileType fzf setlocal guicursor+=n:ver25
-  \ | autocmd BufLeave <buffer> setlocal guicursor-=n:ver25
-
-" autocmd FileType fzf let &t_SI.="\e[6 q"
 
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{
 

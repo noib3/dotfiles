@@ -1,6 +1,3 @@
-" Maintainer: Riccardo Mazzarini
-" Github:     https://github.com/n0ibe/macOS-dotfiles
-
 " In the following comments and definitions a section is a generic term for any
 " sectioning command like \part{..} or \subsection{..}, not just a literal
 " \section{..}.
