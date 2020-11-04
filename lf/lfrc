@@ -12,7 +12,6 @@ cmd open ${{
   case $(file -b --mime-type $fx) in
     text/*) $EDITOR $fx;;
     inode/x-empty) $EDITOR $fx;;
-    # Workaround to have multiple videos open in MPV
     video/*) open -n $fx;;
     *) for f in $fx; do open "$f" &>/dev/null; done;;
   esac

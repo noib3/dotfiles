@@ -283,6 +283,7 @@ augroup tex
   autocmd BufUnload *.tex call tex#PdfClose(expand('<afile>:p:r') . '.pdf',
                                             \ expand('<afile>:t:r') . '.pdf')
   autocmd BufRead *.cls setlocal filetype=tex
+  autocmd ColorScheme * highlight texComment gui=italic
   autocmd User VimtexEventTocActivated norm zt
 augroup END
 

@@ -13,6 +13,8 @@ PATH=$PATH:/sbin
 PATH=$PATH:/Applications/Alacritty.app/Contents/MacOS
 PATH=$PATH:/Users/noibe/scripts
 PATH=$PATH:/Users/noibe/scripts/pfetch
+PATH=$PATH:/Users/noibe/scripts/vimv
+PATH=$PATH:/Users/noibe/bin
 PATH=$PATH:/Users/noibe/bin/ndiet
 export PATH
 
