@@ -22,6 +22,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'lervag/vimtex'
   " Syntax
   Plug 'godlygeek/tabular'
+  Plug 'dag/vim-fish'
   Plug 'plasticboy/vim-markdown'
   Plug 'elzr/vim-json'
   " Color schemes

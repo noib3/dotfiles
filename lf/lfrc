@@ -82,7 +82,8 @@ cmd fuzzy_edit ${{
 # Fuzzy search a directory and cd into it
 cmd fuzzy_cd ${{
   clear
-  dirname="$(fd . --base-directory ~ --type d --hidden --color always |
+  dirname="$(fd . --base-directory ~ --ignore-file ~/Dropbox/share/fd/ignore \
+                  --type d --hidden --color always |
              sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
              fzf --height=80%)" \
   && lf -remote "send $id cd ~/$dirname" || true

@@ -1,56 +1,46 @@
 shell:
-  program: /usr/local/bin/zsh
+  program: /usr/local/bin/fish
   args:
     - --login
 
 font:
   normal:
     family: SFMono Nerd Font
-    style: Regular
-  # Iosevka on 1440x900
-  # size: 16.0
-  # Iosevka on 2048x1152
-  # size: 18.0
-  # Iosevka on 2560x1440
-  # size: 20
-  # SFmono on 2048x1152
   size: 16
-  # JetBrainsMono on 2048x1152
-  # size: 16
   offset:
     y: 1
 
 schemes:
   afterglow: &afterglow
     primary:
-      background: '#1a1a1a'
-      foreground: '#d6d6d6'
+      background: "#1a1a1a"
+      foreground: "#d6d6d6"
     cursor:
-      text: '#ffffff'
-      cursor: '#d6d6d6'
+      text: "#ffffff"
+      cursor: "#d6d6d6"
     selection:
-      text: '#d6d6d6'
-      background: '#5a647e'
+      text: "#d6d6d6"
+      background: "#5a647e"
     normal:
-      black: '#1a1a1a'
-      red: '#ac4142'
-      green: '#b4c973'
-      yellow: '#e5b567'
-      blue: '#6c99bb'
-      magenta: '#b05279'
-      cyan: '#9e86c8'
-      white: '#d6d6d6'
+      black: "#1a1a1a"
+      red: "#ac4142"
+      green: "#b4c973"
+      yellow: "#e5b567"
+      blue: "#6c99bb"
+      magenta: "#b05279"
+      cyan: "#9e86c8"
+      white: "#d6d6d6"
 
 colors: *afterglow
 
 window:
   decorations: buttonless
   padding:
-    x: 7
+    x: 6
     y: 2
 
 key_bindings:
-  # To get the 'chars' values use xxd: enter the character sequence, hit return
+  # To get the chars values use xxd: enter the character sequence, hit return
   # then ctrl-d to get its hex dump.
   - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
