@@ -1,9 +1,6 @@
-#!/usr/bin/env sh
-
-# Needs to be executable
+#!/usr/bin/env bash
 
 FILE="$1"
-HEIGHT="$2"
 
 text_preview() {
     highlight -O ansi --force "$1"
@@ -14,7 +11,7 @@ pdf_preview() {
 }
 
 image_preview() {
-    TCELL_TRUECOLOR=on chafa --fill=block --symbols=block "$1"
+    chafa --fill=block --symbols=block "$1"
 }
 
 video_preview() {
@@ -29,10 +26,10 @@ fallback_preview() {
     highlight -O ansi --force "$1"
 }
 
-case "$(file -b --mime-type "$FILE")" in
+case "$(file -b --mime-type $FILE)" in
     text/*) text_preview "$FILE" ;;
     */pdf) pdf_preview "$FILE" ;;
-    image/*) image_preview "$FILE" "$HEIGHT" ;;
+    image/*) image_preview "$FILE" ;;
     video/*) video_preview "$FILE" ;;
     audio/*) audio_preview "$FILE" ;;
     *) fallback_preview "$FILE" ;;

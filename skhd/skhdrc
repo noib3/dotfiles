@@ -1,44 +1,36 @@
-# Launch a new Firefox instance
 ctrl - w : open -na /Applications/Firefox.app
 
-# Launch terminal programs
-cmd - return : open -na /Applications/Alacritty.app
-cmd - f : $TERMINAL -e zsh -c "lf ~/Downloads"
-cmd - g : $TERMINAL -e gotop
-cmd - a : $TERMINAL -e calcurse -C ~/.config/calcurse -D ~/Dropbox/share/calcurse
+cmd - return : alacritty
+alt - return : alacritty --title "dont-manage" --dimensions 75 15
+cmd - f : alacritty --command sh -c "lf ~/Downloads"
+cmd - g : alacritty --command gotop
+cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
+                                       -D ~/Dropbox/share/calcurse
 
-# Open a fuzzy search file opener
-cmd - space : sh ~/scripts/fuzzy_opener.sh
+cmd - space : bash $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 
-# Commit and push every directory passed to the script
-cmd - m : sh ~/scripts/committed/committed.sh ~/.config ~/scripts ~/bin/diet
-
-# Open downloads sidebar in Firerox
 cmd - d [
   "Firefox" : skhd --key "f4"
 ]
 
-# Open Bitwarden sidebar in Firerox
 cmd - e [
   "Firefox" : skhd --key "shift + alt - y"
 ]
 
-# Disable Cmd-s in Firefox
 cmd - s [
   "Firefox" : false
 ]
 
-# Disable Cmd-h everywhere except for Alacritty and Firefox
 cmd - h [
   "Alacritty" ~
   "Firefox" : skhd --key "shift + cmd - h"
   * : false
 ]
 
-# Go fullscreen
+# Toggle fullscreen
 alt - f : skhd --key "ctrl + cmd - f"
 
-# Float/unfloat window and center on screen
+# Toggle float and center on screen
 alt + shift - f : yabai -m window --toggle float \
                   && yabai -m window --grid 4:4:1:1:2:2
 
@@ -82,7 +74,6 @@ alt + cmd - right : yabai -m window --move rel:25:0
 alt + cmd - n : yabai -m space --create \
                 && yabai -m window --space last \
                 && yabai -m space --focus last
-alt + cmd - w : yabai -m window --close && yabai -m space --destroy
 alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
 alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2
 alt + cmd - 3 : yabai -m window --space 3 && yabai -m space --focus 3
@@ -102,33 +93,32 @@ ctrl + cmd - 3 : yabai -m space --move 3
 ctrl + cmd - 4 : yabai -m space --move 4
 ctrl + cmd - 5 : yabai -m space --move 5
 
-# Create, destroy, mirror, balance, rotate spaces
+# Create, destroy, balance, rotate spaces
 alt - n : yabai -m space --create && yabai -m space --focus last
 alt - w : yabai -m space --destroy
-alt - x : yabai -m space --mirror x-axis
-alt - y : yabai -m space --mirror y-axis
+alt + cmd - w : yabai -m window --close && yabai -m space --destroy
 alt - b : yabai -m space --balance
 alt - r : yabai -m space --rotate 270
 alt + shift - r : yabai -m space --rotate 90
 
-# Screenshot the whole screen
+# Screenshot the whole screen and send a notification
 shift + cmd - 3 : \
-  ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png \
+  set ss_name ~/Dropbox/screenshots/"$(date +%F@%T)".png \
   && screencapture "$ss_name" \
   && terminal-notifier -title "New screenshot" \
                        -subtitle "$(basename $ss_name)" \
                        -message "Saved in $(dirname $ss_name)" \
-                       -appIcon ~/.config/skhd/screenshot_icon.png \
+                       -appIcon ~/.config/skhd/screenshot-icon.png \
                        -contentImage "$ss_name"
 
-# Screenshot a portion of the screen, then send a notification if the
-# screenshot wasn't cancelled.
+# Screenshot a portion of the screen and send a notification if the screenshot
+# wasn't cancelled.
 shift + cmd - 4 : \
-  ss_name=~/Dropbox/screenshots/"$(date +%F@%T)".png \
+  set ss_name ~/Dropbox/screenshots/"$(date +%F@%T)".png \
   && screencapture -i "$ss_name" \
   && ls "$ss_name" \
   && terminal-notifier -title "New screenshot" \
                        -subtitle "$(basename $ss_name)" \
                        -message "Saved in $(dirname $ss_name)" \
-                       -appIcon ~/.config/skhd/screenshot_icon.png \
+                       -appIcon ~/.config/skhd/screenshot-icon.png \
                        -contentImage "$ss_name"

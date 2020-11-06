@@ -1,5 +1,4 @@
-#nav-bar {
-  border-width: 0;
+#nav-bar,
+#navigator-toolbox {
+  border-width: 0 !important;
 }
-
-#navigator-toolbox { border-width: 0 !important; }

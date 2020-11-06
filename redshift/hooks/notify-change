@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+event=$1
+new_period=$3
+
+case $event in
+  period-changed)
+    if [ $new_period != "none" ]; then
+      new_period=$(echo $new_period |
+                   sed "s/night/Night time/;s/daytime/Day time/")
+      /usr/local/bin/terminal-notifier -title "Redshift" \
+                                       -subtitle "Switching temps..." \
+                                       -message "$new_period" \
+                                       -appIcon $(dirname "$0")/Redshift-logo.png
+    fi
+esac

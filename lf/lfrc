@@ -3,9 +3,9 @@ set drawbox
 set hidden
 set period 1
 set ifs "\n"
-set previewer ~/.config/lf/previewer.sh
-set promptfmt "\033[32;1m%u@%h\033[0m \033[34;1m%w\033[0m\033[1m%f\033[0m"
-set timefmt ''
+set previewer "~/.config/lf/previewer"
+set promptfmt "\033[32m%u\033[0m@%h \033[01;34m%w\033[0m%f"
+set timefmt ""
 
 # Opener function
 cmd open ${{
@@ -19,7 +19,7 @@ cmd open ${{
 
 # Create new files
 cmd touch %{{
-  touch "$@"
+  touch $@
   lf -remote "send $id select \"$@\""
 }}
 
@@ -54,7 +54,6 @@ cmd set_wallpaper ${{
   && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
   || lf -remote "send $id echoerr \"Error: could not set wallpaper\""
   osascript -e 'quit app "Finder"' &>/dev/null
-  echo $(basename $fx) > current.txt
 }}
 
 # Eject a disk and send a notification
@@ -68,24 +67,24 @@ cmd eject_disk ${{
     && terminal-notifier -title "Disk ejected" \
                          -subtitle "\'$(basename $f)' has been ejected" \
                          -message "There are $space_left left on disk" \
-                         -appIcon ~/.config/lf/hard-disk_icon.png \
+                         -appIcon ~/.config/lf/hard-disk-icon.png \
     || lf -remote "send $id echoerr \"Error: could not eject disk\""
   done
 }}
 
-# Fuzzy search a file and open it in $EDITOR
+# Fuzzy search a file in ~ and open it in $EDITOR
 cmd fuzzy_edit ${{
   clear
-  filename="$(fzf --height=80%)" && $EDITOR ~/"$filename" || true
+  filename="$(fzf --height=80%)" \
+  && $EDITOR ~/"$filename" || true
 }}
 
-# Fuzzy search a directory and cd into it
+# Fuzzy search a directory in ~ and cd into it
 cmd fuzzy_cd ${{
   clear
-  dirname="$(fd . --base-directory ~ --ignore-file ~/Dropbox/share/fd/ignore \
-                  --type d --hidden --color always |
-             sed 's/\[1;34m/\[1;90m/g; s/\(.*\)\[1;90m/\1\[1;34m/' |
-             fzf --height=80%)" \
+  dirname="$(eval $(echo $FZF_DEFAULT_COMMAND | sed "s/-t f/-t d/") |
+             sed "s/\(.*\)\[1;90m/\1\[1;34m/" |
+             fzf --height=8)" \
   && lf -remote "send $id cd ~/$dirname" || true
 }}
 
@@ -104,5 +103,6 @@ map j eject_disk
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 map gvl cd "/Volumes"
+
 cmap <up> cmd-history-prev
 cmap <down> cmd-history-next

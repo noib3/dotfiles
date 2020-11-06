@@ -1,6 +1,14 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
 SETUVAR __fish_initialized:3100
+SETUVAR _fish_abbr_bsr:brew\x20services\x20restart
+SETUVAR _fish_abbr_bss:brew\x20services\x20start
+SETUVAR _fish_abbr_ipy:ipython
+SETUVAR _fish_abbr_pl:peek\x2epy\x20pull
+SETUVAR _fish_abbr_pll:peek\x2epy\x20pull
+SETUVAR _fish_abbr_psh:peek\x2epy\x20push
+SETUVAR _fish_abbr_upd:brew\x20update
+SETUVAR _fish_abbr_upg:brew\x20upgrade
 SETUVAR fish_color_autosuggestion:969896
 SETUVAR fish_color_cancel:\x2dr
 SETUVAR fish_color_command:b294bb
@@ -30,3 +38,4 @@ SETUVAR fish_pager_color_completion:normal
 SETUVAR fish_pager_color_description:B3A06D\x1eyellow
 SETUVAR fish_pager_color_prefix:white\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
+SETUVAR pisces_pairs:\x28\x2c\x29\x1e\x5b\x2c\x5d\x1e\x7b\x2c\x7d\x1e\x22\x2c\x22\x1e\x27\x2c\x27
