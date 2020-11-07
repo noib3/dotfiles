@@ -3,19 +3,30 @@
 # https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 
 global !p
-texMathZones = ['texMathZone' + x for x in ['A', 'AS', 'B', 'BS', 'C', 'CS', 'D', 'DS', 'E', 'ES', 'F', 'FS', 'G', 'GS', 'H', 'HS', 'I', 'IS', 'J', 'JS', 'K', 'KS', 'L', 'LS', 'DS', 'V', 'W', 'X', 'Y', 'Z', 'AmsA', 'AmsB', 'AmsC', 'AmsD', 'AmsE', 'AmsF', 'AmsG', 'AmsAS', 'AmsBS', 'AmsCS', 'AmsDS', 'AmsES', 'AmsFS', 'AmsGS' ]]
+texMathZones = ["texMathZone" + x for x in ["A", "AS", "B", "BS", "C", "CS", \
+                                            "D", "DS", "E", "ES", "F", "FS", \
+                                            "G", "GS", "H", "HS", "I", "IS", \
+                                            "J", "JS", "K", "KS", "L", "LS", \
+                                            "DS", "V", "W", "X", "Y", "Z", \
+                                            "AmsA", "AmsB", "AmsC", "AmsD", \
+                                            "AmsE", "AmsF", "AmsG", "AmsAS", \
+                                            "AmsBS", "AmsCS", "AmsDS", \
+                                            "AmsES", "AmsFS", "AmsGS" ]]
 
-texIgnoreMathZones = ['texMathText']
+texIgnoreMathZones = ["texMathText"]
 
-texMathZoneIds = vim.eval('map('+str(texMathZones)+", 'hlID(v:val)')")
-texIgnoreMathZoneIds = vim.eval('map('+str(texIgnoreMathZones)+", 'hlID(v:val)')")
+texMathZoneIds = vim.eval("map(" + str(texMathZones) + ", \" hlID(v:val)\")")
+texIgnoreMathZoneIds = vim.eval("map(" + str(texIgnoreMathZones) \
+                                       + ", \"hlID(v:val)\")")
 
 ignore = texIgnoreMathZoneIds[0]
 
 def math():
-    synstackids = vim.eval("synstack(line('.'), col('.') - (col('.')>=2 ? 1 : 0))")
+    synstackids = vim.eval("synstack(line(\".\"), \
+                                     col(\".\") - (col(\".\") >= 2 ? 1 : 0))")
     try:
-        first = next(i for i in reversed(synstackids) if i in texIgnoreMathZoneIds or i in texMathZoneIds)
+        first = next(i for i in reversed(synstackids) \
+                        if i in texIgnoreMathZoneIds or i in texMathZoneIds)
         return first != ignore
     except StopIteration:
         return False
@@ -51,17 +62,17 @@ endsnippet
 
 context "math()"
 snippet lrr "left right round" iA
-\left( ${1:${VISUAL}} \right)
+\left( $1 \right)
 endsnippet
 
 context "math()"
 snippet lrs "left right square" iA
-\left[ ${1:${VISUAL}} \right]
+\left[ $1 \right]
 endsnippet
 
 context "math()"
 snippet lrc "left right curly" iA
-\left\\{ ${1:${VISUAL}} \right\\}
+\left\\{ $1 \right\\}
 endsnippet
 
 context "math()"
@@ -109,13 +120,13 @@ snippet mue "Make unnumbered equation" bA
 \]
 endsnippet
 
-snippet item "Itemize environment" b
+snippet item "Itemize" b
 \begin{itemize}
 	\item $1
 \end{itemize}
 endsnippet
 
-snippet enum "Enumerate environment" b
+snippet enum "Enumerate" b
 \begin{enumerate}
 	\item $1
 \end{enumerate}
@@ -171,6 +182,8 @@ endsnippet
 
 # }}}
 
+# Miscellaneous {{{
+
 # This one gives problems. Try typing 'md\mathrmmca<Tab><Tab>', expected output
 # is '$\mathrm{a}$|', where '|' is the cursor. Instead I get '$\m|athrm{a}$'.
 # However 'mdmathrmmca<Tab><Tab>' correctly results in '$mathrm{a}$|', so maybe
@@ -182,9 +195,12 @@ endsnippet
 
 snippet mwe "mwe" b
 \documentclass{article}
+$1
 \begin{document}
 $0
 \end{document}
 endsnippet
+
+# }}}
 
 # vim:fdm=marker

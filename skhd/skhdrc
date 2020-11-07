@@ -7,7 +7,7 @@ cmd - g : alacritty --command gotop
 cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
                                        -D ~/Dropbox/share/calcurse
 
-cmd - space : bash $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
+cmd - space : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 
 cmd - d [
   "Firefox" : skhd --key "f4"
@@ -30,9 +30,8 @@ cmd - h [
 # Toggle fullscreen
 alt - f : skhd --key "ctrl + cmd - f"
 
-# Toggle float and center on screen
-alt + shift - f : yabai -m window --toggle float \
-                  && yabai -m window --grid 4:4:1:1:2:2
+# Toggle float
+alt + shift - f : yabai -m window --toggle float
 
 # Focus windows
 alt - up : yabai -m window --focus north
@@ -101,24 +100,24 @@ alt - b : yabai -m space --balance
 alt - r : yabai -m space --rotate 270
 alt + shift - r : yabai -m space --rotate 90
 
-# Screenshot the whole screen and send a notification
+# Screenshot the whole screen and send a notification (uses fish syntax)
 shift + cmd - 3 : \
-  set ss_name ~/Dropbox/screenshots/"$(date +%F@%T)".png \
-  && screencapture "$ss_name" \
+  set ss_name ~/Dropbox/screenshots/(date +%4Y-%b-%d@%T).png \
+  && screencapture $ss_name \
   && terminal-notifier -title "New screenshot" \
-                       -subtitle "$(basename $ss_name)" \
-                       -message "Saved in $(dirname $ss_name)" \
+                       -subtitle (basename $ss_name) \
+                       -message "Saved in "(dirname $ss_name) \
                        -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage "$ss_name"
+                       -contentImage $ss_name
 
 # Screenshot a portion of the screen and send a notification if the screenshot
-# wasn't cancelled.
+# wasn't cancelled (uses fish syntax).
 shift + cmd - 4 : \
-  set ss_name ~/Dropbox/screenshots/"$(date +%F@%T)".png \
-  && screencapture -i "$ss_name" \
-  && ls "$ss_name" \
+  set ss_name ~/Dropbox/screenshots/(date +%4Y-%b-%d@%T).png \
+  && screencapture -i $ss_name \
+  && ls $ss_name \
   && terminal-notifier -title "New screenshot" \
-                       -subtitle "$(basename $ss_name)" \
-                       -message "Saved in $(dirname $ss_name)" \
+                       -subtitle (basename $ss_name) \
+                       -message "Saved in "(dirname $ss_name) \
                        -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage "$ss_name"
+                       -contentImage $ss_name

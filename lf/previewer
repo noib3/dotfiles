@@ -3,34 +3,34 @@
 FILE="$1"
 
 text_preview() {
-    highlight -O ansi --force "$1"
+  highlight -O ansi --force "$FILE"
 }
 
 pdf_preview() {
-    pdftotext "$1" -
+  pdftotext "$FILE" -
 }
 
 image_preview() {
-    chafa --fill=block --symbols=block "$1"
+  chafa --fill=block --symbols=block "$FILE"
 }
 
 video_preview() {
-    mediainfo "$1"
+  mediainfo "$FILE"
 }
 
 audio_preview() {
-    mediainfo "$1"
+  mediainfo "$FILE"
 }
 
 fallback_preview() {
-    highlight -O ansi --force "$1"
+  highlight -O ansi --force "$FILE"
 }
 
 case "$(file -b --mime-type $FILE)" in
-    text/*) text_preview "$FILE" ;;
-    */pdf) pdf_preview "$FILE" ;;
-    image/*) image_preview "$FILE" ;;
-    video/*) video_preview "$FILE" ;;
-    audio/*) audio_preview "$FILE" ;;
-    *) fallback_preview "$FILE" ;;
+  text/*) text_preview ;;
+  */pdf) pdf_preview ;;
+  image/*) image_preview ;;
+  video/*) video_preview ;;
+  audio/*) audio_preview ;;
+  *) fallback_preview ;;
 esac

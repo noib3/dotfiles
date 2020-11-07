@@ -1,13 +1,12 @@
-# Settings
+set dircounts
 set drawbox
 set hidden
+set info "size"
 set period 1
-set ifs "\n"
 set previewer "~/.config/lf/previewer"
 set promptfmt "\033[32m%u\033[0m@%h \033[01;34m%w\033[0m%f"
-set timefmt ""
+set timefmt "| 2006-Jan-02 @ 15:04:05"
 
-# Opener function
 cmd open ${{
   case $(file -b --mime-type $fx) in
     text/*) $EDITOR $fx;;
@@ -17,92 +16,85 @@ cmd open ${{
   esac
 }}
 
-# Create new files
-cmd touch %{{
-  touch $@
+cmd newfile %{{
+  touch "$@"
   lf -remote "send $id select \"$@\""
 }}
 
-# Create new directories
-cmd mkdir %{{
+cmd newdir %{{
   mkdir -p "$@"
   lf -remote "send $id select \"$@\""
 }}
 
-# Create new directory and move highlighted files into it
-cmd newdir %{{
+cmd move_to_newdir %{{
   mkdir -p "$@"
   mv $fx "$@"
   lf -remote "send $id select \"$@\""
 }}
 
-# Add execute permissions
 cmd make_executable %{{
   chmod +x $fx
   lf -remote "send $id reload"
 }}
 
-# Remove execute permissions
 cmd remove_executable %{{
   chmod -x $fx
   lf -remote "send $id reload"
 }}
 
-# Set the wallpaper
 cmd set_wallpaper ${{
-  osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$fx\"" &>/dev/null \
+  osascript -e "tell application \"Finder\" to set desktop \
+                picture to POSIX file \"$fx\"" &>/dev/null \
   && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
   || lf -remote "send $id echoerr \"Error: could not set wallpaper\""
-  osascript -e 'quit app "Finder"' &>/dev/null
+  osascript -e "quit app \"Finder\"" &>/dev/null
 }}
 
-# Eject a disk and send a notification
 cmd eject_disk ${{
-  for f in $fx; do
-    space_left=$(diskutil info "$f" 2>/dev/null |
-                 sed -n 's/.*Volume Free Space:\s*//p' |
-                 awk '{print $1, $2}')
-    diskutil eject "$f" &>/dev/null \
-    && lf -remote "send $id echo \"\033[32m'$(basename $f)' has been properly ejected\033[0m\"" \
-    && terminal-notifier -title "Disk ejected" \
-                         -subtitle "\'$(basename $f)' has been ejected" \
-                         -message "There are $space_left left on disk" \
-                         -appIcon ~/.config/lf/hard-disk-icon.png \
-    || lf -remote "send $id echoerr \"Error: could not eject disk\""
-  done
+  space_left=$(diskutil info "$f" 2>/dev/null |
+               sed -n "s/.*Volume Free Space:\s*//p" |
+               awk "{print $1, $2}")
+  diskutil eject "$f" &>/dev/null \
+  && lf -remote "send $id echo \"\033[32m$(basename $f) \
+                                 has been properly ejected\033[0m\"" \
+  && terminal-notifier -title "Disk ejected" \
+                       -subtitle "$(basename $f) has been ejected" \
+                       -message "There are $space_left left on disk" \
+                       -appIcon ~/.config/lf/hard-disk-icon.png \
+  || lf -remote "send $id echoerr \"Error: could not eject disk\""
 }}
 
-# Fuzzy search a file in ~ and open it in $EDITOR
 cmd fuzzy_edit ${{
   clear
   filename="$(fzf --height=80%)" \
   && $EDITOR ~/"$filename" || true
 }}
 
-# Fuzzy search a directory in ~ and cd into it
 cmd fuzzy_cd ${{
   clear
   dirname="$(eval $(echo $FZF_DEFAULT_COMMAND | sed "s/-t f/-t d/") |
              sed "s/\(.*\)\[1;90m/\1\[1;34m/" |
              fzf --height=8)" \
+  && dirname="$(echo $dirname | sed "s/\ /\\\ /g")" \
   && lf -remote "send $id cd ~/$dirname" || true
 }}
 
-# Mappings
-map <enter> push $
 map x cut
 map d delete
-map u :unselect; clear
-map t push :touch<space>
-map k push :mkdir<space>
-map D push :newdir<space>
+
+cmap <up> cmd-history-prev
+cmap <down> cmd-history-next
+
+map <enter> push $
+map t push :newfile<space>
+map k push :newdir<space>
+map D push :move_to_newdir<space>
+
 map + make_executable
 map - remove_executable
 map s set_wallpaper
 map j eject_disk
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
-map gvl cd "/Volumes"
 
-cmap <up> cmd-history-prev
-cmap <down> cmd-history-next
+map gvl cd "/Volumes"

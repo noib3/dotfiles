@@ -10,7 +10,6 @@ function set_theme() {
 set_theme afterglow
 
 yabai -m config window_placement second_child
-
 yabai -m config window_topmost on
 
 yabai -m config layout          bsp

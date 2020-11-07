@@ -12,11 +12,11 @@
 
 /* Tab dividers */
 /* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
-.tabbrowser-tab::after {
-  visibility: hidden;
-}
 :root {
   --lwt-accent-color: var(--color-focused-tabs-bg) !important;
+}
+.tabbrowser-tab::after {
+  visibility: hidden;
 }
 
 /* Urlbar */

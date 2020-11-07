@@ -1,2 +1,5 @@
+/calcurse/
 /coc/
 /configstore/
+**/fish_variables
+bootstrap.sh

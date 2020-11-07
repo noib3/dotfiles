@@ -1,11 +1,8 @@
-/* Font */
 @import "/Users/noibe/.config/firefox/fonts/SFMono.css";
 
-/* Colorscheme */
 @import "/Users/noibe/.config/firefox/colors/colors.css";
 @import "/Users/noibe/.config/firefox/colors/themes/afterglow.css";
 
-/* Tab bar */
 @import "/Users/noibe/.config/firefox/tab_bar/debloat_tab_bar.css";
 @import "/Users/noibe/.config/firefox/tab_bar/tabs_layout.css";
 @import "/Users/noibe/.config/firefox/tab_bar/tabs_fill_available_width.css";
@@ -13,16 +10,13 @@
 @import "/Users/noibe/.config/firefox/tab_bar/tab_close_button_always_on_hover.css";
 @import "/Users/noibe/.config/firefox/tab_bar/hide_tabs_with_one_tab.css";
 
-/* Navbar */
 @import "/Users/noibe/.config/firefox/navbar/debloat_navbar.css";
 @import "/Users/noibe/.config/firefox/navbar/navbar_layout.css";
 @import "/Users/noibe/.config/firefox/navbar/navbar_on_focus.css";
 
-/* Urlbar */
 @import "/Users/noibe/.config/firefox/urlbar/debloat_urlbar.css";
 @import "/Users/noibe/.config/firefox/urlbar/urlbar_layout.css";
 @import "/Users/noibe/.config/firefox/urlbar/remove_megabar.css";
 
-/* Sidebar */
 @import "/Users/noibe/.config/firefox/sidebar/debloat_sidebar.css";
 @import "/Users/noibe/.config/firefox/sidebar/sidebar_layout.css";

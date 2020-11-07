@@ -1,31 +1,22 @@
-/* Go back button */
 #back-button { display: none; }
 
-/* Go forward button */
 #forward-button { display: none; }
 
-/* Reload page button */
 #reload-button { display: none; }
 
-/* Stop loading page button */
 #stop-button { display: none; }
 
-/* Go to home page button */
 #home-button { display: none; }
 
-/* Downloads button */
 #downloads-button { display: none; }
 
-/* Library button */
 #library-button { display: none; }
 
-/* Open sidebar button */
 #sidebar-button { display: none; }
 
 /* Firefox account button */
 #fxa-toolbar-menu-button { display: none; }
 
-/* Overflow button */
 #nav-bar-overflow-button { display: none !important; }
 
 /* General Firefox menu button */

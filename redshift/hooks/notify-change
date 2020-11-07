@@ -7,10 +7,10 @@ case $event in
   period-changed)
     if [ $new_period != "none" ]; then
       new_period=$(echo $new_period |
-                   sed "s/night/Night time/;s/daytime/Day time/")
+                   sed "s/night/Night time/;s/day/Day /;s/tr/Tr/")
       /usr/local/bin/terminal-notifier -title "Redshift" \
                                        -subtitle "Switching temps..." \
                                        -message "$new_period" \
-                                       -appIcon $(dirname "$0")/Redshift-logo.png
+                                       -appIcon $(dirname $0)/Redshift-logo.png
     fi
 esac

@@ -1,7 +1,3 @@
-setlocal tabstop=2
-setlocal softtabstop=2
-setlocal shiftwidth=2
-
 setlocal iskeyword-=:
 
 setlocal spell
@@ -25,7 +21,6 @@ if expand("%:e") ==# "tex"
   nmap <buffer> <silent> <LocalLeader><LocalLeader> <plug>(vimtex-toc-open)
 else
   setlocal formatoptions-=t
-  setlocal colorcolumn=80,100
   " Don't highlight underscores in bright red
   syntax clear texOnlyMath
   " Enable spellcheck in comments only

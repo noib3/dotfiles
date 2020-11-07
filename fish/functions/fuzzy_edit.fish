@@ -1,6 +1,7 @@
-function fuzzy_edit --description "Fuzzy search a file in ~ and open it in $EDITOR"
-    set -l filename (fzf --height=8) \
-    && commandline "$EDITOR ~/$filename" \
-    && commandline -f execute
-    commandline -f repaint
+function fuzzy_edit --description "Fuzzy search a file in ~ and \
+open it in $EDITOR"
+  set -l filename (fzf --height=8) \
+  && commandline "$EDITOR ~/"(string replace -a " " "\\ " $filename) \
+  && commandline -f execute
+  commandline -f repaint
 end
