@@ -4,8 +4,8 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'junegunn/fzf'
   Plug 'Yggdroot/indentLine'
-  Plug 'norcalli/nvim-colorizer.lua'
-  Plug 'pacha/vem-tabline'
+  " Plug 'norcalli/nvim-colorizer.lua'
+  " Plug 'pacha/vem-tabline'
   Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
