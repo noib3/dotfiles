@@ -1,5 +1,10 @@
 /calcurse/
-/coc/
 /configstore/
-**/fish_variables
+
+/nvim/plugged/
+/nvim/coc/*
+!/nvim/coc/ultisnips/
+!/nvim/coc/coc-settings.json
+
 bootstrap.sh
+**/fish_variables

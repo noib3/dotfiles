@@ -3,9 +3,9 @@ ctrl - w : open -na /Applications/Firefox.app
 cmd - return : alacritty
 alt - return : alacritty --title "dont-manage" --dimensions 75 15
 cmd - f : alacritty --command sh -c "lf ~/Downloads"
-cmd - g : alacritty --command gotop
+cmd - g : alacritty --command ytop
 cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
-                                       -D ~/Dropbox/share/calcurse
+                                       -D $CLOUDDIR/calcurse
 
 cmd - space : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 
@@ -102,22 +102,22 @@ alt + shift - r : yabai -m space --rotate 90
 
 # Screenshot the whole screen and send a notification (uses fish syntax)
 shift + cmd - 3 : \
-  set ss_name ~/Dropbox/screenshots/(date +%4Y-%b-%d@%T).png \
-  && screencapture $ss_name \
+  set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
+  && screencapture "$sshot" \
   && terminal-notifier -title "New screenshot" \
-                       -subtitle (basename $ss_name) \
-                       -message "Saved in "(dirname $ss_name) \
+                       -subtitle (basename "$sshot") \
+                       -message "Saved in "(dirname "$sshot") \
                        -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage $ss_name
+                       -contentImage "$sshot"
 
 # Screenshot a portion of the screen and send a notification if the screenshot
 # wasn't cancelled (uses fish syntax).
 shift + cmd - 4 : \
-  set ss_name ~/Dropbox/screenshots/(date +%4Y-%b-%d@%T).png \
-  && screencapture -i $ss_name \
-  && ls $ss_name \
+  set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
+  && screencapture -i "$sshot" \
+  && ls "$sshot" \
   && terminal-notifier -title "New screenshot" \
-                       -subtitle (basename $ss_name) \
-                       -message "Saved in "(dirname $ss_name) \
+                       -subtitle (basename "$sshot") \
+                       -message "Saved in "(dirname "$sshot") \
                        -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage $ss_name
+                       -contentImage "$sshot"

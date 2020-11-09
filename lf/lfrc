@@ -8,11 +8,11 @@ set promptfmt "\033[32m%u\033[0m@%h \033[01;34m%w\033[0m%f"
 set timefmt "| 2006-Jan-02 @ 15:04:05"
 
 cmd open ${{
-  case $(file -b --mime-type $fx) in
-    text/*) $EDITOR $fx;;
-    inode/x-empty) $EDITOR $fx;;
-    video/*) open -n $fx;;
-    *) for f in $fx; do open "$f" &>/dev/null; done;;
+  case "$(file -b --mime-type $fx)" in
+    text/*) $EDITOR "$fx";;
+    inode/x-empty) $EDITOR "$fx";;
+    video/*) open -n "$fx";;
+    *) for f in "$fx"; do open "$f" &>/dev/null; done;;
   esac
 }}
 
@@ -66,15 +66,13 @@ cmd eject_disk ${{
 
 cmd fuzzy_edit ${{
   clear
-  filename="$(fzf --height=80%)" \
+  filename="$(fzf --height=8)" \
   && $EDITOR ~/"$filename" || true
 }}
 
 cmd fuzzy_cd ${{
   clear
-  dirname="$(eval $(echo $FZF_DEFAULT_COMMAND | sed "s/-t f/-t d/") |
-             sed "s/\(.*\)\[1;90m/\1\[1;34m/" |
-             fzf --height=8)" \
+  dirname="$(eval $(echo $FZF_ONLYDIR_COMMAND) | fzf --height=8)" \
   && dirname="$(echo $dirname | sed "s/\ /\\\ /g")" \
   && lf -remote "send $id cd ~/$dirname" || true
 }}
