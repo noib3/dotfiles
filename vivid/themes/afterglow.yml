@@ -46,9 +46,8 @@ core:
   other_writable: {}
 
 text:
-  special:
-    foreground: black
-    background: apricot
+  readme:
+    font-style: bold
   todo:
     font-style: bold
   licenses:
@@ -57,6 +56,8 @@ text:
     foreground: apricot
   other:
     foreground: apricot
+  bibtex:
+    foreground: gray
 
 markup:
   foreground: apricot
@@ -64,6 +65,10 @@ markup:
 programming:
   source:
     foreground: green
+    latex:
+      foreground: green
+      special:
+        foreground: apricot
   tooling:
     foreground: light_green
     continuous-integration:
@@ -85,6 +90,7 @@ executable:
 
 unimportant:
   foreground: lightgray
-  fzf-grayed-out-dir:
-    foreground: darkgray
-    font-style: bold
+
+fzf-grayed-out-dir:
+  foreground: darkgray
+  font-style: bold

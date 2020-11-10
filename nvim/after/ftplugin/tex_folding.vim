@@ -1,143 +1,128 @@
-" In the following comments and definitions a section is a generic term for any
-" sectioning command like \part{..} or \subsection{..}, not just a literal
-" \section{..}.
-
 " The two functions s:clear_texorpdfstring() and s:find_closing() were taken
 " from the vimtex's plugin, specifically from autoload/vimtex/parser/toc.vim
 
-" Finish early if the file's extension isn't .tex (e.g. *.sty or *.cls files)
-if expand('%:e') !=# 'tex'
+if expand("%:e") !=# "tex"
   finish
 endif
 
-" Define (re)inclusion guard
-if exists('b:LaTeX_folds_loaded')
+if exists("b:LaTeXFolds_loaded")
   finish
 endif
-let b:LaTeX_folds_loaded = 1
+let b:LaTeXFolds_loaded = 1
 
 setlocal foldmethod=expr
 setlocal foldexpr=LaTeXFoldsExpr(v:lnum)
 setlocal foldtext=LaTeXFoldsText()
 
-" Sections to be folded
-if !exists('g:LaTeX_folds_sections')
-  let g:LaTeX_folds_sections = [
-    \ 'part',
-    \ 'chapter',
-    \ 'section',
-    \ 'subsection',
-    \ 'subsubsection',
+if !exists("g:LaTeXFolds_sections")
+  let g:LaTeXFolds_sections = [
+    \ "part",
+    \ "chapter",
+    \ "section",
+    \ "subsection",
+    \ "subsubsection",
     \ ]
 endif
 
-" Option to fold preamble
-if !exists('g:LaTeX_folds_preamble')
-  let g:LaTeX_folds_preamble = 1
+if !exists("g:LaTeXFolds_fold_preamble")
+  let g:LaTeXFolds_fold_preamble = 0
 endif
 
-" Option to use the section numbers from the vimtex's plugin in the section
-" title.
-if !exists('g:LaTeX_folds_vimtex_sec_nums')
-  let g:LaTeX_folds_vimtex_sec_nums = 1
+if !exists("g:LaTeXFolds_use_vimtex_section_numbers")
+  let g:LaTeXFolds_use_vimtex_section_numbers = 0
 endif
 
-" Join all section names in a single regex, including potential asterisks for
-" starred sections (e.g. \chapter*{..}).
-let s:sections_regex = '^\s*\\\(' . join(g:LaTeX_folds_sections, '\|') . '\)'
-                                \ . '\s*\(\*\)\?\s*{\(.*\)}\s*$'
+let s:sections_regex =
+  \ '^\s*' .
+  \ '\\\(' . join(g:LaTeXFolds_sections, '\|') . '\)' .
+  \ '\s*\(\*\)\?\s*{\(.*\)}\s*$'
 
 function! s:find_sections() " {{{1
-  " This function finds which sections in g:LaTeX_folds_sections are
-  " actually present in the document, and returns a dictionary where the keys
-  " are the section names and the values are their foldlevel in the document.
-
-  let fold_levels = {}
-
-  let level = 1
-  for section in g:LaTeX_folds_sections
+  " This function finds which sections in g:LaTeXFolds_sections are
+  " actually present in the file, and returns a dictionary where the keys are
+  " the sections it found and the values are their foldlevel.
+  let l:fold_levels = {}
+  let l:level = 1
+  for section in g:LaTeXFolds_sections
     let i = 1
     while i <= line('$')
       if getline(i) =~# '^\s*\\' . section . '\s*\(\*\)\?\s*{.*'
-        let fold_levels[section] = level
-        let level += 1
+        let l:fold_levels[section] = level
+        let l:level += 1
         break
       endif
       let i += 1
     endwhile
   endfor
-
-  return fold_levels
+  return l:fold_levels
 endfunction " }}}1
 
-" s:find_sections() returns a dictionary where the keys are the section names
-" and the values are their foldlevel in the document.
 let s:fold_levels = s:find_sections()
 
 function! LaTeXFoldsExpr(lnum) " {{{1
-  let line = getline(a:lnum)
+  let l:line = getline(a:lnum)
 
-  " If the line is blank return the fold level of the previous or the next
-  " line, whichever is the lowest.
-  if line =~ '^\s*$' | return '-1' | endif
+  " If the l:line is blank return the fold level of the previous or the next
+  " l:line, whichever is the lowest.
+  if l:line =~ '^\s*$' | return "-1" | endif
 
   " Let \begin{document} and \end{document} remain unfolded
-  if line =~# '^\s*\\\(begin\|end\)\s*{document}' | return '0' | endif
+  if l:line =~# '^\s*\\\(begin\|end\)\s*{document}' | return "0" | endif
 
   " Fold the preamble
-  if g:LaTeX_folds_preamble == 1 && line =~# '^\s*\\documentclass'
-    return '>1'
+  if g:LaTeXFolds_fold_preamble == 1 && l:line =~# '^\s*\\documentclass'
+    return ">1"
   endif
 
-  " If this is a 'regular' line, return the fold level of the previous line
-  if line !~# s:sections_regex | return '=' | endif
+  " If this is a 'regular' l:line, return the fold level of the previous l:line
+  if l:line !~# s:sections_regex | return "=" | endif
 
-  " If I get here it means the line contains a sectioning command. Find which
+  " If I get here it means the l:line contains a sectioning command. Find which
   " one it is and return its fold level.
-  let line_section = substitute(line, s:sections_regex, '\1', '')
-  return '>' . s:fold_levels[line_section]
+  let l:line_section = substitute(l:line, s:sections_regex, '\1', '')
+  return ">" . s:fold_levels[l:line_section]
 endfunction " }}}1
 
 function! LaTeXFoldsText() "{{{1
-  let line = getline(v:foldstart)
+  let l:line = getline(v:foldstart)
 
   " Get the section title, and if it contains any \texorpdfstring's extract
   " their first argument.
-  let section_title = substitute(line, s:sections_regex, '\3', '')
-  if section_title =~# '\\texorpdfstring'
-    let section_title = s:clear_texorpdfstring(section_title)
+  let l:section_title = substitute(l:line, s:sections_regex, '\3', '')
+  if l:section_title =~# '\\texorpdfstring'
+    let l:section_title = s:clear_texorpdfstring(section_title)
   endif
 
-  if g:LaTeX_folds_vimtex_sec_nums == 1
+  if g:LaTeXFolds_use_vimtex_section_numbers == 1
     " If the vimtex plugin is loaded use it to get the section numbers, if not
     " display an error message and use two question marks as the section
     " numbers.
-    if exists('*vimtex#toc#new')
-      let section_num = s:get_section_num(v:foldstart)
+    if &runtimepath =~# 'vimtex'
+     let l:section_num = s:get_section_num(v:foldstart)
     else
       echohl ErrorMsg
-      echomsg '[folding.vim] vimtex not loaded'
+      echomsg "[LaTeXFolds] vimtex not loaded"
       echohl None
-      let section_num = '??'
+      let l:section_num = "??"
     endif
     " If the section number isn't empty insert two spaces before the title
-    let fold_title = empty(section_num)
-                     \ ? section_title
-                     \ : section_num . '  ' . section_title
+    let l:fold_title = empty(l:section_num)
+                     \ ? l:section_title
+                     \ : l:section_num . ": " . l:section_title
   else
     " Get the section name, capitalizing its first letter and including
     " potential asterisks for starred sections (e.g. \chapter*{...}).
-    let section_name = substitute(line, s:sections_regex, '\u\1\2', '')
-    let fold_title = section_name . ': ' . section_title
+    let l:section_name = substitute(l:line, s:sections_regex, '\u\1\2', '')
+    let l:fold_title = l:section_name . ": " . l:section_title
   endif
 
-  " If I'm folding the preamble and the line contains a \documentclass, just
-  " set fold_title to 'Preamble'.
-  if g:LaTeX_folds_preamble == 1 && line =~# '^\s*\\documentclass'
-    let fold_title = 'Preamble'
+  " If I'm folding the preamble and the l:line contains a \documentclass, just
+  " set l:fold_title to 'Preamble'.
+  if g:LaTeXFolds_fold_preamble == 1 && l:line =~# '^\s*\\documentclass'
+    let l:fold_title = "Preamble"
   endif
 
-  return folding#FoldsTextFormat(fold_title)
+  return folding#FoldsTextFormat(l:fold_title)
 endfunction " }}}1
 
 " Helper functions {{{1

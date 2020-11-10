@@ -1,6 +1,7 @@
 set dircounts
 set drawbox
 set hidden
+set ifs "\n"
 set info "size"
 set period 1
 set previewer "~/.config/lf/previewer"
@@ -8,12 +9,14 @@ set promptfmt "\033[32m%u\033[0m@%h \033[01;34m%w\033[0m%f"
 set timefmt "| 2006-Jan-02 @ 15:04:05"
 
 cmd open ${{
-  case "$(file -b --mime-type $fx)" in
-    text/*) $EDITOR "$fx";;
-    inode/x-empty) $EDITOR "$fx";;
-    video/*) open -n "$fx";;
-    *) for f in "$fx"; do open "$f" &>/dev/null; done;;
-  esac
+  for f in $fx; do
+    case $(file -b --mime-type $f) in
+      text/*) $EDITOR "$f";;
+      inode/x-empty) $EDITOR "$f";;
+      video/*) open -n "$f";;
+      *) open "$f" &>/dev/null;;
+    esac
+  done
 }}
 
 cmd newfile %{{
@@ -43,10 +46,11 @@ cmd remove_executable %{{
 }}
 
 cmd set_wallpaper ${{
-  osascript -e "tell application \"Finder\" to set desktop \
-                picture to POSIX file \"$fx\"" &>/dev/null \
+  [[ $(file -b --mime-type "$f") == image/* ]] \
+  && osascript -e "tell application \"Finder\" to set desktop \
+                picture to POSIX file \"$f\"" &>/dev/null \
   && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
-  || lf -remote "send $id echoerr \"Error: could not set wallpaper\""
+  || lf -remote "send $id echoerr 'Error: could not set wallpaper'"
   osascript -e "quit app \"Finder\"" &>/dev/null
 }}
 
@@ -61,7 +65,7 @@ cmd eject_disk ${{
                        -subtitle "$(basename $f) has been ejected" \
                        -message "There are $space_left left on disk" \
                        -appIcon ~/.config/lf/hard-disk-icon.png \
-  || lf -remote "send $id echoerr \"Error: could not eject disk\""
+  || lf -remote "send $id echoerr 'Error: could not eject disk'"
 }}
 
 cmd fuzzy_edit ${{
@@ -73,7 +77,7 @@ cmd fuzzy_edit ${{
 cmd fuzzy_cd ${{
   clear
   dirname="$(eval $(echo $FZF_ONLYDIR_COMMAND) | fzf --height=8)" \
-  && dirname="$(echo $dirname | sed "s/\ /\\\ /g")" \
+  && dirname="$(echo $dirname | sed 's/\ /\\\ /g')" \
   && lf -remote "send $id cd ~/$dirname" || true
 }}
 

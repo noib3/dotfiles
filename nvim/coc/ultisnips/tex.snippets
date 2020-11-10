@@ -13,15 +13,15 @@ texMathZones = ["texMathZone" + x for x in ["A", "AS", "B", "BS", "C", "CS", \
 
 texIgnoreMathZones = ["texMathText"]
 
-texMathZoneIds = vim.eval("map(" + str(texMathZones) + ", \" hlID(v:val)\")")
+texMathZoneIds = vim.eval("map(" + str(texMathZones) + ", ' hlID(v:val)')")
 texIgnoreMathZoneIds = vim.eval("map(" + str(texIgnoreMathZones) \
-                                       + ", \"hlID(v:val)\")")
+                                       + ", 'hlID(v:val)')")
 
 ignore = texIgnoreMathZoneIds[0]
 
 def math():
-    synstackids = vim.eval("synstack(line(\".\"), \
-                                     col(\".\") - (col(\".\") >= 2 ? 1 : 0))")
+    synstackids = vim.eval("synstack(line('.'), \
+                                     col('.') - (col('.') >= 2 ? 1 : 0))")
     try:
         first = next(i for i in reversed(synstackids) \
                         if i in texIgnoreMathZoneIds or i in texMathZoneIds)
@@ -29,82 +29,6 @@ def math():
     except StopIteration:
         return False
 endglobal
-
-# Math snippets
-
-snippet md "Make dollar" A
-$$1$
-endsnippet
-
-context "math()"
-snippet ^^ "superscript" ieA
-^{$1}
-endsnippet
-
-context "math()"
-snippet __ "subscript" ieA
-_{$1}
-endsnippet
-
-context "math()"
-snippet .. "dots" eA
-\dots
-endsnippet
-
-context "math()"
-snippet oo "infty" eA
-\infty
-endsnippet
-
-context "math()"
-snippet lrr "left right round" eA
-\left( $1 \right)
-endsnippet
-
-context "math()"
-snippet lrs "left right square" eA
-\left[ $1 \right]
-endsnippet
-
-context "math()"
-snippet lrc "left right curly" eA
-\left\\{ $1 \right\\}
-endsnippet
-
-context "math()"
-snippet "([^\\])fr" "frac" reA
-`!p snip.rv=match.group(1)`\\frac{$1}{$2}
-endsnippet
-
-context "math()"
-snippet "([^\\])sum" "sum" reA
-`!p snip.rv=match.group(1)`\sum_{$1}^{$2}
-endsnippet
-
-context "math()"
-snippet "([^\\])int" "int" reA
-`!p snip.rv=match.group(1)`\int_{$1}^{$2}
-endsnippet
-
-context "math()"
-snippet "([A-Za-z])(\d)" "Auto subscript" ireA
-`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
-endsnippet
-
-context "math()"
-snippet "([A-Za-z])bar" "Postfix bar" ireA
-\overline{`!p snip.rv=match.group(1)`}
-endsnippet
-
-context "math()"
-snippet "([A-Za-z])hat" "Postfix hat" ireA
-\hat{`!p snip.rv=match.group(1)`}
-endsnippet
-
-context "math()"
-snippet "([A-Za-z])tilde" "Postfix tilde" ireA
-\tilde{`!p snip.rv=match.group(1)`}
-endsnippet
 
 # Environmemts
 
@@ -174,13 +98,89 @@ snippet env "Generic environment" b
 \end{$1}
 endsnippet
 
+# Math
+
+context "math()"
+snippet ^^ "superscript" ieA
+^{$1}
+endsnippet
+
+context "math()"
+snippet __ "subscript" ieA
+_{$1}
+endsnippet
+
+context "math()"
+snippet .. "dots" ieA
+\dots
+endsnippet
+
+context "math()"
+snippet oo "infty" ieA
+\infty
+endsnippet
+
+context "math()"
+snippet lrr "left right round" ieA
+\left( $1 \right)
+endsnippet
+
+context "math()"
+snippet lrs "left right square" ieA
+\left[ $1 \right]
+endsnippet
+
+context "math()"
+snippet lrc "left right curly" ieA
+\left\\{ $1 \right\\}
+endsnippet
+
+context "math()"
+snippet "([^\\])fr" "frac" ireA
+`!p snip.rv=match.group(1)`\\frac{$1}{$2}
+endsnippet
+
+context "math()"
+snippet "([^\\])sum" "sum" ireA
+`!p snip.rv=match.group(1)`\sum_{$1}^{$2}
+endsnippet
+
+context "math()"
+snippet "([^\\])int" "int" ireA
+`!p snip.rv=match.group(1)`\int_{$1}^{$2}
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])(\d)" "Auto subscript" ireA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])bar" "Postfix bar" ireA
+\overline{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])hat" "Postfix hat" ireA
+\hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+context "math()"
+snippet "([A-Za-z])tilde" "Postfix tilde" ireA
+\tilde{`!p snip.rv=match.group(1)`}
+endsnippet
+
 # Miscellaneous
+
+snippet md "Make dollar" iA
+$$1$
+endsnippet
 
 snippet mc "Make curly" iA
 {$1}
 endsnippet
 
-snippet mwe "mwe" b
+snippet mwe "Minimal working example" b
 \documentclass{article}
 $1
 \begin{document}

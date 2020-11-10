@@ -15,350 +15,54 @@ core:
   sticky_other_writable: [$tw]
 
 text:
-  special:
-    - CONTRIBUTORS
-    - CONTRIBUTORS.md
-    - CONTRIBUTORS.txt
-    - INSTALL
-    - INSTALL.md
-    - INSTALL.txt
-    - README
-    - README.md
-    - README.txt
-  todo:
-    - TODO
-    - TODO.md
-    - TODO.txt
-  licenses:
-    - COPYING
-    - COPYRIGHT
-    - LICENSE
-    - LICENSE-APACHE
-    - LICENSE-MIT
-  configuration:
-    generic:
-      - .cfg
-      - .conf
-      - .config
-      - .ini
-      - .json
-      - .tml
-      - .toml
-      - .yaml
-      - .yml
-    metadata:
-      - .xmp
-    bibtex:
-      - .bib
-      - .bst
-    dockerfile:
-      - Dockerfile
-    nix:
-      - .nix
-    qt:
-      - .ui
-    desktop:
-      - .desktop
-    system:
-      - passwd
-      - shadow
-  other:
-    - .txt
+  readme: [README.md]
+  todo: [TODO, TODO.md, TODO.txt]
+  licenses: [LICENSE]
+  configuration: [.conf, .json, .yml]
+  bibtex: [.bib]
+  other: [.txt]
 
 markup:
-  web:
-    - .htm
-    - .html
-    - .shtml
-    - .xhtml
-  other:
-    - .csv
-    - .markdown
-    - .md
-    - .mdown
-    - .rst
-    - .xml
+  web: [.html]
+  other: [.md, .Rmd, .xml]
 
 programming:
   source:
-    actionscript: [.as]
-    applescript: [.applescript]
-    asp: [.asa]
-    awk: [.awk]
-    basic: [.vb]
-    cabal: [.cabal]
-    clojure: [.clj]
-    crystal: [.cr]
-    csharp: [.cs, .csx]
-    css: [css]
-    cxx: [.c, .cpp, .cc, .cp, .cxx, .c++, .h, .hh, .hpp, .hxx, .h++, .inc, .inl, .ipp, .def]
-    d: [.d, .di]
-    dart: [.dart]
-    diff: [.diff, .patch]
-    elixir: [.ex, .exs]
-    elm: [.elm]
-    erlang: [.erl]
-    fsharp: [.fs, .fsi, .fsx]
+    css: [.css]
     go: [.go]
-    graphviz: [.dot, .gv]
-    groovy: [.groovy, .gvy, .gradle]
-    haskell: [.hs]
     ipython: [.ipynb]
-    java: [.java, .bsh]
-    javascript: [.js, .htc]
-    julia: [.jl]
-    kotlin: [.kt, .kts]
-    latex: [.tex, .ltx]
-    less: [.less]
-    llvm: [.ll, .mir]
-    lisp: [.lisp, .el]
-    lua: [.lua]
-    mathematica: [.nb]
-    matlab: [.matlab, .m, .mn]
-    ocaml: [.ml, .mli]
-    pascal: [.pas, .p, .dpr]
-    perl: [.pl, .pm, .pod, .t, .cgi]
-    php: [.php]
-    powershell: [.ps1, .psm1, .psd1]
-    puppet: [.pp, .epp]
-    purescript: [.purs]
+    javascript: [.js]
+    latex:
+      regular: [.tex]
+      class: [.cls]
+      package: [.sty]
+      special: [main.tex]
+    ocaml: [.ml]
     python: [.py]
     r: [.r]
-    ruby: [.rb]
     rust: [.rs]
-    scala: [.scala, .sbt]
     shell: [.sh, .bash, .zsh, .fish]
-    sql: [.sql]
-    swift: [.swift]
-    tablegen: [.td]
-    tcl: [.tcl]
-    typescript: [.ts, .tsx]
-    viml: [.vim]
+    viml: [.vim, .snippets]
   tooling:
-    vcs:
-      git:
-        - .gitignore
-        - .gitmodules
-        - .gitattributes
-        - .gitconfig
-      hg:
-        - .hgrc
-        - hgrc
-      other:
-        - CODEOWNERS
-        - .ignore
-        - .fdignore
-        - .rgignore
-    build:
-      cmake:
-        - .cmake
-        - CMakeLists.txt
-        - .cmake.in
-      make:
-        - Makefile
-        - .make
-      automake:
-        - Makefile.am
-      configure:
-        - configure
-        - configure.ac
-      scons:
-        - SConscript
-        - SConstruct
-      pip:
-        - requirements.txt
-    packaging:
-      python:
-        - MANIFEST.in
-        - setup.py
-      ruby:
-        - .gemspec
-    code-style:
-      python:
-        - .flake8
-      cxx:
-        - .clang-format
-    editors:
-      qt:
-        - .pro
-      kdevelop:
-        - .kdevelop
-    documentation:
-      doxygen:
-        - Doxyfile
-        - .dox
-    continuous-integration:
-      - appveyor.yml
-      - .travis.yml
+    git: [.gitignore, .gitmodules, .gitattributes, .gitconfig]
+    build: [.cmake, Makefile, .make]
+    packaging: [MANIFEST.in, setup.py]
 
 media:
-  image:
-    - .bmp
-    - .eps
-    - .gif
-    - .ico
-    - .jpeg
-    - .jpg
-    - .pbm
-    - .pgm
-    - .png
-    - .ppm
-    - .psd
-    - .svg
-    - .tif
-    - .tiff
-    - .xcf
-  audio:
-    - .aif
-    - .flac
-    - .m4a
-    - .mid
-    - .mp3
-    - .ogg
-    - .wav
-    - .wma
-  video:
-    - .avi
-    - .flv
-    - .h264
-    - .m4v
-    - .mkv
-    - .mov
-    - .mp4
-    - .mpeg
-    - .mpg
-    - .rm
-    - .swf
-    - .vob
-    - .wmv
-  fonts:
-    - .fnt
-    - .fon
-    - .otf
-    - .ttf
+  image: [.eps, .gif, .jpeg, .jpg, .png, .svg]
+  audio: [.flac, .mp3, .ogg, .wav]
+  video: [.mkv, .mp4, .mov, .avi]
 
 office:
-  document:
-    - .doc
-    - .docx
-    - .epub
-    - .odt
-    - .pdf
-    - .ps
-    - .rtf
-    - .sxw
-  spreadsheet:
-    - .xls
-    - .xlsx
-    - .ods
-    - .xlr
-  presentation:
-    - .ppt
-    - .pptx
-    - .odp
-    - .sxi
-    - .kex
-    - .pps
-  calendar:
-    - .ics
+  document: [.pdf]
 
 archives:
-  packages:
-    - .apk
-    - .deb
-    - .rpm
-  ros:
-    - .bag
-  images:
-    - .bin
-    - .dmg
-    - .img
-    - .iso
-    - .toast
-    - .vcd
-  other:
-    - .7z
-    - .arj
-    - .bz
-    - .bz2
-    - .gz
-    - .jar
-    - .pkg
-    - .rar
-    - .tar
-    - .tbz
-    - .tbz2
-    - .tgz
-    - .xz
-    - .z
-    - .zip
-
-executable:
-  windows:
-    - .bat
-    - .com
-    - .exe
-  library:
-    - .so
-    - .a
-    - .dll
-  linux:
-    - .ko
+  images: [.dmg, .img, .iso]
+  other: [.gz, .pkg, .tar, .zip]
 
 unimportant:
   build_artifacts:
-    cxx:
-      - .o
-      - .la
-      - .lo
-    cmake:
-      - CMakeCache.txt
-    automake:
-      - Makefile.in
-    rust:
-      - .rlib
-    python:
-      - .pyc
-    haskell:
-      - .dyn_hi
-      - .dyn_o
-      - .cache
-      - .hi
-    java:
-      - .class
-    scons:
-      - .scons_opt
-      - .sconsign.dblite
-    latex:
-      - .aux
-      - .bbl
-      - .bcf
-      - .blg
-      - .fdb_latexmk
-      - .fls
-      - .idx
-      - .ilg
-      - .ind
-      - .out
-      - .sty
-      - .synctex.gz
-      - .toc
-    llvm:
-      - .bc
-  macos:
-    - .CFUserTextEncoding
-    - .DS_Store
-    - .localized
-  other:
-    - "~"
-    - .bak
-    - .git
-    - .lock
-    - .log
-    - .orig
-    - .pid
-    - .swp
-    - .tmp
-    - package-lock.json
-  fzf-grayed-out-dir:
-    - .fgod
+    latex: [.aux, .bbl, .bcf, .blg, .loe, .log, .out, .run.xml,
+           .synctex(busy), .synctex.gz, .toc]
+
+fzf-grayed-out-dir: [.fgod]

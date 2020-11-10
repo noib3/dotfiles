@@ -1,5 +1,7 @@
 let g:vimtex_compiler_enabled = 0
-let g:vimtex_view_enabled = 0
+
+let g:vimtex_view_method = "skim"
+let g:vimtex_view_skim_reading_bar = 0
 
 let g:vimtex_toc_show_preamble = 0
 let g:vimtex_toc_config = {

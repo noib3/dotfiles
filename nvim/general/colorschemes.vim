@@ -1,7 +1,8 @@
-set termguicolors
-
-augroup patch_colors
+augroup colorschemes
   autocmd!
+  autocmd ColorScheme * highlight Normal guibg=NONE
+  autocmd ColorScheme * highlight Comment gui=italic
+  autocmd ColorScheme * highlight texComment gui=italic
   autocmd ColorScheme afterglow call s:patch_afterglow_colors()
 augroup END
 

@@ -18,10 +18,9 @@ set iskeyword-=_
 set colorcolumn=80
 set laststatus=0
 set mouse=a
-" set noshowmode
 set noswapfile
 set scrolloff=1
-set spellfile=~/Dropbox/share/nvim/spell/en.utf-8.add
+set spellfile=$CLOUDDIR/nvim/spell/en.utf-8.add
 set termguicolors
 set undofile
 

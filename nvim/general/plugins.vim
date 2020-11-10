@@ -1,8 +1,6 @@
 call plug#begin('~/.config/nvim/plugged')
-  " Functionality
-  Plug 'dense-analysis/ale'
+  " Miscellaneous
   Plug 'jiangmiao/auto-pairs'
-  Plug 'neoclide/coc.nvim'
   Plug 'junegunn/fzf'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
@@ -12,12 +10,22 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
   Plug 'embear/vim-localvimrc'
+  Plug 'lervag/vimtex'
+
+  " Completion & linting
+  Plug 'dense-analysis/ale'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+  " Text objects
+  Plug 'kana/vim-textobj-user'
+  Plug 'somini/vim-textobj-fold'
+  Plug 'thinca/vim-textobj-between'
+
+  " tpope
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
-  Plug 'kana/vim-textobj-user'
-  Plug 'lervag/vimtex'
 
   " Syntax
   Plug 'godlygeek/tabular'

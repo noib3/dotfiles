@@ -8,21 +8,21 @@ setlocal errorformat=%f:%l:\ %m
 " Use bash for its PIPESTATUS feature
 setlocal shell=bash
 
+let g:LaTeXFolds_use_vimtex_section_numbers = 1
+
 let b:AutoPairs = {"(": ")", "[": "]", "{": "}", "`": "\"", "$": "$"}
 
 let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
 
 if expand("%:e") ==# "tex"
-  setlocal colorcolumn=80
+  VimtexView
   nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>
-  nmap <buffer> <silent> <LocalLeader>p :call tex#PdfOpen()<CR>
-  nmap <buffer> <silent> <LocalLeader>f :call tex#SkimForwardSearch()<CR>
   nmap <buffer> <silent> <LocalLeader><LocalLeader> <plug>(vimtex-toc-open)
-else
-  setlocal formatoptions-=t
-  " Don't highlight underscores in bright red
-  syntax clear texOnlyMath
-  " Enable spellcheck in comments only
-  syntax spell notoplevel
 endif
+
+augroup tex
+  autocmd!
+  autocmd BufRead *.tex VimtexView
+  autocmd BufUnload *.tex call tex#PdfClose(expand("<afile>:p:r") . ".pdf")
+augroup END

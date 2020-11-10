@@ -1,19 +1,13 @@
+let g:netrw_home = $HOME . "/.cache/nvim"
+let g:tex_flavor = "latex"
+let g:tex_conceal = ""
+
 augroup all
   autocmd!
   autocmd BufWritePre * call s:StripTrailingWhiteSpace()
   autocmd BufLeave * call s:AutoSaveWinView()
   autocmd BufEnter * call s:AutoRestoreWinView()
-  autocmd ColorScheme * highlight Normal guibg=NONE
-  autocmd ColorScheme * highlight Comment gui=italic
   autocmd BufRead *.cls setlocal filetype=tex
-augroup END
-
-augroup tex
-  autocmd!
-  autocmd BufRead *.tex call tex#PdfOpen()
-  autocmd BufUnload *.tex call tex#PdfClose(expand("<afile>:p:r") . ".pdf",
-                                            \ expand("<afile>:t:r") . ".pdf")
-  autocmd ColorScheme * highlight texComment gui=italic
 augroup END
 
 function! s:StripTrailingWhiteSpace()
