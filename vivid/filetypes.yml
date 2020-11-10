@@ -61,6 +61,7 @@ archives:
   other: [.gz, .pkg, .tar, .zip]
 
 unimportant:
+  editor: [.lvimrc]
   build_artifacts:
     latex: [.aux, .bbl, .bcf, .blg, .loe, .log, .out, .run.xml,
            .synctex(busy), .synctex.gz, .toc]

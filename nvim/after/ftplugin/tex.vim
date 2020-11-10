@@ -23,6 +23,5 @@ endif
 
 augroup tex
   autocmd!
-  autocmd BufRead *.tex VimtexView
   autocmd BufUnload *.tex call tex#PdfClose(expand("<afile>:p:r") . ".pdf")
 augroup END

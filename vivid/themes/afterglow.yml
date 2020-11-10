@@ -1,16 +1,14 @@
 colors:
-  background_color: "fafafa"
-  black: "000"
-  apricot: "ed9366"
-  green: "318866"
-  sienna: "ed666a"
+  black: "1a1a1a"
+  gray: "797979"
+  red: "ac4142"
+  orange: "e87d3e"
+  yellow: "e5b567"
+  green: "b4c973"
   blue: "6c99bb"
-  pink: "f07171"
-  lime: "86b300"
-  light_green: "9ae845"
-  gray: "666666"
-  lightgray: "aaa"
-  darkgray: "797979"
+  wine: "b05279"
+  purple: "9e86c8"
+  selection: "5a647e"
 
 core:
   regular_file: {}
@@ -18,79 +16,76 @@ core:
     foreground: blue
     font-style: bold
   executable_file:
-    foreground: sienna
-    font-style: bold
+    foreground: green
   symlink:
-    foreground: pink
+    foreground: wine
   broken_symlink:
     foreground: black
-    background: sienna
+    background: red
   missing_symlink_target:
     foreground: black
-    background: sienna
+    background: red
   fifo:
     foreground: black
     background: blue
   socket:
     foreground: black
-    background: pink
+    background: selection
   character_device:
     foreground: black
-    background: lime
+    background: wine
   block_device:
     foreground: black
-    background: sienna
+    background: red
   normal_text: {}
   sticky: {}
   sticky_other_writable: {}
   other_writable: {}
 
-text:
-  readme:
-    font-style: bold
-  todo:
-    font-style: bold
-  licenses:
-    foreground: gray
-  configuration:
-    foreground: apricot
-  other:
-    foreground: apricot
-  bibtex:
-    foreground: gray
-
 markup:
-  foreground: apricot
+  foreground: yellow
+
+text:
+  foreground: yellow
+  readme:
+    foreground: yellow
+    font-style: underline
 
 programming:
   source:
-    foreground: green
+    foreground: purple
     latex:
-      foreground: green
+      foreground: purple
       special:
-        foreground: apricot
+        font-style: underline
+        foreground: wine
   tooling:
-    foreground: light_green
+    foreground: gray
     continuous-integration:
-      foreground: green
+      foreground: gray
 
 media:
-  foreground: pink
+  image:
+    foreground: orange
+  audio:
+    foreground: orange
+  video:
+    foreground: wine
+
 
 office:
-  foreground: sienna
+  foreground: wine
 
 archives:
-  foreground: lime
-  font-style: underline
+  foreground: red
 
 executable:
-  foreground: sienna
+  foreground: red
   font-style: bold
 
 unimportant:
-  foreground: lightgray
+  foreground: gray
 
 fzf-grayed-out-dir:
-  foreground: darkgray
+  foreground: gray
   font-style: bold
