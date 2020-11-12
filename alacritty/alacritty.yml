@@ -6,7 +6,7 @@ shell:
 font:
   normal:
     family: SFMono Nerd Font
-  size: 16
+  size: 19
   offset:
     y: 1
 
@@ -37,7 +37,7 @@ window:
   decorations: buttonless
   padding:
     x: 6
-    y: 2
+    y: 1
 
 key_bindings:
   - { key: Q, mods: Super, action: Quit }

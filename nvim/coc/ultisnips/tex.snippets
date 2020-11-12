@@ -136,7 +136,7 @@ snippet lrc "left right curly" ieA
 endsnippet
 
 context "math()"
-snippet "([^\\])fr" "frac" ireA
+snippet "([^\\a-zA-Z])fr" "frac" ireA
 `!p snip.rv=match.group(1)`\\frac{$1}{$2}
 endsnippet
 

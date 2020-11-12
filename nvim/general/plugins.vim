@@ -13,7 +13,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'lervag/vimtex'
 
   " Completion & linting
-  Plug 'dense-analysis/ale'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
   " Text objects

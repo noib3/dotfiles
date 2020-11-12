@@ -11,3 +11,5 @@ let g:vimtex_toc_config = {
 \   "split_width" : 40,
 \   "tocdepth": 6,
 \ }
+
+let g:vimtex_format_enabled = 1

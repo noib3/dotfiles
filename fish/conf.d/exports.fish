@@ -13,6 +13,7 @@ set PATH $PATH /usr/bin
 set PATH $PATH /bin
 set PATH $PATH /usr/sbin
 set PATH $PATH /sbin
+set PATH $PATH $SCRIPTSDIR
 set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv
 set PATH $PATH /Applications/Firefox.app/Contents/MacOS
