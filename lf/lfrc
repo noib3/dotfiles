@@ -6,17 +6,22 @@ set info "size"
 set period 1
 set previewer "~/.config/lf/previewer"
 set promptfmt "\033[32m%u\033[0m@%h \033[01;34m%w\033[0m%f"
+set shell "bash"
 set timefmt "| 2006-Jan-02 @ 15:04:05"
 
 cmd open ${{
+  text_files=()
+  image_files=()
   for f in $fx; do
     case $(file -b --mime-type $f) in
-      text/*) $EDITOR "$f";;
-      inode/x-empty) $EDITOR "$f";;
+      text/*|inode/x-empty) text_files+=("$f");;
+      image/*) image_files+=("$f");;
       video/*) open -n "$f";;
       *) open "$f" &>/dev/null;;
     esac
   done
+  (( ${#image_files[@]} )) && open "${image_files[@]}"
+  (( ${#text_files[@]} )) && $EDITOR "${text_files[@]}"
 }}
 
 cmd newfile %{{
