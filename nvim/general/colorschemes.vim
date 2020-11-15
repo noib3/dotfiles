@@ -4,6 +4,7 @@ augroup colorschemes
   autocmd ColorScheme * highlight Comment gui=italic
   autocmd ColorScheme * highlight texComment gui=italic
   autocmd ColorScheme afterglow call s:patch_afterglow_colors()
+  autocmd ColorScheme gruvbox call s:patch_gruvbox_colors()
 augroup END
 
 function! s:patch_afterglow_colors()
@@ -31,4 +32,29 @@ function! s:patch_afterglow_colors()
   highlight FzfBorder guifg=#797979
 endfunction
 
-colorscheme afterglow
+function! s:patch_gruvbox_colors()
+  let g:terminal_color_0 = "#282828"
+  let g:terminal_color_1 = "#cc241d"
+  let g:terminal_color_2 = "#98971a"
+  let g:terminal_color_3 = "#d79921"
+  let g:terminal_color_4 = "#458588"
+  let g:terminal_color_5 = "#b16286"
+  let g:terminal_color_6 = "#689d6a"
+  let g:terminal_color_7 = "#ebdbb2"
+  highlight Visual guifg=#ebdbb2 guibg=#83a598
+  highlight VertSplit guifg=NONE guibg=#83a598
+  highlight SpellBad guifg=#cc241d gui=underline
+  highlight SpellCap guifg=#fe8019 gui=NONE
+  highlight htmlItalic guifg=#b16286 gui=italic
+  highlight htmlBold guifg=#fe8019 gui=bold
+  highlight VemTabLineNormal guifg=#ebdbb2 guibg=#504945
+  highlight VemTabLineLocation guifg=#ebdbb2 guibg=#504945
+  highlight VemTabLineNumber guifg=#ebdbb2 guibg=#504945
+  highlight VemTabLineSelected guifg=#ebdbb2 guibg=#a89984 gui=NONE
+  highlight VemTabLineLocationSelected guifg=#ebdbb2 guibg=#a89984 gui=NONE
+  highlight VemTabLineNumberSelected guifg=#ebdbb2 guibg=#a89984 gui=NONE
+  highlight FloatermBorder guifg=#a89984
+  highlight FzfBorder guifg=#a89984
+endfunction
+
+colorscheme gruvbox

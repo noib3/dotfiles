@@ -14,24 +14,23 @@ nmap <Space> za
 
 cmap <C-a> <C-b>
 
-nnoremap <Leader>w <C-w>k
-nnoremap <Leader>a <C-w>h
-nnoremap <Leader>s <C-w>j
-nnoremap <Leader>d <C-w>l
+" nnoremap <S-Left> <C-w>h
+" nnoremap <S-Down> <C-w>j
+" nnoremap <S-Up> <C-w>k
+" nnoremap <S-Right> <C-w>l
 
-" coc-snippets
-if &runtimepath =~# 'coc.nvim'
-  inoremap <expr> <silent> <Tab>
-    \ coc#expandableOrJumpable() ?
-    \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-    \ <SID>check_back_space() ? "\<Tab>" : coc#refresh()
-endif
-
-function! s:check_back_space() abort
-  let col = col(".") - 1
-  return !col || getline(".")[col - 1] =~# '\s'
-endfunction
-
+nnoremap <expr> <silent> <S-Left> winnr() == winnr('h') ?
+                                  \ ":silent !yabai -m window --focus west<CR>" :
+                                  \ "<C-w>h"
+nnoremap <expr> <silent> <S-Down> winnr() == winnr('j') ?
+                                  \ ":silent !yabai -m window --focus south<CR>" :
+                                  \ "<C-w>j"
+nnoremap <expr> <silent> <S-Up> winnr() == winnr('k') ?
+                                  \ ":silent !yabai -m window --focus north<CR>" :
+                                  \ "<C-w>k"
+nnoremap <expr> <silent> <S-Right> winnr() == winnr('l') ?
+                                  \ ":silent !yabai -m window --focus east<CR>" :
+                                  \ "<C-w>l"
 " floaterm
 if &runtimepath =~# 'vim-floaterm'
   nmap <silent> ll :FloatermNew lf<CR>

@@ -15,6 +15,9 @@ call plug#begin('~/.config/nvim/plugged')
   " Completion & linting
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+  " Snippets
+  Plug 'SirVer/ultisnips'
+
   " Text objects
   Plug 'kana/vim-textobj-user'
   Plug 'somini/vim-textobj-fold'
@@ -33,6 +36,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'dag/vim-fish'
 
   " Colorschemes
-  Plug 'joshdick/onedark.vim'
+  Plug 'morhetz/gruvbox'
   Plug 'danilo-augusto/vim-afterglow'
 call plug#end()

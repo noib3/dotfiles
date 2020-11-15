@@ -1,4 +1,4 @@
-set -x THEME afterglow
+set -x THEME gruvbox
 set -x SCRIPTSDIR $HOME/Dropbox/scripts
 set -x SSHOTDIR $HOME/Dropbox/screenshots
 set -x CLOUDDIR $HOME/Dropbox/share
@@ -7,6 +7,8 @@ set PATH ""
 set PATH $PATH /usr/local/opt/coreutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/findutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/gnu-sed/libexec/gnubin
+set PATH $PATH /Applications/Firefox.app/Contents/MacOS
+set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
 set PATH $PATH /Library/TeX/texbin
 set PATH $PATH /usr/local/bin
 set PATH $PATH /usr/bin
@@ -16,7 +18,6 @@ set PATH $PATH /sbin
 set PATH $PATH $SCRIPTSDIR
 set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv
-set PATH $PATH /Applications/Firefox.app/Contents/MacOS
 set -x PATH $PATH
 
 set -x IPYTHONDIR $HOME/.local/share/ipython

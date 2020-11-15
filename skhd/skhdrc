@@ -34,10 +34,50 @@ alt - f : skhd --key "ctrl + cmd - f"
 alt + shift - f : yabai -m window --toggle float
 
 # Focus windows
-alt - up : yabai -m window --focus north
-alt - down : yabai -m window --focus south
-alt - left : yabai -m window --focus west
-alt - right : yabai -m window --focus east
+# alt - up : yabai -m window --focus north
+# alt - down : yabai -m window --focus south
+# alt - left : yabai -m window --focus west
+# alt - right : yabai -m window --focus east
+
+alt - left [
+  * : yabai -m window --focus west
+  "Alacritty" : if test (yabai -m query --windows --window | \
+                         jq -r .title) = "neovim" ; \
+                  skhd --key "shift - left"; \
+                else; \
+                  yabai -m window --focus west; \
+                end
+]
+
+alt - down [
+  * : yabai -m window --focus south
+  "Alacritty" : if test (yabai -m query --windows --window | \
+                         jq -r .title) = "neovim" ; \
+                  skhd --key "shift - down"; \
+                else; \
+                  yabai -m window --focus south; \
+                end
+]
+
+alt - up [
+  * : yabai -m window --focus north
+  "Alacritty" : if test (yabai -m query --windows --window | \
+                         jq -r .title) = "neovim" ; \
+                  skhd --key "shift - up"; \
+                else; \
+                  yabai -m window --focus north; \
+                end
+]
+
+alt - right [
+  * : yabai -m window --focus east
+  "Alacritty" : if test (yabai -m query --windows --window | \
+                         jq -r .title) = "neovim" ; \
+                  skhd --key "shift - right"; \
+                else; \
+                  yabai -m window --focus east; \
+                end
+]
 
 # Swap windows
 ctrl - up : yabai -m window --swap north

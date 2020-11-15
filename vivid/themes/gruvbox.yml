@@ -1,13 +1,14 @@
 colors:
-  black: "1a1a1a"
-  red: "ac4142"
-  green: "b4c973"
-  yellow: "e5b567"
-  blue: "6c99bb"
-  magenta: "9e86c8"
-  cyan: "b05279"
-  orange: "e87d3e"
-  gray: "797979"
+  black: "282828"
+  red: "cc241d"
+  green: "98971a"
+  yellow: "d79921"
+  blue: "458588"
+  magenta: "b16286"
+  cyan: "689d6a"
+  orange: "fe8019"
+  gray: "928374"
+  # this is a comment
 
 core:
   regular_file: {}
