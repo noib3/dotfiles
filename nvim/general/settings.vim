@@ -23,8 +23,6 @@ set scrolloff=1
 set spellfile=$CLOUDDIR/nvim/spell/en.utf-8.add
 set termguicolors
 set undofile
-set title
-set titlestring=neovim
 
 let &showbreak="\u21aa "
 let &fillchars="fold: ,vert: "
