@@ -1,6 +1,6 @@
 set gray 928374
 set cyan 689d6a
-set selection_background 83a598
+set selection_background 665c54
 
 set fish_color_user green
 set fish_color_host white

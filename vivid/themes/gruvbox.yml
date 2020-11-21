@@ -8,7 +8,6 @@ colors:
   cyan: "689d6a"
   orange: "fe8019"
   gray: "928374"
-  # this is a comment
 
 core:
   regular_file: {}

@@ -34,14 +34,17 @@ endif
 
 " vem-tabline
 if &runtimepath =~# 'vem-tabline'
-  nmap <expr> <silent> <C-w> len(getbufinfo({"buflisted":1})) == 1 ?
-                             \ ":q<CR>" :
-                             \ "<Plug>vem_delete_buffer-"
-  imap <expr> <silent> <C-w> len(getbufinfo({"buflisted":1})) == 1 ?
-                             \ "<C-o>:q<CR>" :
-                             \ "<C-o><Plug>vem_delete_buffer-"
-
+  nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
+  imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
   for i in range(1, 9)
     execute "nmap <silent> <F" . i . "> :silent! VemTablineGo " . i . "<CR>"
   endfor
 endif
+
+function! s:close_window_or_delete_buffer()
+  if len(getbufinfo({"buflisted":1})) == 1 || winnr("$") != 1
+    return ":q\<CR>"
+  else
+    return "\<Plug>vem_delete_buffer-"
+  endif
+endfunction

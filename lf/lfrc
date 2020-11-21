@@ -60,9 +60,10 @@ cmd set_wallpaper ${{
 }}
 
 cmd eject_disk ${{
+  clear
   space_left=$(diskutil info "$f" 2>/dev/null |
                sed -n "s/.*Volume Free Space:\s*//p" |
-               awk "{print $1, $2}")
+               awk '{print $1, $2}')
   diskutil eject "$f" &>/dev/null \
   && lf -remote "send $id echo \"\033[32m$(basename $f) \
                                  has been properly ejected\033[0m\"" \
@@ -105,3 +106,4 @@ map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 
 map gvl cd "/Volumes"
+map ` $less /tmp/lf.${USER}.${id}.log

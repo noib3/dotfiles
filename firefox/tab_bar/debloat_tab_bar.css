@@ -17,7 +17,7 @@
 #new-tab-button { display: none; }
 
 /* List all tabs button when the tabs overflow the tab bar */
-#alltabs-button { display: none; }
+#alltabs-button { display: none !important; }
 
 /* Private window icon at the end of the tab bar */
 .private-browsing-indicator { display: none; }

@@ -1,13 +1,13 @@
 :root {
-  --color-unfocused-tabs-fg: #ebdbb2;
-  --color-unfocused-tabs-bg: #504945;
-  --color-focused-tabs-fg: #ebdbb2;
+  --color-unfocused-tabs-fg: #a89984;
+  --color-unfocused-tabs-bg: #3c3836;
+  --color-focused-tabs-fg: #282828;
   --color-focused-tabs-bg: #a89984;
   --color-urlbar-separator: #a89984;
   --color-urlbar-fg: #ebdbb2;
-  --color-urlbar-bg: #504945;
+  --color-urlbar-bg: #3c3836;
   --color-urlbar-popup-url: #83a598;
-  --color-urlbar-selected-fg: #504945;
+  --color-urlbar-selected-fg: #3c3836;
   --color-urlbar-selected-bg: #83a598;
   --color-urlbar-selected-popup-url: #ebdbb2;
   --color-sidebar-fg: #ebdbb2;

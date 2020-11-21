@@ -10,7 +10,7 @@ setlocal shell=bash
 
 let g:LaTeXFolds_use_vimtex_section_numbers = 1
 
-let b:AutoPairs = {"(": ")", "[": "]", "{": "}", "`": "\"", "$": "$"}
+let b:AutoPairs = {"(": ")", "[": "]", "{": "}", "`": "'", "$": "$"}
 
 let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"

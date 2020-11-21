@@ -19,3 +19,11 @@ yabai -m config active_window_border_color 0xff${active_window_border_color//#}
 
 yabai -m rule --add app="Digital Colour Meter" manage=off
 yabai -m rule --add title="dont-manage" manage=off
+
+# https://github.com/koekeishiya/yabai/issues/719#issuecomment-728140216
+
+# focus window after active space changes
+yabai -m signal --add event=space_changed action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
+
+# focus window after active display changes
+yabai -m signal --add event=display_changed action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
