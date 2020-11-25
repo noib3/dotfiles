@@ -19,7 +19,7 @@ function! s:patch_afterglow_colors()
   let g:terminal_color_6 = "#9e86c8"
   let g:terminal_color_7 = "#d6d6d6"
   highlight Visual guifg=#d6d6d6 guibg=#5a647e
-  highlight VertSplit guifg=NONE guibg=#5a647e
+  highlight VertSplit guifg=NONE guibg=#393939
   highlight SpellBad guifg=#ac4142 gui=underline
   highlight SpellCap guifg=#e87d3e gui=NONE
   highlight htmlItalic guifg=#9e86c8 gui=italic
@@ -37,13 +37,15 @@ function! s:patch_gruvbox_colors()
   let g:terminal_color_5 = "#b16286"
   let g:terminal_color_6 = "#689d6a"
   let g:terminal_color_7 = "#ebdbb2"
-  highlight VertSplit guifg=NONE guibg=#83a598
+  highlight StatusLine guifg=NONE guibg=#83a598
+  highlight VertSplit guifg=NONE guibg=#3c3836
   highlight SpellBad guifg=#cc241d gui=underline
   highlight SpellCap guifg=#fe8019 gui=NONE
   highlight htmlItalic guifg=#b16286 gui=italic
   highlight htmlBold guifg=#fe8019 gui=bold
   highlight FloatermBorder guifg=#a89984
   highlight FzfBorder guifg=#a89984
+  highlight texComment guifg=#928374
 endfunction
 
 if g:colorscheme ==# "gruvbox"

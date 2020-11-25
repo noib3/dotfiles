@@ -9,7 +9,9 @@ function! tex#Compile() " {{{1
     \ "!" . b:LaTeX_compile_command . " 2>&1 | tee " . l:errorfile . ";" .
     \ "exit ${PIPESTATUS[0]}"
 
-  if v:shell_error | execute "silent cfile " . l:errorfile | endif
+  if v:shell_error
+    execute "silent cfile " . l:errorfile
+  endif
   execute "silent !sudo rm " . l:errorfile
 endfunction " }}}1
 

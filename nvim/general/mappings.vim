@@ -3,12 +3,11 @@ let maplocalleader = ","
 
 map <C-a> ^
 map <C-e> $
-map <silent> <C-s> :w<CR>
 
 imap <C-a> <C-o>I
 imap <C-e> <C-o>A
-imap <silent> <C-s> <C-o>:w<CR>
 
+nmap <silent> <C-s> :w<CR>
 nmap ss :%s//g<Left><Left>
 nmap <Space> za
 
@@ -22,9 +21,8 @@ nnoremap <S-Right> <C-w>l
 " fzf
 if &runtimepath =~# 'fzf'
   map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-  map <silent> <C-i> :Rg<CR>
   imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
-  imap <silent> <C-i> <C-o>:Rg<CR>
+  imap <expr> <C-s> fzf#vim#complete#path($FZF_DEFAULT_COMMAND)
 endif
 
 " lightline-bufferline
@@ -47,8 +45,13 @@ endfunction
 
 " vim-floaterm
 if &runtimepath =~# 'vim-floaterm'
-  " nmap <silent> ll :FloatermNew lf <bar> !lf -remote "send $id select %"<CR>
-  nmap <silent> ll :FloatermNew lf <bar> !touch ~/test<CR>
+  nmap <expr> <silent> ll ":FloatermNew lf\<CR>:select " . expand("%") . "\<CR>"
+  " nmap <expr> <silent> ll <SID>open_lf_select_current_file()
   nmap <silent> <Leader>i :FloatermNew ipython<CR>
   nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 endif
+
+function! s:open_lf_select_current_file()
+  execute "FloatermNew lf"
+  execute "silent !lf -remote \"send select " . expand("%") . "\""
+endfunction

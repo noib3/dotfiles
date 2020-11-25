@@ -1,6 +1,6 @@
 call plug#begin('~/.config/nvim/plugged')
   " Miscellaneous
-  Plug 'jiangmiao/auto-pairs'
+  Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
