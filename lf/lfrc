@@ -12,16 +12,16 @@ set timefmt "| 2006-Jan-02 @ 15:04:05"
 cmd open ${{
   text_files=()
   image_files=()
-  for f in $fx; do
-    case $(file -b --mime-type $f) in
-      text/*|inode/x-empty) text_files+=("$f");;
-      image/*) image_files+=("$f");;
-      video/*) open -n "$f";;
-      *) open "$f" &>/dev/null;;
+  while IFS=": " read -r f mime; do
+    case "$mime" in
+        text/*|inode/x-empty) text_files+=("$f");;
+        image/*) image_files+=("$f");;
+        video/*) open -n "$f";;
+        *) open "$f" &>/dev/null;;
     esac
-  done
-  (( ${#image_files[@]} )) && open "${image_files[@]}"
-  (( ${#text_files[@]} )) && $EDITOR "${text_files[@]}"
+  done < <(printf "%s\n" $fx | xargs -r -d '\n' file --mime-type)
+  [ ${#image_files[@]} -eq 0 ] || open "${image_files[@]}"
+  [ ${#text_files[@]} -eq 0 ] || $EDITOR "${text_files[@]}"
 }}
 
 cmd newfile %{{

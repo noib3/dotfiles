@@ -33,9 +33,9 @@ if !exists("g:LaTeXFolds_use_vimtex_section_numbers")
 endif
 
 let s:sections_regex =
-  \ '^\s*' .
-  \ '\\\(' . join(g:LaTeXFolds_sections, '\|') . '\)' .
-  \ '\s*\(\*\)\?\s*{\(.*\)}\s*$'
+  \ '^\s*'
+  \  . '\\\(' . join(g:LaTeXFolds_sections, '\|') . '\)'
+  \  . '\s*\(\*\)\?\s*{\(.*\)}\s*$'
 
 function! s:find_sections() " {{{1
   " This function finds which sections in g:LaTeXFolds_sections are

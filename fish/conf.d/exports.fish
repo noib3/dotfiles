@@ -1,4 +1,4 @@
-set -x THEME gruvbox
+set -x COLORSCHEME gruvbox
 set -x SCRIPTSDIR $HOME/Dropbox/scripts
 set -x SSHOTDIR $HOME/Dropbox/screenshots
 set -x CLOUDDIR $HOME/Dropbox/share
@@ -42,7 +42,7 @@ set -x FZF_DEFAULT_OPTS \
 set -x FZF_ONLYDIR_COMMAND \
 (echo $FZF_DEFAULT_COMMAND | sed "s/--type f/--type d/")
 
-set -x LS_COLORS (vivid generate $THEME)
+set -x LS_COLORS (vivid generate ~/.config/vivid/colorschemes/$COLORSCHEME)
 
 set dircolor (echo $LS_COLORS | sed "s/.*:di=\([^:]*\):.*/\1/")
 set fgodcolor (echo $LS_COLORS | sed "s/.*:\*\.fgod=\([^:]*\):.*/\1/")

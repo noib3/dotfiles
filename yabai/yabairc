@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source $(dirname $0)/themes/gruvbox
+source $(dirname $0)/colorschemes/gruvbox
 
 yabai -m config window_placement second_child
 yabai -m config window_topmost on

@@ -1,3 +1,5 @@
+let g:colorscheme = "gruvbox"
+
 augroup colorschemes
   autocmd!
   autocmd ColorScheme * highlight Normal guibg=NONE
@@ -22,12 +24,6 @@ function! s:patch_afterglow_colors()
   highlight SpellCap guifg=#e87d3e gui=NONE
   highlight htmlItalic guifg=#9e86c8 gui=italic
   highlight htmlBold guifg=#e87d3e gui=bold
-  highlight VemTabLineNormal guifg=#a1a1a1 guibg=#393939
-  highlight VemTabLineLocation guifg=#a1a1a1 guibg=#393939
-  highlight VemTabLineNumber guifg=#a1a1a1 guibg=#393939
-  highlight VemTabLineSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  highlight VemTabLineLocationSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
-  highlight VemTabLineNumberSelected guifg=#d6d6d6 guibg=#797979 gui=NONE
   highlight FloatermBorder guifg=#797979
   highlight FzfBorder guifg=#797979
 endfunction
@@ -46,15 +42,12 @@ function! s:patch_gruvbox_colors()
   highlight SpellCap guifg=#fe8019 gui=NONE
   highlight htmlItalic guifg=#b16286 gui=italic
   highlight htmlBold guifg=#fe8019 gui=bold
-  highlight VemTabLineNormal guifg=#a89984 guibg=#3c3836
-  highlight VemTabLineLocation guifg=#a89984 guibg=#3c3836
-  highlight VemTabLineNumber guifg=#a89984 guibg=#3c3836
-  highlight VemTabLineSelected guifg=#282828 guibg=#a89984 gui=NONE
-  highlight VemTabLineLocationSelected guifg=#282828 guibg=#a89984 gui=NONE
-  highlight VemTabLineNumberSelected guifg=#282828 guibg=#a89984 gui=NONE
   highlight FloatermBorder guifg=#a89984
   highlight FzfBorder guifg=#a89984
 endfunction
 
-let g:gruvbox_invert_selection=0
-colorscheme gruvbox
+if g:colorscheme ==# "gruvbox"
+  let g:gruvbox_invert_selection=0
+endif
+
+execute "colorscheme " . g:colorscheme

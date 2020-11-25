@@ -19,32 +19,36 @@ nnoremap <S-Down> <C-w>j
 nnoremap <S-Up> <C-w>k
 nnoremap <S-Right> <C-w>l
 
-" floaterm
-if &runtimepath =~# 'vim-floaterm'
-  nmap <silent> ll :FloatermNew lf<CR>
-  nmap <silent> <Leader>i :FloatermNew ipython<CR>
-  nmap <silent> <Leader>g :FloatermNew lazygit<CR>
-endif
-
 " fzf
 if &runtimepath =~# 'fzf'
   map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
+  map <silent> <C-i> :Rg<CR>
   imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
+  imap <silent> <C-i> <C-o>:Rg<CR>
 endif
 
-" vem-tabline
-if &runtimepath =~# 'vem-tabline'
+" lightline-bufferline
+if &runtimepath =~# 'lightline-bufferline'
+  for i in range(1, 9)
+    execute "nmap <silent> <F" . i . "> "
+            \ . ":call lightline#bufferline#go(" . i . ")<CR>"
+  endfor
   nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
   imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
-  for i in range(1, 9)
-    execute "nmap <silent> <F" . i . "> :silent! VemTablineGo " . i . "<CR>"
-  endfor
 endif
 
 function! s:close_window_or_delete_buffer()
   if len(getbufinfo({"buflisted":1})) == 1 || winnr("$") != 1
     return ":q\<CR>"
   else
-    return "\<Plug>vem_delete_buffer-"
+    return ":bdelete\<CR>"
   endif
 endfunction
+
+" vim-floaterm
+if &runtimepath =~# 'vim-floaterm'
+  " nmap <silent> ll :FloatermNew lf <bar> !lf -remote "send $id select %"<CR>
+  nmap <silent> ll :FloatermNew lf <bar> !touch ~/test<CR>
+  nmap <silent> <Leader>i :FloatermNew ipython<CR>
+  nmap <silent> <Leader>g :FloatermNew lazygit<CR>
+endif

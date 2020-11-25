@@ -1,7 +1,7 @@
 @import "/Users/noibe/.config/firefox/fonts/JetBrainsMono.css";
 
 @import "/Users/noibe/.config/firefox/colors/colors.css";
-@import "/Users/noibe/.config/firefox/colors/themes/gruvbox.css";
+@import "/Users/noibe/.config/firefox/colors/colorschemes/gruvbox.css";
 
 @import "/Users/noibe/.config/firefox/tab_bar/debloat_tab_bar.css";
 @import "/Users/noibe/.config/firefox/tab_bar/tabs_layout.css";
@@ -20,20 +20,3 @@
 
 @import "/Users/noibe/.config/firefox/sidebar/debloat_sidebar.css";
 @import "/Users/noibe/.config/firefox/sidebar/sidebar_layout.css";
-
-
-/* /1* Close, minizime and maximize window buttons *1/ */
-/* .titlebar-buttonbox-container { display: none; } */
-
-/* /1* Empty space before and after the tab bar *1/ */
-/* .titlebar-spacer { display: none; } */
-
-/* #tabs-newtab-button { display: none; } */
-
-/* :root { --tab-min-height: 1.3em !important; } */
-
-/* .tab-label-container { height: var(--tab-min-height); } */
-
-/* .tab-label { line-height: var(--tab-min-height) !important; } */
-
-/* .tabbrowser-tab[fadein]{ max-width: 100vw !important } */

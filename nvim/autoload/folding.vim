@@ -14,8 +14,8 @@ function! folding#FoldsTextFormat(fold_title) " {{{1
 
   " Calculate how many filler characters should be displayed
   let l:fill_num =
-    \ l:last_foldtext_column - strchars("+" . l:dashes . " " . l:fold_title .
-                                        \ "  " . l:fold_size . " lines")
+    \ l:last_foldtext_column - strchars("+" . l:dashes . " " . l:fold_title
+                                        \ . "  " . l:fold_size . " lines")
 
   " If the fold title isn't too long append a space. If it is, cut the fold
   " title short and add three dots at the end of it.
@@ -30,8 +30,8 @@ function! folding#FoldsTextFormat(fold_title) " {{{1
   endif
 
   return
-    \ "+" . l:dashes . " " . l:fold_title .
-    \ repeat("·", l:fill_num) . " " . l:fold_size . " lines"
+    \ "+" . l:dashes . " " . l:fold_title
+    \ . repeat("·", l:fill_num) . " " . l:fold_size . " lines"
 endfunction " }}}1
 
 " vim:fdm=marker

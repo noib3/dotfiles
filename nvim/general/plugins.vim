@@ -2,9 +2,9 @@ call plug#begin('~/.config/nvim/plugged')
   " Miscellaneous
   Plug 'jiangmiao/auto-pairs'
   Plug 'junegunn/fzf'
+  Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
-  Plug 'pacha/vem-tabline'
   Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
@@ -28,6 +28,10 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-surround'
+
+  " Statusline & bufferline
+  Plug 'itchyny/lightline.vim'
+  Plug 'mengelbrecht/lightline-bufferline'
 
   " Syntax
   Plug 'godlygeek/tabular'

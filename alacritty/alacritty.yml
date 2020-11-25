@@ -68,7 +68,6 @@ window:
     y: 1
 
 key_bindings:
-  - { key: Q, mods: Super, action: Quit }
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
   - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
   - { key: LBracket, mods: Alt, chars: "\x5B" } # [
@@ -77,13 +76,14 @@ key_bindings:
   - { key: 41, mods: Alt, chars: "\x40" } # @
   - { key: 39, mods: Alt, chars: "\x23" } # #
   - { key: 10, mods: Alt, chars: "\x60"} # `
-  - { key: S, mods: Super, chars: "\x13" } # C-s
-  - { key: W, mods: Super, chars: "\x17" } # C-w
-  - { key: T, mods: Super, chars: "\x14" } # C-t
-  - { key: E, mods: Super, chars: "\x18\x05" } # C-x C-e
   - { key: D, mods: Super, chars: "\x18\x04" } # C-x C-d
+  - { key: E, mods: Super, chars: "\x18\x05" } # C-x C-e
   - { key: H, mods: Super, chars: "\x18\x06" } # C-x C-f
   - { key: L, mods: Super, chars: "\x07" } # C-g
+  - { key: R, mods: Super, chars: "\x09" } # C-i
+  - { key: S, mods: Super, chars: "\x13" } # C-s
+  - { key: T, mods: Super, chars: "\x14" } # C-t
+  - { key: W, mods: Super, chars: "\x17" } # C-w
   - { key: Up, mods: Super, chars: "\x15" } # C-u
   - { key: Down, mods: Super, chars: "\x04" } # C-d
   - { key: Left, mods: Super, chars: "\x01" } # C-a
