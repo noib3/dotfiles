@@ -6,6 +6,7 @@ map <C-e> $
 
 imap <C-a> <C-o>I
 imap <C-e> <C-o>A
+inoremap <M-BS> <C-w>
 
 nmap <silent> <C-s> :w<CR>
 nmap ss :%s//g<Left><Left>
@@ -20,9 +21,14 @@ nnoremap <S-Right> <C-w>l
 
 " fzf
 if &runtimepath =~# 'fzf'
-  map <silent> <C-x><C-e> :FZF --prompt=>\  ~<CR>
-  imap <silent> <C-x><C-e> <C-o>:FZF --prompt=>\  ~<CR>
-  imap <expr> <C-s> fzf#vim#complete#path($FZF_DEFAULT_COMMAND)
+  map <silent> <C-x><C-e> :FZF --prompt=Edit>\  ~<CR>
+  imap <silent> <C-x><C-e> <C-o>:FZF --prompt=Edit>\  ~<CR>
+  imap <expr> <C-s>
+    \ fzf#vim#complete(fzf#wrap({
+    \   "prefix": '',
+    \   "reducer": { lines -> join(lines) },
+    \   "options": '--multi "--prompt=Paste> "',
+    \ }))
 endif
 
 " lightline-bufferline
@@ -45,13 +51,12 @@ endfunction
 
 " vim-floaterm
 if &runtimepath =~# 'vim-floaterm'
-  nmap <expr> <silent> ll ":FloatermNew lf\<CR>:select " . expand("%") . "\<CR>"
-  " nmap <expr> <silent> ll <SID>open_lf_select_current_file()
+  nmap <silent> ll :call <SID>open_lf_select_current_file()<CR>
   nmap <silent> <Leader>i :FloatermNew ipython<CR>
   nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 endif
 
 function! s:open_lf_select_current_file()
   execute "FloatermNew lf"
-  execute "silent !lf -remote \"send select " . expand("%") . "\""
+  silent execute '!lf -remote "send select ' . expand("%:p") . '"'
 endfunction

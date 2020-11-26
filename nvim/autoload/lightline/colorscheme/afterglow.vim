@@ -3,7 +3,7 @@ let s:unfocused_tabs_fg = "#a1a1a1"
 let s:focused_tabs_bg = "#797979"
 let s:focused_tabs_fg = "#d6d6d6"
 
-let s:p = {"normal": {}, "tabline": {}, "inactive": {}}
+let s:p = { "normal": {}, "tabline": {}, "inactive": {} }
 
 let s:p.normal.left = [ [ s:unfocused_tabs_bg, s:unfocused_tabs_bg, 0, 0 ] ]
 let s:p.normal.tabsel = copy(s:p.normal.left)

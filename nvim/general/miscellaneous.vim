@@ -10,9 +10,9 @@ augroup all
 augroup END
 
 function! s:StripTrailingWhiteSpace()
-  let curr_pos = getpos(".")
+  let current_pos = getpos(".")
   %s/\s\+$//e
-  call setpos (".", curr_pos)
+  call setpos (".", current_pos)
 endfunction
 
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers

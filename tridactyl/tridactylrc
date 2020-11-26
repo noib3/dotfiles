@@ -1,0 +1,9 @@
+colorscheme ciaones
+
+set modeindicator false
+
+bind / fillcmdline find
+bind n findnext 1
+bind N findnext -1
+
+source $CLOUDDIR/tridactyl/website-bindings

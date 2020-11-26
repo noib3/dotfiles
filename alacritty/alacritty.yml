@@ -26,7 +26,6 @@ key_bindings:
   - { key: E, mods: Super, chars: "\x18\x05" } # C-x C-e
   - { key: H, mods: Super, chars: "\x18\x06" } # C-x C-f
   - { key: L, mods: Super, chars: "\x07" } # C-g
-  - { key: R, mods: Super, chars: "\x09" } # C-i
   - { key: S, mods: Super, chars: "\x13" } # C-s
   - { key: T, mods: Super, chars: "\x14" } # C-t
   - { key: W, mods: Super, chars: "\x17" } # C-w

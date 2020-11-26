@@ -1,17 +1,14 @@
+setlocal errorformat=%f:%l:\ %m
 setlocal iskeyword-=:
-
+setlocal shell=bash " Use bash for its PIPESTATUS feature
 setlocal spell
 setlocal spelllang=en_us,it
 
-setlocal errorformat=%f:%l:\ %m
-
-" Use bash for its PIPESTATUS feature
-setlocal shell=bash
-
-let g:LaTeXFolds_use_vimtex_section_numbers = 1
-
+let b:delimitMate_matchpairs = "`:'"
+let b:delimitMate_quotes = "$"
 let b:surround_{char2nr("e")} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 let b:surround_{char2nr("c")} = "\\\1command: \1{\r}"
+let g:LaTeXFolds_use_vimtex_section_numbers = 1
 
 if expand("%:e") ==# "tex"
   VimtexView

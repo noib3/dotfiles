@@ -5,7 +5,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
   Plug 'norcalli/nvim-colorizer.lua'
-  Plug 'romainl/vim-cool'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
@@ -38,6 +37,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'plasticboy/vim-markdown'
   Plug 'elzr/vim-json'
   Plug 'dag/vim-fish'
+  Plug 'tridactyl/vim-tridactyl'
 
   " Colorschemes
   Plug 'morhetz/gruvbox'

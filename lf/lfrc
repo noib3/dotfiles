@@ -12,14 +12,14 @@ set timefmt "| 2006-Jan-02 @ 15:04:05"
 cmd open ${{
   text_files=()
   image_files=()
-  while IFS=": " read -r f mime; do
-    case "$mime" in
-        text/*|inode/x-empty) text_files+=("$f");;
-        image/*) image_files+=("$f");;
-        video/*) open -n "$f";;
-        *) open "$f" &>/dev/null;;
+  for f in $fx; do
+    case $(file -b --mime-type $f) in
+      text/*|inode/x-empty) text_files+=("$f");;
+      image/*) image_files+=("$f");;
+      video/*) open -n "$f";;
+      *) open "$f" &>/dev/null;;
     esac
-  done < <(printf "%s\n" $fx | xargs -r -d '\n' file --mime-type)
+  done
   [ ${#image_files[@]} -eq 0 ] || open "${image_files[@]}"
   [ ${#text_files[@]} -eq 0 ] || $EDITOR "${text_files[@]}"
 }}
@@ -53,7 +53,7 @@ cmd remove_executable %{{
 cmd set_wallpaper ${{
   [[ $(file -b --mime-type "$f") == image/* ]] \
   && osascript -e "tell application \"Finder\" to set desktop \
-                picture to POSIX file \"$f\"" &>/dev/null \
+                   picture to POSIX file \"$f\"" &>/dev/null \
   && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
   || lf -remote "send $id echoerr 'Error: could not set wallpaper'"
   osascript -e "quit app \"Finder\"" &>/dev/null
@@ -66,7 +66,7 @@ cmd eject_disk ${{
                awk '{print $1, $2}')
   diskutil eject "$f" &>/dev/null \
   && lf -remote "send $id echo \"\033[32m$(basename $f) \
-                                 has been properly ejected\033[0m\"" \
+                 has been properly ejected\033[0m\"" \
   && terminal-notifier -title "Disk ejected" \
                        -subtitle "$(basename $f) has been ejected" \
                        -message "There are $space_left left on disk" \
@@ -76,13 +76,14 @@ cmd eject_disk ${{
 
 cmd fuzzy_edit ${{
   clear
-  filename="$(fzf --height=8)" \
+  filename="$(fzf --prompt="Edit> " --multi --height=8)" \
   && $EDITOR ~/"$filename" || true
 }}
 
 cmd fuzzy_cd ${{
   clear
-  dirname="$(eval $(echo $FZF_ONLYDIR_COMMAND) | fzf --height=8)" \
+  dirname="$(eval $(echo $FZF_ONLYDIR_COMMAND) |
+             fzf --prompt="Cd> " --height=8)" \
   && dirname="$(echo $dirname | sed 's/\ /\\\ /g')" \
   && lf -remote "send $id cd ~/$dirname" || true
 }}
@@ -106,4 +107,3 @@ map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
 
 map gvl cd "/Volumes"
-map ` $less /tmp/lf.${USER}.${id}.log
