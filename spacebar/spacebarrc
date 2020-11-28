@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+source $(dirname $0)/fonts/JetBrainsMono.sh
+source $(dirname $0)/colorschemes/gruvbox.sh
+
+spacebar -m config height 21
+spacebar -m config spacing_left 25
+spacebar -m config spacing_right 35
+
+spacebar -m config text_font "$text_font"
+spacebar -m config icon_font "$icon_font"
+
+spacebar -m config background_color 0xff${background_color//#}
+spacebar -m config foreground_color 0xff${foreground_color//#}
+spacebar -m config space_icon_color 0xff${space_icon_color//#}
+
+spacebar -m config space_icon_strip 1 2 3 4 5
+spacebar -m config power_icon_strip   
+spacebar -m config clock_icon 
+spacebar -m config clock_format "%a %d %b %R"
