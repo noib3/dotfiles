@@ -1,7 +1,7 @@
 ctrl - w : open -na /Applications/Firefox.app
 
 cmd - return : alacritty
-alt - return : alacritty --title "dont-manage" --dimensions 65 15
+alt - return : alacritty --title "floating" --dimensions 65 15
 cmd - f : alacritty --command sh -c "lf ~/Downloads"
 cmd - g : alacritty --command ytop
 cmd - a : alacritty --command calcurse -C ~/.config/calcurse \

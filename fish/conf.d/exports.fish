@@ -44,8 +44,10 @@ set -x FZF_ONLYDIR_COMMAND \
 
 set -x LS_COLORS (vivid generate ~/.config/vivid/colorschemes/$COLORSCHEME)
 
-set dircolor (echo $LS_COLORS | sed "s/.*:di=\([^:]*\):.*/\1/")
-set fgodcolor (echo $LS_COLORS | sed "s/.*:\*\.fgod=\([^:]*\):.*/\1/")
+# This need to be changed. Need to match
+# .*[beginning-of-line-or-one-:]di=everything-except-:[end-of-line-or-:].*
+set dircolor (echo $LS_COLORS | sed "s/.*di=\([^:]*\):.*/\1/")
+set fgodcolor (echo $LS_COLORS | sed "s/.*\*\.fgod=\([^:]*\):.*/\1/")
 
 set -x FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND "|
 sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'"

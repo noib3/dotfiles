@@ -19,7 +19,7 @@ yabai -m config right_padding   17
 yabai -m config window_gap      19
 
 yabai -m rule --add app="Digital Colour Meter" manage=off
-yabai -m rule --add title="dont-manage" manage=off
+yabai -m rule --add title="floating" manage=off
 
 # https://github.com/koekeishiya/yabai/issues/719#issuecomment-728140216
 
