@@ -33,10 +33,11 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'mengelbrecht/lightline-bufferline'
 
   " Syntax
+  Plug 'dag/vim-fish'
+  Plug 'elzr/vim-json'
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
-  Plug 'elzr/vim-json'
-  Plug 'dag/vim-fish'
+  Plug 'LnL7/vim-nix'
   Plug 'tridactyl/vim-tridactyl'
 
   " Colorschemes

@@ -3,7 +3,7 @@
 :root {
   /* JetBrainsMono */
   --font-family: "JetBrainsMono Nerd Font";
-  --font-size-hints: 14px;
+  --font-size-hints: 12px;
   --font-size-commandline: 14px;
 }
 
@@ -28,7 +28,6 @@
   --tridactyl-hintspan-fg: var(--color-hint-fg);
   --tridactyl-hint-bg: none;
   --tridactyl-hint-outline: none;
-  --tridactyl-hint-active-fg: none;
   --tridactyl-hint-active-bg: none;
   --tridactyl-hint-active-outline: none;
 }
@@ -44,7 +43,7 @@
 
 #command-line-holder,
 #tridactyl-input {
-  font-size: var(--font-size-commandline);
+  font-size: var(--tridactyl-cmdl-font-size);
   height: 1.3em;
   margin-top: -1px;
   margin-bottom: 2px;

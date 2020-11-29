@@ -1,12 +1,9 @@
 colorscheme tridactyl
 
-set editorcmd \
-  alacritty --dimensions 85 25 --title "floating" --command bash -c \
-  'sleep .5 && nvim %f "+normal!%lGzv%c|" -c "set fo-=t | startinsert!"'
-
 set modeindicator false
 
-alias edit composite editor | jsb -p tri.native.run(`rm -f '${JS_ARG[0]}'`) | focusinput -l
+bind j scrollline 5
+bind k scrollline -5
 
 bind f hint -J
 bind F hint -Jb
@@ -14,8 +11,5 @@ bind F hint -Jb
 bind / fillcmdline find
 bind n findnext 1
 bind N findnext -1
-
-bind --mode=insert <C-i> edit
-bind --mode=input <C-i> edit
 
 source $CLOUDDIR/tridactyl/website-bindings

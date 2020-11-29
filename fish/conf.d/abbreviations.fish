@@ -8,6 +8,7 @@ abbr -a bstrt "brew services start"
 abbr -a bstp "brew services stop"
 abbr -a bsr "brew services restart"
 
+abbr -a hm "home-manager"
 abbr -a ipy "ipython"
 abbr -a lg "lazygit"
 

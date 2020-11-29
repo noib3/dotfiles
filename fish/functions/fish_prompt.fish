@@ -4,7 +4,7 @@ function fish_prompt --description "Write out the prompt"
     # Color the prompt differently when we're root
     set -l color_cwd $fish_color_cwd
     set -l prefix
-    set -l suffix ">"
+    set -l suffix "\$"
 
     # If we're running via SSH, change the host color.
     set -l color_host $fish_color_host

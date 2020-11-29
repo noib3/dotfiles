@@ -31,6 +31,8 @@ set -x MANPAGER "nvim -c 'set ft=man' -"
 
 set -x HOMEBREW_NO_AUTO_UPDATE 1
 
+set -x TCELL_TRUECOLOR on
+
 set -x FZF_DEFAULT_COMMAND \
 "fd -uu --ignore-file $CLOUDDIR/fd/ignore \
     --base-directory ~ --type f --color always"
