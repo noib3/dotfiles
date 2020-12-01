@@ -40,7 +40,7 @@ set -x FZF_DEFAULT_COMMAND \
 set -x FZF_DEFAULT_OPTS \
 "--reverse --no-bold --info=inline --hscroll-off=50 --ansi \
  --color='hl:-1:underline,fg+:-1:regular:italic' \
- --color='hl+:-1:underline,prompt:4:regular,pointer:1'"
+ --color='hl+:-1:underline:italic,prompt:4:regular,pointer:1'"
 
 set -x FZF_ONLYDIR_COMMAND \
 (echo $FZF_DEFAULT_COMMAND | sed 's/--type f/--type d/')
