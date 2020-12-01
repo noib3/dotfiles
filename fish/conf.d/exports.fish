@@ -43,17 +43,12 @@ set -x FZF_DEFAULT_OPTS \
  --color='hl+:-1:underline,prompt:4:regular,pointer:1'"
 
 set -x FZF_ONLYDIR_COMMAND \
-(echo $FZF_DEFAULT_COMMAND | sed "s/--type f/--type d/")
+(echo $FZF_DEFAULT_COMMAND | sed 's/--type f/--type d/')
 
 set -x LS_COLORS (vivid generate ~/.config/vivid/colorschemes/$COLORSCHEME)
 
-# This need to be changed. Need to match
-# .*[beginning-of-line-or-one-:]di=everything-except-:[end-of-line-or-:].*
-# echo "di=a;b:*.di=c;d:ddi=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
-# echo "ddi=a;b:di=c;d:*.di=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
-# echo "*.di=a;b:ddi=c;d:di=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
-set dircolor (echo $LS_COLORS | sed "s/.*di=\([^:]*\):.*/\1/")
-set fgodcolor (echo $LS_COLORS | sed "s/.*\*\.fgod=\([^:]*\):.*/\1/")
+set dircolor (echo $LS_COLORS | sed 's/\(^\|.*:\)di=\([^:]*\).*/\2/')
+set fgodcolor (echo $LS_COLORS | sed 's/\(^\|.*:\)\*\.fgod=\([^:]*\).*/\2/')
 
 set -x FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND "|
 sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'"

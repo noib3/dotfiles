@@ -10,7 +10,7 @@ font:
     style: Regular Italic
   bold_italic:
     family: SFMono Nerd Font
-    style: Heavy Italic
+    style: Heavy
   size: 19
   offset:
     y: 1

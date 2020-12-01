@@ -10,7 +10,7 @@ font:
     style: Italic
   bold_italic:
     family: JetBrainsMono Nerd Font
-    style: Extra Bold Italic
+    style: Extra Bold
   size: 19
   offset:
     y: 1
