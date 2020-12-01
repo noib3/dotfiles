@@ -19,27 +19,24 @@ nnoremap <S-Down> <C-w>j
 nnoremap <S-Up> <C-w>k
 nnoremap <S-Right> <C-w>l
 
-" fzf
-if &runtimepath =~# 'fzf'
-  map <silent> <C-x><C-e> :FZF --prompt=Edit>\  ~<CR>
-  imap <silent> <C-x><C-e> <C-o>:FZF --prompt=Edit>\  ~<CR>
-  imap <expr> <C-s>
-    \ fzf#vim#complete(fzf#wrap({
-    \   "prefix": '',
-    \   "reducer": { lines -> join(lines) },
-    \   "options": '--multi "--prompt=Paste> "',
-    \ }))
-endif
+" fzf {{{
+map <silent> <C-x><C-e> :FZF --prompt=Edit>\  ~<CR>
+imap <silent> <C-x><C-e> <C-o>:FZF --prompt=Edit>\  ~<CR>
+imap <expr> <C-s>
+      \ fzf#vim#complete(fzf#wrap({
+      \   "prefix": '',
+      \   "reducer": { lines -> join(lines) },
+      \   "options": '--multi "--prompt=Paste> "',
+      \ }))
+" }}}
 
-" lightline-bufferline
-if &runtimepath =~# 'lightline-bufferline'
-  for i in range(1, 9)
-    execute "nmap <silent> <F" . i . "> "
-            \ . ":call lightline#bufferline#go(" . i . ")<CR>"
-  endfor
-  nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
-  imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
-endif
+" lightline-bufferline {{{
+for i in range(1, 9)
+  execute "nmap <silent> <F" . i . "> "
+        \ . ":call lightline#bufferline#go(" . i . ")<CR>"
+endfor
+nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
+imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
 
 function! s:close_window_or_delete_buffer()
   if len(getbufinfo({"buflisted":1})) == 1 || winnr("$") != 1
@@ -48,13 +45,12 @@ function! s:close_window_or_delete_buffer()
     return ":bdelete\<CR>"
   endif
 endfunction
+" }}}
 
-" vim-floaterm
-if &runtimepath =~# 'vim-floaterm'
-  nmap <silent> ll :call <SID>open_lf_select_current_file()<CR>
-  nmap <silent> <Leader>i :FloatermNew ipython<CR>
-  nmap <silent> <Leader>g :FloatermNew lazygit<CR>
-endif
+" vim-floaterm {{{
+nmap <silent> ll :call <SID>open_lf_select_current_file()<CR>
+nmap <silent> <Leader>i :FloatermNew ipython<CR>
+nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 
 " https://github.com/voldikss/vim-floaterm/issues/209#issuecomment-734656183
 
@@ -67,3 +63,6 @@ function! s:open_lf_select_current_file()
   execute "FloatermNew lf"
   call timer_start(100, function('s:select', [filename]), {'repeat': 3})
 endfunction
+" }}}
+
+" vim:fdm=marker

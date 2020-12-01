@@ -3,7 +3,8 @@
 FILE="$1"
 
 text_preview() {
-  highlight -O ansi --force "$FILE"
+  bat --paging never --decorations never \
+      --color always --theme $COLORSCHEME "$FILE"
 }
 
 pdf_preview() {
@@ -23,7 +24,7 @@ audio_preview() {
 }
 
 fallback_preview() {
-  highlight -O ansi --force "$FILE"
+  text_preview
 }
 
 case "$(file -b --mime-type $FILE)" in

@@ -8,6 +8,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
   Plug 'farmergreg/vim-lastplace'
+  Plug 'shime/vim-livedown'
   Plug 'embear/vim-localvimrc'
   Plug 'lervag/vimtex'
 

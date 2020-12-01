@@ -1,7 +1,7 @@
 set -x COLORSCHEME gruvbox
 set -x SCRIPTSDIR $HOME/Dropbox/scripts
 set -x SSHOTDIR $HOME/Dropbox/screenshots
-set -x CLOUDDIR $HOME/Dropbox/share
+set -x CLOUDDIR $HOME/Dropbox/cloud
 
 set PATH ""
 set PATH $PATH /usr/local/opt/coreutils/libexec/gnubin
@@ -38,8 +38,9 @@ set -x FZF_DEFAULT_COMMAND \
     --base-directory ~ --type f --color always"
 
 set -x FZF_DEFAULT_OPTS \
-"--reverse --info=inline --hscroll-off=50 \
- --ansi --color='hl:5,fg+:-1,hl+:5,prompt:4,pointer:1'"
+"--reverse --no-bold --info=inline --hscroll-off=50 --ansi \
+ --color='hl:-1:underline,fg+:-1:regular:italic' \
+ --color='hl+:-1:underline,prompt:4:regular,pointer:1'"
 
 set -x FZF_ONLYDIR_COMMAND \
 (echo $FZF_DEFAULT_COMMAND | sed "s/--type f/--type d/")
@@ -48,6 +49,9 @@ set -x LS_COLORS (vivid generate ~/.config/vivid/colorschemes/$COLORSCHEME)
 
 # This need to be changed. Need to match
 # .*[beginning-of-line-or-one-:]di=everything-except-:[end-of-line-or-:].*
+# echo "di=a;b:*.di=c;d:ddi=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
+# echo "ddi=a;b:di=c;d:*.di=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
+# echo "*.di=a;b:ddi=c;d:di=e;f" | sed "s/.*di=\([^:]*\):.*/\1/"
 set dircolor (echo $LS_COLORS | sed "s/.*di=\([^:]*\):.*/\1/")
 set fgodcolor (echo $LS_COLORS | sed "s/.*\*\.fgod=\([^:]*\):.*/\1/")
 

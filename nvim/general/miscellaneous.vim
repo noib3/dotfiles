@@ -1,5 +1,4 @@
 let g:netrw_home = $HOME . "/.cache/nvim"
-let g:tex_flavor = "latex"
 
 augroup all
   autocmd!
@@ -15,7 +14,7 @@ function! s:StripTrailingWhiteSpace()
   call setpos (".", current_pos)
 endfunction
 
-" https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers
+" https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{
 
 " Save current view settings on a per-window, per-buffer basis.
 function! s:AutoSaveWinView()
@@ -37,3 +36,7 @@ function! s:AutoRestoreWinView()
     unlet w:SavedBufView[buf]
   endif
 endfunction
+
+" }}}
+
+" vim:fdm=marker

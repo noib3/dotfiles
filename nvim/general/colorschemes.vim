@@ -9,7 +9,7 @@ augroup colorschemes
   autocmd ColorScheme gruvbox call s:patch_gruvbox_colors()
 augroup END
 
-function! s:patch_afterglow_colors()
+function! s:patch_afterglow_colors() " {{{1
   let g:terminal_color_0 = "#1a1a1a"
   let g:terminal_color_1 = "#ac4142"
   let g:terminal_color_2 = "#b4c973"
@@ -26,9 +26,9 @@ function! s:patch_afterglow_colors()
   highlight htmlBold guifg=#e87d3e gui=bold
   highlight FloatermBorder guifg=#797979
   highlight FzfBorder guifg=#797979
-endfunction
+endfunction " }}}1
 
-function! s:patch_gruvbox_colors()
+function! s:patch_gruvbox_colors() " {{{1
   let g:terminal_color_0 = "#282828"
   let g:terminal_color_1 = "#cc241d"
   let g:terminal_color_2 = "#98971a"
@@ -46,10 +46,12 @@ function! s:patch_gruvbox_colors()
   highlight FloatermBorder guifg=#a89984
   highlight FzfBorder guifg=#a89984
   highlight texComment guifg=#928374
-endfunction
+endfunction " }}}1
 
 if g:colorscheme ==# "gruvbox"
   let g:gruvbox_invert_selection=0
 endif
 
 execute "colorscheme " . g:colorscheme
+
+" vim:fdm=marker
