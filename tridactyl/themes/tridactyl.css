@@ -5,12 +5,21 @@
   --font-family: "JetBrainsMono Nerd Font";
   --font-size-hints: 12px;
   --font-size-commandline: 14px;
+  /* SFMono */
+  /* --font-family: "SFMono Nerd Font"; */
+  /* --font-size-hints: 12px; */
+  /* --font-size-commandline: 14px; */
 }
 
 
 /* Colorschemes */
 
 :root {
+  /* Afterglow */
+  /* --color-hint-bg: #5a647e; */
+  /* --color-hint-fg: #d6d6d6; */
+  /* --color-commandline-bg: #1a1a1a; */
+  /* --color-commandline-fg: #d6d6d6; */
   /* Gruvbox */
   --color-hint-bg: #b57614;
   --color-hint-fg: #eddbb2;

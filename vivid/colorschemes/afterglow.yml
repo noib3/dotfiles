@@ -16,6 +16,7 @@ core:
     font-style: bold
   executable_file:
     foreground: green
+    font-style: bold
   symlink:
     foreground: cyan
   broken_symlink:

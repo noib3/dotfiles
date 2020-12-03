@@ -1,6 +1,6 @@
 setlocal errorformat=%f:%l:\ %m
 setlocal iskeyword-=:
-setlocal shell=bash " Use bash for its PIPESTATUS feature
+setlocal shell=bash " Using bash for its PIPESTATUS feature
 setlocal spell
 setlocal spelllang=en_us,it
 

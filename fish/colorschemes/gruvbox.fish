@@ -2,19 +2,4 @@ set gray 928374
 set cyan 689d6a
 set selection_background 665c54
 
-set fish_color_user green
-set fish_color_host white
-set fish_color_host_remote white
-set fish_color_cwd blue
-
-set fish_color_command green
-set fish_color_error red
-set fish_color_quote yellow
-set fish_color_param $cyan
-set fish_color_operator $cyan
-set fish_color_autosuggestion $gray --italics
-set fish_color_comment $gray --italics
-set fish_color_valid_path --underline
-set fish_color_redirection white
-set fish_color_end cyan
-set fish_color_selection --background=$selection_background
+source ~/.config/fish/colorschemes/common.fish

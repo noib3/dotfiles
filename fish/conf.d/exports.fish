@@ -20,27 +20,30 @@ set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv
 set -x PATH $PATH
 
+set -x VISUAL nvim
+set -x EDITOR $VISUAL
+set -x MANPAGER "nvim -c 'set ft=man' -"
+
+set -x LANG en_US.UTF-8
+set -x LC_ALL en_US.UTF-8
+
+set -x TCELL_TRUECOLOR on
+
+set -x HOMEBREW_NO_AUTO_UPDATE 1
+
 set -x IPYTHONDIR $HOME/.local/share/ipython
 set -x MPLCONFIGDIR $HOME/.local/share/matplotlib
 set -x LESSHISTFILE $HOME/.cache/less/lesshst
 set -x npm_config_cache $HOME/.cache/npm
 
-set -x VISUAL nvim
-set -x EDITOR $VISUAL
-set -x MANPAGER "nvim -c 'set ft=man' -"
-
-set -x HOMEBREW_NO_AUTO_UPDATE 1
-
-set -x TCELL_TRUECOLOR on
-
 set -x FZF_DEFAULT_COMMAND \
 "fd -uu --ignore-file $CLOUDDIR/fd/ignore \
-    --base-directory ~ --type f --color always"
+--base-directory ~ --type f --color always"
 
 set -x FZF_DEFAULT_OPTS \
 "--reverse --no-bold --info=inline --hscroll-off=50 --ansi \
- --color='hl:-1:underline,fg+:-1:regular:italic' \
- --color='hl+:-1:underline:italic,prompt:4:regular,pointer:1'"
+--color='hl:-1:underline,fg+:-1:regular:italic' \
+--color='hl+:-1:underline:italic,prompt:4:regular,pointer:1'"
 
 set -x FZF_ONLYDIR_COMMAND \
 (echo $FZF_DEFAULT_COMMAND | sed 's/--type f/--type d/')
