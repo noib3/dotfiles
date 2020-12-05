@@ -1,5 +1,6 @@
 call plug#begin('~/.config/nvim/plugged')
   " Miscellaneous
+  Plug 'rhysd/clever-f.vim'
   Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
