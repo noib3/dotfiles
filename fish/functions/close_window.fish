@@ -1,3 +1,3 @@
 function close_window --description "Close the terminal window"
-  exit
+  yabai -m window --close
 end

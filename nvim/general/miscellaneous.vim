@@ -6,6 +6,7 @@ augroup all
   autocmd BufLeave * call s:AutoSaveWinView()
   autocmd BufEnter * call s:AutoRestoreWinView()
   autocmd BufRead *.cls setlocal filetype=tex
+  autocmd BufRead lfrc,skhdrc setlocal filetype=conf
 augroup END
 
 function! s:StripTrailingWhiteSpace()

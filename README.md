@@ -2,6 +2,12 @@
 
 My configuration files for the various programs I use on my macOS machine.
 
+## Installation
+
+```bash
+/bin/bash -c "$(https://raw.githubusercontent.com/noib3/macOS-dotfiles/master/install.sh)"
+```
+
 ## Screenshots
 
 ### December 01, 2020 ([c2d06e5](https://github.com/noib3/macOS-dotfiles/tree/c2d06e5d9143fec39d512599bb68f5098fa8f215))

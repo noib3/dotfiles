@@ -35,6 +35,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'mengelbrecht/lightline-bufferline'
 
   " Syntax
+  Plug 'bfontaine/Brewfile.vim'
   Plug 'dag/vim-fish'
   Plug 'elzr/vim-json'
   Plug 'godlygeek/tabular'
