@@ -4,22 +4,44 @@ GITHUB_REPO="noib3/macOS-dotfiles"
 GITHUB_REPO_BRANCH="master"
 GITHUB_REPO_PATH="Brewfile"
 
-function print_start() { printf '\033[32m→ \033[0m\033[1m'"$1"'\033[0m\n\n'; }
-function print_step() { printf '\033[34m→ \033[0m\033[1m'"$1"'\033[0m\n'; }
-function print_warning() { printf '\033[33mWARNING: '"$1"'\033[0m\n'; }
-function print_error() { printf '\033[31mERROR: '"$1"'\033[0m\n'; }
+function print_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
+function print_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
+function print_reboot() { printf '\r\033[31m⟶   \033[0m\033[1m'"$1"'\033[0m'; }
+function print_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
+function print_error() { printf '\033[31mERROR: \033[0m\033[1m'"$1"'\033[0m\n'; }
+
+function check_sip_status() {
+  if [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') != "disabled" ]]
+  then
+    print_error "SIP needs to be disabled for the installation"
+    cat << EOL
+To disable it you need to:
+  1. Reboot in recovery mode;
+  2. Something;
+  3. Something else.
+
+EOL
+    exit 1
+  fi
+}
 
 function greeting_message() {
   print_start "Install starting!"
-  # printf '\n'
-  # read -n 1 -s -r -p "Press any key to continue:"
-  # printf '\n\n'
+  cat << EOL
+You'll need the following passwords:
+  1. The current user's password if you want to add it to the sudoers file;
+  2. Your Firefox account's password if you want to link your bookmarks,
+     previous history, addons, etc;
+
+EOL
+  read -n 1 -s -r -p "Press any key to continue:"
+  printf '\n\n'
 }
 
 function command_line_tools() {
   print_step "Installing command line tools"
-  if ! xcode-select --print-path >/dev/null; then
-    xcode-select --install >/dev/null
+  if ! xcode-select --print-path &>/dev/null; then
+    xcode-select --install &>/dev/null
   fi
   printf '\n' && sleep 1
 }
@@ -27,7 +49,7 @@ function command_line_tools() {
 function whoami_to_sudoers() {
   print_step "Adding current user to /private/etc/sudoers"
   printf "\n$(whoami)		ALL = (ALL) NOPASSWD: ALL\n" \
-  | sudo tee -a /private/etc/sudoers >/dev/null
+  | sudo tee -a /private/etc/sudoers &>/dev/null
   printf '\n' && sleep 1
 }
 
@@ -124,7 +146,7 @@ function set_sys_defaults() {
   printf '\n'
   sudo systemsetup -listtimezones
   read -p "Set the current timezone from the list above:" timezone
-  sudo systemsetup -settimezone "$timezone" >/dev/null
+  sudo systemsetup -settimezone "$timezone" &>/dev/null
 
   printf '\n' && sleep 1
 }
@@ -208,28 +230,55 @@ function setup_neovim() {
 function setup_firefox() {
   print_step "Setting up Firefox"
 
-  # 1. Open firefox without being prompted for dialog
-  #       sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
-  # 2. Download bitwarden firefox extension
-  # 3. Sign in to gmail to get bitwarden master password
-  # 9. Login firefox
-  # 10. firefox about:config options
-  # 11. load firefox config
-  #     cd ~/Library/Application\ Support/Firefox/Profiles/*-release/
-  #     mkdir chrome && cd chrome
-  #     ln -s ~/.config/firefox/userChrome.css
-  #     ln ~/.config/firefox/userContent.css
-  # 29. login youtube, switch account and enable dark mode and english
-  # 22. load vimium c config file
+  # Open firefox without being prompted for dialog
+  sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
-  # Download tridactyl build without new tab page from
-  #   https://tridactyl.cmcaine.co.uk/betas/nonewtab/
-  # Download the latest release. It will be a .xpi file. Open that file in
-  # Finder, drag and drop it into Firefox -> accept installation.
-  # See https://github.com/tridactyl/tridactyl/issues/534 for source
-  # also, install native-messanger to use :source in tridactyl
-  # see the tutor for instructions (:tutor)
-  # Set firefox as default browser
+  printf "\n"
+  print_substep "Set Firefox as the default browser"
+  print_substep "Log into your Firefox account"
+  print_substep "Quit Firefox"
+  sleep 2
+
+  /Applications/Firefox.app/Contents/MacOS/firefox \
+    --setDefaultBrowser \
+    --new-tab "about:preferences#sync" \
+
+  profiles="$(ls "~/Library/Application Support/Firefox/Profiles/" \
+              | grep release)"
+
+  # Symlink firefox config
+  for profile in "${profiles[@]}"; do
+    ln -s --force \
+      ~/.config/firefox/user.js \
+      ~/Library/Application\ Support/Firefox/Profiles/"$profile"/user.js
+    mkdir -p \
+      ~/Library/Application\ Support/Firefox/Profiles/"$profile"/chrome
+    ln -s --force \
+      ~/.config/firefox/userChrome.css \
+      ~/Library/Application\ Support/Firefox/Profiles/"$profile"/chrome/
+    ln --force \
+      ~/.config/firefox/userContent.css \
+      ~/Library/Application\ Support/Firefox/Profiles/"$profile"/chrome/
+  done
+
+  # Download and install tridactyl (no-new-tab version)
+  printf "\n"
+  wget https://tridactyl.cmcaine.co.uk/betas/nonewtab/tridactyl_no_new_tab_beta-latest.xpi
+
+  print_substep "Accept Tridactyl installation"
+  print_substep "Quit Firefox"
+  sleep 2
+
+  /Applications/Firefox.app/Contents/MacOS/firefox \
+    ./tridactyl_no_new_tab_beta-latest.xpi
+
+  # Install native messanger for tridactyl
+  curl -fsSl \
+    https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh \
+      -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
+
+  # Go to preferences -> Search -> Search suggestions -> Untick every Search
+  # Shortcut if you want
 
   printf '\n' && sleep 1
 }
@@ -237,13 +286,34 @@ function setup_firefox() {
 function setup_skim() {
   print_step "Setting up Skim preferences"
 
-  # 25. install skim
-  #       preferences -> Sync -> Check 'check for file changes' and 'reload automatically'
-  # 26. use skim as default pdf viewer
-  #       right click on a pdf file -> get info -> open with: skim.app -> change all
-  # 27. debloat skim
-  #       skim -> view -> hide contents pane and notes pane, toogle toolbar
-  #       skim -> preferences -> general -> remember lat page viewed
+  # Use Skim as the default PDF viewer
+
+  # Open pdf with Skim to generate plist file
+
+  # Preferences -> Sync -> Check for file changes
+  defaults write -app Skim SKAutoCheckFileUpdate -int 1
+
+  # Preferences -> Sync -> Reload automatically
+  defaults write -app Skim SKAutoReloadFileUpdate -int 1
+
+  # Preferences -> General -> Remember last page viewed
+  defaults write -app Skim SKRememberLastPageViewed -int 1
+
+  # Preferences -> General -> Open files: -> Fit
+  defaults write -app Skim SKInitialWindowSizeOption -int 2
+
+  # View -> Hide Contents Pane
+  defaults write -app Skim SKLeftSidePaneWidth -int 0
+
+  # View -> Hide Notes Pane
+  defaults write -app Skim SKRightSidePaneWidth -int 0
+
+  # View -> Hide Status Bar
+  defaults write -app Skim SKShowStatusBar -int 0
+
+  # View -> Toggle Toolbar
+  plutil -replace "NSToolbar Configuration SKDocumentToolbar"."TB Is Shown" \
+    -bool NO ~/Library/Preferences/net.sourceforge.skim-app.skim.plist
 
   printf '\n' && sleep 1
 }
@@ -251,6 +321,8 @@ function setup_skim() {
 function allow_accessibility() {
   print_step "Allowing accessibility permissions to skhd, yabai and spacebar"
   # Allow skhd and yabai and spacebar accessibility permission
+
+  printf '\n' && sleep 1
 }
 
 function cleanup() {
@@ -270,7 +342,7 @@ function cleanup() {
 
 function reboot() {
   for n in {9..0}; do
-    printf "\r\033[34m→ \033[0m\033[1mRebooting in $n\033[0m"
+    print_reboot "Rebooting in $n"
     [[ ${n} == 0 ]] || sleep 1
   done
 
@@ -278,6 +350,7 @@ function reboot() {
   osascript -e "tell app \"System Events\" to restart"
 }
 
+check_sip_status
 greeting_message
 # command_line_tools
 # whoami_to_sudoers
@@ -289,7 +362,7 @@ greeting_message
 # setup_neovim
 # setup_firefox
 # setup_skim
-# allow_accessibility
+allow_accessibility
 # cleanup
 # reboot
 
@@ -326,6 +399,9 @@ greeting_message
 # 1. Do this
 # 2. Do that
 # 3. Attach an external display and rearrange so that the external is the main one
+# Sign in to gmail to get bitwarden master password
+# login youtube, switch account and enable dark mode and english
+# Log into bitwarden, unlock it, then Settings -> Vault timeout -> Never
 # EOL
 # }
 
@@ -392,7 +468,7 @@ greeting_message
 
 # function reboot() {
 #   for n in {9..0}; do
-#     printf "\r\033[34m→ \033[0m\033[1mRebooting in $n\033[0m"
+#     print_reboot "Rebooting in $n"
 #     [[ ${n} == 0 ]] || sleep 1
 #   done
 
