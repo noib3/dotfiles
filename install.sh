@@ -11,9 +11,9 @@ function print_error() { printf '\033[31mERROR: '"$1"'\033[0m\n'; }
 
 function greeting_message() {
   print_start "Install starting!"
-  printf '\n'
-  read -n 1 -s -r -p "Press any key to continue:"
-  printf '\n\n'
+  # printf '\n'
+  # read -n 1 -s -r -p "Press any key to continue:"
+  # printf '\n\n'
 }
 
 function command_line_tools() {
@@ -139,30 +139,144 @@ function get_homebrew() {
     brew update
   fi
 
-  curl -fsSL https://raw.githubusercontent.com/"$GITHUB_REPO"/"$GITHUB_REPO_BRANCH"/"$GITHUB_REPO_PATH"
+  curl -fsSL https://raw.githubusercontent.com/"$GITHUB_REPO"/"$GITHUB_REPO_BRANCH"/"$GITHUB_REPO_PATH" > ~/Brewfile
 
-  brew bundle install
+  brew bundle install --file ~/Brewfile
 
   printf '\n' && sleep 1
 }
 
-# function patch_square_edges() {
-#   # DESC: Patches .car files with square edges for all macOS GUI programs
-#   # ARGS: None
-#   # OUTS: None
-#   # NOTE: https://github.com/tsujp/custom-macos-gui
+function patch_square_edges() {
+  print_step "Patching .car file to get square edges"
 
-#   sudo mount -uw /
-#   # 40. SQUARE BORDERS
+  # https://www.reddit.com/r/unixporn/comments/i7s3t1/yabaiwm_monokai_machintosh/g16gnck?utm_source=share&utm_medium=web2x
+  sudo mount -uw /
+  wget https://github.com/tsujp/custom-macos-gui/tree/master/DarkAquaAppearance/Edited/DarkAquaAppearance.car
+  mv --force ./DarkAquaAppearance.car /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/DarkAquaAppearance.car
 
-#   # Place DarkAquaAppearance.car file found here (https://github.com/tsujp/custom-macos-gui/tree/master/DarkAquaAppearance/Edited) in /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/DarkAquaAppearance.car. Will have to unmount the filesystem first with
+  printf '\n' && sleep 1
+}
 
-#   # then move the file there replacing the one that's already there, then reboot. (https://www.reddit.com/r/unixporn/comments/i7s3t1/yabaiwm_monokai_machintosh/g16gnck?utm_source=share&utm_medium=web2x)'
-# }
+function setup_odourless() {
+  print_step "Setting up Odourless"
 
-# reboot() {
-#   osascript -e "tell app \"System Events\" to restart"
-# }
+  # STOP CREATION OF .DS_Store FILES
+  # download the latest .zip release from 'https://github.com/xiaozhuai/odourless/releases'
+  # move it to /Applications
+  # in case it doesn't launch (in my case it said something like 'this has to be under /Applications', even if it was under /Applications), just run it from the command line:
+  # /Applications/Odourless.app/Contents/MacOS/odourless
+  # install the daemon on the lil gui that pops up
+  # reboot and you should be gucci
+
+  # download latest release
+  # unzip it
+  mv ./Odourless.app /Applications/Odourless.app
+  /Applications/Odourless.app/Contents/Resources/install-daemon
+  /Applications/Odourless.app/Contents/Resources/start-daemon
+
+  printf '\n' && sleep 1
+}
+
+function setup_fish() {
+  print_step "Setting up the fish shell"
+
+  sudo sh -c 'echo /usr/local/bin/fish >> /etc/shells'
+  chsh -s /usr/local/bin/fish
+
+  wget https://raw.githubusercontent.com/alacritty/alacritty/master/extra/alacritty.info
+  sudo tic -xe alacritty,alacritty-direct ./alacritty.info
+  rm ./alacritty.info
+
+  printf '\n' && sleep 1
+}
+
+function setup_neovim() {
+  print_step "Setting up some neovim-related tools"
+
+  # Install vim-plug
+  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+  # For UltiSnips
+  pip3 install neovim
+
+  # For coc-python
+  pip3 install jedi
+
+  printf '\n' && sleep 1
+}
+
+function setup_firefox() {
+  print_step "Setting up Firefox"
+
+  # 1. Open firefox without being prompted for dialog
+  #       sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
+  # 2. Download bitwarden firefox extension
+  # 3. Sign in to gmail to get bitwarden master password
+  # 9. Login firefox
+  # 10. firefox about:config options
+  # 11. load firefox config
+  #     cd ~/Library/Application\ Support/Firefox/Profiles/*-release/
+  #     mkdir chrome && cd chrome
+  #     ln -s ~/.config/firefox/userChrome.css
+  #     ln ~/.config/firefox/userContent.css
+  # 29. login youtube, switch account and enable dark mode and english
+  # 22. load vimium c config file
+
+  # Download tridactyl build without new tab page from
+  #   https://tridactyl.cmcaine.co.uk/betas/nonewtab/
+  # Download the latest release. It will be a .xpi file. Open that file in
+  # Finder, drag and drop it into Firefox -> accept installation.
+  # See https://github.com/tridactyl/tridactyl/issues/534 for source
+  # also, install native-messanger to use :source in tridactyl
+  # see the tutor for instructions (:tutor)
+  # Set firefox as default browser
+
+  printf '\n' && sleep 1
+}
+
+function setup_skim() {
+  print_step "Setting up Skim preferences"
+
+  # 25. install skim
+  #       preferences -> Sync -> Check 'check for file changes' and 'reload automatically'
+  # 26. use skim as default pdf viewer
+  #       right click on a pdf file -> get info -> open with: skim.app -> change all
+  # 27. debloat skim
+  #       skim -> view -> hide contents pane and notes pane, toogle toolbar
+  #       skim -> preferences -> general -> remember lat page viewed
+
+  printf '\n' && sleep 1
+}
+
+function allow_accessibility() {
+  print_step "Allowing accessibility permissions to skhd, yabai and spacebar"
+  # Allow skhd and yabai and spacebar accessibility permission
+}
+
+function cleanup() {
+  print_step "Cleaning up some files"
+
+  # DESC: Cleans up all the cache/history files
+  # ARGS: None
+  # OUTS: None
+  # NOTE: None
+
+  # Remove public folder from home folder
+  # rm -rf Public
+  # rm ~/.config/zsh/.zsh-history ~/.CFUserTextEncoding ~/.viminfo ~/.zsh-history
+
+  printf '\n' && sleep 1
+}
+
+function reboot() {
+  for n in {9..0}; do
+    printf "\r\033[34m→ \033[0m\033[1mRebooting in $n\033[0m"
+    [[ ${n} == 0 ]] || sleep 1
+  done
+
+  printf '\n\n'
+  osascript -e "tell app \"System Events\" to restart"
+}
 
 greeting_message
 # command_line_tools
@@ -170,154 +284,16 @@ greeting_message
 # set_sys_defaults
 # get_homebrew
 # patch_square_edges
+# setup_odourless
+# setup_fish
+# setup_neovim
+# setup_firefox
+# setup_skim
+# allow_accessibility
+# cleanup
 # reboot
 
-
-# THIS IS WHAT AN INSTALL SCRIPT SHOULD DO
-# 1. Install all programs, setup git with ssh etc..
-# 2. Patch square edges
-# 3. Clean up
-# 4. Create TODO file with things left to do
-# 5. reboot
-
-# _patch_square_edges() {
-# }
-# _patch_square_edges
-
-# _setup_fish() {
-#   # 1. Change shell to zsh
-#   #       sudo sh -c 'echo /usr/local/bin/zsh >> /etc/shells'
-#   #       chsh -s /usr/local/bin/zsh
-#   # to get italics suggestions working with fish + alacritty, download
-#   #   https://github.com/alacritty/alacritty/blob/master/extra/alacritty.info
-#   # then
-#   #   sudo tic -xe alacritty,alacritty-direct ./alacritty.info
-#   # then you can remove the alacritty.info file, but leave the .terminfo
-#   # directory
-# }
-# _setup_fish
-
-# _setup_neovim() {
-#   # 5. Install vim-plug
-#   #       curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-#   # 38. 'pip3 install neovim' for UltiSnips
-
-#   # 40. pip3 install jedi if coc-python gives problems
-# }
-# _setup_neovim
-
-# _setup_firefox() {
-#   # 1. Open firefox without being prompted for dialog
-#   #       sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
-#   # 2. Download bitwarden firefox extension
-#   # 3. Sign in to gmail to get bitwarden master password
-#   # 9. Login firefox
-#   # 10. firefox about:config options
-#   # 11. load firefox config
-#   #     cd ~/Library/Application\ Support/Firefox/Profiles/*-release/
-#   #     mkdir chrome && cd chrome
-#   #     ln -s ~/.config/firefox/userChrome.css
-#   #     ln ~/.config/firefox/userContent.css
-#   # 29. login youtube, switch account and enable dark mode and english
-#   # 22. load vimium c config file
-
-#   # Download tridactyl build without new tab page from
-#   #   https://tridactyl.cmcaine.co.uk/betas/nonewtab/
-#   # Download the latest release. It will be a .xpi file. Open that file in
-#   # Finder, drag and drop it into Firefox -> accept installation.
-#   # See https://github.com/tridactyl/tridactyl/issues/534 for source
-#   # also, install native-messanger to use :source in tridactyl
-#   # see the tutor for instructions (:tutor)
-# }
-# _setup_firefox
-
-# _setup_skim() {
-#   # 25. install skim
-#   #       preferences -> Sync -> Check 'check for file changes' and 'reload automatically'
-#   # 26. use skim as default pdf viewer
-#   #       right click on a pdf file -> get info -> open with: skim.app -> change all
-#   # 27. debloat skim
-#   #       skim -> view -> hide contents pane and notes pane, toogle toolbar
-#   #       skim -> preferences -> general -> remember lat page viewed
-# }
-# _setup_skim
-
-# _setup_logi_options() {
-#   # 31. Logitech options -> zoom with wheel,
-#   #     Logitech options -> Point & Scroll -> Scroll direction -> Natural, Thumb wheel direction -> Inverted
-#   #     set pointer and scrolling speed
-#   #     Smooth scrolling -> disabled
-#   # 36. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need them to work with qutebrowser, otherwise stick with forward and back)'
-# }
-# _setup_logi_options
-
-# _setup_configs() {
-#   # 28. tell transmission to run script when torrent is done
-#   #       transmission-remote --torrent-done-script ~/scripts/transmission/notify-done.sh
-# }
-# _setup_configs
-
-# _setup_scripts() {
-#   # 12. download scripts folder
-#   #      git clone https://github.com/n0ibe/scripts
-#   # 15. link at login files
-#   #       cd /Library/LaunchDaemons
-#   #       sudo ln -s ~/scripts/@login/Odourless/odourless-daemon.plist
-#   #       launchctl load /Library/LaunchDaemons/odourless-daemon.plist
-#   #       reboot and test if it works
-#   # 18. link login files
-#   #     cd ~/Library/LaunchAgents
-#   #     ln -s ~/scripts/@login/....plist
-#   #     launchctl load ./*.plist
-# }
-# _setup_scripts
-
-# _setup_calcurse() {
-#   # 14. download calcurse
-#   #       git clone https://github.com/n0ibe/calcurse
-#   #       mv calcurse ~/.local/share/
-# }
-# _setup_calcurse
-
-# _setup_ndiet() {
-#   # 20. install ndiet
-#   #       mkdir ~/bin && cd ~/bin
-#   #       git clone https://github.com/n0ibe/ndiet
-#   #       pip3 install pyfiglet
-#   #       pip3 install docopt
-#   #       pip3 install gkeepapi
-# }
-# _setup_ndiet
-
-# _setup_odourless(){
-#   # STOP CREATION OF .DS_Store FILES
-#   # download the latest .zip release from 'https://github.com/xiaozhuai/odourless/releases'
-#   # move it to /Applications
-#   # in case it doesn't launch (in my case it said something like 'this has to be under /Applications', even if it was under /Applications), just run it from the command line:
-#   # /Applications/Odourless.app/Contents/MacOS/odourless
-#   # install the daemon on the lil gui that pops up
-#   # reboot and you should be gucci
-# }
-# _setup_odourless
-
-# _allow_accessibility(){
-#   # 6. Allow skhd and yabai accessibility permission
-#   # 7. Allow dropbox accessibility permissions
-#   # 24. allow accessibility to logitech options (have to select it manually clicking on +)
-#   # 30. Allow terminal-notifier notifications
-# }
-# _allow_accessibility
-
-
-# set -o errexit
-# set -o errtrace
-# set -p pipefail
-
-
-
-
-
-
+# ----------------------------------------------------------------------------
 
 
 # NOW IT'S PERSONAL
@@ -353,25 +329,84 @@ greeting_message
 # EOL
 # }
 
+# _setup_scripts() {
+#   # 12. download scripts folder
+#   #      git clone https://github.com/n0ibe/scripts
+#   # 15. link at login files
+#   #       cd /Library/LaunchDaemons
+#   #       sudo ln -s ~/scripts/@login/Odourless/odourless-daemon.plist
+#   #       launchctl load /Library/LaunchDaemons/odourless-daemon.plist
+#   #       reboot and test if it works
+#   # 18. link login files
+#   #     cd ~/Library/LaunchAgents
+#   #     ln -s ~/scripts/@login/....plist
+#   #     launchctl load ./*.plist
+# }
+# _setup_scripts
+
+# function setup_transmission() {
+#   transmission-remote --torrent-done-script \
+#     ~/Dropbox/scripts/transmission/notify-done.sh
+# }
+
 # set_wallpaper() {
 
 # }
 # set_wallpaper
 
-# cleanup() {
-#   # DESC: Cleans up all the cache/history files
-#   # ARGS: None
-#   # OUTS: None
-#   # NOTE: None
+# _setup_skim() {
+# }
+# _setup_skim
 
-#   # Remove public folder from home folder
-#   # rm -rf Public
-#   # rm ~/.config/zsh/.zsh-history ~/.CFUserTextEncoding ~/.viminfo ~/.zsh-history
+# _setup_calcurse() {
+#   # 14. download calcurse
+#   #       git clone https://github.com/n0ibe/calcurse
+#   #       mv calcurse ~/.local/share/
+# }
+# _setup_calcurse
+
+# _setup_ndiet() {
+#   # 20. install ndiet
+#   #       mkdir ~/bin && cd ~/bin
+#   #       git clone https://github.com/n0ibe/ndiet
+#   #       pip3 install pyfiglet
+#   #       pip3 install docopt
+#   #       pip3 install gkeepapi
+# }
+# _setup_ndiet
+
+# _setup_logi_options() {
+#   # 31. Logitech options -> zoom with wheel,
+#   #     Logitech options -> Point & Scroll -> Scroll direction -> Natural, Thumb wheel direction -> Inverted
+#   #     set pointer and scrolling speed
+#   #     Smooth scrolling -> disabled
+#   # 36. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need them to work with qutebrowser, otherwise stick with forward and back)'
+# }
+# _setup_logi_options
+
+# function allow_accessibility() {
+#   print_step "Allowing accessibility permissions to skhd and yabai"
+  # Allow dropbox accessibility permissions
+  # allow accessibility to logitech options (have to select it manually clicking on +)
+# }
+
+# function reboot() {
+#   for n in {9..0}; do
+#     printf "\r\033[34m→ \033[0m\033[1mRebooting in $n\033[0m"
+#     [[ ${n} == 0 ]] || sleep 1
+#   done
+
+#   printf '\n\n'
+#   osascript -e "tell app \"System Events\" to restart"
 # }
 
 # configure_github_ssh
 # configure_clouded
 # configure_remote_server
+# setup_calcurse
+# setup_transmission
+# setup_logi_options
 # create_todo_file
 # set_wallpaper
 # cleanup
+# reboot
