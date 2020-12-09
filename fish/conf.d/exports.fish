@@ -1,7 +1,7 @@
 set -x COLORSCHEME gruvbox
-set -x SCRIPTSDIR $HOME/Dropbox/scripts
-set -x SSHOTDIR $HOME/Dropbox/screenshots
-set -x CLOUDDIR $HOME/Dropbox/cloud
+set -x SCRIPTSDIR $HOME/Sync/scripts
+set -x SSHOTDIR $HOME/Sync/screenshots
+set -x CLOUDDIR $HOME/Sync/cloud
 
 set PATH ""
 set PATH $PATH /usr/local/opt/coreutils/libexec/gnubin

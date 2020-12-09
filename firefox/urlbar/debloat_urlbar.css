@@ -17,6 +17,3 @@
 
 /* Bottom left page loading status or url preview */
 #statuspanel { display: none !important; }
-
-/* One-offs search suggestions at the bottom of the urlbar when searching */
-.search-one-offs { display: none !important; }

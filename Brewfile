@@ -32,6 +32,7 @@ brew "neovim"
 brew "openssh"
 brew "redshift", restart_service: true
 brew "rsync"
+brew "tccutil"
 brew "terminal-notifier"
 brew "transmission-cli", restart_service: true
 brew "vivid"

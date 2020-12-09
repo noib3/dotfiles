@@ -6,7 +6,7 @@ My configuration files for the various programs I use on my macOS machine.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/noib3/macOS-dotfiles/master/install.sh \
-  > ~/install.sh && bash ~/install.sh
+  -o /tmp/install.sh && bash /tmp/install.sh
 ```
 
 ## Screenshots

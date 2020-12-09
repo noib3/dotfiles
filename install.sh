@@ -14,13 +14,16 @@ function check_sip_status() {
   if [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') != "disabled" ]]
   then
     print_error "SIP needs to be disabled for the installation"
-    cat << EOL
-To disable it you need to:
-  1. Reboot in recovery mode;
-  2. Something;
-  3. Something else.
+    echo -e "To disable it you need to:
+  1. Restart macOS;
+  2. Hold down Command-R while rebooting to go into recovery mode;
+  3. Open a terminal via Utilities -> Terminal;
+  4. execute \033[1mcsrutil disable\033[0m;
+  5. Reboot.
 
-EOL
+If SIP was disabled correctly the output of \033[1mcsrutil status\033[0m will
+be \"System Integrity Protection status: disabled\".
+"
     exit 1
   fi
 }
@@ -156,12 +159,15 @@ function get_homebrew() {
 
   which -s brew
   if [[ $? != 0 ]]; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    bash -c \
+     "$(curl -fsSL \
+         https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
     brew update
   fi
 
-  curl -fsSL https://raw.githubusercontent.com/"$GITHUB_REPO"/"$GITHUB_REPO_BRANCH"/"$GITHUB_REPO_PATH" > ~/Brewfile
+  curl -fsSL \
+    https://raw.githubusercontent.com/"$GITHUB_REPO"/"$GITHUB_REPO_BRANCH"/"$GITHUB_REPO_PATH" > ~/Brewfile
 
   brew bundle install --file ~/Brewfile
 
@@ -192,9 +198,15 @@ function setup_odourless() {
 
   # download latest release
   # unzip it
-  mv ./Odourless.app /Applications/Odourless.app
-  /Applications/Odourless.app/Contents/Resources/install-daemon
-  /Applications/Odourless.app/Contents/Resources/start-daemon
+  # mv ./Odourless.app /Applications/Odourless.app
+  # /Applications/Odourless.app/Contents/Resources/install-daemon
+  # /Applications/Odourless.app/Contents/Resources/start-daemon
+  local path_resources="/Applications/Odourless.app/Contents/Resources"
+  cat "$path_resources/odourless-daemon.plist" \
+  | sed "s#___replace_me_daemon_path__#$path_resources/bin/odourless-daemon#" \
+  | sudo tee /Library/LaunchDaemons/odourless-daemon.plist &>/dev/null
+
+  launchctl load "/Library/LaunchDaemons/odourless-daemon.plist"
 
   printf '\n' && sleep 1
 }
@@ -216,7 +228,8 @@ function setup_neovim() {
   print_step "Setting up some neovim-related tools"
 
   # Install vim-plug
-  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim \
+    --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
   # For UltiSnips
   pip3 install neovim
@@ -263,7 +276,8 @@ function setup_firefox() {
 
   # Download and install tridactyl (no-new-tab version)
   printf "\n"
-  wget https://tridactyl.cmcaine.co.uk/betas/nonewtab/tridactyl_no_new_tab_beta-latest.xpi
+  wget \
+    https://tridactyl.cmcaine.co.uk/betas/nonewtab/tridactyl_no_new_tab_beta-latest.xpi
 
   print_substep "Accept Tridactyl installation"
   print_substep "Quit Firefox"
@@ -276,9 +290,6 @@ function setup_firefox() {
   curl -fsSl \
     https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh \
       -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
-
-  # Go to preferences -> Search -> Search suggestions -> Untick every Search
-  # Shortcut if you want
 
   printf '\n' && sleep 1
 }
@@ -320,7 +331,14 @@ function setup_skim() {
 
 function allow_accessibility() {
   print_step "Allowing accessibility permissions to skhd, yabai and spacebar"
-  # Allow skhd and yabai and spacebar accessibility permission
+
+  local path_skhd_bin="$(readlink -f /usr/local/bin/skhd)"
+  local path_spacebar_bin=$(readlink -f /usr/local/bin/spacebar)
+  local path_yabai_bin=$(readlink -f /usr/local/bin/yabai)
+
+  sudo tccutil --insert "$path_skhd_bin"
+  sudo tccutil --insert "$path_spacebar_bin"
+  sudo tccutil --insert "$path_yabai_bin"
 
   printf '\n' && sleep 1
 }
@@ -357,12 +375,12 @@ greeting_message
 # set_sys_defaults
 # get_homebrew
 # patch_square_edges
-# setup_odourless
+setup_odourless
 # setup_fish
 # setup_neovim
 # setup_firefox
 # setup_skim
-allow_accessibility
+# allow_accessibility
 # cleanup
 # reboot
 
