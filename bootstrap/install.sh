@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO
-# 1. fix odourless
-# 2. ask if they want to add whoami to sudoers
-# 3. open pdf file and solve plutil error
-# 4. refactor function names and step messages
-
 function print_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function print_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
 function print_reboot() { printf '\r\033[31m⟶   \033[0m\033[1m'"$1"'\033[0m'; }
@@ -157,13 +151,13 @@ function set_sys_defaults() {
 }
 
 function get_homebrew() {
-  print_step "Downloading homebrew, then formulas from Brewfile"
+  print_step "Downloading homebrew, then programs from Brewfile"
 
   local path_homebrew_install_script=\
 https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 
   local path_brewfile=\
-https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
+https://raw.githubusercontent.com/noib3/dotfiles/macOS/Brewfile
 
   which -s brew
   if [[ $? != 0 ]]; then
@@ -225,16 +219,6 @@ function setup_odourless() {
   printf '\n' && sleep 1
 }
 
-function setup_dotfiles() {
-  print_step "Downloading and installing dotfiles from noib3/dotfiles"
-
-  git clone https://github.com/noib3/dotfiles --branch macOS /tmp/dotfiles
-  rm -rf ~/.config
-  mv /tmp/dotfiles ~/.config
-
-  printf '\n' && sleep 1
-}
-
 function setup_fish() {
   print_step "Setting up the fish shell"
 
@@ -253,16 +237,11 @@ alacritty/alacritty/master/extra/alacritty.info
 }
 
 function setup_python() {
-  print_step "Downloading python modules"
+  # For UltiSnips
+  pip3 install neovim
 
-  local path_python_requirements=\
-https://raw.githubusercontent.com/noib3/dotfiles/\
-macOS/boostrap/requirements.txt
-
-  wget -P /tmp/ $path_python_requirements
-  pip3 install -r /tmp/requirements.txt
-
-  printf '\n' && sleep 1
+  # For coc-python
+  pip3 install jedi
 }
 
 function setup_vimplug() {
@@ -342,10 +321,9 @@ https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
 function setup_skim() {
   print_step "Setting up Skim preferences"
 
-  # Open pdf with Skim to generate plist file
-
   # Use Skim as the default PDF viewer
-  duti -s net.sourceforge.skim-app.skim .pdf all
+
+  # Open pdf with Skim to generate plist file
 
   # Preferences -> Sync -> Check for file changes
   defaults write -app Skim SKAutoCheckFileUpdate -int 1
@@ -386,10 +364,6 @@ function allow_accessibility() {
   sudo tccutil --insert "$path_spacebar_bin"
   sudo tccutil --insert "$path_yabai_bin"
 
-  brew services start skhd
-  brew services start spacebar
-  brew services start yabai
-
   printf '\n' && sleep 1
 }
 
@@ -426,7 +400,6 @@ greeting_message
 # get_homebrew
 # patch_square_edges
 # setup_odourless
-# setup_dotfiles
 # setup_fish
 # setup_github
 # setup_vimplug
