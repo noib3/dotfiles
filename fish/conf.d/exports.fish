@@ -37,8 +37,7 @@ set -x LESSHISTFILE $HOME/.cache/less/lesshst
 set -x npm_config_cache $HOME/.cache/npm
 
 set -x FZF_DEFAULT_COMMAND \
-"fd -uu --ignore-file $CLOUDDIR/fd/ignore \
---base-directory ~ --type f --color always"
+"fd --base-directory ~ --hidden --type f --color always"
 
 set -x FZF_DEFAULT_OPTS \
 "--reverse --no-bold --info=inline --hscroll-off=50 --ansi \
