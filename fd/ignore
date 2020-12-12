@@ -1,9 +1,7 @@
-/.Trash/
 /.cache/
-/.cargo/
-/.dropbox/
 /.local/
 /.terminfo/
+/.Trash/
 /Desktop/
 /Documents/
 /Library/
@@ -16,19 +14,17 @@
 /.config/nvim/plugged/
 /.config/nvim/coc/
 
-/Dropbox/.dropbox.cache/
-/Dropbox/finances/2017
-/Dropbox/finances/2018
-/Dropbox/finances/2019
-/Dropbox/fitness/logs/2019
-/Dropbox/memories/2017
-/Dropbox/memories/2018
-/Dropbox/memories/2019
-/Dropbox/scripts/committed
-/Dropbox/scripts/pfetch
-/Dropbox/scripts/vimv
-/Dropbox/university
-/Dropbox/zother
+/Sync/finances/2017
+/Sync/finances/2018
+/Sync/finances/2019
+/Sync/fitness/logs/2019
+/Sync/memories/2017
+/Sync/memories/2018
+/Sync/memories/2019
+/Sync/scripts/committed
+/Sync/scripts/pfetch
+/Sync/scripts/vimv
+/Sync/university
 
 **/.git
 
@@ -43,5 +39,3 @@
 *.synctex(busy)
 *.synctex.gz
 *.toc
-
-/Downloads/MEDIA/

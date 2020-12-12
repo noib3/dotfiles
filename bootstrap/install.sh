@@ -1,65 +1,90 @@
 #!/usr/bin/env bash
+#
+# Bootstrap a new macOS machine.
 
 # TODO
 # 1. fix odourless
-# 2. ask if they want to add whoami to sudoers
-# 3. open pdf file and solve plutil error
-# 4. refactor function names and step messages
+# 2. open pdf file
+# 3. refactor function names and step messages
 
-function print_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
-function print_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
-function print_reboot() { printf '\r\033[31m⟶   \033[0m\033[1m'"$1"'\033[0m'; }
-function print_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
-function print_error() { printf '\033[31mERROR: \033[0m\033[1m'"$1"'\033[0m\n'; }
+function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
+function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
+function echo_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
+function echo_reboot() { printf '\r\033[31m⟶   \033[0m\033[1m'"$1"'\033[0m'; }
+function error_exit() { printf '\033[31mERROR: \033[0m'"$1"'\n' && exit 1; }
 
-function check_sip_status() {
-  if [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') != "disabled" ]]
-  then
-    print_error "SIP needs to be disabled for the installation"
-    echo -e "\
+function exit_if_not_darwin() {
+  # Checks if the script is being run on a macOS machine. Echoes an error
+  # message and exit if it isn't.
+
+  [[ "$OSTYPE" == "darwin"* ]] \
+    || error_exit "We are not on macOS."
+}
+
+function exit_if_root() {
+  # Checks if the script is being run as root. Echoes an error message and exit
+  # if it is.
+
+  (( EUID != 0 )) \
+    || error_exit "This script shouldn't be run as root."
+}
+
+function exit_if_sip_enabled() {
+  # Checks if System Integrity Protection (SIP) is enabled. Echoes the steps to
+  # disable it and exit if it is.
+
+  [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') == "disabled" ]] \
+    || error_exit "SIP needs to be disabled for the installation.
+
 To disable it you need to:
-  1. Restart macOS;
-  2. Hold down Command-R while rebooting to go into recovery mode;
-  3. Open a terminal via Utilities -> Terminal;
+  1. reboot;
+  2. hold down Command-R while rebooting to go into recovery mode;
+  3. open a terminal via Utilities -> Terminal;
   4. execute \033[1mcsrutil disable\033[0m;
-  5. Reboot.
-
-If SIP was disabled correctly the output of \033[1mcsrutil status\033[0m will
-be \"System Integrity Protection status: disabled\".
+  5. reboot.
 "
-    exit 1
-  fi
 }
 
 function greeting_message() {
-  print_start "Install starting!"
+  # Echoes a greeting message listing the passwords needed for a full
+  # installation. Then waits for user input.
+
+  echo_start "Starting the installation"
   echo -e "\
-You'll need the following passwords:
-  1. The current user's password if you want to add it to the sudoers file;
-  2. Your Firefox account's password if you want to link your bookmarks,
-     previous history, addons, etc;
+You'll need:
+  1. $(whoami)'s password to add $(whoami) to the sudoers file;
+  2. the Firefox account's password to link bookmarks, previous history,
+     addons, etc;
 "
   read -n 1 -s -r -p "Press any key to continue:"
   printf '\n\n'
 }
 
 function command_line_tools() {
-  print_step "Installing command line tools"
-  if ! xcode-select --print-path &>/dev/null; then
-    xcode-select --install &>/dev/null
-  fi
+  # Checks if the command line tools are installed. Installs them if they
+  # aren't.
+
+  echo_step "Installing command line tools"
+  xcode-select --print-path &>/dev/null \
+    || xcode-select --install &>/dev/null
   printf '\n' && sleep 1
 }
 
 function whoami_to_sudoers() {
-  print_step "Adding current user to /private/etc/sudoers"
+  # Adds the current user to the sudoers file with the NOPASSWD directive,
+  # allowing it to issue sudo commands without being prompted for a password.
+
+  echo_step "Adding $(whoami) to /private/etc/sudoers"
   printf "\n$(whoami)		ALL = (ALL) NOPASSWD: ALL\n" \
-  | sudo tee -a /private/etc/sudoers &>/dev/null
+    | sudo tee -a /private/etc/sudoers &>/dev/null
   printf '\n' && sleep 1
 }
 
 function set_sys_defaults() {
-  print_step "Setting system defaults"
+  # Sets some macOS system defaults. Then asks for user input to set the
+  # current timezone and the host name for the new machine.
+
+  echo_step "Setting macOS system preference defaults"
 
   # Enable trackpad's tap to click
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad \
@@ -140,6 +165,7 @@ function set_sys_defaults() {
   sudo pmset -a halfdim 0
 
   printf '\n'
+
   read -p "Choose a name for this machine:" hostname
   sudo scutil --set ComputerName "$hostname"
   sudo scutil --set HostName "$hostname"
@@ -149,6 +175,7 @@ function set_sys_defaults() {
       -string "$hostname"
 
   printf '\n'
+
   sudo systemsetup -listtimezones
   read -p "Set the current timezone from the list above:" timezone
   sudo systemsetup -settimezone "$timezone" &>/dev/null
@@ -157,7 +184,10 @@ function set_sys_defaults() {
 }
 
 function get_homebrew() {
-  print_step "Downloading homebrew, then formulas from Brewfile"
+  # Checks if homebrew is installed, and it install it if it isn't. Then
+  # it installs the formulas listed in the Brewfile in the GitHub repo.
+
+  echo_step "Downloading homebrew, then formulas from Brewfile"
 
   local path_homebrew_install_script=\
 https://raw.githubusercontent.com/Homebrew/install/master/install.sh
@@ -165,12 +195,8 @@ https://raw.githubusercontent.com/Homebrew/install/master/install.sh
   local path_brewfile=\
 https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
 
-  which -s brew
-  if [[ $? != 0 ]]; then
-    bash -c "$(curl -fsSL $path_homebrew_install_script)"
-  else
-    brew update
-  fi
+  which -s brew && brew update \
+    || bash -c "$(curl -fsSL $path_homebrew_install_script)"
 
   curl -fsSL $path_brewfile -o /tmp/Brewfile
   brew bundle install --file /tmp/Brewfile
@@ -179,7 +205,10 @@ https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
 }
 
 function patch_square_edges() {
-  print_step "Patching .car file to get square edges"
+  # Downloads an edited .car file to display windows with squared edges, then
+  # substitutes the default one with it.
+
+  echo_step "Patching UI to get squared window edges"
 
   # https://cutt.ly/IhTI04v
 
@@ -200,7 +229,10 @@ Contents/Resources/DarkAquaAppearance.car
 }
 
 function setup_odourless() {
-  print_step "Setting up Odourless"
+  # Downloads and installs Odourless, a program used to prevent Finder from
+  # creating .DS_Store files.
+
+  echo_step "Setting up Odourless"
 
   # STOP CREATION OF .DS_Store FILES
   # download the latest .zip release from 'https://github.com/xiaozhuai/odourless/releases'
@@ -226,7 +258,10 @@ function setup_odourless() {
 }
 
 function setup_dotfiles() {
-  print_step "Downloading and installing dotfiles from noib3/dotfiles"
+  # Downloads the current dotfiles from the GitHub repo, then moves them to
+  # ~/.config.
+
+  echo_step "Downloading and installing dotfiles from noib3/dotfiles"
 
   git clone https://github.com/noib3/dotfiles --branch macOS /tmp/dotfiles
   rm -rf ~/.config
@@ -236,10 +271,19 @@ function setup_dotfiles() {
 }
 
 function setup_fish() {
-  print_step "Setting up the fish shell"
+  # Adds fish to the list of the valid shells, then sets fish as the chosen
+  # login shell.
+
+  echo_step "Setting up the fish shell"
 
   sudo sh -c "echo /usr/local/bin/fish >> /etc/shells"
   chsh -s /usr/local/bin/fish
+
+  printf '\n' && sleep 1
+}
+
+function setup_alacritty() {
+  # Downloads and installs the terminfo database for alacritty.
 
   local path_alacritty_terminfo=\
 https://raw.githubusercontent.com/\
@@ -247,13 +291,15 @@ alacritty/alacritty/master/extra/alacritty.info
 
   wget -P /tmp/ $path_alacritty_terminfo
   sudo tic -xe alacritty,alacritty-direct /tmp/alacritty.info
-  rm /tmp/alacritty.info
 
   printf '\n' && sleep 1
 }
 
 function setup_python() {
-  print_step "Downloading python modules"
+  # Installs all python modules listed in the requirements.txt file in the
+  # GitHub repo.
+
+  echo_step "Downloading python modules"
 
   local path_python_requirements=\
 https://raw.githubusercontent.com/noib3/dotfiles/\
@@ -266,28 +312,36 @@ macOS/boostrap/requirements.txt
 }
 
 function setup_vimplug() {
-  print_step "Installing vim-plug"
+  # Downloads vim-plug, a tool to manage Vim plugins.
+
+  echo_step "Installing vim-plug"
 
   local path_vim_plug=\
 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
   local path_destination_vim_plug=~/.local/share/nvim/site/autoload/plug.vim
 
-  curl -fLo $path_vim_plug --create-dirs $path_destination_vim_plug
+  sh -c \
+    'curl -fLo "${path_destination_vim_plug}" --create-dirs "${path_vim_plug}"'
 
   printf '\n' && sleep 1
 }
 
 function setup_firefox() {
-  print_step "Setting up Firefox"
+  # Sets Firefox as the default browser. Symlinks the files in
+  # ~/.config/firefox to all the user profiles. Downloads and installs the
+  # no-new-tab version of Tridactyl. Installs the native messager to allow
+  # Tridactyl to run other programs.
+
+  echo_step "Setting up Firefox"
 
   # Open firefox without being prompted for dialog
   sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
   printf "\n"
-  print_substep "Set Firefox as the default browser"
-  print_substep "Log into your Firefox account"
-  print_substep "Quit Firefox"
+  echo_substep "Set Firefox as the default browser"
+  echo_substep "Log into your Firefox account"
+  echo_substep "Quit Firefox"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -321,8 +375,8 @@ tridactyl_no_new_tab_beta-latest.xpi
 
   wget -P /tmp/ $path_tridactyl_xpi
 
-  print_substep "Accept Tridactyl installation"
-  print_substep "Quit Firefox"
+  echo_substep "Accept Tridactyl installation"
+  echo_substep "Quit Firefox"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -340,9 +394,21 @@ https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
 }
 
 function setup_skim() {
-  print_step "Setting up Skim preferences"
+  # Opens a dummy pdf file used to trigger the creation of Skim's property list
+  # file in ~/Library/Preferences. Sets a few Skim preferences.
+
+  echo_step "Setting up Skim preferences"
+
+  local path_plist_trigger_file=\
+https://github.com/noib3/dotfiles/macOS/bootstrap/Skim_plist_trigger.pdf
+
+  wget -P /tmp/ $path_plist_trigger_file
+
+  echo_substep "Quit Skim in a few seconds"
+  sleep 2
 
   # Open pdf with Skim to generate plist file
+  /Applications/Skim.app/Contents/MacOS/Skim /tmp/Skim_plist_trigger.pdf
 
   # Use Skim as the default PDF viewer
   duti -s net.sourceforge.skim-app.skim .pdf all
@@ -376,7 +442,10 @@ function setup_skim() {
 }
 
 function allow_accessibility() {
-  print_step "Allowing accessibility permissions to skhd, yabai and spacebar"
+  # Allow accessibility permissions to skhd, spacebar, yabai. Then start
+  # redshift, skhd, spacebar, syncthing, transmission-cli, yabai.
+
+  echo_step "Allowing accessibility permissions to skhd, yabai and spacebar"
 
   local path_skhd_bin="$(readlink -f /usr/local/bin/skhd)"
   local path_spacebar_bin=$(readlink -f /usr/local/bin/spacebar)
@@ -386,31 +455,40 @@ function allow_accessibility() {
   sudo tccutil --insert "$path_spacebar_bin"
   sudo tccutil --insert "$path_yabai_bin"
 
+  brew services start redshift
   brew services start skhd
   brew services start spacebar
+  brew services start syncthing
+  brew services start transmission-cli
   brew services start yabai
 
   printf '\n' && sleep 1
 }
 
 function cleanup() {
-  print_step "Cleaning up some files"
+  # Remove unneeded files, either already present in the machine or created
+  # by a function in this script.
 
-  # DESC: Cleans up all the cache/history files
-  # ARGS: None
-  # OUTS: None
-  # NOTE: None
+  echo_step "Cleaning up some files"
 
   # Remove public folder from home folder
-  # rm -rf Public
+  rm -rf ~/Public
   # rm ~/.config/zsh/.zsh-history ~/.CFUserTextEncoding ~/.viminfo ~/.zsh-history
+  rm /tmp/Brewfile
+  rm /tmp/alacritty.info
+  rm /tmp/requirements.txt
+  rm /tmp/tridactyl_no_new_tab_beta-latest.xpi
+  rm /tmp/trinativeinstall.sh
+  rm /tmp/Skim_plist_trigger.pdf
 
   printf '\n' && sleep 1
 }
 
-function reboot() {
+function countdown_reboot() {
+  # Display a nine second countdown, then reboot the system.
+
   for n in {9..0}; do
-    print_reboot "Rebooting in $n"
+    echo_reboot "Rebooting in $n"
     [[ ${n} == 0 ]] || sleep 1
   done
 
@@ -418,9 +496,11 @@ function reboot() {
   osascript -e "tell app \"System Events\" to restart"
 }
 
-check_sip_status
+exit_if_not_darwin
+exit_if_root
+exit_if_sip_enabled
 greeting_message
-# command_line_tools
+command_line_tools
 # whoami_to_sudoers
 # set_sys_defaults
 # get_homebrew
@@ -434,12 +514,16 @@ greeting_message
 # setup_skim
 # allow_accessibility
 # cleanup
-# reboot
+# countdown_reboot
 
 # ----------------------------------------------------------------------------
 
-
 # NOW IT'S PERSONAL
+
+# 4. brew services stop syncthing
+#    edit ~/Library/Application Support/Syncthing/config.xml, change markerName
+#    from .stfolder to wallpapers for /Users/noibe/Sync
+#    brew services start syncthing
 
 # function configure_github_ssh() {
 #   # TODO create ssh key for github
@@ -531,7 +615,7 @@ greeting_message
 # _setup_logi_options
 
 # function allow_accessibility() {
-#   print_step "Allowing accessibility permissions to skhd and yabai"
+#   echo_step "Allowing accessibility permissions to skhd and yabai"
   # Allow dropbox accessibility permissions
   # allow accessibility to logitech options (have to select it manually clicking on +)
 # }
