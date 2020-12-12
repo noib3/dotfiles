@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# Bootstrap a new macOS machine.
+# Bootstraps a new macOS machine.
 
 # TODO
-# 1. fix odourless
-# 2. open pdf file
-# 3. refactor function names and step messages
+# 1. purge dsstore cron job every 60s
+# 2. unload finder service
+# 3. quit finder service
+# 4. remove finder from dock service
 
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
@@ -15,15 +16,15 @@ function error_exit() { printf '\033[31mERROR: \033[0m'"$1"'\n' && exit 1; }
 
 function exit_if_not_darwin() {
   # Checks if the script is being run on a macOS machine. Echoes an error
-  # message and exit if it isn't.
+  # message and exits if it isn't.
 
   [[ "$OSTYPE" == "darwin"* ]] \
     || error_exit "We are not on macOS."
 }
 
 function exit_if_root() {
-  # Checks if the script is being run as root. Echoes an error message and exit
-  # if it is.
+  # Checks if the script is being run as root. Echoes an error message and
+  # exits if it is.
 
   (( EUID != 0 )) \
     || error_exit "This script shouldn't be run as root."
@@ -31,7 +32,7 @@ function exit_if_root() {
 
 function exit_if_sip_enabled() {
   # Checks if System Integrity Protection (SIP) is enabled. Echoes the steps to
-  # disable it and exit if it is.
+  # disable it and exits if it is.
 
   [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') == "disabled" ]] \
     || error_exit "SIP needs to be disabled for the installation.
@@ -45,8 +46,8 @@ To disable it you need to:
 "
 }
 
-function greeting_message() {
-  # Echoes a greeting message listing the passwords needed for a full
+function greetings_message() {
+  # Echoes a greetings message listing the passwords needed for a full
   # installation. Then waits for user input.
 
   echo_start "Starting the installation"
@@ -82,7 +83,7 @@ function whoami_to_sudoers() {
 
 function set_sys_defaults() {
   # Sets some macOS system defaults. Then asks for user input to set the
-  # current timezone and the host name for the new machine.
+  # current timezone and the host name.
 
   echo_step "Setting macOS system preference defaults"
 
@@ -183,9 +184,9 @@ function set_sys_defaults() {
   printf '\n' && sleep 1
 }
 
-function get_homebrew() {
-  # Checks if homebrew is installed, and it install it if it isn't. Then
-  # it installs the formulas listed in the Brewfile in the GitHub repo.
+function homebrew() {
+  # Checks if homebrew is installed, it installs it if it isn't. Then
+  # it installs the formulas taken from the Brewfile in the GitHub repo.
 
   echo_step "Downloading homebrew, then formulas from Brewfile"
 
@@ -204,7 +205,7 @@ https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
   printf '\n' && sleep 1
 }
 
-function patch_square_edges() {
+function patch_window_edges() {
   # Downloads an edited .car file to display windows with squared edges, then
   # substitutes the default one with it.
 
@@ -228,49 +229,201 @@ Contents/Resources/DarkAquaAppearance.car
   printf '\n' && sleep 1
 }
 
-function setup_odourless() {
-  # Downloads and installs Odourless, a program used to prevent Finder from
-  # creating .DS_Store files.
+function unload_Finder {
+  # Creates a service that quits Finder after the user logs in.
 
-  echo_step "Setting up Odourless"
+  echo_step "Creating a new service that quits Finder after loggin in"
 
-  # STOP CREATION OF .DS_Store FILES
-  # download the latest .zip release from 'https://github.com/xiaozhuai/odourless/releases'
-  # move it to /Applications
-  # in case it doesn't launch (in my case it said something like 'this has to be under /Applications', even if it was under /Applications), just run it from the command line:
-  # /Applications/Odourless.app/Contents/MacOS/odourless
-  # install the daemon on the lil gui that pops up
-  # reboot and you should be gucci
+  local agent_scripts_dir=~/.local/agent-scripts
 
-  # download latest release
-  # unzip it
-  # mv ./Odourless.app /Applications/Odourless.app
-  # /Applications/Odourless.app/Contents/Resources/install-daemon
-  # /Applications/Odourless.app/Contents/Resources/start-daemon
-  local path_resources="/Applications/Odourless.app/Contents/Resources"
-  cat "$path_resources/odourless-daemon.plist" \
-  | sed "s#___replace_me_daemon_path__#$path_resources/bin/odourless-daemon#" \
-  | sudo tee /Library/LaunchDaemons/odourless-daemon.plist &>/dev/null
+  mkdir -p "${agent_scripts_dir}"
 
-  launchctl load "/Library/LaunchDaemons/odourless-daemon.plist"
+  cat << EOF >> "${agent_scripts_dir}/unload-Finder.sh"
+#!/usr/bin/env bash
+
+launchctl unload /System/Library/LaunchAgents/com.apple.Finder.plist
+osascript -e 'quit app "Finder"'
+EOF
+
+  chmod +x "${agent_scripts_dir}/unload-Finder.sh"
+
+  cat << EOF >> "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$(whoami).unload-Finder</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${agent_scripts_dir}/unload-Finder.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+EOF
+
+  launchctl load \
+    "${HOME}"/Library/LaunchAgents/"$(whoami)".unload-Finder.plist
+
+  printf '\n' && sleep 1
+}
+
+function add_remove_from_dock {
+  # Add the "Remove from Dock" option when right-clicking the Finder's Dock
+  # icon.
+
+  echo_step "Adding the \"Remove from Dock\" option to the Finder's Dock icon"
+
+  sudo mount -uw /
+
+  sudo /usr/libexec/PlistBuddy \
+    -c "Add :finder-quit:0 dict" \
+    -c "Add :finder-quit:0:command integer 1004" \
+    -c "Add :finder-quit:0:name string REMOVE_FROM_DOCK" \
+    -c "Add :finder-running:0 dict" \
+    -c "Add :finder-running:0:command integer 1004" \
+    -c "Add :finder-running:0:name string REMOVE_FROM_DOCK" \
+      /System/Library/CoreServices/Dock.app/Contents/Resources/DockMenus.plist
+
+  killall Dock
+
+  printf '\n' && sleep 1
+}
+
+function remove_Finder_from_Dock {
+  # Creates a service that removes the Finder icon from the Dock after the user
+  # logs in.
+
+  echo_step "Creating a new service that removes Finder from the Dock"
+
+  local agent_scripts_dir=~/.local/agent-scripts
+
+  mkdir -p "${agent_scripts_dir}"
+
+  cat << EOF >> "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+#!/usr/bin/env bash
+
+osascript -e 'tell application "System Events"' \\
+          -e    'tell UI element "Finder" of list 1 of process "Dock"' \\
+          -e        'perform action "AXShowMenu"' \\
+          -e        'click menu item "Remove from Dock" of menu 1' \\
+          -e    'end tell' \\
+          -e 'end tell'
+EOF
+
+  chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+
+  cat << EOF >> \
+    "${HOME}/Library/LaunchAgents/$(whoami).remove-Finder-from-Dock.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$(whoami).remove-Finder-from-Dock</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${agent_scripts_dir}/remove-Finder-from-Dock.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+EOF
+
+  launchctl load \
+    "${HOME}"/Library/LaunchAgents/"$(whoami)".remove-Finder-from-Dock.plist
+
+  printf '\n' && sleep 1
+}
+
+function purge_DSStore {
+  # Creates a service that every 60 seconds searches every .DS_Store file in /
+  # and deletes them.
+
+  echo_step "Creating a new service that deletes every .DS_Store file every \
+60 seconds"
+
+  local agent_scripts_dir=~/.local/agent-scripts
+
+  mkdir -p "${agent_scripts_dir}"
+
+  cat << EOF >> "${agent_scripts_dir}/purge-DSStore.sh"
+#!/usr/bin/env bash
+
+sudo mount -uw /
+osascript -e 'quit app "Finder"'
+fd -uu ".DS_Store" / -X sudo rm
+EOF
+
+  chmod +x "${agent_scripts_dir}/purge-DSStore.sh"
+
+  cat << EOF >> "${HOME}/Library/LaunchAgents/$(whoami).purge-DSStore.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$(whoami).purge-DSStore</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${agent_scripts_dir}/purge-DSStore.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>StartInterval</key>
+  <integer>60</integer>
+  <key>ThrottleInterval</key>
+  <integer>0</integer>
+</dict>
+</plist>
+EOF
+
+  launchctl load \
+    "${HOME}"/Library/LaunchAgents/"$(whoami)".purge-DSStore.plist
 
   printf '\n' && sleep 1
 }
 
 function setup_dotfiles() {
-  # Downloads the current dotfiles from the GitHub repo, then moves them to
-  # ~/.config.
+  # Downloads the current dotfiles from the GitHub repo. Replaces the username
+  # in "firefox/userChrome.css" and "alacritty/alacritty.yml" with $(whoami).
+  # Lastly, it overrides ~/.config with the cloned repo.
 
-  echo_step "Downloading and installing dotfiles from noib3/dotfiles"
+  echo_step "Downloading and installing dotfiles \
+from noib3/dotfiles (macOS branch)"
 
-  git clone https://github.com/noib3/dotfiles --branch macOS /tmp/dotfiles
+  git clone git@github.com:noib3/dotfiles.git --branch macOS /tmp/dotfiles
+
+  sed -i "s@/Users/[^/]*/\(.*\)@/Users/`whoami`/\1@g" \
+    /tmp/dotfiles/alacritty/alacritty.yml \
+    /tmp/dotfiles/firefox/userChrome.css
+
   rm -rf ~/.config
   mv /tmp/dotfiles ~/.config
 
   printf '\n' && sleep 1
 }
 
-function setup_fish() {
+function chsh_fish() {
   # Adds fish to the list of the valid shells, then sets fish as the chosen
   # login shell.
 
@@ -282,7 +435,7 @@ function setup_fish() {
   printf '\n' && sleep 1
 }
 
-function setup_alacritty() {
+function terminfo_alacritty() {
   # Downloads and installs the terminfo database for alacritty.
 
   local path_alacritty_terminfo=\
@@ -295,8 +448,8 @@ alacritty/alacritty/master/extra/alacritty.info
   printf '\n' && sleep 1
 }
 
-function setup_python() {
-  # Installs all python modules listed in the requirements.txt file in the
+function python_install_modules() {
+  # Installs the python modules taken from the requirements.txt file in the
   # GitHub repo.
 
   echo_step "Downloading python modules"
@@ -311,7 +464,7 @@ macOS/boostrap/requirements.txt
   printf '\n' && sleep 1
 }
 
-function setup_vimplug() {
+function vimplug_install() {
   # Downloads vim-plug, a tool to manage Vim plugins.
 
   echo_step "Installing vim-plug"
@@ -348,8 +501,8 @@ function setup_firefox() {
     --setDefaultBrowser \
     --new-tab "about:preferences#sync" \
 
-  profiles=\
-"$(ls "~/Library/Application Support/Firefox/Profiles/" | grep release)"
+  profiles="$(ls "~/Library/Application Support/Firefox/Profiles/" \
+                | grep release)"
 
   # Symlink firefox config
   for profile in "${profiles[@]}"; do
@@ -471,15 +624,13 @@ function cleanup() {
 
   echo_step "Cleaning up some files"
 
-  # Remove public folder from home folder
-  rm -rf ~/Public
-  # rm ~/.config/zsh/.zsh-history ~/.CFUserTextEncoding ~/.viminfo ~/.zsh-history
-  rm /tmp/Brewfile
-  rm /tmp/alacritty.info
-  rm /tmp/requirements.txt
-  rm /tmp/tridactyl_no_new_tab_beta-latest.xpi
-  rm /tmp/trinativeinstall.sh
-  rm /tmp/Skim_plist_trigger.pdf
+  # rm -rf ~/Public
+  # rm /tmp/Brewfile
+  # rm /tmp/alacritty.info
+  # rm /tmp/requirements.txt
+  # rm /tmp/tridactyl_no_new_tab_beta-latest.xpi
+  # rm /tmp/trinativeinstall.sh
+  # rm /tmp/Skim_plist_trigger.pdf
 
   printf '\n' && sleep 1
 }
@@ -499,17 +650,21 @@ function countdown_reboot() {
 exit_if_not_darwin
 exit_if_root
 exit_if_sip_enabled
-greeting_message
+greetings_message
 command_line_tools
 # whoami_to_sudoers
 # set_sys_defaults
-# get_homebrew
-# patch_square_edges
-# setup_odourless
+# homebrew
+# patch_window_edges
+# unload_Finder
+# add_remove_from_dock
+# remove_Finder_from_Dock
+# purge_DSStore
 # setup_dotfiles
-# setup_fish
-# setup_github
-# setup_vimplug
+# chsh_fish
+# terminfo_alacritty
+# python_install_modules
+# vimplug_install
 # setup_firefox
 # setup_skim
 # allow_accessibility
@@ -583,10 +738,6 @@ command_line_tools
 
 # }
 # set_wallpaper
-
-# _setup_skim() {
-# }
-# _setup_skim
 
 # _setup_calcurse() {
 #   # 14. download calcurse

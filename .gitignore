@@ -1,4 +1,5 @@
 /configstore/
-/nvim/plugged/
-/nvim/coc/
+/fish/fundle/
 /fish/fish_variables
+/nvim/coc/
+/nvim/plugged/

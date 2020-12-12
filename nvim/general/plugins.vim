@@ -40,7 +40,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'elzr/vim-json'
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
-  Plug 'LnL7/vim-nix'
   Plug 'tridactyl/vim-tridactyl'
 
   " Colorschemes

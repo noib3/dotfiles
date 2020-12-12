@@ -11,6 +11,7 @@
 
 /.config/calcurse/
 /.config/configstore/
+/.config/fish/fundle/
 /.config/nvim/plugged/
 /.config/nvim/coc/
 
