@@ -5,7 +5,7 @@ alt - return : alacritty --title "floating" --dimensions 65 15
 cmd - f : alacritty --command fish -c "lf ~/Downloads"
 cmd - g : alacritty --command btm
 cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
-                                       -D $CLOUDDIR/calcurse
+                                       -D $PRIVATEDIR/calcurse
 
 cmd - space : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 

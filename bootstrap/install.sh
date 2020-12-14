@@ -2,12 +2,6 @@
 #
 # Bootstraps a new macOS machine.
 
-# TODO
-# 1. purge dsstore cron job every 60s
-# 2. unload finder service
-# 3. quit finder service
-# 4. remove finder from dock service
-
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
 function echo_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
@@ -618,6 +612,102 @@ function allow_accessibility() {
   printf '\n' && sleep 1
 }
 
+function setup_logi_options() {
+  # Opens the Logi Options app to log in and recover the settings for the MX
+  # Master 2S mouse.
+
+  echo_step "Opening the Logi Options app"
+
+  echo_substep "Log in to recover all the MX Master settings"
+
+  /Applications/Logi\ Options.app/Contents/MacOS/Logi\ Options &>/dev/null
+
+  printf '\n' && sleep 1
+}
+
+function setup_syncthing() {
+  # qweq
+
+  echo_step "Sync directories"
+  /Applications/Firefox.app/Contents/MacOS/firefox \
+    --new-tab "http://127.0.0.1:8384/#" \
+    --new-tab "https://64.227.35.152:8384/#"
+
+  brew services stop syncthing
+  # edit ~/Library/Application Support/Syncthing/config.xml, change markerName
+  # from .stfolder to wallpapers for /Users/noibe/Sync
+  brew services start syncthing
+
+  printf '\n' && sleep 1
+}
+
+function github_add_ssh_key() {
+  # Creates a new ssh key for pushing to GitHub without having to input any
+  # password. Adds the public key to the clipboard. Opens GitHub's settings
+  # page in Firefox to add the newly generated key to the list of accepted
+  # keys.
+
+  echo_step "Creating new ssh key for GitHub"
+
+  echo_substep "Leave the default value for the key path \
+(/Users/$(whomai)/.ssh/id_rsa)"
+  echo_substep "Leave the passphrase empty"
+
+  ssh-keygen -t rsa -C "riccardo.mazzarini@pm.me"
+  cat ~/Sync/private/ssh/id_rsa.pub | pbcopy
+
+  echo_substep "The public key in id_rsa.pub is in the clipboard"
+  echo_substep "Log in to GitHub, choose a name for the new key and paste the
+key from the clipboard"
+
+  /Applications/Firefox.app/Contents/MacOS/firefox
+    --new-tab "https://github.com/settings/ssh/new" \
+
+  echo_substep "Answer \"yes\""
+  ssh -T git@github.com
+
+  printf '\n' && sleep 1
+}
+
+function setup_transmission {
+  # Setup transmission notify done script
+
+  echo_step "Setting up Transmission notify script"
+
+  transmission-remote \
+    --torrent-done-script "${HOME}"/Sync/code/scripts/transmission/notify-done
+
+  printf '\n' && sleep 1
+}
+
+function setup_symlinks {
+  # Setup symlinks
+
+  echo_step "Setup symlinks"
+
+  ln -s ~/Sync/private/ssh "${HOME}"/.ssh
+  ln -s ~/Sync/dotfiles "${HOME}"/.config
+
+  ln -s ~/Sync/code/ndiet/ndiet.py /usr/local/bin/ndiet
+  ln -s ~/Sync/code/ndiet/pantry.txt "${HOME}"/.local/share/ndiet/pantry.txt
+  ln -s ~/Sync/code/ndiet/diets "${HOME}"/.local/share/ndiet/diets
+
+  ln -s \
+    ~/Sync/private/auto-selfcontrol/config.json \
+    /usr/local/etc/auto-selfcontrol/config.json
+
+  printf '\n' && sleep 1
+}
+
+function set_spotlight_binding() {
+  # System Preferences -> Keyboard -> Shortcuts -> Show Spotlight Search ->
+  # Cmd-O.
+
+  echo_step ""
+
+  printf '\n' && sleep 1
+}
+
 function cleanup() {
   # Remove unneeded files, either already present in the machine or created
   # by a function in this script.
@@ -632,6 +722,34 @@ function cleanup() {
   # rm /tmp/trinativeinstall.sh
   # rm /tmp/Skim_plist_trigger.pdf
 
+  printf '\n' && sleep 1
+}
+
+function create_todo_file() {
+  # DESC: Creates a TODO.md file in the home directory with all the steps left
+  #       to have a finished working environment
+
+  # Logitech options -> zoom with wheel,
+  # Logitech options -> Point & Scroll -> Scroll direction -> Natural,
+  # Thumb wheel direction -> Inverted
+  # set pointer and scrolling speed
+  # Smooth scrolling -> disabled
+  # 36. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and
+  # 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need
+  # them to work with qutebrowser, otherwise stick with forward and back)'
+  # allow accessibility to logitech options (have to select it manually
+  # clicking on +)
+
+  cat > $HOME/TODO.md << EOF
+# TODO.md
+
+1. do this;
+2. do that;
+3. attach an external display and rearrange so that the external is the main
+   one;
+4. login youtube, switch account and enable dark mode and english;
+5. log into bitwarden, unlock it, then Settings -> Vault timeout -> Never;
+EOF
   printf '\n' && sleep 1
 }
 
@@ -668,126 +786,22 @@ command_line_tools
 # setup_firefox
 # setup_skim
 # allow_accessibility
-# cleanup
-# countdown_reboot
 
-# ----------------------------------------------------------------------------
+# These functions are specific to my particular setup. Things like configuring
+# settings for my Logitech MX Master mouse, adding a new SSH key to my GitHub
+# account, synching directories from a remote server, etc.
 
-# NOW IT'S PERSONAL
-
-# 4. brew services stop syncthing
-#    edit ~/Library/Application Support/Syncthing/config.xml, change markerName
-#    from .stfolder to wallpapers for /Users/noibe/Sync
-#    brew services start syncthing
-
-# function configure_github_ssh() {
-#   # TODO create ssh key for github
-#   #      ssh-keygen -t rsa -C "riccardo.mazzarini98@gmail.com"
-#   # TODO copy the content of ~/.ssh/id_rsa.pub, go to github -> settings -> ssh
-#   #      and gpg keys -> new ssh key -> paste
-#   # TODO answer 'yes' to
-#   #      ssh -T git@github.com
-#   # TODO go to the repository on github, close or download -> use ssh url, copy
-#   #      that url and paste it in <git_repo>/.git/config under [remote "origin"]
-#   # TODO Use /usr/local/etc/gitconfig for git config file instead of
-#   #      ~/.config/gitconfig. To use that you need to use the --system flag, so
-#   #      for ex 'git config --system user.name n0ibe' etc. To list all configs
-#   #      and the file where they are defined use 'git config --list --show-origin'
-#   # TODO for every git folder downloaded, edit the remote origin url in the git
-#   #      config file to be of the form git@github.com:n0ibe/<repo_name>.git
-# }
-
-# create_todo_file() {
-#   # DESC: Creates a TODO.txt file in the home directory with all the steps left
-#   #       to have a finished working environment
-#   # ARGS: None
-#   # OUTS: None
-#   # NOTE: None
-
-#   cat >$HOME/TODO.txt << EOL
-# 1. Do this
-# 2. Do that
-# 3. Attach an external display and rearrange so that the external is the main one
-# Sign in to gmail to get bitwarden master password
-# login youtube, switch account and enable dark mode and english
-# Log into bitwarden, unlock it, then Settings -> Vault timeout -> Never
-# EOL
-# }
-
-# _setup_scripts() {
-#   # 12. download scripts folder
-#   #      git clone https://github.com/n0ibe/scripts
-#   # 15. link at login files
-#   #       cd /Library/LaunchDaemons
-#   #       sudo ln -s ~/scripts/@login/Odourless/odourless-daemon.plist
-#   #       launchctl load /Library/LaunchDaemons/odourless-daemon.plist
-#   #       reboot and test if it works
-#   # 18. link login files
-#   #     cd ~/Library/LaunchAgents
-#   #     ln -s ~/scripts/@login/....plist
-#   #     launchctl load ./*.plist
-# }
-# _setup_scripts
-
-# function setup_transmission() {
-#   transmission-remote --torrent-done-script \
-#     ~/Dropbox/scripts/transmission/notify-done.sh
-# }
-
-# set_wallpaper() {
-
-# }
-# set_wallpaper
-
-# _setup_calcurse() {
-#   # 14. download calcurse
-#   #       git clone https://github.com/n0ibe/calcurse
-#   #       mv calcurse ~/.local/share/
-# }
-# _setup_calcurse
-
-# _setup_ndiet() {
-#   # 20. install ndiet
-#   #       mkdir ~/bin && cd ~/bin
-#   #       git clone https://github.com/n0ibe/ndiet
-#   #       pip3 install pyfiglet
-#   #       pip3 install docopt
-#   #       pip3 install gkeepapi
-# }
-# _setup_ndiet
-
-# _setup_logi_options() {
-#   # 31. Logitech options -> zoom with wheel,
-#   #     Logitech options -> Point & Scroll -> Scroll direction -> Natural, Thumb wheel direction -> Inverted
-#   #     set pointer and scrolling speed
-#   #     Smooth scrolling -> disabled
-#   # 36. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need them to work with qutebrowser, otherwise stick with forward and back)'
-# }
-# _setup_logi_options
-
-# function allow_accessibility() {
-#   echo_step "Allowing accessibility permissions to skhd and yabai"
-  # Allow dropbox accessibility permissions
-  # allow accessibility to logitech options (have to select it manually clicking on +)
-# }
-
-# function reboot() {
-#   for n in {9..0}; do
-#     print_reboot "Rebooting in $n"
-#     [[ ${n} == 0 ]] || sleep 1
-#   done
-
-#   printf '\n\n'
-#   osascript -e "tell app \"System Events\" to restart"
-# }
-
-# configure_github_ssh
-# configure_clouded
-# configure_remote_server
-# setup_calcurse
-# setup_transmission
 # setup_logi_options
-# create_todo_file
+# setup_syncthing
+# github_add_ssh_key
+# setup_transmission
+# setup_symlinks
+# set_spotlight_binding
 # set_wallpaper
+
+# Cleanup leftover files, create a TODO.md file listing the things left to do
+# to get back to full speed. Lastly, reboot the system.
+
 # cleanup
-# reboot
+# todo_dot_md
+# countdown_reboot
