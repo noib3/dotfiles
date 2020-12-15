@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-source $(dirname $0)/fonts/RobotoMono.sh
-source $(dirname $0)/colorschemes/gruvbox.sh
+source "$(dirname $0)"/fonts/RobotoMono.sh
+source "$(dirname $0)"/colorschemes/onedark.sh
 
 spacebar -m config height 21
 spacebar -m config spacing_left 25
 spacebar -m config spacing_right 35
 
-spacebar -m config text_font "$text_font"
-spacebar -m config icon_font "$icon_font"
+spacebar -m config text_font "${text_font}"
+spacebar -m config icon_font "${icon_font}"
 
 spacebar -m config background_color 0xff${background_color//#}
 spacebar -m config foreground_color 0xff${foreground_color//#}

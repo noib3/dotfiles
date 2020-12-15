@@ -1,9 +1,11 @@
 :root {
-  --color-about-blank: #1a1a1a;
+  /* --color-about-blank: #1a1a1a; */
+  /* --color-about-blank: #1a1a1a; */
+  --color-about-blank: #282c34;
 }
 
 @-moz-document url-prefix(about:blank) {
   * {
-    background-color: var(--color-about-blank);
+    background-color: var(--color-about-blank) !important;
   }
 }

@@ -48,6 +48,14 @@ function! s:patch_gruvbox_colors() " {{{1
   highlight texComment guifg=#928374
 endfunction " }}}1
 
+function! s:patch_onedark_colors() " {{{1
+  highlight VertSplit guifg=NONE guibg=#3e4452
+  highlight SpellBad guifg=#e06c75 gui=underline
+  highlight SpellCap guifg=#d19a66 gui=NONE
+  highlight FloatermBorder guifg=#5c6073
+  highlight FzfBorder guifg=#5c6073
+endfunction " }}}1
+
 if g:colorscheme ==# "gruvbox"
   let g:gruvbox_invert_selection=0
 endif

@@ -2,12 +2,6 @@
 #
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
-# TODO
-# 1. Edit syncthing config file, change Markername from .stfolder to wallpapers
-# 2. Move spotlight binding from cmd-space to cmd-o
-# 3. Symlink dotfiles to ~/.config
-# 4. Set wallpaper
-
 # AFTER TESTING
 # 1. cleanup
 # 2. todo_dot_md
@@ -458,8 +452,9 @@ function setup_firefox() {
     --setDefaultBrowser \
     --new-tab "about:preferences#sync" \
 
-  profiles="$(ls "~/Library/Application Support/Firefox/Profiles/" \
-                | grep release)"
+  profiles="$(\
+    ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
+  )"
 
   # Symlink firefox config
   for profile in "${profiles[@]}"; do
@@ -629,9 +624,36 @@ ${local_sync_path}"
     --new-tab "http://127.0.0.1:8384/#" \
     --new-tab "https://64.227.35.152:8384/#"
 
-  # brew services stop syncthing
-  # sed -i 's///g' "${HOME}/Library/Application Support/Syncthing/config.xml"
-  # brew services start syncthing
+  brew services stop syncthing
+  xml ed --inplace \
+    -u "/configuration/folder[@path='${local_sync_path}']/markerName" \
+    -v "wallpapers" \
+    "${HOME}/Library/Application Support/Syncthing/config.xml"
+  rm -rf "${local_sync_path}/.stfolder"
+  brew services start syncthing
+
+  printf '\n' && sleep 1
+}
+
+function setup_sync_symlinks {
+  # Sets up symlinks from various directories and files to ~/Sync.
+
+  echo_step "Setting up symlinks to ~/Sync"
+
+  ln -s "${HOME}/Sync/private/ssh" "${HOME}/.ssh"
+
+  rm -rf "${HOME}/.config"
+  ln -s "${HOME}/Sync/dotfiles/macOS" "${HOME}/.config"
+
+  ln -s "${HOME}/Sync/code/ndiet/ndiet.py" /usr/local/bin/ndiet
+  ln -s "${HOME}/Sync/code/ndiet/diets" "${HOME}/.local/share/ndiet/diets"
+  ln -s \
+    "${HOME}/Sync/code/ndiet/pantry.txt" \
+    "${HOME}/.local/share/ndiet/pantry.txt"
+
+  ln -s \
+    "${HOME}/Sync/private/auto-selfcontrol/config.json" \
+    /usr/local/etc/auto-selfcontrol/config.json
 
   printf '\n' && sleep 1
 }
@@ -680,40 +702,20 @@ function transmission_torrent_done_script {
   printf '\n' && sleep 1
 }
 
-function setup_symlinks {
-  # Setup symlinks
-
-  echo_step "Setup symlinks"
-
-  ln -s "${HOME}/Sync/private/ssh" "${HOME}/.ssh"
-  ln -s "${HOME}/Sync/dotfiles" "${HOME}/.config"
-
-  ln -s "${HOME}/Sync/code/ndiet/ndiet.py" /usr/local/bin/ndiet
-  ln -s "${HOME}/Sync/code/ndiet/diets" "${HOME}/.local/share/ndiet/diets"
-  ln -s \
-    "${HOME}/Sync/code/ndiet/pantry.txt" \
-    "${HOME}/.local/share/ndiet/pantry.txt"
-
-  ln -s \
-    "${HOME}/Sync/private/auto-selfcontrol/config.json" \
-    /usr/local/etc/auto-selfcontrol/config.json
-
-  printf '\n' && sleep 1
-}
-
-function set_spotlight_to_cmd_o() {
-  # System Preferences -> Keyboard -> Shortcuts -> Show Spotlight Search ->
-  # Cmd-O.
-
-  echo_step ""
-
-  printf '\n' && sleep 1
-}
-
 function set_wallpaper() {
-  #
+  # Fetches the current $COLORSCHEME from fish/conf.d/exports.fish, then sets
+  # the wallpaper to ~/Sync/wallpapers/$COLORSCHEME.png.
 
-  echo_step ""
+  local colorscheme="$(\
+    grep 'set\s*-x\s*COLORSCHEME' "$HOME/.config/fish/conf.d/exports.fish" \
+    sed 's/set\s*-x\s*COLORSCHEME\s*\(.*\)$/\1/'
+  )"
+
+  echo_step "Changing the wallpaper to ${colorscheme}.png"
+
+  osascript -e \
+    "tell application \"Finder\" to set desktop picture \
+      to POSIX file \"${HOME}/Sync/wallpapers/${colorscheme}.png\"" &>/dev/null
 
   printf '\n' && sleep 1
 }
@@ -802,14 +804,13 @@ brew_start_services
 
 # These functions are specific to my particular setup. Things like configuring
 # settings for my Logitech MX Master mouse, adding a new SSH key to my GitHub
-# account, synching directories from a remote server, etc.
+# account or synching directories from a remote server.
 
 setup_logi_options
 syncthing_sync_from_server
+setup_sync_symlinks
 github_add_ssh_key
 transmission_torrent_done_script
-setup_symlinks
-move_spotlight_to_cmd_o
 set_wallpaper
 
 # Cleanup leftover files, create a TODO.md file listing the things left to do

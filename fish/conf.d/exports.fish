@@ -1,14 +1,14 @@
-set -x COLORSCHEME gruvbox
+set -x COLORSCHEME onedark
 set -x SCRIPTSDIR $HOME/Sync/code/scripts
 set -x SSHOTDIR $HOME/Sync/screenshots
 set -x PRIVATEDIR $HOME/Sync/private
 
 set PATH ""
+set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
+set PATH $PATH /Applications/Firefox.app/Contents/MacOS
 set PATH $PATH /usr/local/opt/coreutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/findutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/gnu-sed/libexec/gnubin
-set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
-set PATH $PATH /Applications/Firefox.app/Contents/MacOS
 set PATH $PATH /Library/TeX/texbin
 set PATH $PATH /usr/local/sbin
 set PATH $PATH /usr/local/bin

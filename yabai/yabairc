@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source $(dirname $0)/colorschemes/gruvbox.sh
+source "$(dirname $0)"/colorschemes/onedark.sh
 
 yabai -m config window_placement second_child
 yabai -m config window_topmost on
@@ -22,6 +22,7 @@ yabai -m rule --add app="Digital Colour Meter" manage=off
 yabai -m rule --add app="System Preferences" manage=off
 yabai -m rule --add app="Activity Monitor" manage=off
 yabai -m rule --add app="Font Book" manage=off
+yabai -m rule --add app="App Store" manage=off
 yabai -m rule --add app="Logi Options" manage=off
 
 yabai -m rule --add title="floating" manage=off
