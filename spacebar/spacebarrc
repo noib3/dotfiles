@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source $(dirname $0)/fonts/JetBrainsMono.sh
+source $(dirname $0)/fonts/RobotoMono.sh
 source $(dirname $0)/colorschemes/gruvbox.sh
 
 spacebar -m config height 21

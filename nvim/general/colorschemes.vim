@@ -1,4 +1,4 @@
-let g:colorscheme = "gruvbox"
+let g:colorscheme = "onedark"
 
 augroup colorschemes
   autocmd!

@@ -44,5 +44,6 @@ call plug#begin('~/.config/nvim/plugged')
 
   " Colorschemes
   Plug 'morhetz/gruvbox'
+  Plug 'joshdick/onedark.vim'
   Plug 'danilo-augusto/vim-afterglow'
 call plug#end()

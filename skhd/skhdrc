@@ -3,7 +3,7 @@ ctrl - w : open -na /Applications/Firefox.app
 cmd - return : alacritty
 alt - return : alacritty --title "floating" --dimensions 65 15
 cmd - f : alacritty --command fish -c "lf ~/Downloads"
-cmd - g : alacritty --command btm
+cmd - g : alacritty --command gotop
 cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
                                        -D $PRIVATEDIR/calcurse
 

@@ -1,6 +1,6 @@
 import:
-  - /Users/noibe/.config/alacritty/fonts/JetBrainsMono.yml
-  - /Users/noibe/.config/alacritty/colorschemes/gruvbox.yml
+  - /Users/noibe/.config/alacritty/fonts/RobotoMono.yml
+  - /Users/noibe/.config/alacritty/colorschemes/onedark.yml
 
 shell:
   program: /usr/local/bin/fish
