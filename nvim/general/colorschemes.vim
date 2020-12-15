@@ -1,4 +1,4 @@
-let g:colorscheme = "onedark"
+let g:colorscheme = $COLORSCHEME
 
 augroup colorschemes
   autocmd!

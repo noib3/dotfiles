@@ -5,9 +5,12 @@ set ifs "\n"
 set info "size"
 set period 1
 set previewer "~/.config/lf/previewer"
-# set promptfmt "\033[0;38;2;180;201;115m%u\033[0m@%h \033[1;38;2;108;154;187m%w\033[0m%f" # afterglow
-# set promptfmt "\033[0;38;2;152;152;26m%u\033[0m@%h \033[1;38;2;69;133;136m%w\033[0m%f" # gruvbox
-set promptfmt "\033[0;38;2;152;195;121m%u\033[0m@%h \033[1;38;2;97;175;239m%w\033[0m%f" # onedark
+# Afterglow
+# set promptfmt "\033[0;38;2;180;201;115m%u\033[0m@%h \033[1;38;2;108;154;187m%w\033[0m%f"
+# Gruvbox
+# set promptfmt "\033[0;38;2;152;152;26m%u\033[0m@%h \033[1;38;2;69;133;136m%w\033[0m%f"
+# Onedark
+set promptfmt "\033[0;38;2;152;195;121m%u\033[0m@%h \033[1;38;2;97;175;239m%w\033[0m%f"
 set shell "bash"
 set timefmt "| 2006-Jan-02 @ 15:04:05"
 
@@ -54,8 +57,9 @@ cmd remove_executable %{{
 
 cmd set_wallpaper ${{
   [[ $(file -b --mime-type "$f") == image/* ]] \
-    && osascript -e "tell application \"Finder\" to set desktop picture to \
-                      POSIX file \"$f\"" &>/dev/null \
+    && osascript -e \
+        "tell application \"Finder\" to set desktop picture to POSIX file \
+          \"$f\"" &>/dev/null \
     && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
     || lf -remote "send $id echoerr 'Error: could not set wallpaper'"
   osascript -e "quit app \"Finder\"" &>/dev/null
@@ -63,31 +67,33 @@ cmd set_wallpaper ${{
 
 cmd eject_disk ${{
   clear
-  space_left=$(\
+  space_left=$( \
     diskutil info "$f" 2>/dev/null \
     | sed -n "s/.*Volume Free Space:\s*//p" \
     | awk '{print $1, $2}'\
   )
   diskutil eject "$f" &>/dev/null \
-    && lf -remote "send $id echo \"\033[32m$(basename $f) has been properly \
-                    ejected\033[0m\"" \
-    && terminal-notifier -title "Disk ejected" \
-                         -subtitle "$(basename $f) has been ejected" \
-                         -message "There are ${space_left} left on disk" \
-                         -appIcon "${HOME}/.config/lf/hard-disk-icon.png" \
+    && lf -remote \
+        "send $id echo \"\033[32m$(basename $f) has been properly \
+          ejected\033[0m\"" \
+    && terminal-notifier \
+        -title "Disk ejected" \
+        -subtitle "$(basename $f) has been ejected" \
+        -message "There are ${space_left} left on disk" \
+        -appIcon "${HOME}/.config/lf/hard-disk-icon.png" \
     || lf -remote "send $id echoerr 'Error: could not eject disk'"
 }}
 
 cmd fuzzy_edit ${{
   clear
   filename="$(fzf --prompt="Edit> " --multi --height=8)" \
-    && $EDITOR ~/"$filename" \
+    && $EDITOR "${HOME}/${filename}" \
     || true
 }}
 
 cmd fuzzy_cd ${{
   clear
-  dirname="$(\
+  dirname="$( \
     eval $(echo $FZF_ONLYDIR_COMMAND) \
     | fzf --prompt="Cd> " --height=8 \
   )" \

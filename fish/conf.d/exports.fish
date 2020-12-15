@@ -41,9 +41,21 @@ set -x npm_config_cache $HOME/.cache/npm
 set -x FZF_DEFAULT_COMMAND \
 "fd --base-directory ~ --hidden --type f --color always"
 
+# The following colors where obtained from
+# https://hexcolorcodes.org/lighten-color, taking a colorscheme's terminal
+# background color and choosing a "Lighten amount" of 10.
+switch $COLORSCHEME
+  case afterglow
+      set fzf_bgplus_color "#242424"
+  case gruvbox
+    set fzf_bgplus_color "#323232"
+  case onedark
+    set fzf_bgplus_color "#32363e"
+end
+
 set -x FZF_DEFAULT_OPTS \
 "--reverse --no-bold --info=inline --hscroll-off=50 --ansi \
---color='hl:-1:underline,fg+:-1:regular:italic' \
+--color='hl:-1:underline,fg+:-1:regular:italic,bg+:$fzf_bgplus_color' \
 --color='hl+:-1:underline:italic,prompt:4:regular,pointer:1'"
 
 set -x FZF_ONLYDIR_COMMAND \

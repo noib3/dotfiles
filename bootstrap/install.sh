@@ -71,6 +71,7 @@ function command_line_tools() {
   echo_step "Installing command line tools"
   xcode-select --print-path &>/dev/null \
     || xcode-select --install &>/dev/null
+
   printf '\n' && sleep 1
 }
 
@@ -214,7 +215,7 @@ function patch_window_edges() {
 
   echo_step "Patching UI to get squared window edges"
 
-  # https://cutt.ly/IhTI04v
+  # See https://cutt.ly/IhTI04v
 
   local path_edited_car_file=\
 https://github.com/tsujp/custom-macos-gui/tree/master/DarkAquaAppearance/\
@@ -452,12 +453,12 @@ function setup_firefox() {
     --setDefaultBrowser \
     --new-tab "about:preferences#sync" \
 
-  profiles="$(\
+  firefox_profiles="$(\
     ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
   )"
 
   # Symlink firefox config
-  for profile in "${profiles[@]}"; do
+  for profile in "${firefox_profiles[@]}"; do
     ln -s --force \
       "${HOME}/.config/firefox/user.js" \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
@@ -610,7 +611,7 @@ function syncthing_sync_from_server() {
 
   local remote_droplet_name=Ocean
   local remote_sync_path=/home/noibe/Sync
-  local local_sync_path=/Users/"$(whoami)"/Sync
+  local_sync_path=/Users/"$(whoami)"/Sync
 
   printf "\n"
   echo_substep "Add ${remote_droplet_name} to this machine's remote devices"
@@ -644,6 +645,12 @@ function setup_sync_symlinks {
 
   rm -rf "${HOME}/.config"
   ln -s "${HOME}/Sync/dotfiles/macOS" "${HOME}/.config"
+
+  for profile in "${firefox_profiles[@]}"; do
+    ln --force \
+      "${local_sync_path}/dotfiles/macOS/firefox/userContent.css" \
+      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
+  done
 
   ln -s "${HOME}/Sync/code/ndiet/ndiet.py" /usr/local/bin/ndiet
   ln -s "${HOME}/Sync/code/ndiet/diets" "${HOME}/.local/share/ndiet/diets"

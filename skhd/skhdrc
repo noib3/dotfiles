@@ -1,13 +1,14 @@
 ctrl - w : open -na /Applications/Firefox.app
 
+cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 cmd - return : alacritty
 alt - return : alacritty --title "floating" --dimensions 65 15
-cmd - f : alacritty --command fish -c "lf ~/Downloads"
+cmd - f : alacritty --command fish -c "lf ${HOME}/Downloads"
 cmd - g : alacritty --command gotop
-cmd - a : alacritty --command calcurse -C ~/.config/calcurse \
-                                       -D $PRIVATEDIR/calcurse
-
-cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
+cmd - a : \
+  alacritty --command calcurse \
+    -C $HOME/.config/calcurse \
+    -D $PRIVATEDIR/calcurse
 
 cmd - d [
   "Firefox" : skhd --key "f4"
@@ -70,14 +71,15 @@ alt + cmd - left : yabai -m window --move rel:-25:0
 alt + cmd - right : yabai -m window --move rel:25:0
 
 # Move windows to spaces and follow focus
-alt + cmd - n : yabai -m space --create \
-                && yabai -m window --space last \
-                && yabai -m space --focus last
 alt + cmd - 1 : yabai -m window --space 1 && yabai -m space --focus 1
 alt + cmd - 2 : yabai -m window --space 2 && yabai -m space --focus 2
 alt + cmd - 3 : yabai -m window --space 3 && yabai -m space --focus 3
 alt + cmd - 4 : yabai -m window --space 4 && yabai -m space --focus 4
 alt + cmd - 5 : yabai -m window --space 4 && yabai -m space --focus 5
+alt + cmd - n : \
+  yabai -m space --create \
+    && yabai -m window --space last \
+    && yabai -m space --focus last
 
 # Focus spaces
 alt - 1 : yabai -m space --focus 1
@@ -104,21 +106,23 @@ alt + cmd - w : yabai -m window --close && yabai -m space --destroy
 # Screenshot the whole screen and send a notification (uses fish syntax)
 shift + cmd - 3 : \
   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-  && screencapture "$sshot" \
-  && terminal-notifier -title "New screenshot" \
-                       -subtitle (basename "$sshot") \
-                       -message "Saved in "(dirname "$sshot") \
-                       -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage "$sshot"
+    && screencapture "$sshot" \
+    && terminal-notifier \
+          -title "New screenshot" \
+          -subtitle (basename "$sshot") \
+          -message "Saved in "(dirname "$sshot") \
+          -appIcon "$HOME/.config/skhd/picture-icon.png" \
+          -contentImage "$sshot"
 
 # Screenshot a portion of the screen and send a notification if the screenshot
 # wasn't cancelled (uses fish syntax).
 shift + cmd - 4 : \
   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-  && screencapture -i "$sshot" \
-  && ls "$sshot" \
-  && terminal-notifier -title "New screenshot" \
-                       -subtitle (basename "$sshot") \
-                       -message "Saved in "(dirname "$sshot") \
-                       -appIcon ~/.config/skhd/screenshot-icon.png \
-                       -contentImage "$sshot"
+    && screencapture -i "$sshot" \
+    && ls "$sshot" \
+    && terminal-notifier \
+          -title "New screenshot" \
+          -subtitle (basename "$sshot") \
+          -message "Saved in "(dirname "$sshot") \
+          -appIcon "$HOME/.config/skhd/picture-icon.png" \
+          -contentImage "$sshot"

@@ -2,28 +2,28 @@
 
 FILE="$1"
 
-text_preview() {
+function text_preview() {
   bat --paging never --decorations never \
       --color always --theme $COLORSCHEME "$FILE"
 }
 
-pdf_preview() {
+function pdf_preview() {
   pdftotext "$FILE" -
 }
 
-image_preview() {
+function image_preview() {
   chafa --fill=block --symbols=block "$FILE"
 }
 
-video_preview() {
+function video_preview() {
   mediainfo "$FILE"
 }
 
-audio_preview() {
+function audio_preview() {
   mediainfo "$FILE"
 }
 
-fallback_preview() {
+function fallback_preview() {
   text_preview
 }
 
