@@ -61,7 +61,6 @@ You'll need:
   5. your GitHub account's password to add a new SSH key;
 "
   read -n 1 -s -r -p "Press any key to continue:"
-  
   printf '\n\n'
 }
 
@@ -70,7 +69,7 @@ function command_line_tools() {
   # aren't.
 
   echo_step "Installing command line tools"
-  
+
   if ! xcode-select --print-path &>/dev/null; then
     xcode-select --install &>/dev/null
     until xcode-select --print-path &>/dev/null; do
@@ -86,10 +85,10 @@ function whoami_to_sudoers() {
   # allowing it to issue sudo commands without being prompted for a password.
 
   echo_step "Adding $(whoami) to /private/etc/sudoers"
-  
+
   printf "\n$(whoami)		ALL = (ALL) NOPASSWD: ALL\n" \
     | sudo tee -a /private/etc/sudoers &>/dev/null
-    
+
   printf '\n' && sleep 1
 }
 
@@ -201,6 +200,7 @@ function get_homebrew_bundle_brewfile() {
   # the formulas taken from the Brewfile in the GitHub repo.
 
   echo_step "Downloading homebrew, then formulas from Brewfile"
+  printf '\n'
 
   local path_homebrew_install_script=\
 https://raw.githubusercontent.com/Homebrew/install/master/install.sh
@@ -234,8 +234,8 @@ Edited/DarkAquaAppearance.car
 DarkAquaAppearance.car
 
   sudo mount -uw /
-  wget -P /tmp/ ${path_edited_car_file}
-  mv --force /tmp/DarkAquaAppearance.car ${path_destination_car_file}
+  wget -P /tmp/ ${path_edited_car_file} &>/dev/null
+  sudo mv -f /tmp/DarkAquaAppearance.car ${path_destination_car_file}
 
   printf '\n' && sleep 1
 }
@@ -370,13 +370,15 @@ function setup_dotfiles() {
   echo_step "Downloading and installing dotfiles from noib3/dotfiles (macOS \
 branch)"
 
-  git clone git@github.com:noib3/dotfiles.git --branch macOS /tmp/dotfiles
+  git clone https://github.com/noib3/dotfiles.git --branch macOS /tmp/dotfiles
 
-  sed -i "s@/Users/[^/]*/\(.*\)@/Users/`whoami`/\1@g" \
+  /usr/local/opt/gnu-sed/libexec/gnubin/sed -i \
+    "s@/Users/[^/]*/\(.*\)@/Users/`whoami`/\1@g" \
     /tmp/dotfiles/alacritty/alacritty.yml \
     /tmp/dotfiles/firefox/userChrome.css
 
-  mv --force /tmp/dotfiles "${HOME}"/.config
+  rm -rf "${HOME}"/.config
+  mv /tmp/dotfiles "${HOME}"/.config
 
   printf '\n' && sleep 1
 }
@@ -415,10 +417,10 @@ function pip_install_requirements() {
   echo_step "Downloading python modules"
 
   local path_python_requirements=\
-https://raw.githubusercontent.com/noib3/dotfiles/macOS/boostrap/\
+https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/\
 requirements.txt
 
-  wget -P /tmp/ "${path_python_requirements}"
+  wget -P /tmp "${path_python_requirements}"
   pip3 install -r /tmp/requirements.txt
 
   printf '\n' && sleep 1
@@ -429,13 +431,16 @@ function download_vimplug() {
 
   echo_step "Installing vim-plug"
 
-  local path_vim_plug=\
-https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  #local path_vim_plug=\
+#https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-  local path_destination_vim_plug=~/.local/share/nvim/site/autoload/plug.vim
+  #local path_destination_vim_plug=~/.local/share/nvim/site/autoload/plug.vim
 
-  sh -c \
-    'curl -fLo "${path_destination_vim_plug}" --create-dirs "${path_vim_plug}"'
+  sh -c ' \
+    curl \
+      -fLo "${HOME}/.local/share/nvim/site/autoload/plug.vim" \
+      --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+  '
 
   printf '\n' && sleep 1
 }
@@ -449,7 +454,7 @@ function setup_firefox() {
   echo_step "Setting up Firefox"
 
   # Open firefox without being prompted for a "Are you sure.." dialog
-  sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
+  # sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
   printf "\n"
   echo_substep "Set Firefox as the default browser"
@@ -461,50 +466,50 @@ function setup_firefox() {
     --setDefaultBrowser \
     --new-tab "about:preferences#sync" \
 
-  firefox_profiles="$(\
-    ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
-  )"
+  # firefox_profiles="$(\
+  #   ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
+  # )"
 
-  # Symlink firefox config
-  for profile in "${firefox_profiles[@]}"; do
-    ln -s --force \
-      "${HOME}/.config/firefox/user.js" \
-      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
-    mkdir -p \
-      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome"
-    ln -s --force \
-      "${HOME}/.config/firefox/userChrome.css" \
-      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
-    ln --force \
-      "${HOME}/.config/firefox/userContent.css" \
-      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
-  done
+  # # Symlink firefox config
+  # for profile in "${firefox_profiles[@]}"; do
+  #   ln -s --force \
+  #     "${HOME}/.config/firefox/user.js" \
+  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
+  #   mkdir -p \
+  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome"
+  #   ln -s --force \
+  #     "${HOME}/.config/firefox/userChrome.css" \
+  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
+  #   ln --force \
+  #     "${HOME}/.config/firefox/userContent.css" \
+  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
+  # done
 
-  printf "\n"
+  # printf "\n"
 
-  # Download and install tridactyl (no-new-tab version)
+  # # Download and install tridactyl (no-new-tab version)
 
-  local path_tridactyl_xpi=
-https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
-tridactyl_no_new_tab_beta-latest.xpi
+  # local path_tridactyl_xpi=
+#https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
+#tridactyl_no_new_tab_beta-latest.xpi
 
-  wget -P /tmp/ "${path_tridactyl_xpi}"
+  # wget -P /tmp/ "${path_tridactyl_xpi}"
 
-  printf "\n"
-  echo_substep "Accept Tridactyl installation"
-  echo_substep "Quit Firefox"
-  sleep 2
+  # printf "\n"
+  # echo_substep "Accept Tridactyl installation"
+  # echo_substep "Quit Firefox"
+  # sleep 2
 
-  /Applications/Firefox.app/Contents/MacOS/firefox \
-    /tmp/tridactyl_no_new_tab_beta-latest.xpi
+  # /Applications/Firefox.app/Contents/MacOS/firefox \
+  #   /tmp/tridactyl_no_new_tab_beta-latest.xpi
 
-  local path_native_installer=\
-https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
+  # local path_native_installer=\
+# https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
 
-  # Install native messanger for tridactyl
-  curl \
-    -fsSl "${path_native_installer}" \
-    -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
+  # # Install native messanger for tridactyl
+  # curl \
+  #   -fsSl "${path_native_installer}" \
+  #   -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
 
   printf '\n' && sleep 1
 }
@@ -563,9 +568,18 @@ function allow_accessibility() {
 
   echo_step "Allowing accessibility permissions to skhd, yabai and spacebar"
 
-  local path_skhd_bin="$(readlink -f /usr/local/bin/skhd)"
-  local path_spacebar_bin=$(readlink -f /usr/local/bin/spacebar)
-  local path_yabai_bin=$(readlink -f /usr/local/bin/yabai)
+  local path_skhd_bin="$( \
+    /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/skhd \
+  )"
+  local path_spacebar_bin="$( \
+    /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/spacebar \
+  )"
+  local path_yabai_bin="$( \
+    /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/yabai \
+  )"
+
+  # local path_spacebar_bin=$(readlink -f /usr/local/bin/spacebar)
+  # local path_yabai_bin=$(readlink -f /usr/local/bin/yabai)
 
   sudo tccutil --insert "${path_skhd_bin}"
   sudo tccutil --insert "${path_spacebar_bin}"
@@ -700,7 +714,7 @@ key from the clipboard"
     --new-tab "https://github.com/settings/ssh/new" \
 
   printf "\n"
-  echo_substep "Answer \"yes\""
+  echo_substep "Answer \"yes\" to the next input prompt"
   ssh -T git@github.com
 
   printf '\n' && sleep 1
@@ -800,37 +814,37 @@ exit_if_root
 exit_if_sip_enabled
 greetings_message
 command_line_tools
-whoami_to_sudoers
-set_sys_defaults
-get_homebrew_bundle_brewfile
-patch_window_edges
-unload_Finder
-add_remove_from_dock
-remove_Finder_from_Dock
-setup_dotfiles
-chsh_fish
-terminfo_alacritty
-pip_install_requirements
-download_vimplug
-setup_firefox
-setup_skim
-allow_accessibility
-brew_start_services
+# whoami_to_sudoers
+# set_sys_defaults
+# get_homebrew_bundle_brewfile
+# patch_window_edges
+# unload_Finder
+# add_remove_from_dock
+# remove_Finder_from_Dock
+# setup_dotfiles
+# chsh_fish
+# terminfo_alacritty
+# pip_install_requirements
+# download_vimplug
+# setup_firefox
+# setup_skim
+# allow_accessibility
+# brew_start_services
 
 # These functions are specific to my particular setup. Things like configuring
 # settings for my Logitech MX Master mouse, adding a new SSH key to my GitHub
 # account or synching directories from a remote server.
 
-setup_logi_options
-syncthing_sync_from_server
-setup_sync_symlinks
-github_add_ssh_key
-transmission_torrent_done_script
-set_wallpaper
+# setup_logi_options
+# syncthing_sync_from_server
+# setup_sync_symlinks
+# github_add_ssh_key
+# transmission_torrent_done_script
+# set_wallpaper
 
 # Cleanup leftover files, create a TODO.md file listing the things left to do
 # to get back to full speed, reboot the system.
 
-cleanup
-todo_dot_md
+# cleanup
+# todo_dot_md
 countdown_reboot
