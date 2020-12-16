@@ -32,7 +32,7 @@ function exit_if_sip_enabled() {
   # Checks if System Integrity Protection (SIP) is enabled. Echoes the steps to
   # disable it and exits if it is.
 
-  [[ $(csrutil status | sed 's/[^:]*:\s*\([^\.]*\).*/\1/') == "disabled" ]] \
+  [[ $(csrutil status | sed 's/[^:]*:[[:space:]]*\([^\.]*\).*/\1/') == "disabled" ]] \
     || error_exit "SIP needs to be disabled for the installation.
 
 To disable it you need to:
@@ -61,6 +61,7 @@ You'll need:
   5. your GitHub account's password to add a new SSH key;
 "
   read -n 1 -s -r -p "Press any key to continue:"
+  
   printf '\n\n'
 }
 
@@ -69,8 +70,13 @@ function command_line_tools() {
   # aren't.
 
   echo_step "Installing command line tools"
-  xcode-select --print-path &>/dev/null \
-    || xcode-select --install &>/dev/null
+  
+  if ! xcode-select --print-path &>/dev/null; then
+    xcode-select --install &>/dev/null
+    until xcode-select --print-path &>/dev/null; do
+      sleep 5
+    done
+  fi
 
   printf '\n' && sleep 1
 }
@@ -80,8 +86,10 @@ function whoami_to_sudoers() {
   # allowing it to issue sudo commands without being prompted for a password.
 
   echo_step "Adding $(whoami) to /private/etc/sudoers"
+  
   printf "\n$(whoami)		ALL = (ALL) NOPASSWD: ALL\n" \
     | sudo tee -a /private/etc/sudoers &>/dev/null
+    
   printf '\n' && sleep 1
 }
 
