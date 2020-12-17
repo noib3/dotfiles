@@ -6,6 +6,16 @@
 # 1. cleanup
 # 2. todo_dot_md
 # 3. uncheck system preferences -> mission control -> when switching to an app...
+# 4. firefox symlinks remove symlink if it already exists (be it a directory or not)
+# 5. skim doesn't work??
+# 6. logi options setup mx master
+# 7. firefox syncthing opens two windows instead of two tabs on the same window
+# 8. set wallpaper use /usr/bin/sed and grep (or not but specify the full path)
+# 9. function github ssh key substep is too long
+# 10. cleanup use old purge script to remove all .DS_Store files
+# 11. add skhd to System Preferences -> Security and Privacy -> Screen
+# recording -> skdh
+# 12. yabai borders don't work
 
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
@@ -57,8 +67,8 @@ You'll need:
      addons, etc;
   3. your Logitech account's password to recover settings for the MX Master 2S
      mouse;
-  4. the remote server's Syncthing's Web GUI password to fetch directories to
-     sync;
+  4. the remote server's Syncthing's Web GUI user name and password to fetch
+     directories to sync;
   5. your GitHub account's password to add a new SSH key;
 "
   read -n 1 -s -r -p "Press any key to continue:"
@@ -454,62 +464,61 @@ function setup_firefox() {
   echo_step "Setting up Firefox"
 
   # Open firefox without being prompted for a "Are you sure.." dialog
-  # sudo xattr -r -d com.apple.quarantine /Applications/Firefox.app
+  xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
   printf "\n"
   echo_substep "Set Firefox as the default browser"
   echo_substep "Log into your Firefox account"
+  echo_substep "Wait for all the extensions to be installed"
   echo_substep "Quit Firefox"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
-    --setDefaultBrowser \
-    --new-tab "about:preferences#sync" \
+    --setDefaultBrowser "about:preferences#sync" &>/dev/null
 
-  # firefox_profiles="$(\
-  #   ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
-  # )"
+  firefox_profiles="$(\
+    ls "${HOME}/Library/Application Support/Firefox/Profiles/" | grep release \
+  )"
 
-  # # Symlink firefox config
-  # for profile in "${firefox_profiles[@]}"; do
-  #   ln -s --force \
-  #     "${HOME}/.config/firefox/user.js" \
-  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
-  #   mkdir -p \
-  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome"
-  #   ln -s --force \
-  #     "${HOME}/.config/firefox/userChrome.css" \
-  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
-  #   ln --force \
-  #     "${HOME}/.config/firefox/userContent.css" \
-  #     "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
-  # done
+  # Symlink firefox config
+  for profile in "${firefox_profiles[@]}"; do
+    ln -s \
+      "${HOME}/.config/firefox/user.js" \
+      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
+    mkdir -p \
+      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome"
+    ln -s \
+      "${HOME}/.config/firefox/userChrome.css" \
+      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
+    ln \
+      "${HOME}/.config/firefox/userContent.css" \
+      "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
+  done
 
-  # printf "\n"
+  printf "\n"
 
-  # # Download and install tridactyl (no-new-tab version)
+  # Download and install tridactyl (no-new-tab version)
 
-  # local path_tridactyl_xpi=
-#https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
-#tridactyl_no_new_tab_beta-latest.xpi
+  local path_tridactyl_xpi=\
+https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
+tridactyl_no_new_tab_beta-latest.xpi
 
-  # wget -P /tmp/ "${path_tridactyl_xpi}"
+  wget -P /tmp/ "${path_tridactyl_xpi}"
 
-  # printf "\n"
-  # echo_substep "Accept Tridactyl installation"
-  # echo_substep "Quit Firefox"
-  # sleep 2
+  echo_substep "Accept Tridactyl installation"
+  echo_substep "Quit Firefox"
+  sleep 2
 
-  # /Applications/Firefox.app/Contents/MacOS/firefox \
-  #   /tmp/tridactyl_no_new_tab_beta-latest.xpi
+  /Applications/Firefox.app/Contents/MacOS/firefox \
+    /tmp/tridactyl_no_new_tab_beta-latest.xpi &>/dev/null
 
-  # local path_native_installer=\
-# https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
+  local path_native_installer=\
+https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
 
-  # # Install native messanger for tridactyl
-  # curl \
-  #   -fsSl "${path_native_installer}" \
-  #   -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
+  # Install native messanger for tridactyl
+  curl \
+    -fsSl "${path_native_installer}" \
+    -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
 
   printf '\n' && sleep 1
 }
@@ -521,13 +530,13 @@ function setup_skim() {
   echo_step "Setting up Skim preferences"
 
   local path_plist_trigger_file=\
-https://github.com/noib3/dotfiles/macOS/bootstrap/Skim_plist_trigger.pdf
+https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
+# https://github.com/noib3/dotfiles/macOS/bootstrap/Skim_plist_trigger.pdf
 
-  wget -P /tmp/ $path_plist_trigger_file
+  wget -P /tmp "${path_plist_trigger_file}"
 
-  printf "\n"
   echo_substep "After the following pdf opens, quit Skim"
-  sleep 2
+  sleep 1
 
   # Open pdf with Skim to generate plist file
   /Applications/Skim.app/Contents/MacOS/Skim /tmp/Skim_plist_trigger.pdf
@@ -633,9 +642,11 @@ function syncthing_sync_from_server() {
 
   local remote_droplet_name=Ocean
   local remote_sync_path=/home/noibe/Sync
-  local_sync_path=/Users/"$(whoami)"/Sync
+  local_sync_path="/Users/$(whoami)/Sync"
 
   printf "\n"
+  echo_substep "Remove Default Folder"
+  echo_substep "Set this machine's Device Name"
   echo_substep "Add ${remote_droplet_name} to this machine's remote devices"
   echo_substep "Sync ${remote_droplet_name}'s ${remote_sync_path} to \
 ${local_sync_path}"
@@ -645,7 +656,7 @@ ${local_sync_path}"
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     --new-tab "http://127.0.0.1:8384/#" \
-    --new-tab "https://64.227.35.152:8384/#"
+    --new-tab "https://64.227.35.152:8384/#" &>/dev/null
 
   brew services stop syncthing
   xml ed --inplace \
@@ -674,12 +685,14 @@ function setup_sync_symlinks {
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
   done
 
+  mkdir -p "${HOME}/.local/share/ndiet"
   ln -s "${HOME}/Sync/code/ndiet/ndiet.py" /usr/local/bin/ndiet
   ln -s "${HOME}/Sync/code/ndiet/diets" "${HOME}/.local/share/ndiet/diets"
   ln -s \
     "${HOME}/Sync/code/ndiet/pantry.txt" \
     "${HOME}/.local/share/ndiet/pantry.txt"
 
+  rm /usr/local/etc/auto-selfcontrol/config.json
   ln -s \
     "${HOME}/Sync/private/auto-selfcontrol/config.json" \
     /usr/local/etc/auto-selfcontrol/config.json
@@ -700,21 +713,20 @@ function github_add_ssh_key() {
   printf "\n"
   echo_substep "Leave the default value for the key path \
 (/Users/$(whomai)/.ssh/id_rsa)"
+  echo_substep "Overwrite the existing id_rsa file"
   echo_substep "Leave the passphrase empty"
 
   ssh-keygen -t rsa -C "${github_user_email}"
-  cat "${HOME}"/Sync/private/ssh/id_rsa.pub | pbcopy
+  cat "${HOME}/Sync/private/ssh/id_rsa.pub" | pbcopy
 
   printf "\n"
   echo_substep "The public key in id_rsa.pub is in the clipboard"
   echo_substep "Log in to GitHub, choose a name for the new key and paste the
 key from the clipboard"
 
-  /Applications/Firefox.app/Contents/MacOS/firefox
-    --new-tab "https://github.com/settings/ssh/new" \
+  /Applications/Firefox.app/Contents/MacOS/firefox \
+    "https://github.com/settings/ssh/new"
 
-  printf "\n"
-  echo_substep "Answer \"yes\" to the next input prompt"
   ssh -T git@github.com
 
   printf '\n' && sleep 1
@@ -736,7 +748,7 @@ function set_wallpaper() {
   # the wallpaper to ~/Sync/wallpapers/$COLORSCHEME.png.
 
   local colorscheme="$(\
-    grep 'set\s*-x\s*COLORSCHEME' "$HOME/.config/fish/conf.d/exports.fish" \
+    grep 'set\s*-x\s*COLORSCHEME' "${HOME}/.config/fish/conf.d/exports.fish" \
     sed 's/set\s*-x\s*COLORSCHEME\s*\(.*\)$/\1/'
   )"
 
@@ -755,7 +767,10 @@ function cleanup() {
 
   echo_step "Cleaning up some files"
 
-  # rm -rf ~/Public
+  sudo rm -rf "${HOME}/Public"
+  sudo rm "${HOME}/.CFUserTextEncoding"
+  rm "${HOME}/.wget-hsts"
+
   # rm /tmp/Brewfile
   # rm /tmp/alacritty.info
   # rm /tmp/requirements.txt
@@ -812,8 +827,8 @@ function countdown_reboot() {
 exit_if_not_darwin
 exit_if_root
 exit_if_sip_enabled
-greetings_message
-command_line_tools
+# greetings_message
+# command_line_tools
 # whoami_to_sudoers
 # set_sys_defaults
 # get_homebrew_bundle_brewfile
@@ -847,4 +862,4 @@ command_line_tools
 
 # cleanup
 # todo_dot_md
-# countdown_reboot
+countdown_reboot
