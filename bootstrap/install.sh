@@ -193,6 +193,7 @@ function set_sys_defaults() {
 
   killall Dock
   killall Finder
+  killall SystemUIServer
 
   printf '\n' && sleep 1
 }
