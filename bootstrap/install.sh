@@ -5,6 +5,7 @@
 # AFTER TESTING
 # 1. cleanup
 # 2. todo_dot_md
+# 3. uncheck system preferences -> mission control -> when switching to an app...
 
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
@@ -133,6 +134,7 @@ function set_sys_defaults() {
   defaults write com.apple.dock persistent-apps -array
   defaults write com.apple.dock persistent-others -array
   defaults write com.apple.dock recent-others -array
+  defaults write com.apple.dock show-recents -bool no
 
   # Autohide menu bar
   defaults write NSGlobalDomain _HIHideMenuBar -bool true
@@ -152,7 +154,6 @@ function set_sys_defaults() {
 
   # Show all files and extensions
   defaults write com.apple.finder AppleShowAllFiles -bool true
-  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
   # Don't show warning before changing an extension
   defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
@@ -176,8 +177,6 @@ function set_sys_defaults() {
   # Never dim the display while on battery power
   sudo pmset -a halfdim 0
 
-  printf '\n'
-
   read -p "Choose a name for this machine:" hostname
   sudo scutil --set ComputerName "${hostname}"
   sudo scutil --set HostName "${hostname}"
@@ -192,6 +191,9 @@ function set_sys_defaults() {
   read -p "Set the current timezone from the list above:" timezone
   sudo systemsetup -settimezone "${timezone}" &>/dev/null
 
+  killall Dock
+  killall Finder
+
   printf '\n' && sleep 1
 }
 
@@ -200,10 +202,9 @@ function get_homebrew_bundle_brewfile() {
   # the formulas taken from the Brewfile in the GitHub repo.
 
   echo_step "Downloading homebrew, then formulas from Brewfile"
-  printf '\n'
 
   local path_homebrew_install_script=\
-https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
 
   local path_brewfile=\
 https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
@@ -245,11 +246,11 @@ function unload_Finder {
 
   echo_step "Creating a new service that quits Finder after loggin in"
 
-  local agent_scripts_dir="${HOME}"/.local/agent-scripts
+  agent_scripts_dir="${HOME}/.local/agent-scripts"
 
   mkdir -p "${agent_scripts_dir}"
 
-  cat << EOF >> "${agent_scripts_dir}/unload-Finder.sh"
+  cat << EOF > "${agent_scripts_dir}/unload-Finder.sh"
 #!/usr/bin/env bash
 
 launchctl unload /System/Library/LaunchAgents/com.apple.Finder.plist
@@ -258,7 +259,8 @@ EOF
 
   chmod +x "${agent_scripts_dir}/unload-Finder.sh"
 
-  cat << EOF >> "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
+  mkdir -p "${HOME}/Library/LaunchAgents"
+  cat << EOF > "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -315,11 +317,8 @@ function remove_Finder_from_Dock {
 
   echo_step "Creating a new service that removes Finder from the Dock"
 
-  local agent_scripts_dir="${HOME}"/.local/agent-scripts
-
-  mkdir -p "${agent_scripts_dir}"
-
-  cat << EOF >> "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+  local agent_scripts_dir="${HOME}/.local/agent-scripts"
+  cat << EOF > "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 #!/usr/bin/env bash
 
 osascript -e 'tell application "System Events"' \\
@@ -332,7 +331,7 @@ EOF
 
   chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  cat << EOF >> \
+  cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(whoami).remove-Finder-from-Dock.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
@@ -847,4 +846,4 @@ command_line_tools
 
 # cleanup
 # todo_dot_md
-countdown_reboot
+# countdown_reboot
