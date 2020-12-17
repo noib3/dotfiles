@@ -2,21 +2,6 @@
 #
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
-# AFTER TESTING
-# 1. cleanup
-# 2. todo_dot_md
-# 3. uncheck system preferences -> mission control -> when switching to an app...
-# 4. firefox symlinks remove symlink if it already exists (be it a directory or not)
-# 5. skim doesn't work??
-# 6. logi options setup mx master
-# 7. firefox syncthing opens two windows instead of two tabs on the same window
-# 8. set wallpaper use /usr/bin/sed and grep (or not but specify the full path)
-# 9. function github ssh key substep is too long
-# 10. cleanup use old purge script to remove all .DS_Store files
-# 11. add skhd to System Preferences -> Security and Privacy -> Screen
-# recording -> skdh
-# 12. yabai borders don't work
-
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
 function echo_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
@@ -63,13 +48,11 @@ function greetings_message() {
   echo -e "\
 You'll need:
   1. $(whoami)'s password to add $(whoami) to the sudoers file;
-  2. your Firefox account's password to link bookmarks, previous history,
-     addons, etc;
-  3. your Logitech account's password to recover settings for the MX Master 2S
+  2. your Logitech account's password to recover settings for the MX Master 2S
      mouse;
-  4. the remote server's Syncthing's Web GUI user name and password to fetch
+  3. the remote server's Syncthing's Web GUI user name and password to fetch
      directories to sync;
-  5. your GitHub account's password to add a new SSH key;
+  4. your GitHub account's password to add a new SSH key;
 "
   read -n 1 -s -r -p "Press any key to continue:"
   printf '\n\n'
@@ -229,29 +212,6 @@ https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
   printf '\n' && sleep 1
 }
 
-function patch_window_edges() {
-  # Downloads an edited .car file to display windows with squared edges, then
-  # substitutes the default one with it.
-
-  echo_step "Patching UI to get squared window edges"
-
-  # See https://cutt.ly/IhTI04v
-
-  local path_edited_car_file=\
-https://github.com/tsujp/custom-macos-gui/tree/master/DarkAquaAppearance/\
-Edited/DarkAquaAppearance.car
-
-  local path_destination_car_file=\
-/System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/\
-DarkAquaAppearance.car
-
-  sudo mount -uw /
-  wget -P /tmp/ ${path_edited_car_file} &>/dev/null
-  sudo mv -f /tmp/DarkAquaAppearance.car ${path_destination_car_file}
-
-  printf '\n' && sleep 1
-}
-
 function unload_Finder {
   # Creates a service that quits Finder after the user logs in.
 
@@ -341,6 +301,9 @@ osascript -e 'tell application "System Events"' \\
 EOF
 
   chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+
+  # Call the script to trigger being asked for permissions
+  "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(whoami).remove-Finder-from-Dock.plist"
@@ -439,7 +402,7 @@ requirements.txt
 function download_vimplug() {
   # Downloads vim-plug, a tool to manage Vim plugins.
 
-  echo_step "Installing vim-plug"
+  echo_step "Installing vim-plug and plugins"
 
   #local path_vim_plug=\
 #https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -451,6 +414,9 @@ function download_vimplug() {
       -fLo "${HOME}/.local/share/nvim/site/autoload/plug.vim" \
       --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
   '
+
+  echo_substep "Installing neovim plugins"
+  nvim --headless +PlugInstall +qall &>/dev/null
 
   printf '\n' && sleep 1
 }
@@ -619,17 +585,13 @@ $((${#services[@]} - 2)) services with Homebrew"
   printf '\n' && sleep 1
 }
 
-function setup_logi_options() {
-  # Opens the Logi Options app to log in and recover the settings for the MX
-  # Master 2S mouse.
+function yabai_install_sa() {
+  # Installs the scripting-addition for yabai.
 
-  echo_step "Opening the Logi Options app"
+  echo_step "Installing yabai scripting-addition"
 
-  printf "\n"
-  echo_substep "Log in to recover all the MX Master settings"
-  sleep 1
-
-  /Applications/Logi\ Options.app/Contents/MacOS/Logi\ Options &>/dev/null
+  sudo yabai --install-sa
+  brew services restart yabai
 
   printf '\n' && sleep 1
 }
@@ -721,8 +683,8 @@ function github_add_ssh_key() {
 
   printf "\n"
   echo_substep "The public key in id_rsa.pub is in the clipboard"
-  echo_substep "Log in to GitHub, choose a name for the new key and paste the
-key from the clipboard"
+  echo_substep "Log in to GitHub, choose a name for the new key and paste the \
+key from the\n  clipboard"
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     "https://github.com/settings/ssh/new"
@@ -743,13 +705,23 @@ function transmission_torrent_done_script {
   printf '\n' && sleep 1
 }
 
+function start_auto_self_control {
+  # Starts auto-selfcontrol
+
+  echo_step "Starting auto-selfcontrol"
+
+  auto-selfcontrol activate
+
+  printf '\n ' && sleep 1
+}
+
 function set_wallpaper() {
   # Fetches the current $COLORSCHEME from fish/conf.d/exports.fish, then sets
   # the wallpaper to ~/Sync/wallpapers/$COLORSCHEME.png.
 
   local colorscheme="$(\
-    grep 'set\s*-x\s*COLORSCHEME' "${HOME}/.config/fish/conf.d/exports.fish" \
-    sed 's/set\s*-x\s*COLORSCHEME\s*\(.*\)$/\1/'
+    grep 'set\s\+-x\s\+COLORSCHEME' "${HOME}/.config/fish/conf.d/exports.fish" \
+    | /usr/local/opt/gnu-sed/libexec/gnubin/sed 's/set\s\+-x\s\+COLORSCHEME\s\+\([^\s]*\)/\1/'
   )"
 
   echo_step "Changing the wallpaper to ${colorscheme}.png"
@@ -771,12 +743,10 @@ function cleanup() {
   sudo rm "${HOME}/.CFUserTextEncoding"
   rm "${HOME}/.wget-hsts"
 
-  # rm /tmp/Brewfile
-  # rm /tmp/alacritty.info
-  # rm /tmp/requirements.txt
-  # rm /tmp/tridactyl_no_new_tab_beta-latest.xpi
-  # rm /tmp/trinativeinstall.sh
-  # rm /tmp/Skim_plist_trigger.pdf
+  # Find every .DS_Store file in / and delete them.
+  sudo mount -uw /
+  osascript -e 'quit app "Finder"'
+  fd -uu ".DS_Store" / -X sudo rm
 
   printf '\n' && sleep 1
 }
@@ -788,13 +758,20 @@ function todo_dot_md() {
   # Logitech options -> zoom with wheel,
   # Logitech options -> Point & Scroll -> Scroll direction -> Natural,
   # Thumb wheel direction -> Inverted
-  # set pointer and scrolling speed
   # Smooth scrolling -> disabled
-  # 36. LogiOptions bind buttons to 'KeyStroke Assignment: Cmd + Left' and
-  # 'KeyStroke Assignment: Cmd + Right' (or don't, do that only if you need
-  # them to work with qutebrowser, otherwise stick with forward and back)'
-  # allow accessibility to logitech options (have to select it manually
-  # clicking on +)
+  # set pointer and scrolling speed
+
+  # Firefox -> Default Zoom -> 133%
+  # Firefox bitwarden login
+
+  # Log back in into all the websites (Bitwarden, Google, YouTube, Reddit,
+  # etc..)
+  # Bitwarden -> Settings -> Vault timeout -> Never
+
+  # Add private window permissions to all extensions
+
+  # Take a screenshot to trigger being asked for screen recording permissions
+  # for skhd.
 
   cat > $HOME/TODO.md << EOF
 # TODO.md
@@ -824,15 +801,14 @@ function countdown_reboot() {
 # These functions are part of a generic installation aiming to fully reproduce
 # my setup.
 
-exit_if_not_darwin
-exit_if_root
-exit_if_sip_enabled
+# exit_if_not_darwin
+# exit_if_root
+# exit_if_sip_enabled
 # greetings_message
 # command_line_tools
 # whoami_to_sudoers
 # set_sys_defaults
 # get_homebrew_bundle_brewfile
-# patch_window_edges
 # unload_Finder
 # add_remove_from_dock
 # remove_Finder_from_Dock
@@ -845,16 +821,17 @@ exit_if_sip_enabled
 # setup_skim
 # allow_accessibility
 # brew_start_services
+# yabai_install_sa
 
 # These functions are specific to my particular setup. Things like configuring
 # settings for my Logitech MX Master mouse, adding a new SSH key to my GitHub
 # account or synching directories from a remote server.
 
-# setup_logi_options
 # syncthing_sync_from_server
 # setup_sync_symlinks
 # github_add_ssh_key
 # transmission_torrent_done_script
+# start_auto_self_control
 # set_wallpaper
 
 # Cleanup leftover files, create a TODO.md file listing the things left to do
@@ -862,4 +839,6 @@ exit_if_sip_enabled
 
 # cleanup
 # todo_dot_md
-countdown_reboot
+# countdown_reboot
+# abLog in to GitHub, choose a name for the new key and paste the key from the
+# clipboard
