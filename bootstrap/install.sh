@@ -2,6 +2,8 @@
 #
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
+set -e
+
 function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
 function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
 function echo_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
@@ -48,11 +50,13 @@ function greetings_message() {
   echo -e "\
 You'll need:
   1. $(whoami)'s password to add $(whoami) to the sudoers file;
-  2. your Logitech account's password to recover settings for the MX Master 2S
-     mouse;
+  2. your Firefox account's password to recover bookmarks, search history and
+		 installed extensions;
   3. the remote server's Syncthing's Web GUI user name and password to fetch
      directories to sync;
   4. your GitHub account's password to add a new SSH key;
+  5. your Logitech account's password to recover settings for the MX Master 2S
+     mouse;
 "
   read -n 1 -s -r -p "Press any key to continue:"
   printf '\n\n'
@@ -291,7 +295,8 @@ function remove_finder_from_dock {
 
   echo_step "Creating a new service that removes Finder from the Dock"
 
-  cat << EOF > "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+  local agent_scripts_dir="${HOME}/.local/agent-scripts"
+  sudo tee "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null << EOF
 #!/usr/bin/env bash
 
 osascript -e 'tell application "System Events"' \\
@@ -302,13 +307,13 @@ osascript -e 'tell application "System Events"' \\
           -e 'end tell'
 EOF
 
-  chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+  sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  echo_substep "Say yes to the following dialog box"
+  echo_substep "Say \"OK\" to the following dialog box"
   sleep 1
 
   # Call the script to trigger being asked for permissions
-  "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
+  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(whoami).remove-Finder-from-Dock.plist"
@@ -346,7 +351,7 @@ function add_to_finder_fav_pt1() {
   echo_step "Adding ${HOME} and /usr/local/bin to the Finder's Favourites"
 
   mysides add "$(whoami)" "file://${HOME}"
-  mysides add bin /usr/local/bin
+  mysides add bin file:///usr/local/bin
 
   printf '\n' && sleep 1
 }
@@ -362,7 +367,7 @@ branch)"
   git clone https://github.com/noib3/dotfiles.git --branch macOS /tmp/dotfiles
 
   /usr/local/opt/gnu-sed/libexec/gnubin/sed -i \
-    "s@/Users/[^/]*/\(.*\)@${HOME}/\0@g" \
+    "s@/Users/[^/]*/\(.*\)@/Users/$(id -un)/\1@g" \
     /tmp/dotfiles/alacritty/alacritty.yml \
     /tmp/dotfiles/firefox/userChrome.css
 
@@ -395,6 +400,9 @@ alacritty.info
 
   wget -P /tmp/ "${path_alacritty_terminfo}"
   sudo tic -xe alacritty,alacritty-direct /tmp/alacritty.info
+
+  # Open Alacritty without being prompted for a "Are you sure.." dialog
+  xattr -r -d com.apple.quarantine /Applications/Alacritty.app
 
   printf '\n' && sleep 1
 }
@@ -440,7 +448,7 @@ function setup_firefox() {
 
   echo_step "Setting up Firefox"
 
-  # Open firefox without being prompted for a "Are you sure.." dialog
+  # Open Firefox without being prompted for a "Are you sure.." dialog
   xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
   printf "\n"
@@ -506,16 +514,22 @@ function setup_skim() {
 
   echo_step "Setting up Skim preferences"
 
-  local path_plist_trigger_file=\
-https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
+  # local path_plist_trigger_file=\
+# https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
 
-  wget -P /tmp "${path_plist_trigger_file}"
+  # wget -P /tmp "${path_plist_trigger_file}"
 
-  echo_substep "After the following pdf opens, quit Skim"
-  sleep 1
+  # Open Skim without being prompted for a "Are you sure.." dialog
+  xattr -r -d com.apple.quarantine /Applications/Skim.app
 
-  # Open pdf with Skim to generate plist file
-  /Applications/Skim.app/Contents/MacOS/Skim /tmp/Skim_plist_trigger.pdf
+  # echo_substep "After the following pdf opens, quit Skim"
+  # sleep 1
+
+  # # Open pdf with Skim to generate plist file
+  /Applications/Skim.app/Contents/MacOS/Skim \
+    /usr/local/lib/python3.9/site-packages/matplotlib/mpl-data/images/back.pdf
+
+  # /Applications/Skim.app/Contents/MacOS/Skim /tmp/Skim_plist_trigger.pdf
 
   # Use Skim as the default PDF viewer
   duti -s net.sourceforge.skim-app.skim .pdf all
@@ -669,18 +683,6 @@ function setup_sync_symlinks {
   printf '\n' && sleep 1
 }
 
-function add_to_finder_fav_pt2() {
-  #
-
-  echo_step "Adding ${local_sync_path}/screenshots and \
-${local_sync_path}/burocrazy to the Finder's Favourites"
-
-  mysides add screenshots "file://${local_sync_path}/screenshots"
-  mysides add burocrazy "file://${local_sync_path}/burocrazy"
-
-  printf '\n' && sleep 1
-}
-
 function github_add_ssh_key() {
   # Creates a new ssh key for pushing to GitHub without having to input any
   # password. Adds the public key to the clipboard. Opens GitHub's settings
@@ -708,7 +710,19 @@ key from the\n  clipboard"
   /Applications/Firefox.app/Contents/MacOS/firefox \
     "https://github.com/settings/ssh/new"
 
-  ssh -T git@github.com
+  # ssh -T git@github.com
+
+  printf '\n' && sleep 1
+}
+
+function add_to_finder_fav_pt2() {
+  #
+
+  echo_step "Adding ${local_sync_path}/screenshots and \
+${local_sync_path}/burocrazy to the Finder's Favourites"
+
+  mysides add screenshots "file://${local_sync_path}/screenshots"
+  mysides add burocrazy "file://${local_sync_path}/burocrazy"
 
   printf '\n' && sleep 1
 }
@@ -825,8 +839,8 @@ function countdown_reboot() {
 # my setup.
 
 exit_if_not_darwin
-# exit_if_root
-# exit_if_sip_enabled
+exit_if_root
+exit_if_sip_enabled
 # greetings_message
 # command_line_tools
 # whoami_to_sudoers
@@ -864,6 +878,4 @@ exit_if_not_darwin
 
 # cleanup
 # todo_dot_md
-# countdown_reboot
-# abLog in to GitHub, choose a name for the new key and paste the key from the
-# clipboard
+countdown_reboot
