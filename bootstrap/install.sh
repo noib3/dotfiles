@@ -139,6 +139,9 @@ function set_sys_defaults() {
   # Don't rearrange spaces based on most recent use
   defaults write com.apple.dock mru-spaces -bool false
 
+  # Never start screen saver
+  defaults -currentHost write com.apple.screensaver idleTime 0
+
   # Show scroll bars when scrolling
   defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
 
@@ -157,7 +160,7 @@ function set_sys_defaults() {
   # Make ~ the default directory when opening a new window
   defaults write com.apple.finder NewWindowTarget -string "PfLo"
   defaults write com.apple.finder NewWindowTargetPath \
-    -string "file:///Users/$(whoami)/"
+    -string "file://${HOME}/"
 
   # Remove 'Other' from login screen
   sudo defaults write /Library/Preferences/com.apple.loginwindow \
@@ -212,7 +215,7 @@ https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
   printf '\n' && sleep 1
 }
 
-function unload_Finder {
+function unload_finder {
   # Creates a service that quits Finder after the user logs in.
 
   echo_step "Creating a new service that quits Finder after loggin in"
@@ -255,7 +258,7 @@ EOF
 EOF
 
   launchctl load \
-    "${HOME}"/Library/LaunchAgents/"$(whoami)".unload-Finder.plist
+    "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
 
   printf '\n' && sleep 1
 }
@@ -282,13 +285,12 @@ function add_remove_from_dock {
   printf '\n' && sleep 1
 }
 
-function remove_Finder_from_Dock {
+function remove_finder_from_dock {
   # Creates a service that removes the Finder icon from the Dock after the user
   # logs in.
 
   echo_step "Creating a new service that removes Finder from the Dock"
 
-  local agent_scripts_dir="${HOME}/.local/agent-scripts"
   cat << EOF > "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 #!/usr/bin/env bash
 
@@ -330,7 +332,18 @@ EOF
 EOF
 
   launchctl load \
-    "${HOME}"/Library/LaunchAgents/"$(whoami)".remove-Finder-from-Dock.plist
+    "${HOME}/Library/LaunchAgents/"$(whoami)".remove-Finder-from-Dock.plist"
+
+  printf '\n' && sleep 1
+}
+
+function add_to_finder_fav_pt1() {
+  #
+
+  echo_step "Adding ${HOME} and /usr/local/bin to the Finder's Favourites"
+
+  mysides add "$(whoami)" "file://${HOME}"
+  mysides add bin /usr/local/bin
 
   printf '\n' && sleep 1
 }
@@ -346,12 +359,12 @@ branch)"
   git clone https://github.com/noib3/dotfiles.git --branch macOS /tmp/dotfiles
 
   /usr/local/opt/gnu-sed/libexec/gnubin/sed -i \
-    "s@/Users/[^/]*/\(.*\)@/Users/`whoami`/\1@g" \
+    "s@/Users/[^/]*/\(.*\)@${HOME}/\0@g" \
     /tmp/dotfiles/alacritty/alacritty.yml \
     /tmp/dotfiles/firefox/userChrome.css
 
-  rm -rf "${HOME}"/.config
-  mv /tmp/dotfiles "${HOME}"/.config
+  rm -rf "${HOME}/.config"
+  mv /tmp/dotfiles "${HOME}/.config"
 
   printf '\n' && sleep 1
 }
@@ -404,11 +417,6 @@ function download_vimplug() {
 
   echo_step "Installing vim-plug and plugins"
 
-  #local path_vim_plug=\
-#https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-  #local path_destination_vim_plug=~/.local/share/nvim/site/autoload/plug.vim
-
   sh -c ' \
     curl \
       -fLo "${HOME}/.local/share/nvim/site/autoload/plug.vim" \
@@ -448,15 +456,15 @@ function setup_firefox() {
 
   # Symlink firefox config
   for profile in "${firefox_profiles[@]}"; do
-    ln -s \
+    ln -sf \
       "${HOME}/.config/firefox/user.js" \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/user.js"
     mkdir -p \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome"
-    ln -s \
+    ln -sf \
       "${HOME}/.config/firefox/userChrome.css" \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
-    ln \
+    ln -f \
       "${HOME}/.config/firefox/userContent.css" \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
   done
@@ -497,7 +505,6 @@ function setup_skim() {
 
   local path_plist_trigger_file=\
 https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
-# https://github.com/noib3/dotfiles/macOS/bootstrap/Skim_plist_trigger.pdf
 
   wget -P /tmp "${path_plist_trigger_file}"
 
@@ -533,7 +540,7 @@ https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
 
   # View -> Toggle Toolbar
   plutil -replace "NSToolbar Configuration SKDocumentToolbar"."TB Is Shown" \
-    -bool NO "${HOME}"/Library/Preferences/net.sourceforge.skim-app.skim.plist
+    -bool NO "${HOME}/Library/Preferences/net.sourceforge.skim-app.skim.plist"
 
   printf '\n' && sleep 1
 }
@@ -552,9 +559,6 @@ function allow_accessibility() {
   local path_yabai_bin="$( \
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/yabai \
   )"
-
-  # local path_spacebar_bin=$(readlink -f /usr/local/bin/spacebar)
-  # local path_yabai_bin=$(readlink -f /usr/local/bin/yabai)
 
   sudo tccutil --insert "${path_skhd_bin}"
   sudo tccutil --insert "${path_spacebar_bin}"
@@ -604,7 +608,7 @@ function syncthing_sync_from_server() {
 
   local remote_droplet_name=Ocean
   local remote_sync_path=/home/noibe/Sync
-  local_sync_path="/Users/$(whoami)/Sync"
+  local_sync_path="${HOME}/Sync"
 
   printf "\n"
   echo_substep "Remove Default Folder"
@@ -617,8 +621,8 @@ ${local_sync_path}"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
-    --new-tab "http://127.0.0.1:8384/#" \
-    --new-tab "https://64.227.35.152:8384/#" &>/dev/null
+    "http://localhost:8384/#" \
+    "https://64.227.35.152:8384/#" &>/dev/null
 
   brew services stop syncthing
   xml ed --inplace \
@@ -636,13 +640,13 @@ function setup_sync_symlinks {
 
   echo_step "Setting up symlinks to ~/Sync"
 
-  ln -s "${HOME}/Sync/private/ssh" "${HOME}/.ssh"
+  ln -sf "${HOME}/Sync/private/ssh" "${HOME}/.ssh"
 
   rm -rf "${HOME}/.config"
   ln -s "${HOME}/Sync/dotfiles/macOS" "${HOME}/.config"
 
   for profile in "${firefox_profiles[@]}"; do
-    ln --force \
+    ln -f \
       "${local_sync_path}/dotfiles/macOS/firefox/userContent.css" \
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
   done
@@ -655,9 +659,21 @@ function setup_sync_symlinks {
     "${HOME}/.local/share/ndiet/pantry.txt"
 
   rm /usr/local/etc/auto-selfcontrol/config.json
-  ln -s \
+  ln -sf \
     "${HOME}/Sync/private/auto-selfcontrol/config.json" \
     /usr/local/etc/auto-selfcontrol/config.json
+
+  printf '\n' && sleep 1
+}
+
+function add_to_finder_fav_pt2() {
+  #
+
+  echo_step "Adding ${local_sync_path}/screenshots and \
+${local_sync_path}/burocrazy to the Finder's Favourites"
+
+  mysides add screenshots "file://${local_sync_path}/screenshots"
+  mysides add burocrazy "file://${local_sync_path}/burocrazy"
 
   printf '\n' && sleep 1
 }
@@ -674,7 +690,7 @@ function github_add_ssh_key() {
 
   printf "\n"
   echo_substep "Leave the default value for the key path \
-(/Users/$(whomai)/.ssh/id_rsa)"
+(${HOME}/.ssh/id_rsa)"
   echo_substep "Overwrite the existing id_rsa file"
   echo_substep "Leave the passphrase empty"
 
@@ -809,9 +825,10 @@ function countdown_reboot() {
 # whoami_to_sudoers
 # set_sys_defaults
 # get_homebrew_bundle_brewfile
-# unload_Finder
+# unload_finder
 # add_remove_from_dock
-# remove_Finder_from_Dock
+# remove_finder_from_dock
+# add_to_finder_fav_pt1
 # setup_dotfiles
 # chsh_fish
 # terminfo_alacritty
@@ -830,6 +847,7 @@ function countdown_reboot() {
 # syncthing_sync_from_server
 # setup_sync_symlinks
 # github_add_ssh_key
+# add_to_finder_fav_pt2
 # transmission_torrent_done_script
 # start_auto_self_control
 # set_wallpaper

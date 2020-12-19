@@ -23,6 +23,7 @@ yabai -m rule --add app="System Preferences" manage=off
 yabai -m rule --add app="Activity Monitor" manage=off
 yabai -m rule --add app="Font Book" manage=off
 yabai -m rule --add app="App Store" manage=off
+yabai -m rule --add app="System Information" manage=off
 yabai -m rule --add app="Logi Options" manage=off
 
 yabai -m rule --add title="floating" manage=off
