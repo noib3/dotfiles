@@ -304,6 +304,9 @@ EOF
 
   chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
+  echo_substep "Say yes to the following dialog box"
+  sleep 1
+
   # Call the script to trigger being asked for permissions
   "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
@@ -784,10 +787,14 @@ function todo_dot_md() {
   # etc..)
   # Bitwarden -> Settings -> Vault timeout -> Never
 
-  # Add private window permissions to all extensions
+  # Firefox add private window permissions to all extensions
 
   # Take a screenshot to trigger being asked for screen recording permissions
-  # for skhd.
+  # for skhd (System Preferences -> Security and Privacy -> Screen
+  # recording -> skdh)
+
+  # Uncheck System Preferences -> Mission Control -> When switching to an
+  # application, switch to a Space with open windows for the application.
 
   cat > $HOME/TODO.md << EOF
 # TODO.md
@@ -817,7 +824,7 @@ function countdown_reboot() {
 # These functions are part of a generic installation aiming to fully reproduce
 # my setup.
 
-# exit_if_not_darwin
+exit_if_not_darwin
 # exit_if_root
 # exit_if_sip_enabled
 # greetings_message
