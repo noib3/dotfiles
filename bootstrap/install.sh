@@ -52,7 +52,10 @@ function greetings_message() {
      installed extensions;
   3. the remote server's Syncthing's Web GUI username and password to fetch
      directories to sync;
-  4. your GitHub account's password to add a new SSH key."
+  4. your GitHub account's password to add a new SSH key.
+
+Also, during the installation process you will be asked several times to give
+some kind of permissions to some programs. You should agree to all of them."
 
   printf '\n'
   read -n 1 -s -r -p "Press any key to continue:"
@@ -186,12 +189,6 @@ function set_sys_defaults() {
     /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName \
       -string "${hostname}"
 
-  printf '\n'
-
-  sudo systemsetup -listtimezones
-  read -p "Set the current timezone from the list above:" timezone
-  sudo systemsetup -settimezone "${timezone}" &>/dev/null
-
   killall Dock
   killall Finder
   killall SystemUIServer
@@ -323,11 +320,12 @@ EOF
 
   sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  echo_step "Click \"OK\" in the following dialog box"
-  sleep 1
-
-  # Call the script to trigger being asked for permissions
-  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
+  # Call the script to trigger being asked for permissions.  Last time I tested
+  # this, the terminal was still not given accessibility permissions even after
+  # having implemented the previous function. This would cause
+  # remove-Finder-from-Dock.sh to fail, which would in turn cause this script
+  # to exit, stopping this installation. That's what the '|| true' is for.
+  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null || true
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
@@ -414,8 +412,8 @@ function pip_install_requirements() {
   wget -qP /tmp https://raw.githubusercontent.com/noib3/dotfiles/macOS/\
 bootstrap/requirements.txt
 
-  python3 -m pip install --upgrade pip
-  pip3 install -qr /tmp/requirements.txt
+  python3 -m pip install --upgrade pip >/dev/null
+  pip3 install -qr /tmp/requirements.txt >/dev/null
 
   sleep 1
 }
@@ -493,7 +491,8 @@ tridactyl_no_new_tab_beta-latest.xpi
   curl \
     -fsSl https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/\
 install.sh \
-    -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
+    -o /tmp/trinativeinstall.sh \
+    && sh /tmp/trinativeinstall.sh master >/dev/null
 
   sleep 1
 }
@@ -560,6 +559,17 @@ You'll need to:
   # View -> Toggle Toolbar
   plutil -replace "NSToolbar Configuration SKDocumentToolbar"."TB Is Shown" \
     -bool NO "${HOME}/Library/Preferences/net.sourceforge.skim-app.skim.plist"
+
+  sleep 1
+}
+
+function mpv_as_default() {
+  # Sets mpv as the default video player.
+
+  echo_step "Setting mpv as the default video player"
+
+  duti -s io.mpv .mp4 all
+  duti -s io.mpv .mkv all
 
   sleep 1
 }
@@ -636,7 +646,8 @@ function syncthing_sync_from_server() {
   3. add ${remote_droplet_name} to this machine's remote devices;
   4. sync ${remote_droplet_name}'s ${remote_sync_path} to ${local_sync_path};
   5. flag ${local_sync_path} as Send Only;
-  6. set ${local_sync_path}'s Full Rescan Interval to 60 seconds;"
+  6. set ${local_sync_path}'s Full Rescan Interval to 60 seconds;
+  7. quit Firefox."
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     "http://localhost:8384/#" \
@@ -706,7 +717,8 @@ function github_add_ssh_key() {
 
   echo -e "\
   4. log in to GitHub;
-  5. choose a name for the new key and paste the key from the clipboard."
+  5. choose a name for the new key and paste the key from the clipboard;
+  6. quit Firefox."
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     https://github.com/settings/ssh/new
@@ -817,7 +829,8 @@ back to \n    full speed"
    d. Bitwarden -> Settings -> Vault timeout -> Never;
    e. log back into all the websites (Google, YouTube, Reddit, etc..).
 4. Other:
-   a. take a screenshot to trigger being asked for screen recording permissions
+   a. rm ~/.zsh_history;
+   b. take a screenshot to trigger being asked for screen recording permissions
       for skhd (System Preferences -> Security and Privacy -> Screen recording
       -> skhd)
 EOF
@@ -860,6 +873,7 @@ greetings_message
 # setup_firefox
 # setup_alacritty
 # setup_skim
+# mpv_as_default
 # allow_accessibility
 # brew_start_services
 # yabai_install_sa
