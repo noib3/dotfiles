@@ -7,14 +7,13 @@
   /* --font-size-commandline: 14px; */
   /* RobotoMono */
   --font-family: "RobotoMono Nerd Font";
-  --font-size-hints: 11px;
-  --font-size-commandline: 13px;
+  --font-size-hints: 12px;
+  --font-size-commandline: 14px;
   /* SFMono */
   /* --font-family: "SFMono Nerd Font"; */
   /* --font-size-hints: 12px; */
   /* --font-size-commandline: 14px; */
 }
-
 
 /* Colorschemes */
 
@@ -35,7 +34,6 @@
   --color-commandline-bg: #282c34;
   --color-commandline-fg: #abb2bf;
 }
-
 
 /* Hints */
 
@@ -74,7 +72,6 @@
 #tridactyl-input {
   outline: none;
 }
-
 
 /* Completions */
 

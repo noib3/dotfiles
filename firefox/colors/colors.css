@@ -1,10 +1,12 @@
 /* Focused tabs */
+
 .tab-content[selected="true"] {
   color: var(--color-focused-tabs-fg);
   background-color: var(--color-focused-tabs-bg);
 }
 
 /* Unfocused tabs */
+
 .tab-content {
   color: var(--color-unfocused-tabs-fg);
   background-color: var(--color-unfocused-tabs-bg);
@@ -12,6 +14,7 @@
 
 /* Tab dividers */
 /* https://www.reddit.com/r/firefox/comments/fjr94k/css_to_change_the_colors_of_the_tab_dividers/ */
+
 :root {
   --lwt-accent-color: var(--color-focused-tabs-bg) !important;
 }
@@ -20,6 +23,7 @@
 }
 
 /* Urlbar */
+
 #urlbar {
   color: var(--color-urlbar-fg) !important;
 }
@@ -29,29 +33,37 @@
 }
 
 /* Urlbar separator */
+
 .urlbarView-body-inner {
   border-top: 2px solid var(--color-urlbar-separator) !important;
 }
 
 /* Urlbar search result url */
+
 .urlbarView-action,
 .urlbarView-url {
   color: var(--color-urlbar-popup-url) !important;
 }
 
 /* Urlbar selected search result */
-.urlbarView-row:not([type="tip"]):not([type="dynamic"])[selected] > .urlbarView-row-inner {
+
+.urlbarView-row:not([type="tip"]):not([type="dynamic"])[selected] >
+.urlbarView-row-inner {
   color: var(--color-urlbar-selected-fg) !important;
   background-color: var(--color-urlbar-selected-bg) !important;
 }
 
 /* Urlbar selected search result url */
-.urlbarView-row[selected] > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-action,
+
+.urlbarView-row[selected] >
+.urlbarView-row-inner >
+.urlbarView-no-wrap > .urlbarView-action,
 .urlbarView-row[selected] > .urlbarView-row-inner > .urlbarView-url {
   color: var(--color-urlbar-selected-popup-url) !important;
 }
 
 /* Sidebar */
+
 .sidebar-placesTreechildren {
   color: var(--color-sidebar-fg) !important;
   background-color: var(--color-sidebar-bg) !important;

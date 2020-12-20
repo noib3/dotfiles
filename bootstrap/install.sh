@@ -291,8 +291,8 @@ function allow_accessibility_terminal_env {
 
   echo_step "Allowing /usr/bin/env and Terminal accessibility permissions"
 
-  sudo tccutil --insert /usr/bin/env
-  sudo tccutil --insert /System/Applications/Utilities/Terminal.app
+  sudo tccutil -i /usr/bin/env
+  sudo tccutil -i com.apple.terminal
 
   sleep 1
 }
@@ -320,12 +320,14 @@ EOF
 
   sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  # Call the script to trigger being asked for permissions.  Last time I tested
+  # Last time I tested
   # this, the terminal was still not given accessibility permissions even after
   # having implemented the previous function. This would cause
   # remove-Finder-from-Dock.sh to fail, which would in turn cause this script
   # to exit, stopping this installation. That's what the '|| true' is for.
-  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null || true
+
+  # Call the script to trigger being asked for permissions.
+  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
@@ -579,20 +581,16 @@ function allow_accessibility() {
 
   echo_step "Allowing accessibility permissions to skhd, yabai and spacebar"
 
-  local path_skhd_bin="$(\
+  sudo tccutil -i "$(\
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/skhd \
   )"
-  local path_spacebar_bin="$(\
+  sudo tccutil -i "$(\
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f \
       /usr/local/bin/spacebar \
   )"
-  local path_yabai_bin="$(\
+  sudo tccutil -i "$(\
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/yabai \
   )"
-
-  sudo tccutil --insert "${path_skhd_bin}"
-  sudo tccutil --insert "${path_spacebar_bin}"
-  sudo tccutil --insert "${path_yabai_bin}"
 
   sleep 1
 }
@@ -818,10 +816,11 @@ back to \n    full speed"
    b. Displays -> Arrangement -> drag displays and menubar to the desired
       positions;
 2. Logitech options:
-   a. Mouse -> set Thumb wheel to Zoom;
-   b. Point & Scroll -> Scroll direction -> Natural;
-   c. Point & Scroll -> Smooth scrolling -> Disabled;
-   d. Point & Scroll -> Thumb wheel direction -> Inverted.
+   a. log in;
+   b. Mouse -> set Thumb wheel to Zoom;
+   c. Point & Scroll -> Scroll direction -> Natural;
+   d. Point & Scroll -> Smooth scrolling -> Disabled;
+   e. Point & Scroll -> Thumb wheel direction -> Inverted.
 3. Firefox:
    a. about:preferences -> Zoom -> Default zoom -> 133%;
    b. about:addons -> allow every extension to Run in Private Windows;
@@ -857,42 +856,42 @@ exit_if_not_darwin
 exit_if_root
 exit_if_sip_enabled
 greetings_message
-# command_line_tools
-# whoami_to_sudoers
-# set_sys_defaults
-# get_homebrew_bundle_brewfile
-# unload_finder
-# add_remove_from_dock
-# allow_accessibility_terminal_env
-# remove_finder_from_dock
-# add_to_finder_fav_pt1
-# setup_dotfiles
-# chsh_fish
-# pip_install_requirements
-# download_vimplug
-# setup_firefox
-# setup_alacritty
-# setup_skim
-# mpv_as_default
-# allow_accessibility
-# brew_start_services
-# yabai_install_sa
+command_line_tools
+whoami_to_sudoers
+set_sys_defaults
+get_homebrew_bundle_brewfile
+unload_finder
+add_remove_from_dock
+allow_accessibility_terminal_env
+remove_finder_from_dock
+add_to_finder_fav_pt1
+setup_dotfiles
+chsh_fish
+pip_install_requirements
+download_vimplug
+setup_firefox
+setup_alacritty
+setup_skim
+mpv_as_default
+allow_accessibility
+brew_start_services
+yabai_install_sa
 
 # These functions are specific to my particular setup. Things like configuring
 # settings for my Logitech MX Master mouse, adding a new SSH key to my GitHub
 # account or synching directories from a remote server.
 
-# syncthing_sync_from_server
-# setup_sync_symlinks
-# github_add_ssh_key
-# add_to_finder_fav_pt2
-# transmission_torrent_done_script
-# start_auto_self_control
-# set_wallpaper
+syncthing_sync_from_server
+setup_sync_symlinks
+github_add_ssh_key
+add_to_finder_fav_pt2
+transmission_torrent_done_script
+start_auto_self_control
+set_wallpaper
 
 # Cleanup leftover files, create a TODO.md file listing the things left to do
 # to get back to full speed, reboot the system.
 
-# cleanup
-# todo_dot_md
-# countdown_reboot
+cleanup
+todo_dot_md
+countdown_reboot
