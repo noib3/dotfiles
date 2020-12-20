@@ -29,6 +29,7 @@ brew "gotop"
 brew "ipython"
 brew "jq"
 brew "lf"
+brew "mas"
 brew "media-info"
 brew "neovim"
 brew "node"
@@ -66,3 +67,5 @@ cask "skim"
 cask "tastyworks"
 cask "whatsapp"
 cask "xquartz"
+
+mas "Ethernet Status", id: 1186187538

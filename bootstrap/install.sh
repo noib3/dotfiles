@@ -4,10 +4,8 @@
 
 set -e
 
-function echo_start() { printf '\033[32m⟶   \033[0m\033[1m'"$1"'\033[0m\n\n'; }
-function echo_step() { printf '\033[34m⟶   \033[0m\033[1m'"$1"'\033[0m\n'; }
-function echo_substep() { printf '\033[33m→ \033[0m\033[3m'"$1"'\033[0m\n'; }
-function echo_reboot() { printf '\r\033[31m⟶   \033[0m\033[1m'"$1"'\033[0m'; }
+function echo_step() { printf '\033[34m==> \033[0m\033[1m'"$1"'\033[0m\n'; }
+function echo_reboot() { printf '\r\033[31m==> \033[0m\033[1m'"$1"'\033[0m'; }
 function error_exit() { printf '\033[31mERROR: \033[0m'"$1"'\n' && exit 1; }
 
 function exit_if_not_darwin() {
@@ -46,10 +44,10 @@ function greetings_message() {
   # Echoes a greetings message listing the passwords needed for a full
   # installation. Then waits for user input.
 
-  echo_start "Starting the installation"
+  echo_step "Starting the installation"
   echo -e "\
 You'll need:
-  1. $(whoami)'s password to add $(whoami) to the sudoers file;
+  1. $(id -un)'s password to add $(id -un) to the sudoers file;
   2. your Firefox account's password to recover bookmarks, search history and
 		 installed extensions;
   3. the remote server's Syncthing's Web GUI user name and password to fetch
@@ -82,9 +80,9 @@ function whoami_to_sudoers() {
   # Adds the current user to the sudoers file with the NOPASSWD directive,
   # allowing it to issue sudo commands without being prompted for a password.
 
-  echo_step "Adding $(whoami) to /private/etc/sudoers"
+  echo_step "Adding $(id -un) to /private/etc/sudoers"
 
-  printf "\n$(whoami)		ALL = (ALL) NOPASSWD: ALL\n" \
+  printf "\n$(id -un)		ALL = (ALL) NOPASSWD: ALL\n" \
     | sudo tee -a /private/etc/sudoers &>/dev/null
 
   printf '\n' && sleep 1
@@ -177,6 +175,10 @@ function set_sys_defaults() {
   # Never dim the display while on battery power
   sudo pmset -a halfdim 0
 
+  # Don't reopen any program after restarting
+  defaults write com.apple.loginwindow TALLogoutSavesState -bool false
+  defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool false
+
   read -p "Choose a name for this machine:" hostname
   sudo scutil --set ComputerName "${hostname}"
   sudo scutil --set HostName "${hostname}"
@@ -238,14 +240,14 @@ EOF
   chmod +x "${agent_scripts_dir}/unload-Finder.sh"
 
   mkdir -p "${HOME}/Library/LaunchAgents"
-  cat << EOF > "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
+  cat << EOF > "${HOME}/Library/LaunchAgents/$(id -un).unload-Finder.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>$(whoami).unload-Finder</string>
+  <string>$(id -un).unload-Finder</string>
   <key>ProgramArguments</key>
   <array>
     <string>${agent_scripts_dir}/unload-Finder.sh</string>
@@ -262,7 +264,7 @@ EOF
 EOF
 
   launchctl load \
-    "${HOME}/Library/LaunchAgents/$(whoami).unload-Finder.plist"
+    "${HOME}/Library/LaunchAgents/$(id -un).unload-Finder.plist"
 
   printf '\n' && sleep 1
 }
@@ -289,6 +291,19 @@ function add_remove_from_dock {
   printf '\n' && sleep 1
 }
 
+function allow_accessibility_terminal_env {
+  # The next function executes a script that needs /usr/bin/env and the
+  # Terminal app to have accessibility permissions to allow osascript assistive
+  # access.
+
+  echo_step "qe"
+
+  sudo tccutil --insert /usr/bin/env
+  sudo tccutil --insert /System/Applications/Utilities/Terminal.app
+
+  printf '\n' && sleep 1
+}
+
 function remove_finder_from_dock {
   # Creates a service that removes the Finder icon from the Dock after the user
   # logs in.
@@ -309,21 +324,21 @@ EOF
 
   sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  echo_substep "Say \"OK\" to the following dialog box"
+  echo_step "Say \"OK\" to the following dialog box"
   sleep 1
 
   # Call the script to trigger being asked for permissions
   "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
 
   cat << EOF > \
-    "${HOME}/Library/LaunchAgents/$(whoami).remove-Finder-from-Dock.plist"
+    "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>$(whoami).remove-Finder-from-Dock</string>
+  <string>$(id -un).remove-Finder-from-Dock</string>
   <key>ProgramArguments</key>
   <array>
     <string>${agent_scripts_dir}/remove-Finder-from-Dock.sh</string>
@@ -340,7 +355,7 @@ EOF
 EOF
 
   launchctl load \
-    "${HOME}/Library/LaunchAgents/"$(whoami)".remove-Finder-from-Dock.plist"
+    "${HOME}/Library/LaunchAgents/"$(id -un)".remove-Finder-from-Dock.plist"
 
   printf '\n' && sleep 1
 }
@@ -350,7 +365,7 @@ function add_to_finder_fav_pt1() {
 
   echo_step "Adding ${HOME} and /usr/local/bin to the Finder's Favourites"
 
-  mysides add "$(whoami)" "file://${HOME}"
+  mysides add "$(id -un)" "file://${HOME}"
   mysides add bin file:///usr/local/bin
 
   printf '\n' && sleep 1
@@ -358,7 +373,7 @@ function add_to_finder_fav_pt1() {
 
 function setup_dotfiles() {
   # Downloads the current dotfiles from the GitHub repo. Replaces the username
-  # in firefox/userChrome.css and alacritty/alacritty.yml with $(whoami).
+  # in firefox/userChrome.css and alacritty/alacritty.yml with $(id -un).
   # Lastly, it overrides ~/.config with the cloned repo.
 
   echo_step "Downloading and installing dotfiles from noib3/dotfiles (macOS \
@@ -434,7 +449,7 @@ function download_vimplug() {
       --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
   '
 
-  echo_substep "Installing neovim plugins"
+  echo_step "Installing neovim plugins"
   nvim --headless +PlugInstall +qall &>/dev/null
 
   printf '\n' && sleep 1
@@ -452,10 +467,10 @@ function setup_firefox() {
   xattr -r -d com.apple.quarantine /Applications/Firefox.app
 
   printf "\n"
-  echo_substep "Set Firefox as the default browser"
-  echo_substep "Log into your Firefox account"
-  echo_substep "Wait for all the extensions to be installed"
-  echo_substep "Quit Firefox"
+  echo_step "Set Firefox as the default browser"
+  echo_step "Log into your Firefox account"
+  echo_step "Wait for all the extensions to be installed"
+  echo_step "Quit Firefox"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -490,8 +505,8 @@ tridactyl_no_new_tab_beta-latest.xpi
 
   wget -P /tmp/ "${path_tridactyl_xpi}"
 
-  echo_substep "Accept Tridactyl installation"
-  echo_substep "Quit Firefox"
+  echo_step "Accept Tridactyl installation"
+  echo_step "Quit Firefox"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -522,7 +537,7 @@ function setup_skim() {
   # Open Skim without being prompted for a "Are you sure.." dialog
   xattr -r -d com.apple.quarantine /Applications/Skim.app
 
-  # echo_substep "After the following pdf opens, quit Skim"
+  # echo_step "After the following pdf opens, quit Skim"
   # sleep 1
 
   # # Open pdf with Skim to generate plist file
@@ -628,13 +643,13 @@ function syncthing_sync_from_server() {
   local_sync_path="${HOME}/Sync"
 
   printf "\n"
-  echo_substep "Remove Default Folder"
-  echo_substep "Set this machine's Device Name"
-  echo_substep "Add ${remote_droplet_name} to this machine's remote devices"
-  echo_substep "Sync ${remote_droplet_name}'s ${remote_sync_path} to \
+  echo_step "Remove Default Folder"
+  echo_step "Set this machine's Device Name"
+  echo_step "Add ${remote_droplet_name} to this machine's remote devices"
+  echo_step "Sync ${remote_droplet_name}'s ${remote_sync_path} to \
 ${local_sync_path}"
-  echo_substep "Flag ${local_sync_path} as Send Only"
-  echo_substep "Set ${local_sync_path}'s Full Rescan Interval to 60 seconds"
+  echo_step "Flag ${local_sync_path} as Send Only"
+  echo_step "Set ${local_sync_path}'s Full Rescan Interval to 60 seconds"
   sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -694,17 +709,17 @@ function github_add_ssh_key() {
   local github_user_email="riccardo.mazzarini@pm.me"
 
   printf "\n"
-  echo_substep "Leave the default value for the key path \
+  echo_step "Leave the default value for the key path \
 (${HOME}/.ssh/id_rsa)"
-  echo_substep "Overwrite the existing id_rsa file"
-  echo_substep "Leave the passphrase empty"
+  echo_step "Overwrite the existing id_rsa file"
+  echo_step "Leave the passphrase empty"
 
   ssh-keygen -t rsa -C "${github_user_email}"
   cat "${HOME}/Sync/private/ssh/id_rsa.pub" | pbcopy
 
   printf "\n"
-  echo_substep "The public key in id_rsa.pub is in the clipboard"
-  echo_substep "Log in to GitHub, choose a name for the new key and paste the \
+  echo_step "The public key in id_rsa.pub is in the clipboard"
+  echo_step "Log in to GitHub, choose a name for the new key and paste the \
 key from the\n  clipboard"
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
@@ -774,25 +789,28 @@ function cleanup() {
 
   sudo rm -rf "${HOME}/Public"
   sudo rm "${HOME}/.CFUserTextEncoding"
+  sudo rm "${HOME}/Downloads/.localized"
   rm "${HOME}/.wget-hsts"
 
   # Find every .DS_Store file in / and delete them.
   sudo mount -uw /
   osascript -e 'quit app "Finder"'
-  fd -uu ".DS_Store" / -X sudo rm
+  fd -uu ".DS_Store" / -X sudo rm -f
+
+  mkdir -p "${HOME}/.cache"
 
   printf '\n' && sleep 1
 }
 
 function todo_dot_md() {
-  # Create a TODO.md file in $(whoami)'s home folder listing the things left to
+  # Create a TODO.md file in $(id -un)'s home folder listing the things left to
   # do to get back to full speed
 
-  # Logitech options -> zoom with wheel,
+  # Logitech options -> Zoom with wheel,
   # Logitech options -> Point & Scroll -> Scroll direction -> Natural,
   # Thumb wheel direction -> Inverted
-  # Smooth scrolling -> disabled
-  # set pointer and scrolling speed
+  # Smooth scrolling -> Disabled
+  # Set pointer and scrolling speed
 
   # Firefox -> Default Zoom -> 133%
   # Firefox bitwarden login
@@ -841,13 +859,14 @@ function countdown_reboot() {
 exit_if_not_darwin
 exit_if_root
 exit_if_sip_enabled
-# greetings_message
+greetings_message
 # command_line_tools
 # whoami_to_sudoers
 # set_sys_defaults
 # get_homebrew_bundle_brewfile
 # unload_finder
 # add_remove_from_dock
+# allow_accessibility_terminal_env
 # remove_finder_from_dock
 # add_to_finder_fav_pt1
 # setup_dotfiles
@@ -878,4 +897,4 @@ exit_if_sip_enabled
 
 # cleanup
 # todo_dot_md
-countdown_reboot
+# countdown_reboot
