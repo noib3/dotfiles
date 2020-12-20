@@ -28,7 +28,7 @@ function exit_if_sip_enabled() {
   # Checks if System Integrity Protection (SIP) is enabled. Echoes the steps to
   # disable it and exits if it is.
 
-  [[ $(csrutil status | sed 's/[^:]*:[[:space:]]*\([^\.]*\).*/\1/') == "disabled" ]] \
+  [[ $(csrutil status) =~ .*disabled.* ]] \
     || error_exit "SIP needs to be disabled for the installation.
 
 To disable it you need to:
@@ -45,17 +45,16 @@ function greetings_message() {
   # installation. Then waits for user input.
 
   echo_step "Starting the installation"
-  echo -e "\
-You'll need:
+
+  echo "You'll need:
   1. $(id -un)'s password to add $(id -un) to the sudoers file;
   2. your Firefox account's password to recover bookmarks, search history and
-		 installed extensions;
-  3. the remote server's Syncthing's Web GUI user name and password to fetch
+     installed extensions;
+  3. the remote server's Syncthing's Web GUI username and password to fetch
      directories to sync;
-  4. your GitHub account's password to add a new SSH key;
-  5. your Logitech account's password to recover settings for the MX Master 2S
-     mouse;
-"
+  4. your GitHub account's password to add a new SSH key."
+
+  printf '\n'
   read -n 1 -s -r -p "Press any key to continue:"
   printf '\n\n'
 }
@@ -73,7 +72,7 @@ function command_line_tools() {
     done
   fi
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function whoami_to_sudoers() {
@@ -85,7 +84,7 @@ function whoami_to_sudoers() {
   printf "\n$(id -un)		ALL = (ALL) NOPASSWD: ALL\n" \
     | sudo tee -a /private/etc/sudoers &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function set_sys_defaults() {
@@ -95,8 +94,8 @@ function set_sys_defaults() {
   echo_step "Setting macOS system preference defaults"
 
   # Enable trackpad's tap to click
-  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad \
-    Clicking -bool true
+  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking \
+    -bool true
 
   # Show battery percentage in menu bar
   defaults write com.apple.menuextra.battery ShowPercent -bool true
@@ -161,8 +160,7 @@ function set_sys_defaults() {
 
   # Make ~ the default directory when opening a new window
   defaults write com.apple.finder NewWindowTarget -string "PfLo"
-  defaults write com.apple.finder NewWindowTargetPath \
-    -string "file://${HOME}/"
+  defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
   # Remove 'Other' from login screen
   sudo defaults write /Library/Preferences/com.apple.loginwindow \
@@ -177,7 +175,8 @@ function set_sys_defaults() {
 
   # Don't reopen any program after restarting
   defaults write com.apple.loginwindow TALLogoutSavesState -bool false
-  defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool false
+  defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool \
+    false
 
   read -p "Choose a name for this machine:" hostname
   sudo scutil --set ComputerName "${hostname}"
@@ -197,7 +196,7 @@ function set_sys_defaults() {
   killall Finder
   killall SystemUIServer
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function get_homebrew_bundle_brewfile() {
@@ -206,27 +205,25 @@ function get_homebrew_bundle_brewfile() {
 
   echo_step "Downloading homebrew, then formulas from Brewfile"
 
-  local path_homebrew_install_script=\
-https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
-
-  local path_brewfile=\
-https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile
-
   which -s brew && brew update \
-    || bash -c "$(curl -fsSL ${path_homebrew_install_script})"
+    || bash -c "$(curl -fsSL \
+          https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  curl -fsSL ${path_brewfile} -o /tmp/Brewfile
+  curl -fsSL \
+    https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/Brewfile \
+    -o /tmp/Brewfile
+
   brew bundle install --file /tmp/Brewfile
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function unload_finder {
   # Creates a service that quits Finder after the user logs in.
 
-  echo_step "Creating a new service that quits Finder after loggin in"
+  echo_step "Creating a new service to quit Finder after loggin in"
 
-  agent_scripts_dir="${HOME}/.local/agent-scripts"
+  local agent_scripts_dir="${HOME}/.local/agent-scripts"
 
   mkdir -p "${agent_scripts_dir}"
 
@@ -263,10 +260,9 @@ EOF
 </plist>
 EOF
 
-  launchctl load \
-    "${HOME}/Library/LaunchAgents/$(id -un).unload-Finder.plist"
+  launchctl load "${HOME}/Library/LaunchAgents/$(id -un).unload-Finder.plist"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function add_remove_from_dock {
@@ -288,20 +284,20 @@ function add_remove_from_dock {
 
   killall Dock
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function allow_accessibility_terminal_env {
   # The next function executes a script that needs /usr/bin/env and the
   # Terminal app to have accessibility permissions to allow osascript assistive
-  # access.
+  # access. This function gives them that.
 
-  echo_step "qe"
+  echo_step "Allowing /usr/bin/env and Terminal accessibility permissions"
 
   sudo tccutil --insert /usr/bin/env
   sudo tccutil --insert /System/Applications/Utilities/Terminal.app
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function remove_finder_from_dock {
@@ -311,6 +307,9 @@ function remove_finder_from_dock {
   echo_step "Creating a new service that removes Finder from the Dock"
 
   local agent_scripts_dir="${HOME}/.local/agent-scripts"
+
+  mkdir -p "${agent_scripts_dir}"
+
   sudo tee "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null << EOF
 #!/usr/bin/env bash
 
@@ -324,7 +323,7 @@ EOF
 
   sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
 
-  echo_step "Say \"OK\" to the following dialog box"
+  echo_step "Click \"OK\" in the following dialog box"
   sleep 1
 
   # Call the script to trigger being asked for permissions
@@ -355,20 +354,21 @@ EOF
 EOF
 
   launchctl load \
-    "${HOME}/Library/LaunchAgents/"$(id -un)".remove-Finder-from-Dock.plist"
+    "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function add_to_finder_fav_pt1() {
-  #
+  # Adds the user home folder and /usr/local/bin to the Finder's favourite
+  # sidebar.
 
   echo_step "Adding ${HOME} and /usr/local/bin to the Finder's Favourites"
 
-  mysides add "$(id -un)" "file://${HOME}"
-  mysides add bin file:///usr/local/bin
+  mysides add "$(id -un)" "file://${HOME}" &>/dev/null
+  mysides add bin file:///usr/local/bin &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function setup_dotfiles() {
@@ -379,7 +379,8 @@ function setup_dotfiles() {
   echo_step "Downloading and installing dotfiles from noib3/dotfiles (macOS \
 branch)"
 
-  git clone https://github.com/noib3/dotfiles.git --branch macOS /tmp/dotfiles
+  git clone -q https://github.com/noib3/dotfiles.git --branch macOS \
+    /tmp/dotfiles
 
   /usr/local/opt/gnu-sed/libexec/gnubin/sed -i \
     "s@/Users/[^/]*/\(.*\)@/Users/$(id -un)/\1@g" \
@@ -389,89 +390,70 @@ branch)"
   rm -rf "${HOME}/.config"
   mv /tmp/dotfiles "${HOME}/.config"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function chsh_fish() {
   # Adds fish to the list of the valid shells, then sets fish as the chosen
   # login shell.
 
-  echo_step "Setting up fish as the default shell"
+  echo_step "Setting fish as the default shell"
 
   sudo sh -c "echo /usr/local/bin/fish >> /etc/shells"
   chsh -s /usr/local/bin/fish
 
-  printf '\n' && sleep 1
-}
-
-function terminfo_alacritty() {
-  # Downloads and installs the terminfo database for alacritty.
-
-  echo_step "Setting up terminfo for alacritty"
-
-  local path_alacritty_terminfo=\
-https://raw.githubusercontent.com/alacritty/alacritty/master/extra/\
-alacritty.info
-
-  wget -P /tmp/ "${path_alacritty_terminfo}"
-  sudo tic -xe alacritty,alacritty-direct /tmp/alacritty.info
-
-  # Open Alacritty without being prompted for a "Are you sure.." dialog
-  xattr -r -d com.apple.quarantine /Applications/Alacritty.app
-
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function pip_install_requirements() {
   # Installs the python modules taken from the requirements.txt file in the
   # GitHub repo.
 
-  echo_step "Downloading python modules"
+  echo_step "Installing python modules"
 
-  local path_python_requirements=\
-https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/\
-requirements.txt
+  wget -qP /tmp https://raw.githubusercontent.com/noib3/dotfiles/macOS/\
+bootstrap/requirements.txt
 
-  wget -P /tmp "${path_python_requirements}"
-  pip3 install -r /tmp/requirements.txt
+  python3 -m pip install --upgrade pip
+  pip3 install -qr /tmp/requirements.txt
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function download_vimplug() {
-  # Downloads vim-plug, a tool to manage Vim plugins.
+  # Downloads vim-plug, a tool to manage Vim plugins, then it installs the
+  # plugins in .config/nvim/general/plugins.vim.
 
   echo_step "Installing vim-plug and plugins"
 
-  sh -c ' \
-    curl \
-      -fLo "${HOME}/.local/share/nvim/site/autoload/plug.vim" \
-      --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+  sh -c ' curl \
+    -sfLo "${HOME}/.local/share/nvim/site/autoload/plug.vim" \
+    --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
   '
 
   echo_step "Installing neovim plugins"
   nvim --headless +PlugInstall +qall &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function setup_firefox() {
-  # Sets Firefox as the default browser. Symlinks the files in
-  # ~/.config/firefox to all the user profiles. Downloads and installs the
-  # no-new-tab version of Tridactyl. Installs the native messager to allow
-  # Tridactyl to run other programs.
+  # Removes Firefox from quarantine. Sets Firefox as the default browser.
+  # Symlinks the files in .config/firefox to all the user profiles. Downloads
+  # and installs the no-new-tab version of Tridactyl. Installs the native
+  # messager to allow Tridactyl to run other programs.
 
   echo_step "Setting up Firefox"
 
+  echo "You'll need to:
+  1. set Firefox as the default browser;
+  2. log into your Firefox account;
+  3. wait for all the extensions to be installed;
+  4. quit Firefox;"
+
   # Open Firefox without being prompted for a "Are you sure.." dialog
   xattr -r -d com.apple.quarantine /Applications/Firefox.app
-
-  printf "\n"
-  echo_step "Set Firefox as the default browser"
-  echo_step "Log into your Firefox account"
-  echo_step "Wait for all the extensions to be installed"
-  echo_step "Quit Firefox"
-  sleep 2
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     --setDefaultBrowser "about:preferences#sync" &>/dev/null
@@ -495,56 +477,61 @@ function setup_firefox() {
       "${HOME}/Library/Application Support/Firefox/Profiles/${profile}/chrome/"
   done
 
-  printf "\n"
-
   # Download and install tridactyl (no-new-tab version)
 
-  local path_tridactyl_xpi=\
-https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
+  wget -qP /tmp/ https://tridactyl.cmcaine.co.uk/betas/nonewtab/\
 tridactyl_no_new_tab_beta-latest.xpi
 
-  wget -P /tmp/ "${path_tridactyl_xpi}"
-
-  echo_step "Accept Tridactyl installation"
-  echo_step "Quit Firefox"
-  sleep 2
+  echo "\
+  5. accept Tridactyl installation;
+  6. quit Firefox."
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     /tmp/tridactyl_no_new_tab_beta-latest.xpi &>/dev/null
 
-  local path_native_installer=\
-https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/install.sh
-
   # Install native messanger for tridactyl
   curl \
-    -fsSl "${path_native_installer}" \
+    -fsSl https://raw.githubusercontent.com/tridactyl/tridactyl/master/native/\
+install.sh \
     -o /tmp/trinativeinstall.sh && sh /tmp/trinativeinstall.sh master
 
-  printf '\n' && sleep 1
+  sleep 1
+}
+
+function setup_alacritty() {
+  # Downloads and installs the terminfo database for alacritty. Removes
+  # Alacritty from quarantine.
+
+  echo_step "Setting up Alacritty"
+
+  wget -qP /tmp/ https://raw.githubusercontent.com/alacritty/alacritty/master/\
+extra/alacritty.info
+
+  sudo tic -xe alacritty,alacritty-direct /tmp/alacritty.info
+
+  # Open Alacritty without being prompted for a "Are you sure.." dialog
+  xattr -r -d com.apple.quarantine /Applications/Alacritty.app
+
+  sleep 1
 }
 
 function setup_skim() {
-  # Opens a dummy pdf file used to trigger the creation of Skim's property list
-  # file in ~/Library/Preferences. Sets a few Skim preferences.
+  # Removes Skim from quarantine. Opens a dummy pdf file used to trigger the
+  # creation of Skim's property list file in ~/Library/Preferences. Sets Skim
+  # as the default PDF viewer. Sets a few Skim preferences.
 
-  echo_step "Setting up Skim preferences"
+  echo_step "Setting up Skim"
 
-  # local path_plist_trigger_file=\
-# https://github.com/noib3/dotfiles/blob/macOS/bootstrap/Skim_plist_trigger.pdf
-
-  # wget -P /tmp "${path_plist_trigger_file}"
+  echo "\
+You'll need to:
+  1. quit Skim after the following pdf opens."
 
   # Open Skim without being prompted for a "Are you sure.." dialog
   xattr -r -d com.apple.quarantine /Applications/Skim.app
 
-  # echo_step "After the following pdf opens, quit Skim"
-  # sleep 1
-
   # # Open pdf with Skim to generate plist file
   /Applications/Skim.app/Contents/MacOS/Skim \
     /usr/local/lib/python3.9/site-packages/matplotlib/mpl-data/images/back.pdf
-
-  # /Applications/Skim.app/Contents/MacOS/Skim /tmp/Skim_plist_trigger.pdf
 
   # Use Skim as the default PDF viewer
   duti -s net.sourceforge.skim-app.skim .pdf all
@@ -574,7 +561,7 @@ function setup_skim() {
   plutil -replace "NSToolbar Configuration SKDocumentToolbar"."TB Is Shown" \
     -bool NO "${HOME}/Library/Preferences/net.sourceforge.skim-app.skim.plist"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function allow_accessibility() {
@@ -582,13 +569,14 @@ function allow_accessibility() {
 
   echo_step "Allowing accessibility permissions to skhd, yabai and spacebar"
 
-  local path_skhd_bin="$( \
+  local path_skhd_bin="$(\
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/skhd \
   )"
-  local path_spacebar_bin="$( \
-    /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/spacebar \
+  local path_spacebar_bin="$(\
+    /usr/local/opt/coreutils/libexec/gnubin/readlink -f \
+      /usr/local/bin/spacebar \
   )"
-  local path_yabai_bin="$( \
+  local path_yabai_bin="$(\
     /usr/local/opt/coreutils/libexec/gnubin/readlink -f /usr/local/bin/yabai \
   )"
 
@@ -596,13 +584,13 @@ function allow_accessibility() {
   sudo tccutil --insert "${path_spacebar_bin}"
   sudo tccutil --insert "${path_yabai_bin}"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function brew_start_services() {
   # Tells homebrew to start a few services.
 
-  local services=( \
+  local services=(\
     redshift \
     skhd \
     spacebar \
@@ -615,10 +603,10 @@ function brew_start_services() {
 $((${#services[@]} - 2)) services with Homebrew"
 
   for service in "${services[@]}"; do
-    brew services start "${service}"
+    brew services start "${service}" &>/dev/null
   done
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function yabai_install_sa() {
@@ -627,44 +615,42 @@ function yabai_install_sa() {
   echo_step "Installing yabai scripting-addition"
 
   sudo yabai --install-sa
-  brew services restart yabai
+  brew services restart yabai &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function syncthing_sync_from_server() {
   # Opens a new Firefox window with this machine's and my remote server's
   # Syncthing Web GUI pages.
 
-  echo_step "Opening Syncthing Web GUIs"
-
   local remote_droplet_name=Ocean
   local remote_sync_path=/home/noibe/Sync
   local_sync_path="${HOME}/Sync"
 
-  printf "\n"
-  echo_step "Remove Default Folder"
-  echo_step "Set this machine's Device Name"
-  echo_step "Add ${remote_droplet_name} to this machine's remote devices"
-  echo_step "Sync ${remote_droplet_name}'s ${remote_sync_path} to \
-${local_sync_path}"
-  echo_step "Flag ${local_sync_path} as Send Only"
-  echo_step "Set ${local_sync_path}'s Full Rescan Interval to 60 seconds"
-  sleep 2
+  echo_step "Setting up Syncthing"
+
+  echo "You'll need to:
+  1. remove this machine's Default Folder;
+  2. set this machine's Device Name;
+  3. add ${remote_droplet_name} to this machine's remote devices;
+  4. sync ${remote_droplet_name}'s ${remote_sync_path} to ${local_sync_path};
+  5. flag ${local_sync_path} as Send Only;
+  6. set ${local_sync_path}'s Full Rescan Interval to 60 seconds;"
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
     "http://localhost:8384/#" \
     "https://64.227.35.152:8384/#" &>/dev/null
 
-  brew services stop syncthing
+  brew services stop syncthing &>/dev/null
   xml ed --inplace \
     -u "/configuration/folder[@path='${local_sync_path}']/markerName" \
     -v "wallpapers" \
     "${HOME}/Library/Application Support/Syncthing/config.xml"
   rm -rf "${local_sync_path}/.stfolder"
-  brew services start syncthing
+  brew services start syncthing &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function setup_sync_symlinks {
@@ -672,10 +658,10 @@ function setup_sync_symlinks {
 
   echo_step "Setting up symlinks to ~/Sync"
 
-  ln -sf "${HOME}/Sync/private/ssh" "${HOME}/.ssh"
+  ln -sf "${local_sync_path}/private/ssh" "${HOME}/.ssh"
 
   rm -rf "${HOME}/.config"
-  ln -s "${HOME}/Sync/dotfiles/macOS" "${HOME}/.config"
+  ln -s "${local_sync_path}/dotfiles/macOS" "${HOME}/.config"
 
   for profile in "${firefox_profiles[@]}"; do
     ln -f \
@@ -684,18 +670,20 @@ function setup_sync_symlinks {
   done
 
   mkdir -p "${HOME}/.local/share/ndiet"
-  ln -s "${HOME}/Sync/code/ndiet/ndiet.py" /usr/local/bin/ndiet
-  ln -s "${HOME}/Sync/code/ndiet/diets" "${HOME}/.local/share/ndiet/diets"
+  ln -s "${local_sync_path}/code/ndiet/ndiet.py" /usr/local/bin/ndiet
   ln -s \
-    "${HOME}/Sync/code/ndiet/pantry.txt" \
+    "${local_sync_path}/code/ndiet/diets" \
+    "${HOME}/.local/share/ndiet/diets"
+  ln -s \
+    "${local_sync_path}/code/ndiet/pantry.txt" \
     "${HOME}/.local/share/ndiet/pantry.txt"
 
   rm /usr/local/etc/auto-selfcontrol/config.json
   ln -sf \
-    "${HOME}/Sync/private/auto-selfcontrol/config.json" \
+    "${local_sync_path}/private/auto-selfcontrol/config.json" \
     /usr/local/etc/auto-selfcontrol/config.json
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function github_add_ssh_key() {
@@ -704,42 +692,39 @@ function github_add_ssh_key() {
   # page in Firefox to add the newly generated key to the list of accepted
   # keys.
 
-  echo_step "Creating new ssh key for GitHub"
-
   local github_user_email="riccardo.mazzarini@pm.me"
 
-  printf "\n"
-  echo_step "Leave the default value for the key path \
-(${HOME}/.ssh/id_rsa)"
-  echo_step "Overwrite the existing id_rsa file"
-  echo_step "Leave the passphrase empty"
+  echo_step "Creating new ssh key for GitHub"
+
+  echo "You'll need to:
+  1. leave the default value for the key path (${HOME}/.ssh/id_rsa);
+  2. overwrite the existing id_rsa file;
+  3. leave the passphrase empty;"
 
   ssh-keygen -t rsa -C "${github_user_email}"
-  cat "${HOME}/Sync/private/ssh/id_rsa.pub" | pbcopy
+  cat "${local_sync_path}/private/ssh/id_rsa.pub" | pbcopy
 
-  printf "\n"
-  echo_step "The public key in id_rsa.pub is in the clipboard"
-  echo_step "Log in to GitHub, choose a name for the new key and paste the \
-key from the\n  clipboard"
+  echo -e "\
+  4. log in to GitHub;
+  5. choose a name for the new key and paste the key from the clipboard."
 
   /Applications/Firefox.app/Contents/MacOS/firefox \
-    "https://github.com/settings/ssh/new"
+    https://github.com/settings/ssh/new
 
-  # ssh -T git@github.com
-
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function add_to_finder_fav_pt2() {
-  #
+  # Add ~/Sync/screenshots and ~/Sync/burocrazy to the Finder's favourite
+  # sidebar.
 
   echo_step "Adding ${local_sync_path}/screenshots and \
 ${local_sync_path}/burocrazy to the Finder's Favourites"
 
-  mysides add screenshots "file://${local_sync_path}/screenshots"
-  mysides add burocrazy "file://${local_sync_path}/burocrazy"
+  mysides add screenshots "file://${local_sync_path}/screenshots" &>/dev/null
+  mysides add burocrazy "file://${local_sync_path}/burocrazy" &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function transmission_torrent_done_script {
@@ -747,20 +732,20 @@ function transmission_torrent_done_script {
 
   echo_step "Adding torrent-done notification script to Transmission"
 
-  transmission-remote \
-    --torrent-done-script "${HOME}/Sync/code/scripts/transmission/notify-done"
+  transmission-remote --torrent-done-script \
+    "${local_sync_path}/code/scripts/transmission/notify-done" &>/dev/null
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function start_auto_self_control {
-  # Starts auto-selfcontrol
+  # Starts auto-selfcontrol.
 
   echo_step "Starting auto-selfcontrol"
 
-  auto-selfcontrol activate
+  auto-selfcontrol activate >/dev/null
 
-  printf '\n ' && sleep 1
+  sleep 1
 }
 
 function set_wallpaper() {
@@ -768,22 +753,24 @@ function set_wallpaper() {
   # the wallpaper to ~/Sync/wallpapers/$COLORSCHEME.png.
 
   local colorscheme="$(\
-    grep 'set\s\+-x\s\+COLORSCHEME' "${HOME}/.config/fish/conf.d/exports.fish" \
-    | /usr/local/opt/gnu-sed/libexec/gnubin/sed 's/set\s\+-x\s\+COLORSCHEME\s\+\([^\s]*\)/\1/'
+    grep 'set\s\+-x\s\+COLORSCHEME' \
+      "${HOME}/.config/fish/conf.d/exports.fish" \
+    | /usr/local/opt/gnu-sed/libexec/gnubin/sed \
+        's/set\s\+-x\s\+COLORSCHEME\s\+\([^\s]*\)/\1/'
   )"
 
   echo_step "Changing the wallpaper to ${colorscheme}.png"
 
   osascript -e \
     "tell application \"Finder\" to set desktop picture \
-      to POSIX file \"${HOME}/Sync/wallpapers/${colorscheme}.png\"" &>/dev/null
+      to POSIX file \"${local_sync_path}/wallpapers/${colorscheme}.png\""
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function cleanup() {
   # Remove unneeded files, either already present in the machine or created
-  # by a function in this script.
+  # by a function in this script. Create ~/.cache directory
 
   echo_step "Cleaning up some files"
 
@@ -799,46 +786,43 @@ function cleanup() {
 
   mkdir -p "${HOME}/.cache"
 
-  printf '\n' && sleep 1
+  sleep 1
 }
 
 function todo_dot_md() {
   # Create a TODO.md file in $(id -un)'s home folder listing the things left to
-  # do to get back to full speed
+  # do to get back to full speed.
 
-  # Logitech options -> Zoom with wheel,
-  # Logitech options -> Point & Scroll -> Scroll direction -> Natural,
-  # Thumb wheel direction -> Inverted
-  # Smooth scrolling -> Disabled
-  # Set pointer and scrolling speed
 
-  # Firefox -> Default Zoom -> 133%
-  # Firefox bitwarden login
+  echo_step "Creating TODO.md in ${HOME} with all the steps to follow to get \
+back to \n    full speed"
 
-  # Log back in into all the websites (Bitwarden, Google, YouTube, Reddit,
-  # etc..)
-  # Bitwarden -> Settings -> Vault timeout -> Never
-
-  # Firefox add private window permissions to all extensions
-
-  # Take a screenshot to trigger being asked for screen recording permissions
-  # for skhd (System Preferences -> Security and Privacy -> Screen
-  # recording -> skdh)
-
-  # Uncheck System Preferences -> Mission Control -> When switching to an
-  # application, switch to a Space with open windows for the application.
-
-  cat > $HOME/TODO.md << EOF
+  cat > "${HOME}/TODO.md" << EOF
 # TODO.md
 
-1. do this;
-2. do that;
-3. attach an external display and rearrange so that the external is the main
-   one;
-4. login youtube, switch account and enable dark mode and english;
-5. log into bitwarden, unlock it, then Settings -> Vault timeout -> Never;
+1. System Preferences:
+   a. Mission Control -> uncheck "When switching to an application, switch to
+      a Space with open windows for the application";
+   b. Displays -> Arrangement -> drag displays and menubar to the desired
+      positions;
+2. Logitech options:
+   a. Mouse -> set Thumb wheel to Zoom;
+   b. Point & Scroll -> Scroll direction -> Natural;
+   c. Point & Scroll -> Smooth scrolling -> Disabled;
+   d. Point & Scroll -> Thumb wheel direction -> Inverted.
+3. Firefox:
+   a. about:preferences -> Zoom -> Default zoom -> 133%;
+   b. about:addons -> allow every extension to Run in Private Windows;
+   c. log into Bitwarden;
+   d. Bitwarden -> Settings -> Vault timeout -> Never;
+   e. log back into all the websites (Google, YouTube, Reddit, etc..).
+4. Other:
+   a. take a screenshot to trigger being asked for screen recording permissions
+      for skhd (System Preferences -> Security and Privacy -> Screen recording
+      -> skhd)
 EOF
-  printf '\n' && sleep 1
+
+  sleep 1
 }
 
 function countdown_reboot() {
@@ -849,7 +833,7 @@ function countdown_reboot() {
     [[ ${n} == 0 ]] || sleep 1
   done
 
-  printf '\n\n'
+  printf '\n'
   osascript -e "tell app \"System Events\" to restart"
 }
 
@@ -871,10 +855,10 @@ greetings_message
 # add_to_finder_fav_pt1
 # setup_dotfiles
 # chsh_fish
-# terminfo_alacritty
 # pip_install_requirements
 # download_vimplug
 # setup_firefox
+# setup_alacritty
 # setup_skim
 # allow_accessibility
 # brew_start_services
