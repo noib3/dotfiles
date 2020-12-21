@@ -291,7 +291,7 @@ function allow_accessibility_terminal_env {
 
   echo_step "Allowing /usr/bin/env and Terminal accessibility permissions"
 
-  #sudo tccutil -i /usr/bin/env
+  sudo tccutil -i /usr/bin/env
   #sudo tccutil -i com.apple.terminal
 
   sleep 1
