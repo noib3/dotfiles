@@ -71,7 +71,7 @@ function command_line_tools() {
   if ! xcode-select --print-path &>/dev/null; then
     xcode-select --install &>/dev/null
     until xcode-select --print-path &>/dev/null; do
-      sleep 5
+      sleep 10
     done
   fi
 
@@ -291,8 +291,8 @@ function allow_accessibility_terminal_env {
 
   echo_step "Allowing /usr/bin/env and Terminal accessibility permissions"
 
-  sudo tccutil -i /usr/bin/env
-  sudo tccutil -i com.apple.terminal
+  #sudo tccutil -i /usr/bin/env
+  #sudo tccutil -i com.apple.terminal
 
   sleep 1
 }
@@ -327,7 +327,7 @@ EOF
   # to exit, stopping this installation. That's what the '|| true' is for.
 
   # Call the script to trigger being asked for permissions.
-  "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
+  # "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
