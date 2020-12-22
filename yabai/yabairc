@@ -3,7 +3,7 @@
 source "$(dirname $0)/colorschemes/onedark.sh"
 
 yabai -m config window_placement second_child
-yabai -m config window_shadow off
+yabai -m config window_shadow on
 
 yabai -m config window_border              on
 yabai -m config window_border_width        4
@@ -11,12 +11,20 @@ yabai -m config normal_window_border_color 0xff${normal_window_border_color//#}
 yabai -m config active_window_border_color 0xff${active_window_border_color//#}
 
 yabai -m config layout          bsp
-yabai -m config external_bar    all:21:0
-yabai -m config top_padding     19
-yabai -m config bottom_padding  19
-yabai -m config left_padding    19
-yabai -m config right_padding   19
-yabai -m config window_gap      22
+# For 2048x1152
+# yabai -m config external_bar    all:21:0
+# yabai -m config top_padding     19
+# yabai -m config bottom_padding  19
+# yabai -m config left_padding    19
+# yabai -m config right_padding   19
+# yabai -m config window_gap      22
+# For 2560x1440
+yabai -m config external_bar    all:25:0
+yabai -m config top_padding     23
+yabai -m config bottom_padding  23
+yabai -m config left_padding    23
+yabai -m config right_padding   23
+yabai -m config window_gap      27
 
 yabai -m rule --add app="Digital Colour Meter" manage=off
 yabai -m rule --add app="System Preferences" manage=off

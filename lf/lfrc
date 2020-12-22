@@ -92,8 +92,8 @@ cmd fuzzy_cd ${{
     eval $(echo $FZF_ONLYDIR_COMMAND) \
     | fzf --prompt="Cd> " --height=8 \
   )" \
-    && dirname="$(echo $dirname | sed 's/\ /\\\ /g')" \
-    && lf -remote "send $id cd ~/$dirname" \
+    && dirname="$(echo ${dirname} | sed 's/\ /\\\ /g')" \
+    && lf -remote "send $id cd ~/${dirname}" \
     || true
 }}
 

@@ -27,7 +27,7 @@ function fallback_preview() {
   text_preview
 }
 
-case "$(file -b --mime-type $FILE)" in
+case "$(file -b --mime-type "$FILE")" in
   text/*) text_preview ;;
   */pdf) pdf_preview ;;
   image/*) image_preview ;;

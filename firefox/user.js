@@ -7,3 +7,4 @@ user_pref("browser.tabs.warnOnClose", false);
 user_pref("browser.newtabpage.pinned", "");
 user_pref("browser.tabs.loadInBackground", false);
 user_pref("browser.urlbar.update2", false);
+user_pref("browser.startup.page", 1);

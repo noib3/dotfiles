@@ -11,6 +11,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'farmergreg/vim-lastplace'
   Plug 'shime/vim-livedown'
   Plug 'embear/vim-localvimrc'
+  Plug 'timakro/vim-searchant'
   Plug 'lervag/vimtex'
 
   " Completion & linting

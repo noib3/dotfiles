@@ -1,4 +1,7 @@
 * {
   font-family: "JetBrainsMono Nerd Font";
-  font-size: 19px !important;
+  /* For 2048x1152 */
+  /* font-size: 19px !important; */
+  /* For 2560x1440 */
+  font-size: 24px !important;
 }

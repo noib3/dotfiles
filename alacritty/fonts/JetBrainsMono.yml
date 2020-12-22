@@ -11,7 +11,10 @@ font:
   bold_italic:
     family: JetBrainsMono Nerd Font
     style: Extra Bold
-  size: 19
+  # For 2048x1152
+  # size: 19
+  # For 2560x1440
+  size: 24
   offset:
     y: 1
   glyph_offset:

@@ -49,6 +49,14 @@ function! s:patch_gruvbox_colors() " {{{1
 endfunction " }}}1
 
 function! s:patch_onedark_colors() " {{{1
+  let g:terminal_color_0 = "#282c34"
+  let g:terminal_color_1 = "#e06c75"
+  let g:terminal_color_2 = "#98c379"
+  let g:terminal_color_3 = "#e5c07b"
+  let g:terminal_color_4 = "#61afef"
+  let g:terminal_color_5 = "#c678dd"
+  let g:terminal_color_6 = "#56b6c2"
+  let g:terminal_color_7 = "#abb2bf"
   highlight VertSplit guifg=NONE guibg=#3e4452
   highlight SpellBad guifg=#e06c75 gui=underline
   highlight SpellCap guifg=#d19a66 gui=NONE
