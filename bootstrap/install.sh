@@ -284,19 +284,6 @@ function add_remove_from_dock {
   sleep 1
 }
 
-function allow_accessibility_terminal_env {
-  # The next function executes a script that needs /usr/bin/env and the
-  # Terminal app to have accessibility permissions to allow osascript assistive
-  # access. This function gives them that.
-
-  echo_step "Allowing /usr/bin/env and Terminal accessibility permissions"
-
-  sudo tccutil -i /usr/bin/env
-  #sudo tccutil -i com.apple.terminal
-
-  sleep 1
-}
-
 function remove_finder_from_dock {
   # Creates a service that removes the Finder icon from the Dock after the user
   # logs in.
@@ -319,15 +306,6 @@ osascript -e 'tell application "System Events"' \\
 EOF
 
   sudo chmod +x "${agent_scripts_dir}/remove-Finder-from-Dock.sh"
-
-  # Last time I tested
-  # this, the terminal was still not given accessibility permissions even after
-  # having implemented the previous function. This would cause
-  # remove-Finder-from-Dock.sh to fail, which would in turn cause this script
-  # to exit, stopping this installation. That's what the '|| true' is for.
-
-  # Call the script to trigger being asked for permissions.
-  # "${agent_scripts_dir}/remove-Finder-from-Dock.sh" >/dev/null
 
   cat << EOF > \
     "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
@@ -352,6 +330,10 @@ EOF
 </dict>
 </plist>
 EOF
+
+  # /usr/bin/env needs to be given accessibility permissions for this script to
+  # work at login.
+  sudo tccutil -i /usr/bin/env
 
   launchctl load \
     "${HOME}/Library/LaunchAgents/$(id -un).remove-Finder-from-Dock.plist"
@@ -728,8 +710,8 @@ function add_to_finder_fav_pt2() {
   # Add ~/Sync/screenshots and ~/Sync/burocrazy to the Finder's favourite
   # sidebar.
 
-  echo_step "Adding ${local_sync_path}/screenshots and \
-${local_sync_path}/burocrazy to the Finder's Favourites"
+  echo_step -e "Adding ${local_sync_path}/screenshots and \
+${local_sync_path}/burocrazy to the\n    Finder's Favourites"
 
   mysides add screenshots "file://${local_sync_path}/screenshots" &>/dev/null
   mysides add burocrazy "file://${local_sync_path}/burocrazy" &>/dev/null
@@ -805,7 +787,7 @@ function todo_dot_md() {
 
 
   echo_step "Creating TODO.md in ${HOME} with all the steps to follow to get \
-back to \n    full speed"
+back to\n    full speed"
 
   cat > "${HOME}/TODO.md" << EOF
 # TODO.md
@@ -862,7 +844,6 @@ set_sys_defaults
 get_homebrew_bundle_brewfile
 unload_finder
 add_remove_from_dock
-allow_accessibility_terminal_env
 remove_finder_from_dock
 add_to_finder_fav_pt1
 setup_dotfiles

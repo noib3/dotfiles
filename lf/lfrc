@@ -5,12 +5,7 @@ set ifs "\n"
 set info "size"
 set period 1
 set previewer "~/.config/lf/previewer"
-# Afterglow
-# set promptfmt "\033[0;38;2;180;201;115m%u\033[0m@%h \033[1;38;2;108;154;187m%w\033[0m%f"
-# Gruvbox
-# set promptfmt "\033[0;38;2;152;152;26m%u\033[0m@%h \033[1;38;2;69;133;136m%w\033[0m%f"
-# Onedark
-set promptfmt "\033[0;38;2;152;195;121m%u\033[0m@%h \033[1;38;2;97;175;239m%w\033[0m%f"
+set promptfmt "\033[0;32m%u\033[0m@%h \033[1;34m%w\033[0m%f"
 set shell "bash"
 set timefmt "| 2006-Jan-02 @ 15:04:05"
 

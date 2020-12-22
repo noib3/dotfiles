@@ -106,7 +106,7 @@ alt + cmd - w : yabai -m window --close && yabai -m space --destroy
 # Screenshot the whole screen and send a notification (uses fish syntax)
 shift + cmd - 3 : \
   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    && screencapture "$sshot" \
+    && screencapture -mx "$sshot" \
     && terminal-notifier \
           -title "New screenshot" \
           -subtitle (basename "$sshot") \
@@ -118,7 +118,7 @@ shift + cmd - 3 : \
 # wasn't cancelled (uses fish syntax).
 shift + cmd - 4 : \
   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    && screencapture -i "$sshot" \
+    && screencapture -imx "$sshot" \
     && ls "$sshot" \
     && terminal-notifier \
           -title "New screenshot" \

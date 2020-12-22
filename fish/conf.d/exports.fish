@@ -28,8 +28,6 @@ set -x MANPAGER "nvim -c 'set ft=man' -"
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 
-set -x TCELL_TRUECOLOR on
-
 set -x HOMEBREW_NO_AUTO_UPDATE 1
 
 set -x IPYTHONDIR $HOME/.local/share/ipython
