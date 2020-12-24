@@ -402,7 +402,7 @@ bootstrap/requirements.txt
   sleep 1
 }
 
-function download_vimplug() {
+function install_vimplug() {
   # Downloads vim-plug, a tool to manage Vim plugins, then it installs the
   # plugins in .config/nvim/general/plugins.vim.
 
@@ -415,7 +415,18 @@ function download_vimplug() {
   '
 
   echo_step "Installing neovim plugins"
+
   nvim --headless +PlugInstall +qall &>/dev/null
+
+  sleep 1
+}
+
+function npm_install_livedown() {
+  # Install Livedown, a tool for previewing markdown-formatted text.
+
+  echo_step "Installing Livedown"
+
+  npm install -g livedown &>/dev/null
 
   sleep 1
 }
@@ -804,7 +815,7 @@ back to\n    full speed"
    d. Point & Scroll -> Smooth scrolling -> Disabled;
    e. Point & Scroll -> Thumb wheel direction -> Inverted.
 3. Firefox:
-   a. about:preferences -> Zoom -> Default zoom -> 133%;
+   a. about:preferences -> Zoom -> Default zoom -> 170%;
    b. about:addons -> allow every extension to Run in Private Windows;
    c. log into Bitwarden;
    d. Bitwarden -> Settings -> Vault timeout -> Never;
@@ -849,7 +860,8 @@ add_to_finder_fav_pt1
 setup_dotfiles
 chsh_fish
 pip_install_requirements
-download_vimplug
+install_vimplug
+npm_install_livedown
 setup_firefox
 setup_alacritty
 setup_skim
