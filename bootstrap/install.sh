@@ -181,6 +181,14 @@ function set_sys_defaults() {
   defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool \
     false
 
+  # https://apple.stackexchange.com/a/253609
+  # Disable relaunching apps and restoring windows after reboot by denying
+  # macOS access to the file that stores the session's state. Make the file
+  # owned by root so that the OS can't replace it, then deny all permissions so
+  # that it can't be read or written to
+  sudo chown root "${HOME}/Library/Preferences/ByHost/com.apple.loginwindow*"
+  sudo chmod 000 "${HOME}/Library/Preferences/ByHost/com.apple.loginwindow*"
+
   read -p "Choose a name for this machine:" hostname
   sudo scutil --set ComputerName "${hostname}"
   sudo scutil --set HostName "${hostname}"
@@ -421,7 +429,7 @@ function install_vimplug() {
   sleep 1
 }
 
-function npm_install_livedown() {
+function install_livedown() {
   # Install Livedown, a tool for previewing markdown-formatted text.
 
   echo_step "Installing Livedown"
@@ -558,11 +566,15 @@ You'll need to:
   sleep 1
 }
 
-function mpv_as_default() {
-  # Sets mpv as the default video player.
+function setup_mpv() {
+  # Removes Skim from quarantine. Sets mpv as the default video player.
 
-  echo_step "Setting mpv as the default video player"
+  echo_step "Setting up mpv"
 
+  # Open mpv without being prompted for a "Are you sure.." dialog
+  xattr -r -d com.apple.quarantine /Applications/mpv.app
+
+  # Set mpv as the default player for all mp4 and mkv files
   duti -s io.mpv .mp4 all
   duti -s io.mpv .mkv all
 
@@ -861,11 +873,11 @@ setup_dotfiles
 chsh_fish
 pip_install_requirements
 install_vimplug
-npm_install_livedown
+install_livedown
 setup_firefox
 setup_alacritty
 setup_skim
-mpv_as_default
+setup_mpv
 allow_accessibility
 brew_start_services
 yabai_install_sa
