@@ -2,6 +2,11 @@
 #
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
+# TODO
+# 1. defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
+# 2. add hammerspoon to accessibility
+# 3. launch hammerspoon at login
+
 set -e
 
 function echo_step() { printf '\033[34m==> \033[0m\033[1m'"$1"'\033[0m\n'; }

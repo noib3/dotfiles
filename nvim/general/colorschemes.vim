@@ -5,8 +5,10 @@ augroup colorschemes
   autocmd ColorScheme * highlight Normal guibg=NONE
   autocmd ColorScheme * highlight Comment gui=italic
   autocmd ColorScheme * highlight texComment gui=italic
+  autocmd ColorScheme * highlight goType gui=italic
   autocmd ColorScheme afterglow call s:patch_afterglow_colors()
   autocmd ColorScheme gruvbox call s:patch_gruvbox_colors()
+  autocmd ColorScheme onedark call s:patch_onedark_colors()
 augroup END
 
 function! s:patch_afterglow_colors() " {{{1

@@ -20,8 +20,14 @@ cmd open ${{
       *) open "$f" &>/dev/null;;
     esac
   done
-  [ ${#image_files[@]} -eq 0 ] || open "${image_files[@]}"
-  [ ${#text_files[@]} -eq 0 ] || $EDITOR "${text_files[@]}"
+  [[ ${#image_files[@]} -eq 0 ]] || open "${image_files[@]}"
+  [[ ${#text_files[@]} -eq 0 ]] || $EDITOR "${text_files[@]}"
+}}
+
+cmd preview_open ${{
+  for f in $fx; do
+    [[ $(head -c 4 $f) != "%PDF" ]] || open -a Preview "$f"
+  done
 }}
 
 cmd newfile %{{
@@ -108,6 +114,7 @@ map t push :newfile<space>
 map k push :newdir<space>
 map D push :move_to_newdir<space>
 
+map P preview_open
 map + make_executable
 map - remove_executable
 map s set_wallpaper

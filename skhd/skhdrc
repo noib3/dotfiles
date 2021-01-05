@@ -99,9 +99,12 @@ alt - n : yabai -m space --create && yabai -m space --focus last
 alt - y : yabai -m space --mirror y-axis
 alt - b : yabai -m space --balance
 alt - r : yabai -m space --rotate 270
-alt - w : yabai -m space --destroy
 alt + shift - r : yabai -m space --rotate 90
-alt + cmd - w : yabai -m window --close && yabai -m space --destroy
+alt - w : yabai -m space --focus prev && yabai -m space recent --destroy
+alt + cmd - w : \
+  yabai -m window --close \
+    && yabai -m space --focus prev \
+    && yabai -m space recent --destroy
 
 # Screenshot the whole screen and send a notification (uses fish syntax)
 shift + cmd - 3 : \

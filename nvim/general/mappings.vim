@@ -23,11 +23,11 @@ nnoremap <S-Right> <C-w>l
 map <silent> <C-x><C-e> :FZF --prompt=Edit>\  ~<CR>
 imap <silent> <C-x><C-e> <C-o>:FZF --prompt=Edit>\  ~<CR>
 imap <expr> <C-s>
-      \ fzf#vim#complete(fzf#wrap({
-      \   "prefix": '',
-      \   "reducer": { lines -> join(lines) },
-      \   "options": '--multi "--prompt=Paste> "',
-      \ }))
+  \ fzf#vim#complete(fzf#wrap({
+  \   "prefix": '',
+  \   "reducer": { lines -> join(lines) },
+  \   "options": '--multi "--prompt=Paste> "',
+  \ }))
 " }}}
 
 " lightline-bufferline {{{
@@ -39,7 +39,7 @@ nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
 imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
 
 function! s:close_window_or_delete_buffer()
-  if len(getbufinfo({"buflisted":1})) == 1 || winnr("$") != 1
+  if len(getbufinfo({"buflisted":1})) == 1
     return ":q\<CR>"
   else
     return ":bdelete\<CR>"
@@ -49,8 +49,6 @@ endfunction
 
 " vim-floaterm {{{
 nmap <silent> ll :call <SID>open_lf_select_current_file()<CR>
-nmap <silent> <Leader>i :FloatermNew ipython<CR>
-nmap <silent> <Leader>g :FloatermNew lazygit<CR>
 
 " https://github.com/voldikss/vim-floaterm/issues/209#issuecomment-734656183
 

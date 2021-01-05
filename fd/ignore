@@ -1,21 +1,26 @@
 /.cache/
 /.local/
 /.openjfx/
+/.oracle_jre_usage/
 /.terminfo/
 /.Trash/
+/Applications/
 /Desktop/
 /Documents/
+/Jts/
 /Library/
+/MotiveWave Extensions/
 /Movies/
 /Music/
 /Pictures/
+.recent_hist.xml
 
-/.config/calcurse/
 /.config/configstore/
 /.config/fish/fundle/
 /.config/nvim/plugged/
 /.config/nvim/coc/
 
+/Sync/code/gopath/pkg
 /Sync/finances/2017
 /Sync/finances/2018
 /Sync/finances/2019
@@ -23,6 +28,7 @@
 /Sync/memories/2017
 /Sync/memories/2018
 /Sync/memories/2019
+/Sync/private/calcurse
 /Sync/scripts/committed
 /Sync/scripts/pfetch
 /Sync/scripts/vimv

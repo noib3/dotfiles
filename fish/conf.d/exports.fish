@@ -3,6 +3,8 @@ set -x SCRIPTSDIR $HOME/Sync/code/scripts
 set -x SSHOTDIR $HOME/Sync/screenshots
 set -x PRIVATEDIR $HOME/Sync/private
 
+set -x GOPATH $HOME/Sync/code/gopath
+
 set PATH ""
 set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
 set PATH $PATH /Applications/Firefox.app/Contents/MacOS
@@ -16,6 +18,7 @@ set PATH $PATH /usr/sbin
 set PATH $PATH /usr/bin
 set PATH $PATH /sbin
 set PATH $PATH /bin
+set PATH $PATH $GOPATH
 set PATH $PATH $SCRIPTSDIR/peek
 set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv

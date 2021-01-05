@@ -1,6 +1,8 @@
-setlocal errorformat=%f:%l:\ %m
+if !exists("current_compiler")
+  compiler pdflatex
+endif
+
 setlocal iskeyword-=:
-setlocal shell=bash " Using bash for its PIPESTATUS feature
 setlocal spell
 setlocal spelllang=en_us,it
 
@@ -13,7 +15,7 @@ let g:LaTeXFolds_use_vimtex_section_numbers = 1
 
 if expand("%:e") ==# "tex"
   VimtexView
-  nmap <buffer> <silent> <C-t> :call tex#Compile()<CR>
+  nmap <buffer> <silent> <C-t> :make! <Bar> silent cc<CR>
   nmap <buffer> <silent> <LocalLeader><LocalLeader> <plug>(vimtex-toc-open)
 endif
 

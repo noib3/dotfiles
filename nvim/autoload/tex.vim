@@ -1,20 +1,3 @@
-function! tex#Compile() " {{{1
-  if !exists("b:LaTeX_compile_command")
-    let b:LaTeX_compile_command =
-      \ "pdflatex -halt-on-error -file-line-error -synctex=1 %"
-  endif
-
-  let l:errorfile="/tmp/nvim_tex.err"
-  execute
-    \ "!" . b:LaTeX_compile_command . " 2>&1 | tee " . l:errorfile . ";" .
-    \ "exit ${PIPESTATUS[0]}"
-
-  if v:shell_error
-    execute "silent cfile " . l:errorfile
-  endif
-  execute "silent !sudo rm " . l:errorfile
-endfunction " }}}1
-
 function! tex#PdfClose(filepath) " {{{1
   " Close the PDF file created by a TeX document. Note that this function only
   " works with the yabai window manager and the Skim PDF viewer.
