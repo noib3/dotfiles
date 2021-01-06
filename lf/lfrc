@@ -103,6 +103,23 @@ cmd fuzzy_cd ${{
     || true
 }}
 
+cmd mount_ocean %{{
+  mnt_dir="${HOME}/ocean"
+  mkdir "${mnt_dir}"
+  sshfs ocean: "${mnt_dir}" -F "${HOME}/.ssh/config" \
+    && lf -remote "send $id cd ${mnt_dir}" \
+  lf -remote "send $id reload"
+}}
+
+cmd unmount_ocean %{{
+  mnt_dir="${HOME}/ocean"
+  lf -remote "send $id cd ${HOME}"
+  umount -f "${mnt_dir}" && rm -rf "${mnt_dir}"
+  lf -remote "send $id reload"
+}}
+
+map m
+map u
 map x cut
 map d delete
 
@@ -121,5 +138,7 @@ map s set_wallpaper
 map j eject_disk
 map <c-x><c-e> fuzzy_edit
 map <c-x><c-d> fuzzy_cd
+map mo mount_ocean
+map uo unmount_ocean
 
 map gvl cd "/Volumes"

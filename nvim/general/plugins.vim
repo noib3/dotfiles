@@ -12,12 +12,12 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'shime/vim-livedown'
   Plug 'embear/vim-localvimrc'
   Plug 'timakro/vim-searchant'
+  Plug 'liuchengxu/vim-which-key'
 
   " Completion & linting
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'dense-analysis/ale'
-  " Plug 'neovim/nvim-lspconfig'
-  " Plug 'nvim-lua/completion-nvim'
+  Plug 'davidhalter/jedi-vim'
 
   " Snippets
   Plug 'SirVer/ultisnips'
@@ -37,7 +37,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'itchyny/lightline.vim'
   Plug 'mengelbrecht/lightline-bufferline'
 
-  " Language support
+  " Language syntax
   Plug 'bfontaine/Brewfile.vim'
   Plug 'dag/vim-fish'
   Plug 'fatih/vim-go'
@@ -52,5 +52,3 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'joshdick/onedark.vim'
   Plug 'danilo-augusto/vim-afterglow'
 call plug#end()
-
-" lua require'lspconfig'.pyls.setup{on_attach=require'completion'.on_attach}

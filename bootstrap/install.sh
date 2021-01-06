@@ -412,6 +412,13 @@ bootstrap/requirements.txt
   python3 -m pip install --upgrade pip >/dev/null
   pip3 install -qr /tmp/requirements.txt >/dev/null
 
+  echo_step "Updating outdated modules"
+
+  # Update all outdated modules (returns an error if there are no modules to be
+  # updated).
+  pip3 list --outdated --format=freeze | grep -v '^\-e' \
+    | cut -d = -f 1 | xargs -n1 pip3 install -U >/dev/null || true
+
   sleep 1
 }
 

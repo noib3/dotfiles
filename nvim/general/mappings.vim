@@ -63,4 +63,9 @@ function! s:open_lf_select_current_file()
 endfunction
 " }}}
 
+" vim-which-key {{{
+nnoremap <silent> <Leader>      :<c-u>WhichKey ","<CR>
+nnoremap <silent> <LocalLeader> :<c-u>WhichKey  ","<CR>
+" }}}
+
 " vim:fdm=marker

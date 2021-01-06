@@ -3,3 +3,8 @@
 /fish/fish_variables
 /nvim/coc/
 /nvim/plugged/
+/ipython/*
+!/ipython/profile_default/
+/ipython/profile_default/*
+!/ipython/profile_default/ipython_config.py
+!/ipython/profile_default/startup/

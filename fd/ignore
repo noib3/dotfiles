@@ -19,6 +19,11 @@
 /.config/fish/fundle/
 /.config/nvim/plugged/
 /.config/nvim/coc/
+/.config/ipython/*
+!/.config/ipython/profile_default/
+/.config/ipython/profile_default/*
+!/.config/ipython/profile_default/ipython_config.py
+!/.config/ipython/profile_default/startup/
 
 /Sync/code/gopath/pkg
 /Sync/finances/2017

@@ -2,18 +2,11 @@ let g:netrw_home = $HOME . "/.cache/nvim"
 
 augroup all
   autocmd!
-  autocmd BufWritePre * call s:StripTrailingWhiteSpace()
   autocmd BufLeave * call s:AutoSaveWinView()
   autocmd BufEnter * call s:AutoRestoreWinView()
   autocmd BufRead *.cls setlocal filetype=tex
   autocmd BufRead lfrc,skhdrc setlocal filetype=conf
 augroup END
-
-function! s:StripTrailingWhiteSpace()
-  let current_pos = getpos(".")
-  %s/\s\+$//e
-  call setpos (".", current_pos)
-endfunction
 
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{
 

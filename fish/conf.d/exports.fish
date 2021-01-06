@@ -35,7 +35,7 @@ set -x TCELL_TRUECOLOR on
 
 set -x HOMEBREW_NO_AUTO_UPDATE 1
 
-set -x IPYTHONDIR $HOME/.local/share/ipython
+set -x IPYTHONDIR $HOME/.config/ipython
 set -x MPLCONFIGDIR $HOME/.local/share/matplotlib
 set -x LESSHISTFILE $HOME/.cache/less/lesshst
 set -x HISTFILE $HOME/.cache/bash/bash_history
