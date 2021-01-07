@@ -5,6 +5,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
   Plug 'Yggdroot/indentLine'
+  Plug 'qpkorr/vim-bufkill'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'ryanoasis/vim-devicons'
   Plug 'voldikss/vim-floaterm'
@@ -17,7 +18,6 @@ call plug#begin('~/.config/nvim/plugged')
   " Completion & linting
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'dense-analysis/ale'
-  Plug 'davidhalter/jedi-vim'
 
   " Snippets
   Plug 'SirVer/ultisnips'
@@ -44,6 +44,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'elzr/vim-json'
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
+  Plug 'cespare/vim-toml'
   Plug 'tridactyl/vim-tridactyl'
   Plug 'lervag/vimtex'
 

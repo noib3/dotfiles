@@ -1,9 +1,10 @@
 set -x COLORSCHEME onedark
-set -x SCRIPTSDIR $HOME/Sync/code/scripts
-set -x SSHOTDIR $HOME/Sync/screenshots
-set -x PRIVATEDIR $HOME/Sync/private
+set -x SYNCDIR "$HOME/Sync"
+set -x SCRIPTSDIR "$SYNCDIR/code/scripts"
+set -x SSHOTDIR "$SYNCDIR/screenshots"
+set -x PRIVATEDIR "$SYNCDIR/private"
 
-set -x GOPATH $HOME/Sync/code/gopath
+set -x GOPATH "$SYNCDIR/code/gopath"
 
 set PATH ""
 set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
@@ -35,11 +36,11 @@ set -x TCELL_TRUECOLOR on
 
 set -x HOMEBREW_NO_AUTO_UPDATE 1
 
-set -x IPYTHONDIR $HOME/.config/ipython
-set -x MPLCONFIGDIR $HOME/.local/share/matplotlib
-set -x LESSHISTFILE $HOME/.cache/less/lesshst
-set -x HISTFILE $HOME/.cache/bash/bash_history
-set -x npm_config_cache $HOME/.cache/npm
+set -x IPYTHONDIR "$HOME/.config/ipython"
+set -x MPLCONFIGDIR "$HOME/.local/share/matplotlib"
+set -x LESSHISTFILE "$HOME/.cache/less/lesshst"
+set -x HISTFILE "$HOME/.cache/bash/bash_history"
+set -x npm_config_cache "$HOME/.cache/npm"
 
 set -x FZF_DEFAULT_COMMAND \
 "fd --base-directory ~ --hidden --type f --color always"

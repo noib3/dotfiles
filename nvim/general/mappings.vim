@@ -42,7 +42,7 @@ function! s:close_window_or_delete_buffer()
   if len(getbufinfo({"buflisted":1})) == 1
     return ":q\<CR>"
   else
-    return ":bdelete\<CR>"
+    return ":BD\<CR>"
   endif
 endfunction
 " }}}
