@@ -379,7 +379,6 @@ branch)"
 
   /usr/local/opt/gnu-sed/libexec/gnubin/sed -i \
     "s@/Users/[^/]*/\(.*\)@/Users/$(id -un)/\1@g" \
-    /tmp/dotfiles/alacritty/alacritty.yml \
     /tmp/dotfiles/firefox/userChrome.css
 
   rm -rf "${HOME}/.config"

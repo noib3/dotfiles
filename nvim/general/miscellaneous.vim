@@ -1,5 +1,3 @@
-let g:netrw_home = $HOME . "/.cache/nvim"
-
 augroup all
   autocmd!
   autocmd BufLeave * call s:AutoSaveWinView()

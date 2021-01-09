@@ -1,6 +1,10 @@
 import:
-  - /Users/noibe/.config/alacritty/fonts/RobotoMono.yml
-  - /Users/noibe/.config/alacritty/colorschemes/onedark.yml
+  - ~/.config/alacritty/fonts/RobotoMono.yml
+  - ~/.config/alacritty/colorschemes/onedark.yml
+
+cursor:
+  style:
+    blinking: Never
 
 window:
   decorations: buttonless

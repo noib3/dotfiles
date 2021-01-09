@@ -1,10 +1,8 @@
 set -x COLORSCHEME onedark
 set -x SYNCDIR "$HOME/Sync"
-set -x SCRIPTSDIR "$SYNCDIR/code/scripts"
+set -x SCRIPTSDIR "$SYNCDIR/scripts"
 set -x SSHOTDIR "$SYNCDIR/screenshots"
 set -x PRIVATEDIR "$SYNCDIR/private"
-
-set -x GOPATH "$SYNCDIR/code/gopath"
 
 set PATH ""
 set PATH $PATH /Applications/Alacritty.app/Contents/MacOS

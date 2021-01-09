@@ -14,6 +14,6 @@ case "${event}" in
         -title "Redshift" \
         -subtitle "Switching temps..." \
         -message "${new_period}" \
-        -appIcon "$(dirname $0)/Redshift-logo.png"
+        -appIcon "$(dirname $0)/redshift-logo.png"
     fi
 esac

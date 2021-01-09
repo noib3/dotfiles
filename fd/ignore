@@ -1,19 +1,14 @@
 /.cache/
 /.local/
 /.openjfx/
-/.oracle_jre_usage/
 /.terminfo/
 /.Trash/
-/Applications/
 /Desktop/
 /Documents/
-/Jts/
 /Library/
-/MotiveWave Extensions/
 /Movies/
 /Music/
 /Pictures/
-.recent_hist.xml
 
 /.config/configstore/
 /.config/fish/fundle/
@@ -25,7 +20,6 @@
 !/.config/ipython/profile_default/ipython_config.py
 !/.config/ipython/profile_default/startup/
 
-/Sync/code/gopath/pkg
 /Sync/finances/2017
 /Sync/finances/2018
 /Sync/finances/2019
@@ -34,8 +28,8 @@
 /Sync/memories/2018
 /Sync/memories/2019
 /Sync/private/calcurse
-/Sync/code/scripts/pfetch
-/Sync/code/scripts/vimv
+/Sync/scripts/pfetch
+/Sync/scripts/vimv
 /Sync/university
 
 **/.git

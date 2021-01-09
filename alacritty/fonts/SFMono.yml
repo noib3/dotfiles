@@ -11,9 +11,9 @@ font:
   bold_italic:
     family: SFMono Nerd Font
     style: Heavy
-  # For 2048x1152
+  # 2048x1152
   # size: 19
-  # For 2560x1440
+  # 2560x1440
   size: 24
   offset:
     y: 1
