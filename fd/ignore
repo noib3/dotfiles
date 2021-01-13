@@ -1,6 +1,8 @@
 /.cache/
+/.cargo/
 /.local/
 /.openjfx/
+/.rustup/
 /.terminfo/
 /.Trash/
 /Desktop/

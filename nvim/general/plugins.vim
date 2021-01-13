@@ -4,7 +4,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
-  Plug 'Yggdroot/indentLine'
   Plug 'qpkorr/vim-bufkill'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'ryanoasis/vim-devicons'
@@ -37,8 +36,9 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'itchyny/lightline.vim'
   Plug 'mengelbrecht/lightline-bufferline'
 
-  " Language syntax
+  " Language specific
   Plug 'bfontaine/Brewfile.vim'
+  Plug 'rust-lang/rust.vim'
   Plug 'dag/vim-fish'
   Plug 'fatih/vim-go'
   Plug 'elzr/vim-json'

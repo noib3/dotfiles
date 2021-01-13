@@ -59,6 +59,7 @@ function! s:patch_onedark_colors() " {{{1
   let g:terminal_color_5 = "#c678dd"
   let g:terminal_color_6 = "#56b6c2"
   let g:terminal_color_7 = "#abb2bf"
+  highlight Whitespace guifg=#5c6370
   highlight VertSplit guifg=NONE guibg=#3e4452
   highlight SpellBad guifg=#e06c75 gui=underline
   highlight SpellCap guifg=#d19a66 gui=NONE

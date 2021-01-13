@@ -8,7 +8,7 @@ set iskeyword-=_
 set laststatus=0
 set linebreak
 set list
-set listchars=tab:\⇥\ ,
+set listchars=tab:\⇥\ ,space:·,eol:¬
 set mouse=a
 set noswapfile
 set number
