@@ -6,6 +6,13 @@
 # 1. defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
 # 2. add hammerspoon to accessibility
 # 3. launch hammerspoon at login
+# 4. Install zathura:
+# brew tap zegervdv/zathura
+# brew install girara --HEAD
+# brew install zathura --HEAD
+# brew install zathura-pdf-poppler
+# mkdir -p $(brew --prefix zathura)/lib/zathura
+# ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
 
 set -e
 

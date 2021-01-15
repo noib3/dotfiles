@@ -1,7 +1,9 @@
 * {
   font-family: "RobotoMono Nerd Font";
-  /* For 2048x1152 */
+  /* 1440x900 */
+  /* font-size: 16px !important; */
+  /* 2048x1152 */
   /* font-size: 19px !important; */
-  /* For 2560x1440 */
+  /* 2560x1440 */
   font-size: 24px !important;
 }

@@ -4,8 +4,6 @@ set -x SCRIPTSDIR "$SYNCDIR/scripts"
 set -x SSHOTDIR "$SYNCDIR/screenshots"
 set -x PRIVATEDIR "$SYNCDIR/private"
 
-set -x GOPATH /usr/local/lib/go
-
 set PATH ""
 set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
 set PATH $PATH /Applications/Firefox.app/Contents/MacOS
@@ -20,7 +18,6 @@ set PATH $PATH /usr/sbin
 set PATH $PATH /usr/bin
 set PATH $PATH /sbin
 set PATH $PATH /bin
-set PATH $PATH $GOPATH
 set PATH $PATH $SCRIPTSDIR/peek
 set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv
