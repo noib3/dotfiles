@@ -16,13 +16,14 @@ set relativenumber
 set scrolloff=1
 set shiftwidth=2
 set smartcase
-set spellfile=$CLOUDDIR/nvim/spell/en.utf-8.add
+set spellfile=$PRIVATEDIR/nvim/spell/en.utf-8.add
 set splitright
 set splitbelow
 set tabstop=2
 set termguicolors
 set textwidth=79
 set undofile
+set updatetime=1
 
 let &fillchars="fold: ,vert: "
 let &showbreak="\u21aa "

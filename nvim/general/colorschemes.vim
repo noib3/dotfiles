@@ -63,6 +63,7 @@ function! s:patch_onedark_colors() " {{{1
   highlight VertSplit guifg=NONE guibg=#3e4452
   highlight SpellBad guifg=#e06c75 gui=underline
   highlight SpellCap guifg=#d19a66 gui=NONE
+  highlight CocHighlightText guibg=#3e4452
   highlight FloatermBorder guifg=#5c6073
   highlight FzfBorder guifg=#5c6073
 endfunction " }}}1
