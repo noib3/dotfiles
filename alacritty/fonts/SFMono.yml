@@ -11,10 +11,10 @@ font:
   bold_italic:
     family: SFMono Nerd Font
     style: Heavy
-  # 2048x1152
-  # size: 19
+  # 1440x900
+  # size: 16
   # 2560x1440
-  size: 24
+  size: 25
   offset:
     y: 1
   glyph_offset:

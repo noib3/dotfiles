@@ -1,4 +1,0 @@
-include ./fonts/RobotoMono
-include ./colorschemes/onedark
-
-set guioptions ""

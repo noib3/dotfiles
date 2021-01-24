@@ -1,5 +1,4 @@
-alias ls="ls -Ahv --color --file-type --group-directories-first \
---quoting-style=literal"
+alias ls="exa -al --icons --group-directories-first --time-style=long-iso"
 alias grep="grep --ignore-case --color=auto"
 alias wget="wget --hsts-file=~/.cache/wget/wget-hsts"
 

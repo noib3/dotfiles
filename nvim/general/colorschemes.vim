@@ -61,10 +61,10 @@ function! s:patch_onedark_colors() " {{{1
   let g:terminal_color_7 = "#abb2bf"
   hi SpellBad guifg=#e06c75 gui=underline
   hi SpellCap guifg=#d19a66 gui=NONE
+  hi VertSplit guifg=NONE guibg=#3e4452
   hi LspReferenceRead guibg=#3e4452
   hi LspReferenceText guibg=#3e4452
   hi LspReferenceWrite guibg=#3e4452
-  hi VertSplit guifg=NONE guibg=#3e4452
   hi Whitespace guifg=#5c6370
   hi FloatermBorder guifg=#5c6073
   hi FzfBorder guifg=#5c6073

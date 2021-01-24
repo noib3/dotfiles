@@ -13,11 +13,7 @@ font:
     style: Bold Italic
   # 1440x900
   # size: 16
-  # 2048x1152
-  # size: 19
   # 2560x1440
-  size: 24
+  size: 25
   offset:
-    y: 2
-  glyph_offset:
     y: 2

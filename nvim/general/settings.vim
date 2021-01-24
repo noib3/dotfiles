@@ -24,7 +24,7 @@ set tabstop=2
 set termguicolors
 set textwidth=79
 set undofile
-set updatetime=1
+" set updatetime=1
 
 let &fillchars="fold: ,vert: "
 let &showbreak="\u21aa "

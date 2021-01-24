@@ -9,13 +9,8 @@ for i in range(1, 9)
   execute "nmap <silent> <F" . i . "> "
         \ . ":call lightline#bufferline#go(" . i . ")<CR>"
 endfor
-nmap <expr> <silent> <C-w> <SID>close_window_or_delete_buffer()
-imap <expr> <silent> <C-w> "\<C-o>" . <SID>close_window_or_delete_buffer()
 
-function! s:close_window_or_delete_buffer()
-  if len(getbufinfo({"buflisted":1})) == 1
-    return ":q\<CR>"
-  else
-    return ":BD\<CR>"
-  endif
-endfunction
+nmap <expr> <silent> <C-w>
+  \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
+imap <expr> <silent> <C-w>
+  \ "\<C-o>" . (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"

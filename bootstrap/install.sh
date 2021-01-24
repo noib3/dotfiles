@@ -6,13 +6,7 @@
 # 1. defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
 # 2. add hammerspoon to accessibility
 # 3. launch hammerspoon at login
-# 4. Install zathura:
-# brew tap zegervdv/zathura
-# brew install girara --HEAD
-# brew install zathura --HEAD
-# brew install zathura-pdf-poppler
-# mkdir -p $(brew --prefix zathura)/lib/zathura
-# ln -s $(brew --prefix zathura-pdf-poppler)/libpdf-poppler.dylib $(brew --prefix zathura)/lib/zathura/libpdf-poppler.dylib
+# 5. install lsp servers
 
 set -e
 
@@ -766,7 +760,7 @@ function transmission_torrent_done_script {
   echo_step "Adding torrent-done notification script to Transmission"
 
   transmission-remote --torrent-done-script \
-    "${local_sync_path}/code/scripts/transmission/notify-done" &>/dev/null
+    "${local_sync_path}/scripts/transmission/notify-done" &>/dev/null
 
   sleep 1
 }

@@ -1,9 +1,8 @@
 call plug#begin('~/.config/nvim/plugged')
-  " Plug 'dense-analysis/ale'
+  Plug 'dense-analysis/ale'
   Plug 'bfontaine/Brewfile.vim'
   Plug 'rhysd/clever-f.vim'
   Plug 'nvim-lua/completion-nvim'
-  " Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
@@ -12,6 +11,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'mengelbrecht/lightline-bufferline'
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'neovim/nvim-lspconfig'
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': 'TSUpdate'}
   Plug 'joshdick/onedark.vim'
   Plug 'rust-lang/rust.vim'
   Plug 'tweekmonster/startuptime.vim'

@@ -1,0 +1,15 @@
+{
+  "segments": [
+    "virtual_env",
+    "username",
+    "hostname",
+    "ssh",
+    "cwd",
+    "git",
+    "jobs"
+  ],
+  "cwd": {
+    "mode": "plain"
+  },
+  "mode": "flat"
+}

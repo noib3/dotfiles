@@ -7,13 +7,10 @@ source "$(dirname $0)"/colorschemes/onedark.sh
 # spacebar -m config height 17
 # spacebar -m config spacing_left 20
 # spacebar -m config spacing_right 30
-# 2048x1152
-# spacebar -m config height 21
-# spacebar -m config spacing_left 25
-# spacebar -m config spacing_right 35
+
 # 2560x1440
-spacebar -m config height 25
-spacebar -m config spacing_left 30
+spacebar -m config height 26
+spacebar -m config spacing_left 40
 spacebar -m config spacing_right 40
 
 spacebar -m config text_font "${text_font}"
