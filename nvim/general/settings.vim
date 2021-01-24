@@ -1,6 +1,7 @@
 set autochdir
 set clipboard+=unnamedplus
 set colorcolumn=80
+set completeopt=menuone,noinsert
 set expandtab
 set hidden
 set ignorecase

@@ -29,10 +29,12 @@
 /Sync/memories/2017
 /Sync/memories/2018
 /Sync/memories/2019
+/Sync/memories/2020
 /Sync/private/calcurse
 /Sync/scripts/pfetch
 /Sync/scripts/vimv
-/Sync/university
+/Sync/university/*
+!/Sync/university/magistrale-Bocconi/
 
 **/.git
 

@@ -1,8 +1,9 @@
 call plug#begin('~/.config/nvim/plugged')
-  Plug 'dense-analysis/ale'
+  " Plug 'dense-analysis/ale'
   Plug 'bfontaine/Brewfile.vim'
   Plug 'rhysd/clever-f.vim'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'nvim-lua/completion-nvim'
+  " Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf'
   Plug 'junegunn/fzf.vim'
@@ -10,8 +11,10 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'itchyny/lightline.vim'
   Plug 'mengelbrecht/lightline-bufferline'
   Plug 'norcalli/nvim-colorizer.lua'
+  Plug 'neovim/nvim-lspconfig'
   Plug 'joshdick/onedark.vim'
   Plug 'rust-lang/rust.vim'
+  Plug 'tweekmonster/startuptime.vim'
   Plug 'godlygeek/tabular'
   Plug 'SirVer/ultisnips'
   Plug 'danilo-augusto/vim-afterglow'

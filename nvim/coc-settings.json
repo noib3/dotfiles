@@ -1,6 +1,5 @@
 {
   "coc.source.around.enable": false,
   "coc.source.buffer.enable": false,
-  "diagnostic.displayByAle": true,
-  "python.autoComplete.addBrackets": true
+  "diagnostic.displayByAle": true
 }

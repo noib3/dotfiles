@@ -1,3 +1,5 @@
 set termguicolors
 
-lua require "colorizer".setup({"*"}, {names = false})
+lua << EOF
+require('colorizer').setup ( {"*"}, {names = false} )
+EOF

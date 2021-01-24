@@ -59,13 +59,15 @@ function! s:patch_onedark_colors() " {{{1
   let g:terminal_color_5 = "#c678dd"
   let g:terminal_color_6 = "#56b6c2"
   let g:terminal_color_7 = "#abb2bf"
-  highlight Whitespace guifg=#5c6370
-  highlight VertSplit guifg=NONE guibg=#3e4452
-  highlight SpellBad guifg=#e06c75 gui=underline
-  highlight SpellCap guifg=#d19a66 gui=NONE
-  highlight CocHighlightText guibg=#3e4452
-  highlight FloatermBorder guifg=#5c6073
-  highlight FzfBorder guifg=#5c6073
+  hi SpellBad guifg=#e06c75 gui=underline
+  hi SpellCap guifg=#d19a66 gui=NONE
+  hi LspReferenceRead guibg=#3e4452
+  hi LspReferenceText guibg=#3e4452
+  hi LspReferenceWrite guibg=#3e4452
+  hi VertSplit guifg=NONE guibg=#3e4452
+  hi Whitespace guifg=#5c6370
+  hi FloatermBorder guifg=#5c6073
+  hi FzfBorder guifg=#5c6073
 endfunction " }}}1
 
 if g:colorscheme ==# "gruvbox"
