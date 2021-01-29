@@ -4,7 +4,7 @@ cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 cmd - return : alacritty
 alt - return : alacritty --title "floating"
 cmd - f : alacritty --command fish -c "lf $HOME/Downloads"
-cmd - p : alacritty --command fish -c "ipython"
+cmd - p : alacritty --command fish -c "ipython --no-confirm-exit"
 cmd - g : alacritty --command gotop
 cmd - a : \
   alacritty --command calcurse \

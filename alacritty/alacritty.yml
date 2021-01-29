@@ -9,8 +9,8 @@ cursor:
 window:
   decorations: buttonless
   padding:
-    x: 10
-    y: 10
+    x: 14
+    y: 6
 
 key_bindings:
   - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {

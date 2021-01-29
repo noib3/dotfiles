@@ -30,7 +30,8 @@ set -x MANPAGER "nvim -c 'set ft=man' -"
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 
-set -x IPYTHONDIR "$HOME/.config/ipython"
+set -x STARSHIP_CONFIG "$HOME/.config/starship/config.toml"
+set -x IPYTHONDIR "$HOME/.local/share/ipython"
 set -x MPLCONFIGDIR "$HOME/.local/share/matplotlib"
 set -x LESSHISTFILE "$HOME/.cache/less/lesshst"
 set -x HISTFILE "$HOME/.cache/bash/bash_history"

@@ -6,3 +6,5 @@ set fish_cursor_replace_one underscore
 set fish_cursor_visual block
 
 source $HOME/.config/fish/colorschemes/$COLORSCHEME.fish
+
+starship init fish | source
