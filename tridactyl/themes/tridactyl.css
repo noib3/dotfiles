@@ -5,10 +5,12 @@
   /* --font-family: "JetBrainsMono Nerd Font"; */
   /* --font-size-hints: 12px; */
   /* --font-size-commandline: 14px; */
+
   /* RobotoMono */
   --font-family: "RobotoMono Nerd Font";
   --font-size-hints: 12px;
   --font-size-commandline: 14px;
+
   /* SFMono */
   /* --font-family: "SFMono Nerd Font"; */
   /* --font-size-hints: 12px; */
@@ -23,11 +25,13 @@
   /* --color-hint-fg: #d6d6d6; */
   /* --color-commandline-bg: #1a1a1a; */
   /* --color-commandline-fg: #d6d6d6; */
+
   /* Gruvbox */
   /* --color-hint-bg: #b57614; */
   /* --color-hint-fg: #eddbb2; */
   /* --color-commandline-bg: #282828; */
   /* --color-commandline-fg: #ebdbb2; */
+
   /* Onedark */
   --color-hint-bg: #3e4452;
   --color-hint-fg: #abb2bf;

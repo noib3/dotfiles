@@ -841,9 +841,10 @@ back to\n    full speed"
 3. Firefox:
    a. about:preferences -> Zoom -> Default zoom -> 170%;
    b. about:addons -> allow every extension to Run in Private Windows;
-   c. log into Bitwarden;
-   d. Bitwarden -> Settings -> Vault timeout -> Never;
-   e. log back into all the websites (Google, YouTube, Reddit, etc..).
+   c. about:preferences -> Search -> Search Shortcuts -> Unselect every option
+   d. log into Bitwarden;
+   e. Bitwarden -> Settings -> Vault timeout -> Never;
+   f. log back into all the websites (Google, YouTube, Reddit, etc..).
 4. Other:
    a. rm ~/.zsh_history;
    b. take a screenshot to trigger being asked for screen recording permissions

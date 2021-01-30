@@ -9,10 +9,10 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'junegunn/goyo.vim'
   Plug 'morhetz/gruvbox'
   Plug 'itchyny/lightline.vim'
-  Plug 'mengelbrecht/lightline-bufferline'
+  Plug 'mengelbrecht/lightline-bufferline', { 'branch': 'bugfix/delay-event-handler' }
   Plug 'norcalli/nvim-colorizer.lua'
   Plug 'neovim/nvim-lspconfig'
-  Plug 'nvim-treesitter/nvim-treesitter', {'do': 'TSUpdate'}
+  Plug 'nvim-treesitter/nvim-treesitter'
   Plug 'joshdick/onedark.vim'
   Plug 'rust-lang/rust.vim'
   Plug 'tweekmonster/startuptime.vim'

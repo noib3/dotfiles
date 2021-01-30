@@ -1,15 +1,13 @@
-ctrl - w : open -na /Applications/Firefox.app
-
-cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 cmd - return : alacritty
 alt - return : alacritty --title "floating"
 cmd - f : alacritty --command fish -c "lf $HOME/Downloads"
 cmd - p : alacritty --command fish -c "ipython --no-confirm-exit"
+cmd - a : alacritty --command calcurse \
+            -C "${HOME}/.config/calcurse" \
+            -D "${PRIVATEDIR}/calcurse"
 cmd - g : alacritty --command gotop
-cmd - a : \
-  alacritty --command calcurse \
-    -C $HOME/.config/calcurse \
-    -D $PRIVATEDIR/calcurse
+cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
+ctrl - w : open -na /Applications/Firefox.app
 
 cmd - d [
   "Firefox" : skhd --key "f4"
