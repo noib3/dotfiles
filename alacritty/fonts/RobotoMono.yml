@@ -15,9 +15,6 @@ font:
     family: RobotoMono Nerd Font
     style: Bold Italic
 
-  # 1440x900
-  # size: 16
-
   # 2560x1440
   size: 24
 

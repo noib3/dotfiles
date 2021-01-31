@@ -3,15 +3,10 @@
 source "$(dirname $0)/fonts/RobotoMono.sh"
 source "$(dirname $0)/colorschemes/onedark.sh"
 
-# 1440x900
-# spacebar -m config height 17
-# spacebar -m config spacing_left 20
-# spacebar -m config spacing_right 30
-
 # 2560x1440
 spacebar -m config height 26
-spacebar -m config spacing_left 40
-spacebar -m config spacing_right 40
+spacebar -m config spacing_left 30
+spacebar -m config spacing_right 60
 
 spacebar -m config text_font "${text_font}"
 spacebar -m config icon_font "${icon_font}"

@@ -12,17 +12,8 @@ yabai -m config active_window_border_color 0xff${active_window_border_color//#}
 
 yabai -m config layout          bsp
 
-# 1440x900
-# yabai -m config external_bar    all:16:0
-# yabai -m config top_padding     15
-# yabai -m config bottom_padding  15
-# yabai -m config left_padding    15
-# yabai -m config right_padding   15
-# yabai -m config window_gap      18
-
 # 2560x1440
-# yabai -m config external_bar    all:26:0
-yabai -m config external_bar    all:0:0
+yabai -m config external_bar    all:26:0
 yabai -m config top_padding     30
 yabai -m config bottom_padding  30
 yabai -m config left_padding    40
@@ -42,7 +33,9 @@ yabai -m rule --add title="floating" manage=off
 # https://github.com/koekeishiya/yabai/issues/719#issuecomment-728140216
 
 # focus window after active space changes
-yabai -m signal --add event=space_changed action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
+yabai -m signal --add event=space_changed \
+  action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
 
 # focus window after active display changes
-yabai -m signal --add event=display_changed action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
+yabai -m signal --add event=display_changed \
+  action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"

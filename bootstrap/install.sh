@@ -3,10 +3,7 @@
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
 # TODO
-# 1. defaults write org.hammerspoon.Hammerspoon MJConfigFile "~/.config/hammerspoon/init.lua"
-# 2. add hammerspoon to accessibility
-# 3. launch hammerspoon at login
-# 5. install lsp servers
+# 1. install lsp servers
 
 set -e
 
@@ -841,7 +838,7 @@ back to\n    full speed"
 3. Firefox:
    a. about:preferences -> Zoom -> Default zoom -> 170%;
    b. about:addons -> allow every extension to Run in Private Windows;
-   c. about:preferences -> Search -> Search Shortcuts -> Unselect every option
+   c. about:preferences -> Search -> Search Shortcuts -> unselect every option
    d. log into Bitwarden;
    e. Bitwarden -> Settings -> Vault timeout -> Never;
    f. log back into all the websites (Google, YouTube, Reddit, etc..).
