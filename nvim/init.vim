@@ -61,6 +61,7 @@ set list
 set listchars=tab:\⇥\ ,space:·,eol:¬
 set mouse=a
 set noswapfile
+set nowrap
 set number
 set relativenumber
 set scrolloff=1

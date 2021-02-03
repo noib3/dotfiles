@@ -2,9 +2,6 @@
 #
 # Bootstraps a new (as in straight out of the box) macOS machine.
 
-# TODO
-# 1. install lsp servers
-
 set -e
 
 function echo_step() { printf '\033[34m==> \033[0m\033[1m'"$1"'\033[0m\n'; }
@@ -438,8 +435,19 @@ function install_vimplug() {
   sleep 1
 }
 
+function install_lang_servers() {
+  # Installs the language servers to be used with neovim's built in LSP client.
+
+  echo_step "Installing language servers"
+
+  pip3 install jedi-language-server &>/dev/null
+  npm install -g vim-language-server &>/dev/null
+
+  sleep 1
+}
+
 function install_livedown() {
-  # Install Livedown, a tool for previewing markdown-formatted text.
+  # Installs Livedown, a tool for previewing markdown-formatted text.
 
   echo_step "Installing Livedown"
 
@@ -762,6 +770,56 @@ function transmission_torrent_done_script {
   sleep 1
 }
 
+function setup_buku {
+  # Symlinks the buku directory to ~/.local/share and creates a service that
+  # launches the buku webserver at login.
+
+  echo_step "Setting up buku"
+
+  ln -s "${local_sync_path}/private/buku" "${HOME}/.local/share"
+
+  local agent_scripts_dir="${HOME}/.local/agent-scripts"
+
+  mkdir -p "${agent_scripts_dir}"
+
+  sudo tee "${agent_scripts_dir}/launch-bukuserver.sh" >/dev/null << EOF
+#!/usr/bin/env bash
+
+bukuserver run --host 127.0.0.1 --port 5001
+EOF
+
+  sudo chmod +x "${agent_scripts_dir}/launch-bukuserver.sh"
+
+  cat << EOF > \
+    "${HOME}/Library/LaunchAgents/$(id -un).launch-bukuserver.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" \
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$(id -un).launch-bukuserver</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${agent_scripts_dir}/launch-bukuserver.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+EOF
+
+  launchctl load \
+    "${HOME}/Library/LaunchAgents/$(id -un).launch-bukuserver.plist"
+
+  sleep 1
+}
+
 function start_auto_self_control {
   # Starts auto-selfcontrol.
 
@@ -883,6 +941,7 @@ setup_dotfiles
 chsh_fish
 pip_install_requirements
 install_vimplug
+install_lang_servers
 install_livedown
 setup_firefox
 setup_alacritty
@@ -901,6 +960,7 @@ setup_sync_symlinks
 github_add_ssh_key
 add_to_finder_fav_pt2
 transmission_torrent_done_script
+setup_buku
 start_auto_self_control
 set_wallpaper
 

@@ -13,6 +13,7 @@ tap "teamookla/speedtest"
 
 brew "bash"
 brew "bat"
+brew "buku"
 brew "calcurse"
 brew "chafa"
 brew "coreutils"
