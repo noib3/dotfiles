@@ -61,7 +61,6 @@ set list
 set listchars=tab:\⇥\ ,space:·,eol:¬
 set mouse=a
 set noswapfile
-set nowrap
 set number
 set relativenumber
 set scrolloff=1
@@ -131,6 +130,14 @@ imap <expr> <C-s>
       \   'reducer': { lines -> join(lines) },
       \   'options': '--multi "--prompt=Paste> "',
       \ }))
+" }}}2
+" goyo.vim {{{2
+let g:goyo_linenr = 1
+
+function! s:goyo_enter()
+  highlight! NonText guifg=#3b4048 guibg=NONE gui=NONE
+endfunction
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
 " }}}2
 " lightline.vim {{{2
 let g:lightline = {}
@@ -292,6 +299,8 @@ command! Ipyvsp FloatermNew --width=0.5 --wintype=normal --name=repl
 " }}}1
 
 " Colorschemes {{{1
+let g:colorscheme = $COLORSCHEME
+
 augroup colorschemes
   autocmd!
   autocmd ColorScheme * highlight Normal guibg=NONE
@@ -318,7 +327,6 @@ function! s:patch_afterglow_colors() " {{{2
   highlight SpellCap guifg=#e87d3e gui=NONE
   highlight htmlItalic guifg=#9e86c8 gui=italic
   highlight htmlBold guifg=#e87d3e gui=bold
-  highlight FloatermBorder guifg=#797979
   highlight FzfBorder guifg=#797979
 endfunction " }}}2
 function! s:patch_gruvbox_colors() " {{{2
@@ -336,7 +344,6 @@ function! s:patch_gruvbox_colors() " {{{2
   highlight SpellCap guifg=#fe8019 gui=NONE
   highlight htmlItalic guifg=#b16286 gui=italic
   highlight htmlBold guifg=#fe8019 gui=bold
-  highlight FloatermBorder guifg=#a89984
   highlight FzfBorder guifg=#a89984
   highlight texComment guifg=#928374
 endfunction " }}}2
@@ -356,15 +363,14 @@ function! s:patch_onedark_colors() " {{{2
   hi LspReferenceText guibg=#3e4452
   hi LspReferenceWrite guibg=#3e4452
   hi Whitespace guifg=#5c6370
-  hi FloatermBorder guifg=#5c6073
   hi FzfBorder guifg=#5c6073
 endfunction " }}}2
 
-if $COLORSCHEME ==# 'gruvbox'
+if g:colorscheme ==# 'gruvbox'
   let g:gruvbox_invert_selection=0
 endif
 
-colorscheme $COLORSCHEME
+execute 'colorscheme ' . g:colorscheme
 " }}}1
 
 " Miscellaneous {{{1

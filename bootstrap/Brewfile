@@ -11,6 +11,7 @@ tap "jesseduffield/lazygit"
 tap "koekeishiya/formulae"
 tap "teamookla/speedtest"
 
+brew "autopep8"
 brew "bash"
 brew "bat"
 brew "buku"
