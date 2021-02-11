@@ -852,7 +852,7 @@ function set_wallpaper() {
 
 function cleanup() {
   # Remove unneeded files, either already present in the machine or created
-  # by a function in this script. Create ~/.cache directory
+  # by a function in this script. Create ~/.cache directory.
 
   echo_step "Cleaning up some files"
 
@@ -861,7 +861,7 @@ function cleanup() {
   sudo rm "${HOME}/Downloads/.localized"
   rm "${HOME}/.wget-hsts"
 
-  # Find every .DS_Store file in / and delete them.
+  # Find every .DS_Store file in / and delete it.
   sudo mount -uw /
   osascript -e 'quit app "Finder"'
   fd -uu ".DS_Store" / -X sudo rm -f

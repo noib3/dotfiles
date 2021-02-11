@@ -1,27 +1,6 @@
-/.cache/
-/.cargo/
-/.local/
-/.openjfx/
-/.rustup/
-/.terminfo/
-/.Trash/
-/Desktop/
-/Documents/
-/Library/
-/Movies/
-/Music/
-/Pictures/
-/go/
-
-/.config/configstore/
-/.config/fish/fundle/
-/.config/nvim/plugged/
-/.config/nvim/coc/
-/.config/ipython/*
-!/.config/ipython/profile_default/
-/.config/ipython/profile_default/*
-!/.config/ipython/profile_default/ipython_config.py
-!/.config/ipython/profile_default/startup/
+/*
+!/Downloads
+!/Sync
 
 /Sync/finances/2017
 /Sync/finances/2018
@@ -37,8 +16,6 @@
 /Sync/university/*
 !/Sync/university/magistrale-Bocconi/
 
-**/.git
-
 *.aux
 *.bbl
 *.bcf
@@ -50,3 +27,5 @@
 *.synctex(busy)
 *.synctex.gz
 *.toc
+
+**/.git

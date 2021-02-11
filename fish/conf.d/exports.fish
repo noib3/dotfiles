@@ -12,6 +12,7 @@ set PATH $PATH /usr/local/opt/findutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/gnu-sed/libexec/gnubin
 set PATH $PATH /Library/TeX/texbin
 set PATH $PATH $HOME/.cargo/bin
+set PATH $PATH $HOME/.poetry/bin
 set PATH $PATH /usr/local/sbin
 set PATH $PATH /usr/local/bin
 set PATH $PATH /usr/sbin
@@ -30,6 +31,7 @@ set -x MANPAGER "nvim -c 'set ft=man' -"
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 
+set -x PYTHONPATH "$HOME/Sync/code/treed-python/treed/treed"
 set -x STARSHIP_CONFIG "$HOME/.config/starship/config.toml"
 set -x IPYTHONDIR "$HOME/.local/share/ipython"
 set -x MPLCONFIGDIR "$HOME/.local/share/matplotlib"

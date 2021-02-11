@@ -379,7 +379,7 @@ augroup all
   autocmd BufLeave * call s:AutoSaveWinView()
   autocmd BufEnter * call s:AutoRestoreWinView()
   autocmd BufRead *.cls setlocal filetype=tex
-  autocmd BufRead lfrc,skhdrc,.gitignore setlocal filetype=conf
+  autocmd BufRead lfrc,skhdrc,.gitignore,ignore setlocal filetype=conf
 augroup END
 
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{2
