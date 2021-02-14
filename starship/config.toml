@@ -1,2 +1,9 @@
+[character]
+format = "[λ](fg:purple) "
+
+[directory]
+truncation_length = 1
+fish_style_pwd_dir_length = 1
+
 [python]
 python_binary = "python3"

@@ -15,7 +15,7 @@ bind --user -M visual \cA beginning-of-line
 bind --user -M visual \cE end-of-line
 
 bind --user -M insert \e\x7F backward-kill-word
-bind --user -M insert \cW close_window
+bind --user -M insert \cW exit
 bind --user -M insert \cX\cD fuzzy_cd
 bind --user -M insert \cX\cE fuzzy_edit
 bind --user -M insert \cX\cF fuzzy_history

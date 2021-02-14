@@ -89,6 +89,7 @@ nmap <Space> za
 nmap <silent> <C-s> :w<CR>
 nmap ss :%s//g<Left><Left>
 inoremap <M-BS> <C-w>
+tnoremap <M-Esc> <C-\><C-n>
 cmap <C-a> <C-b>
 
 nnoremap <S-Left> <C-w>h
@@ -243,6 +244,8 @@ let g:floaterm_height = 0.8
 let g:floaterm_autoclose = 2
 
 nmap <silent> ll :call <SID>open_lf_select_current_file()<CR>
+nmap <silent> lg :FloatermNew lazygit<CR>
+nmap <silent> <Leader>tt :FloatermNew<CR>
 
 " https://github.com/voldikss/vim-floaterm/issues/209#issuecomment-734656183
 

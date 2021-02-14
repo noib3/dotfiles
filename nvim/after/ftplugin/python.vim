@@ -6,4 +6,4 @@ setlocal formatoptions-=r
 
 let b:surround_{char2nr("f")} = "\1function: \1(\r)"
 
-nmap <buffer> <silent> <C-t> :make! <Bar> silent cc<CR>
+nmap <buffer> <silent> <C-t> :make!<CR>
