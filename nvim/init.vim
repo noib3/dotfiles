@@ -13,12 +13,12 @@ Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-treesitter/nvim-treesitter'
+" Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'joshdick/onedark.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'tweekmonster/startuptime.vim'
 Plug 'godlygeek/tabular'
-Plug 'SirVer/ultisnips'
+" Plug 'SirVer/ultisnips'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'qpkorr/vim-bufkill'
 Plug 'tpope/vim-commentary'
@@ -218,16 +218,16 @@ for _, server in ipairs(servers) do
 end
 EOF
 " }}}2
-" nvim-treesitter {{{2
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained",
-  highlight = {
-    enable = true,
-  },
-}
-EOF
-" }}}2
+" " nvim-treesitter {{{2
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   ensure_installed = "maintained",
+"   highlight = {
+"     enable = true,
+"   },
+" }
+" EOF
+" " }}}2
 " rust.vim {{{2
 let g:rustfmt_autosave = 1
 let g:cargo_makeprg_params = 'run'

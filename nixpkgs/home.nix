@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 
-{
+let
+  unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
+
+in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -18,4 +21,74 @@
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home.stateVersion = "21.05";
+
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+    };
+  };
+
+  home.packages = with pkgs; [
+    alacritty
+    # auto-selfcontrol
+    bash
+    bat
+    buku
+    calcurse
+    chafa
+    coreutils
+    duti
+    entr
+    exa
+    fd
+    ffmpeg
+    findutils
+    firefox
+    fish
+    fzf
+    git
+    # gnu-sed
+    gotop
+    jq
+    lazygit
+    unstable.lf
+    # mas
+    mediainfo
+    # neovim
+    nodejs
+    openssh
+    python39
+    python39Packages.autopep8
+    python39Packages.ipython
+    python39Packages.pip
+    redshift
+    rsync
+    skhd
+    spacebar
+    # ookla-speedtest
+    # sshfs
+    starship
+    syncthing
+    # tccutil
+    terminal-notifier
+    transmission
+    vivid
+    wget
+    xmlstarlet
+    yabai
+  ];
+
+  # programs.neovim = {
+  #   enable = true;
+  #   withPython3 = true;
+  #   extraPython3Packages = (
+  #     ps: with ps; [
+  #       autopep8
+  #       flake8
+  #       isort
+  #       jedi
+  #       pynvim
+  #     ]
+  #   );
+  # };
 }

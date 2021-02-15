@@ -6,7 +6,6 @@ set -x PRIVATEDIR "$SYNCDIR/private"
 
 set PATH ""
 set PATH $PATH /run/current-system/sw/bin
-set PATH $PATH /Applications/Alacritty.app/Contents/MacOS
 set PATH $PATH /Applications/Firefox.app/Contents/MacOS
 set PATH $PATH /usr/local/opt/coreutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/findutils/libexec/gnubin
