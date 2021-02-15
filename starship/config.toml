@@ -2,6 +2,7 @@
 format = "[λ](fg:purple) "
 
 [directory]
+home_symbol = "/Users/noibe"
 truncation_length = 1
 fish_style_pwd_dir_length = 1
 

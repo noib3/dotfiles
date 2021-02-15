@@ -9,8 +9,12 @@ set fish_cursor_visual block
 source "$HOME/.config/fish/colorschemes/$COLORSCHEME.fish"
 
 # Plugins
-fundle plugin "laughedelic/pisces"
+fundle plugin 'edc/bass'
+fundle plugin 'laughedelic/pisces'
 fundle init
 
 # Prompt
 starship init fish | source
+
+# Nix
+bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh

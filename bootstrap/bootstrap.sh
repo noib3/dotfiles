@@ -137,8 +137,8 @@ function set_sys_defaults() {
   defaults write NSGlobalDomain _HIHideMenuBar -bool true
 
   # Set keyboard key repeat delays
-  defaults write NSGlobalDomain InitialKeyRepeat -int 15
-  defaults write NSGlobalDomain KeyRepeat -int 2
+  defaults write NSGlobalDomain InitialKeyRepeat -int 10
+  defaults write NSGlobalDomain KeyRepeat -int 1
 
   # Don't rearrange spaces based on most recent use
   defaults write com.apple.dock mru-spaces -bool false
@@ -185,7 +185,7 @@ function set_sys_defaults() {
   # Disable relaunching apps and restoring windows after reboot by denying
   # macOS access to the file that stores the session's state. Make the file
   # owned by root so that the OS can't replace it, then deny all permissions so
-  # that it can't be read or written to
+  # that it can't be read or written to.
   sudo chown root "${HOME}/Library/Preferences/ByHost/com.apple.loginwindow*"
   sudo chmod 000 "${HOME}/Library/Preferences/ByHost/com.apple.loginwindow*"
 
