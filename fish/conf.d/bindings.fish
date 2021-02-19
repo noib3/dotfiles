@@ -9,11 +9,11 @@ bind --user yy fish_clipboard_copy
 bind --user Y fish_clipboard_copy
 bind --user p fish_clipboard_paste
 
-bind --user -M insert \cA beginning-of-line
-bind --user -M insert \cE end-of-line
 bind --user -M visual \cA beginning-of-line
 bind --user -M visual \cE end-of-line
 
+bind --user -M insert \cA beginning-of-line
+bind --user -M insert \cE end-of-line
 bind --user -M insert \e\x7F backward-kill-word
 bind --user -M insert \cW exit
 bind --user -M insert \cX\cD fuzzy_cd

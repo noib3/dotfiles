@@ -2,9 +2,14 @@
 format = "[λ](fg:purple) "
 
 [directory]
-home_symbol = "/Users/noibe"
 truncation_length = 1
 fish_style_pwd_dir_length = 1
 
+[hostname]
+ssh_only = false
+
 [python]
 python_binary = "python3"
+
+[username]
+show_always = true

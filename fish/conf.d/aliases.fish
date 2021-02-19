@@ -1,4 +1,4 @@
-alias ls='exa -al --group-directories-first --time-style=long-iso'
+alias ls='ls -Al --group-directories-first --color'
 alias grep='grep --ignore-case --color=auto'
 alias wget='wget --hsts-file=~/.cache/wget/wget-hsts'
 

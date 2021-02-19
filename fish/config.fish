@@ -18,3 +18,5 @@ starship init fish | source
 
 # Nix
 bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh
+
+direnv hook fish | source

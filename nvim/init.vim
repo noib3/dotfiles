@@ -97,6 +97,11 @@ nnoremap <S-Left> <C-w>h
 nnoremap <S-Down> <C-w>j
 nnoremap <S-Up> <C-w>k
 nnoremap <S-Right> <C-w>l
+
+nmap <expr> <silent> <C-w>
+      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
+imap <expr> <silent> <C-w> "\<C-o>" .
+      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
 " }}}1
 
 " Configure plugins {{{1
@@ -162,11 +167,6 @@ for i in range(1, 9)
   execute 'nmap <silent> <F' . i . '> '
         \ . ':call lightline#bufferline#go(' . i . ')<CR>'
 endfor
-
-nmap <expr> <silent> <C-w>
-      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
-imap <expr> <silent> <C-w> "\<C-o>" .
-      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
 " }}}2
 " nvim-colorizer.lua {{{2
 lua << EOF
@@ -257,7 +257,9 @@ endfunction
 function! s:open_lf_select_current_file()
   let filename = expand('%')
   execute 'FloatermNew lf'
-  call timer_start(100, function('s:select', [filename]), {'repeat': 3})
+  if filename != ''
+    call timer_start(100, function('s:select', [filename]), {'repeat': 3})
+  endif
 endfunction
 " }}}2
 " vim-json {{{2

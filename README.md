@@ -6,7 +6,7 @@ My configuration files for the various programs I use on my macOS machine.
 
 ```bash
 bash -c "$(curl -fsSL \
-  https://raw.githubusercontent.com/noib3/dotfiles/macOS/bootstrap/bootstrap.sh)"
+  https://raw.githubusercontent.com/noib3/dotfiles/master/bootstrap.sh)"
 ```
 
 ## Screenshots

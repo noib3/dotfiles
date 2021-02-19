@@ -12,7 +12,6 @@ set PATH $PATH /usr/local/opt/findutils/libexec/gnubin
 set PATH $PATH /usr/local/opt/gnu-sed/libexec/gnubin
 set PATH $PATH /Library/TeX/texbin
 set PATH $PATH $HOME/.cargo/bin
-set PATH $PATH $HOME/.poetry/bin
 set PATH $PATH /usr/local/sbin
 set PATH $PATH /usr/local/bin
 set PATH $PATH /usr/sbin
@@ -20,7 +19,6 @@ set PATH $PATH /usr/bin
 set PATH $PATH /sbin
 set PATH $PATH /bin
 set PATH $PATH $SCRIPTSDIR/peek
-set PATH $PATH $SCRIPTSDIR/pfetch
 set PATH $PATH $SCRIPTSDIR/vimv
 set -x PATH $PATH
 
@@ -35,8 +33,8 @@ set -x PYTHONPATH "$HOME/Sync/code/treed-python/treed/treed"
 set -x STARSHIP_CONFIG "$HOME/.config/starship/config.toml"
 set -x IPYTHONDIR "$HOME/.local/share/ipython"
 set -x MPLCONFIGDIR "$HOME/.local/share/matplotlib"
-set -x LESSHISTFILE "$HOME/.cache/less/lesshst"
 set -x HISTFILE "$HOME/.cache/bash/bash_history"
+set -x LESSHISTFILE "$HOME/.cache/less/lesshst"
 set -x npm_config_cache "$HOME/.cache/npm"
 
 set -x HOMEBREW_NO_AUTO_UPDATE 1
@@ -50,7 +48,7 @@ set -x FZF_DEFAULT_COMMAND \
 
 switch $COLORSCHEME
   case afterglow
-      set fzf_bgplus_color "#242424"
+    set fzf_bgplus_color "#242424"
   case gruvbox
     set fzf_bgplus_color "#323232"
   case onedark
