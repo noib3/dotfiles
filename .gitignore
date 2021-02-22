@@ -1,3 +1,8 @@
-/fish/fundle/
-/fish/fish_variables
+/bat/
+/fish/
+/git/
+/lf/
+
 /nvim/plugged/
+
+/starship.toml

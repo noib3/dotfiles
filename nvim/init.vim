@@ -1,10 +1,10 @@
 " Load plugins {{{1
 call plug#begin('~/.config/nvim/plugged')
 Plug 'dense-analysis/ale'
-Plug 'bfontaine/Brewfile.vim'
 Plug 'rhysd/clever-f.vim'
 Plug 'nvim-lua/completion-nvim'
 Plug 'Raimondi/delimitMate'
+Plug 'direnv/direnv.vim'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
@@ -99,9 +99,9 @@ nnoremap <S-Up> <C-w>k
 nnoremap <S-Right> <C-w>l
 
 nmap <expr> <silent> <C-w>
-      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
+      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':BD') . "\<CR>"
 imap <expr> <silent> <C-w> "\<C-o>" .
-      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':bd') . "\<CR>"
+      \ (len(getbufinfo({'buflisted':1})) == 1 ? ':q' : ':BD') . "\<CR>"
 " }}}1
 
 " Configure plugins {{{1
