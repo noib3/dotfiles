@@ -1,3 +1,9 @@
+{ theme }:
+
+let
+  colors = import (../themes + "/${theme}" + /fzf.nix);
+in
+
 {
   defaultCommand = "fd --base-directory=$HOME --hidden --type=f --color=always";
   defaultOptions = [
@@ -11,5 +17,6 @@
     "--color='hl+:-1:underline:italic'"
     "--color='prompt:4:regular'"
     "--color='pointer:1'"
+    "--color='bg+:${colors.bgplus}'"
   ];
 }
