@@ -83,7 +83,7 @@
     s   = "set_wallpaper";
     j   = "eject_disk";
     mo  = "mount_ocean";
-    uo  = "unmoune_ocean";
+    uo  = "unmount_ocean";
     gvl = ''cd "/Volumes"'';
   };
 }

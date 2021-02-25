@@ -131,14 +131,14 @@ shift + cmd - 3 : \
 
 # Screenshot a portion of the screen and send a notification if the screenshot
 # wasn't cancelled (uses fish syntax).
-shift + cmd - 4 : \
-  set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    && screencapture -imx "$sshot" \
-    && ls "$sshot" \
-    && terminal-notifier \
-          -title "New screenshot" \
-          -subtitle (basename "$sshot") \
-          -message "Saved in "(dirname "$sshot") \
-          -appIcon "$HOME/.config/skhd/picture-icon.png" \
-          -contentImage "$sshot" \
-          -execute "open \"$sshot\""
+# shift + cmd - 4 : \
+#   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
+#     && screencapture -imx "$sshot" \
+#     && ls "$sshot" \
+#     && terminal-notifier \
+#           -title "New screenshot" \
+#           -subtitle (basename "$sshot") \
+#           -message "Saved in "(dirname "$sshot") \
+#           -appIcon "$HOME/.config/skhd/picture-icon.png" \
+#           -contentImage "$sshot" \
+#           -execute "open \"$sshot\""

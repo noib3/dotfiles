@@ -59,8 +59,8 @@
     "<enter>"    = "push $";
     t            = "push :touch<space>";
     k            = "push :mkdir<space>";
-    "+"          = "make_executable";
-    "-"          = "remove_executable";
+    "+"          = "give_ex";
+    "-"          = "remove_ex";
     "<c-x><c-e>" = "fuzzy_edit";
     "<c-x><c-d>" = "fuzzy_cd";
   };

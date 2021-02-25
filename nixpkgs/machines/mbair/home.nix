@@ -11,6 +11,10 @@ let
     (import ./defaults/alacritty.nix { font = font; theme = theme; })
     (import (./machines + "/${machine}" + /alacritty.nix));
 
+  fdConfig =
+    (import ./defaults/fd.nix)
+    + (import (./machines + "/${machine}" + /fd.nix) );
+
   fishConfig = lib.attrsets.recursiveUpdate
     (import ./defaults/fish.nix { pkgs = pkgs; theme = theme; })
     (import (./machines + "/${machine}" + /fish.nix) );
@@ -23,8 +27,14 @@ let
   fzfConfig      = import ./defaults/fzf.nix { theme = theme; };
   gitConfig      = import ./defaults/git.nix;
   starshipConfig = import ./defaults/starship.nix;
+  vividConfig    = import ./defaults/vivid.nix { theme = theme; };
 
 in {
+  imports = [
+    ./modules/programs/fd.nix
+    ./modules/programs/vivid.nix
+  ];
+
   home = {
     username      = "noibe";
     homeDirectory = "/Users/noibe";
@@ -40,7 +50,7 @@ in {
       direnv
       duti
       entr
-      fd
+      # fd
       ffmpeg
       findutils
       # firefox
@@ -145,6 +155,11 @@ in {
     config = batConfig;
   };
 
+  programs.fd = {
+    enable = true;
+    ignore = fdConfig;
+  };
+
   programs.fish = lib.attrsets.recursiveUpdate fishConfig {
     enable = true;
   };
@@ -164,5 +179,9 @@ in {
   programs.starship = {
     enable = true;
     settings = starshipConfig;
+  };
+
+  programs.vivid = lib.attrsets.recursiveUpdate vividConfig {
+    enable = true;
   };
 }
