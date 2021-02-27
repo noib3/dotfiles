@@ -1,9 +1,1 @@
-/alacritty/
-/bat/
-/fd/
-/fish/
-/git/
-/lf/
-/nvim/plugged/
-/vivid/
-/starship.toml
+/home.nix
