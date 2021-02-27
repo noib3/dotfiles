@@ -1,7 +1,7 @@
 {
-  ignore = [
+  ignores = [
     "/*"
-    "!/.config"
+    "!/dotfiles"
     "!/treed"
   ];
 }

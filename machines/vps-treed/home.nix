@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
+  unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
 
   machine = "vps-treed";
   theme   = "onedark";
@@ -47,9 +47,19 @@ in {
       gotop
       lazygit
       mediainfo
-      neofetch
       neovim-nightly
       pfetch
+      (python39.withPackages(
+        ps: with ps; [
+          autopep8
+          black
+          flake8
+          ipython
+          isort
+          jedi
+        ]
+      ))
+      vimv
       vivid
     ];
 
@@ -75,6 +85,14 @@ in {
     };
 
     overlays = [
+      (self: super: {
+        direnv   = unstable.direnv;
+        fzf      = unstable.fzf;
+        lf       = unstable.lf;
+        python39 = unstable.python39;
+        starship = unstable.starship;
+        vimv     = unstable.vimv;
+      })
       (import (builtins.fetchTarball {
         url =
           https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
