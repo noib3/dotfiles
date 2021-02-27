@@ -1,5 +1,7 @@
-''
-  /*
-  !/.config
-  !/treed
-''
+{
+  ignore = [
+    "/*"
+    "!/.config"
+    "!/treed"
+  ];
+}

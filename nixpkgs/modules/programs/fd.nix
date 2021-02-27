@@ -13,13 +13,13 @@ in {
       fd, A simple, fast and user-friendly alternative to 'find'
     '';
 
-    ignore = mkOption {
-      type = types.str;
-      default = "";
-      example = ''
-        **/.git
-        */.aux
-      '';
+    ignores = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      example = [
+        "**/.git"
+        "*/.aux"
+      ];
       description = ''
         Contents of the global ignore file.
       '';
@@ -30,7 +30,8 @@ in {
   config = mkIf cfg.enable {
     home.packages = [ pkgs.fd ];
 
-    xdg.configFile."fd/ignore" =
-      mkIf (cfg.ignore != "") { text = cfg.ignore; };
+    xdg.configFile."fd/ignore" = mkIf (cfg.ignores != [ ]) {
+      text = concatStringsSep "\n" cfg.ignores + "\n";
+    };
   };
 }

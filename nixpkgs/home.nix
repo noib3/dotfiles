@@ -1,25 +1,31 @@
 { config, lib, pkgs, ... }:
 
 let
+  recUpdate = lib.attrsets.recursiveUpdate;
+
   unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
 
   machine = "mbair";
   theme   = "onedark";
   font    = "RobotoMono";
 
-  alacrittyConfig = lib.attrsets.recursiveUpdate
-    (import ./defaults/alacritty.nix { font = font; theme = theme; })
-    (import (./machines + "/${machine}" + /alacritty.nix));
+  alacrittyConfig = {
+    settings = recUpdate
+      (import ./defaults/alacritty.nix { font = font; theme = theme; })
+      (import (./machines + "/${machine}" + /alacritty.nix));
+  };
 
-  fdConfig =
-    (import ./defaults/fd.nix)
-    + (import (./machines + "/${machine}" + /fd.nix) );
+  fdConfig = {
+    ignores =
+      (import ./defaults/fd.nix).ignores
+      ++ (import (./machines + "/${machine}" + /fd.nix)).ignores ;
+  };
 
-  fishConfig = lib.attrsets.recursiveUpdate
+  fishConfig = recUpdate
     (import ./defaults/fish.nix { pkgs = pkgs; theme = theme; })
     (import (./machines + "/${machine}" + /fish.nix) );
 
-  lfConfig = lib.attrsets.recursiveUpdate
+  lfConfig = recUpdate
     (import ./defaults/lf.nix { pkgs = pkgs; })
     (import (./machines + "/${machine}" + /lf.nix) );
 
@@ -27,7 +33,7 @@ let
   fzfConfig      = import ./defaults/fzf.nix { theme = theme; };
   gitConfig      = import ./defaults/git.nix;
   starshipConfig = import ./defaults/starship.nix;
-  vividConfig    = import ./defaults/vivid.nix { theme = theme; };
+  vividConfig    = import ./defaults/vivid.nix { lib = lib; theme = theme; };
 
 in {
   imports = [
@@ -97,6 +103,7 @@ in {
       # tccutil
       terminal-notifier
       transmission-remote-cli
+      # vimv
       vivid
       wget
       xmlstarlet
@@ -134,54 +141,24 @@ in {
         lf       = unstable.lf;
         python39 = unstable.python39;
         starship = unstable.starship;
+        vimv     = unstable.vimv;
       })
       (import (builtins.fetchTarball {
-        url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+        url =
+          https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
       }))
     ];
   };
 
-  programs.home-manager = {
-    enable = true;
-  };
+  programs.home-manager = { enable = true; };
 
-  programs.alacritty = {
-    enable = true;
-    settings = alacrittyConfig;
-  };
-
-  programs.bat = {
-    enable = true;
-    config = batConfig;
-  };
-
-  programs.fd = {
-    enable = true;
-    ignore = fdConfig;
-  };
-
-  programs.fish = lib.attrsets.recursiveUpdate fishConfig {
-    enable = true;
-  };
-
-  programs.fzf = lib.attrsets.recursiveUpdate fzfConfig {
-    enable = true;
-  };
-
-  programs.git = lib.attrsets.recursiveUpdate gitConfig {
-    enable = true;
-  };
-
-  programs.lf = lib.attrsets.recursiveUpdate lfConfig {
-    enable = true;
-  };
-
-  programs.starship = {
-    enable = true;
-    settings = starshipConfig;
-  };
-
-  programs.vivid = lib.attrsets.recursiveUpdate vividConfig {
-    enable = true;
-  };
+  programs.alacritty = alacrittyConfig // { enable = true; };
+  programs.bat       = batConfig       // { enable = true; };
+  programs.fd        = fdConfig        // { enable = true; };
+  programs.fish      = fishConfig      // { enable = true; };
+  programs.fzf       = fzfConfig       // { enable = true; };
+  programs.git       = gitConfig       // { enable = true; };
+  programs.lf        = lfConfig        // { enable = true; };
+  programs.starship  = starshipConfig  // { enable = true; };
+  # programs.vivid     = vividConfig     // { enable = true; };
 }
