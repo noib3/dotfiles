@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source "$(dirname $0)/fonts/RobotoMono.sh"
-source "$(dirname $0)/colorschemes/onedark.sh"
+source "$(dirname $0)/themes/onedark.sh"
 
 # 2560x1440
 spacebar -m config height 26

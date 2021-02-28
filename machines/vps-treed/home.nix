@@ -3,33 +3,31 @@
 let
   unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
 
-  machine = "vps-treed";
   theme   = "onedark";
 
   fdConfig = {
     ignores =
-      (import ./defaults/fd.nix).ignores
-      ++ (import (./machines + "/${machine}" + /fd.nix)).ignores ;
+      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores ;
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ./defaults/fish.nix { pkgs = pkgs; theme = theme; })
-    (import (./machines + "/${machine}" + /fish.nix) );
+    (import ../../defaults/fish.nix { pkgs = pkgs; theme = theme; })
+    (import ./fish.nix );
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ./defaults/lf.nix { pkgs = pkgs; })
-    (import (./machines + "/${machine}" + /lf.nix) );
+    (import ../../defaults/lf.nix { pkgs = pkgs; })
+    (import ./lf.nix );
 
-  batConfig      = import ./defaults/bat.nix;
-  fzfConfig      = import ./defaults/fzf.nix { theme = theme; };
-  gitConfig      = import ./defaults/git.nix;
-  starshipConfig = import ./defaults/starship.nix;
-  vividConfig    = import ./defaults/vivid.nix { lib = lib; theme = theme; };
+  batConfig      = import ../../defaults/bat.nix;
+  fzfConfig      = import ../../defaults/fzf.nix { theme = theme; };
+  gitConfig      = import ../../defaults/git.nix;
+  starshipConfig = import ../../defaults/starship.nix;
+  vividConfig    = import ../../defaults/vivid.nix { theme = theme; };
 
 in {
   imports = [
-    ./modules/programs/fd.nix
-    ./modules/programs/vivid.nix
+    ../../modules/programs/fd.nix
+    ../../modules/programs/vivid.nix
   ];
 
   home = {
@@ -61,11 +59,11 @@ in {
       ))
       vimv
       vivid
+      yarn
     ];
 
     sessionVariables = {
       COLORTERM    = "truecolor";
-      COLORSCHEME  = "${theme}";
       EDITOR       = "nvim";
       HISTFILE     = "$HOME/.cache/bash/bash_history";
       MANPAGER     = "nvim -c 'set ft=man' -";
@@ -73,9 +71,17 @@ in {
       LC_ALL       = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
       LS_COLORS    = "$(vivid generate ${theme})";
+      THEME        = "${theme}";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
+    };
+
+    file = {
+      "${config.xdg.configHome}/nvim" = {
+        source    = ./defaults/nvim;
+        recursive = true;
+      };
     };
   };
 

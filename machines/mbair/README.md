@@ -1,5 +1,7 @@
 # macOS dotfiles
 
+NOTE: `bootstrap.sh` is now deprecated and it will error out if called.
+
 ## Screenshots
 
 ### February 03, 2021

@@ -3,40 +3,38 @@
 let
   unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
 
-  machine = "mbair";
-  theme   = "onedark";
-  font    = "RobotoMono";
+  theme = "onedark";
+  font  = "RobotoMono";
 
   alacrittyConfig = {
     settings = lib.attrsets.recursiveUpdate
-      (import ./defaults/alacritty.nix { font = font; theme = theme; })
-      (import (./machines + "/${machine}" + /alacritty.nix));
+      (import ../../defaults/alacritty.nix { font = font; theme = theme; })
+      (import ./alacritty.nix);
   };
 
   fdConfig = {
     ignores =
-      (import ./defaults/fd.nix).ignores
-      ++ (import (./machines + "/${machine}" + /fd.nix)).ignores ;
+      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores ;
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ./defaults/fish.nix { pkgs = pkgs; theme = theme; })
-    (import (./machines + "/${machine}" + /fish.nix) );
+    (import ../../defaults/fish.nix { pkgs = pkgs; theme = theme; })
+    (import ./fish.nix );
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ./defaults/lf.nix { pkgs = pkgs; })
-    (import (./machines + "/${machine}" + /lf.nix) );
+    (import ../../defaults/lf.nix { pkgs = pkgs; })
+    (import ./lf.nix );
 
-  batConfig      = import ./defaults/bat.nix;
-  fzfConfig      = import ./defaults/fzf.nix { theme = theme; };
-  gitConfig      = import ./defaults/git.nix;
-  starshipConfig = import ./defaults/starship.nix;
-  vividConfig    = import ./defaults/vivid.nix { lib = lib; theme = theme; };
+  batConfig      = import ../../defaults/bat.nix;
+  fzfConfig      = import ../../defaults/fzf.nix { theme = theme; };
+  gitConfig      = import ../../defaults/git.nix;
+  starshipConfig = import ../../defaults/starship.nix;
+  vividConfig    = import ../../defaults/vivid.nix { theme = theme; };
 
 in {
   imports = [
-    ./modules/programs/fd.nix
-    ./modules/programs/vivid.nix
+    ../../modules/programs/fd.nix
+    ../../modules/programs/vivid.nix
   ];
 
   home = {
@@ -105,12 +103,12 @@ in {
       vivid
       wget
       xmlstarlet
-      # yabai
+      yabai
+      yarn
     ];
 
     sessionVariables = {
       COLORTERM    = "truecolor";
-      COLORSCHEME  = "${theme}";
       EDITOR       = "nvim";
       HISTFILE     = "$HOME/.cache/bash/bash_history";
       MANPAGER     = "nvim -c 'set ft=man' -";
@@ -118,12 +116,45 @@ in {
       LC_ALL       = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
       LS_COLORS    = "$(vivid generate ${theme})";
-      PRIVATEDIR   = "$HOME/Sync/private";
+      THEME        = "${theme}";
+      SECRETSDIR   = "$HOME/Sync/secrets";
       SCRSHOTDIR   = "$HOME/Sync/screenshots";
       SCRIPTSDIR   = "$HOME/Sync/scripts";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
+    };
+
+    file = {
+      "${config.xdg.configHome}/nvim" = {
+        source    = ../../defaults/nvim;
+        recursive = true;
+      };
+
+      "${config.xdg.configHome}/firefox" = {
+        source    = ./firefox;
+        recursive = true;
+      };
+
+      "${config.xdg.configHome}/skhd" = {
+        source    = ./skhd;
+        recursive = true;
+      };
+
+      "${config.xdg.configHome}/spacebar" = {
+        source    = ./spacebar;
+        recursive = true;
+      };
+
+      "${config.xdg.configHome}/tridactyl" = {
+        source    = ./tridactyl;
+        recursive = true;
+      };
+
+      "${config.xdg.configHome}/yabai" = {
+        source    = ./yabai;
+        recursive = true;
+      };
     };
   };
 

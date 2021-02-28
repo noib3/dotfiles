@@ -210,7 +210,7 @@ if client.resolved_capabilities.document_highlight then
 end
 end
 
-local servers = { 'jedi_language_server', 'vimls' }
+local servers = { 'pyls_ms', 'vimls' }
 for _, server in ipairs(servers) do
   lspconfig[server].setup { on_attach = custom_lsp_attach }
 end
@@ -377,7 +377,7 @@ augroup all
   autocmd BufLeave * call s:AutoSaveWinView()
   autocmd BufEnter * call s:AutoRestoreWinView()
   autocmd BufRead *.cls setlocal filetype=tex
-  autocmd BufRead lfrc,skhdrc,.gitignore,ignore setlocal filetype=conf
+  autocmd BufRead .gitignore,ignore setlocal filetype=conf
 augroup END
 
 " https://vim.fandom.com/wiki/Avoid_scrolling_when_switch_buffers {{{2
