@@ -79,7 +79,7 @@ in {
 
     file = {
       "${config.xdg.configHome}/nvim" = {
-        source    = ./defaults/nvim;
+        source    = ../../defaults/nvim;
         recursive = true;
       };
     };

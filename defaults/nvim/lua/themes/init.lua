@@ -1,3 +1,5 @@
+local theme = vim.env.THEME
+
 vim.api.nvim_exec([[
 augroup themes
   autocmd!
@@ -12,4 +14,8 @@ augroup themes
 augroup END
 ]], false)
 
-vim.cmd('colorscheme ' .. vim.env.THEME)
+vim.cmd('packadd packer.nvim')
+
+if packer_plugins[theme] and packer_plugins[theme].loaded then
+  vim.cmd('colorscheme ' .. theme)
+end
