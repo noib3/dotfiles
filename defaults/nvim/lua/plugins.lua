@@ -5,7 +5,7 @@ return require('packer').startup(function()
   use {'wbthomason/packer.nvim', opt = true}
 
   -- Lsp, completions and linting
-  -- use {'neovim/nvim-lspconfig', config = [[require('config.lsp')]]}
+  use {'neovim/nvim-lspconfig', config = [[require('config.lsp')]]}
   use {'nvim-lua/completion-nvim', config = [[require('config.completions')]]}
   use {'dense-analysis/ale', config = [[require('config.ale')]]}
 
