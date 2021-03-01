@@ -14,8 +14,4 @@ augroup themes
 augroup END
 ]], false)
 
-vim.cmd('packadd packer.nvim')
-
-if packer_plugins[theme] and packer_plugins[theme].loaded then
-  vim.cmd('colorscheme ' .. theme)
-end
+vim.cmd('silent! colorscheme ' .. theme)
