@@ -1,14 +1,23 @@
 local map = vim.api.nvim_set_keymap
+local fn  = vim.fn
+local cmd = vim.cmd
 
 vim.g.mapleader = ','
 
 -- Save the file
 map('n', '<C-s>', ':w<CR>', { silent = true })
 
--- Quit neovim if there's only one buffer open, else delete the current one
-map('n', '<C-w>',
-    '(len(getbufinfo({"buflisted":1})) == 1 ? ":q" : ":bd") . "\\<CR>"',
-    { expr = true, silent = true })
+-- Quit if there's only one buffer open or if there are multiple windows open,
+-- else delete the current buffer.
+function q_if_one_buff_or_multpl_wins()
+  if fn.len(fn.getbufinfo({buflisted = 1})) == 1 or fn.winnr('$') > 1 then
+    cmd('q')
+  else
+    cmd('bd')
+  end
+end
+
+map('n', '<C-w>', ':lua q_if_one_buff_or_multpl_wins()<CR>', { silent = true })
 
 -- Jump to the first non whitespace character in the line
 map('',  '<C-a>', '^',      {})

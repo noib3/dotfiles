@@ -3,7 +3,7 @@
 let
   unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
 
-  theme   = "onedark";
+  theme = "onedark";
 
   fdConfig = {
     ignores =
@@ -115,5 +115,5 @@ in {
   programs.git       = gitConfig       // { enable = true; };
   programs.lf        = lfConfig        // { enable = true; };
   programs.starship  = starshipConfig  // { enable = true; };
-  # programs.vivid     = vividConfig     // { enable = true; };
+  programs.vivid     = vividConfig     // { enable = true; };
 }

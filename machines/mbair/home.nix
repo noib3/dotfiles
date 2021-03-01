@@ -70,7 +70,8 @@ in {
       mediainfo
       mpv
       neovim-nightly
-      # nodejs
+      nodejs
+      nodePackages.vim-language-server
       # nordvpn
       openssh
       osxfuse
@@ -189,5 +190,5 @@ in {
   programs.git       = gitConfig       // { enable = true; };
   programs.lf        = lfConfig        // { enable = true; };
   programs.starship  = starshipConfig  // { enable = true; };
-  # programs.vivid     = vividConfig     // { enable = true; };
+  programs.vivid     = vividConfig     // { enable = true; };
 }

@@ -5,14 +5,14 @@ with lib;
 let
   cfg = config.programs.vivid;
 
-  filetypesFile = config:
-    pkgs.runCommand "filetypes.yml" {
+  configFile = config: file:
+    pkgs.runCommand "${file}.yml" {
       buildInputs = [ pkgs.remarshal ];
       preferLocalBuild = true;
       allowSubstitutes = false;
     } ''
       remarshal -if json -of yaml \
-        < ${pkgs.writeText "filetypes.yml" (builtins.toJSON config)} \
+        < ${pkgs.writeText "${file}.json" (builtins.toJSON config)} \
         > $out
     '';
 
@@ -53,9 +53,7 @@ in {
       '';
       description = ''
         Configuration written to
-        <filename>~/.config/vivid/filetypes.yml</filename>. See
-        <link xlink:href="https://github.com/sharkdp/vivid/blob/master/config/filetypes.yml"/>
-        for the default configuration.
+        <filename>~/.config/vivid/filetypes.yml</filename>.
       '';
     };
 
@@ -83,35 +81,22 @@ in {
       '';
       description = ''
         Configuration written to
-        <filename>~/.config/vivid/filetypes.yml</filename>. See
-        <link xlink:href="https://github.com/sharkdp/vivid/blob/master/config/filetypes.yml"/>
-        for the default configuration.
+        <filename>~/.config/vivid/filetypes.yml</filename>.
       '';
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [{
-      home.packages = [ cfg.package ];
+  config = mkIf cfg.enable {
+    home.packages = [ cfg.package ];
 
-      xdg.configFile."vivid/filetypes.yml" =
-        mkIf (cfg.filetypes != { }) { source = filetypesFile cfg.filetypes; };
-    }
-    {
-      xdg.configFile = mapAttrs' (theme: def: {
-        name = "vivid/themes/${theme}.yml";
-        value = def;
-      }) cfg.themes;
-    }
-  ]);
-
-  # config = mkMerge [
-  #   (mkIf cfg.enable {
-  #     home.packages = [ cfg.package ];
-
-  #     # xdg.configFile."vivid/filetypes.yml" = mkIf (cfg.filetypes != { }){
-  #     #   text =
-  #     #     replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON cfg.filetypes);
-  #     # };
-  #   })
-  # ];
+    xdg.configFile = {
+      "vivid/filetypes.yml" = mkIf (cfg.filetypes != { }) {
+        source = configFile cfg.filetypes "filetypes";
+      };
+    } // mapAttrs' (
+      name: value: nameValuePair
+        ("vivid/themes/${name}.yml")
+        ({source = configFile cfg.themes."${name}" name;})
+    ) cfg.themes;
+  };
 }
