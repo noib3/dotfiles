@@ -47,6 +47,8 @@ in
       mediainfo
       neovim-nightly
       nixpkgs-fmt
+      nodejs
+      nodePackages.vim-language-server
       pfetch
       (python39.withPackages (
         ps: with ps; [

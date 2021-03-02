@@ -1,5 +1,5 @@
 local lspconfig = require('lspconfig')
-vim.lsp.callbacks["textDocument/publishDiagnostics"] = function() end
+vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
 
 local custom_lsp_attach = function(client, bufnr)
 require('completion').on_attach()
