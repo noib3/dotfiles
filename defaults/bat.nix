@@ -1,8 +1,8 @@
 {
   config = {
-    color       = "always";
+    color = "always";
     decorations = "never";
-    paging      = "never";
-    theme       = "TwoDark";
+    paging = "never";
+    theme = "TwoDark";
   };
 }

@@ -1,25 +1,25 @@
 {
   normal = {
     family = "SFMono Nerd Font";
-    style  = "Regular";
+    style = "Regular";
   };
 
   bold = {
     family = "SFMono Nerd Font";
-    style  = "Heavy";
+    style = "Heavy";
   };
 
   italic = {
     family = "SFMono Nerd Font";
-    style  = "Regular Italic";
+    style = "Regular Italic";
   };
 
   bold_italic = {
     family = "SFMono Nerd Font";
-    style  = "Heavy";
+    style = "Heavy";
   };
 
-  size           = 19;
-  offset.y       = 1;
+  size = 19;
+  offset.y = 1;
   glyph_offset.y = 1;
 }

@@ -1,22 +1,23 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-
 let
   cfg = config.programs.vivid;
 
   configFile = config: file:
-    pkgs.runCommand "${file}.yml" {
-      buildInputs = [ pkgs.remarshal ];
-      preferLocalBuild = true;
-      allowSubstitutes = false;
-    } ''
+    pkgs.runCommand "${file}.yml"
+      {
+        buildInputs = [ pkgs.remarshal ];
+        preferLocalBuild = true;
+        allowSubstitutes = false;
+      } ''
       remarshal -if json -of yaml \
         < ${pkgs.writeText "${file}.json" (builtins.toJSON config)} \
         > $out
     '';
 
-in {
+in
+{
   meta.maintainers = [ mainteners.noib3 ];
 
   options.programs.vivid = {
@@ -37,7 +38,8 @@ in {
           entry = either prim (listOf primOrPrimAttrs);
           entryOrAttrsOf = t: either entry (attrsOf t);
           entries = entryOrAttrsOf (entryOrAttrsOf entry);
-        in attrsOf entries // { description = "Filetypes configuration"; };
+        in
+        attrsOf entries // { description = "Filetypes configuration"; };
       default = { };
       example = literalExample ''
         {
@@ -65,7 +67,8 @@ in {
           entry = either prim (listOf primOrPrimAttrs);
           entryOrAttrsOf = t: either entry (attrsOf t);
           entries = entryOrAttrsOf (entryOrAttrsOf entry);
-        in attrsOf (attrsOf entries) // { description = "Filetypes configuration"; };
+        in
+        attrsOf (attrsOf entries) // { description = "Filetypes configuration"; };
       default = { };
       example = literalExample ''
         {
@@ -93,10 +96,12 @@ in {
       "vivid/filetypes.yml" = mkIf (cfg.filetypes != { }) {
         source = configFile cfg.filetypes "filetypes";
       };
-    } // mapAttrs' (
-      name: value: nameValuePair
-        ("vivid/themes/${name}.yml")
-        ({source = configFile cfg.themes."${name}" name;})
-    ) cfg.themes;
+    } // mapAttrs'
+      (
+        name: value: nameValuePair
+          ("vivid/themes/${name}.yml")
+          ({ source = configFile cfg.themes."${name}" name; })
+      )
+      cfg.themes;
   };
 }

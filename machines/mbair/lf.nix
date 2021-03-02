@@ -79,11 +79,11 @@
   };
 
   keybindings = {
-    P   = "open_pdf_with_preview";
-    s   = "set_wallpaper";
-    j   = "eject_disk";
-    mo  = "mount_ocean";
-    uo  = "unmount_ocean";
+    P = "open_pdf_with_preview";
+    s = "set_wallpaper";
+    j = "eject_disk";
+    mo = "mount_ocean";
+    uo = "unmount_ocean";
     gvl = ''cd "/Volumes"'';
   };
 }

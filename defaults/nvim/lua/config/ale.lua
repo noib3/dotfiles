@@ -10,4 +10,5 @@ g.ale_linters = {
 g.ale_fixers = {
   ['*']  = {'remove_trailing_lines', 'trim_whitespace'},
   python = {'autopep8', 'isort'},
+  nix    = {'nixpkgs-fmt'},
 }

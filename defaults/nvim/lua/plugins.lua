@@ -5,7 +5,7 @@ return require('packer').startup(function()
   use {'wbthomason/packer.nvim', opt = true}
 
   -- Lsp, completions and linting
-  use {'neovim/nvim-lspconfig', config = [[require('config.lsp')]]}
+  -- use {'neovim/nvim-lspconfig', config = [[require('config.lsp')]]}
   use {'nvim-lua/completion-nvim', config = [[require('config.completions')]]}
   use {'dense-analysis/ale', config = [[require('config.ale')]]}
 
@@ -44,6 +44,7 @@ return require('packer').startup(function()
   -- Filetype specific
   use {'rust-lang/rust.vim', ft = 'rust', config = [[require('config.rust')]]}
   use {'lervag/vimtex', ft = 'tex', config = [[require('config.vimtex')]]}
+  use 'LnL7/vim-nix'
 
   -- Misc
   use {'liuchengxu/vim-which-key', config = [[require('config.which-key')]]}

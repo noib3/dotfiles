@@ -1,24 +1,24 @@
 {
   normal = {
     family = "RobotoMono Nerd Font";
-    style  = "Regular";
+    style = "Regular";
   };
 
   bold = {
     family = "RobotoMono Nerd Font";
-    style  = "Bold";
+    style = "Bold";
   };
 
   italic = {
     family = "RobotoMono Nerd Font";
-    style  = "Italic";
+    style = "Italic";
   };
 
   bold_italic = {
     family = "RobotoMono Nerd Font";
-    style  = "Bold Italic";
+    style = "Bold Italic";
   };
 
-  size     = 19;
+  size = 19;
   offset.y = 2;
 }

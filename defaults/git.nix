@@ -1,5 +1,5 @@
 {
-  userName  = "noib3";
+  userName = "noib3";
   userEmail = "riccardo.mazzarini@pm.me";
 
   extraConfig = {

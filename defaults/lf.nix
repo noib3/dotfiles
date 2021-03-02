@@ -3,13 +3,13 @@
 {
   settings = {
     dircounts = true;
-    drawbox   = true;
-    hidden    = true;
-    ifs       = "\\n";
-    info      = "size";
-    period    = 1;
-    shell     = "bash";
-    timefmt   = "2006-Jan-02 at 15:04:05";
+    drawbox = true;
+    hidden = true;
+    ifs = "\\n";
+    info = "size";
+    period = 1;
+    shell = "bash";
+    timefmt = "2006-Jan-02 at 15:04:05";
   };
 
   commands = {
@@ -25,9 +25,9 @@
       }}
     '';
 
-    touch     = ''%touch "$@"   ; lf -remote "send $id select \"$@\""'';
-    mkdir     = ''%mkdir -p "$@"; lf -remote "send $id select \"$@\""'';
-    give_ex   = ''%chmod +x $fx ; lf -remote "send $id reload"'';
+    touch = ''%touch "$@"   ; lf -remote "send $id select \"$@\""'';
+    mkdir = ''%mkdir -p "$@"; lf -remote "send $id select \"$@\""'';
+    give_ex = ''%chmod +x $fx ; lf -remote "send $id reload"'';
     remove_ex = ''%chmod -x $fx ; lf -remote "send $id reload"'';
 
     fuzzy_edit = ''
@@ -52,21 +52,21 @@
   };
 
   keybindings = {
-    m            = null;
-    u            = null;
-    x            = "cut";
-    d            = "delete";
-    "<enter>"    = "push $";
-    t            = "push :touch<space>";
-    k            = "push :mkdir<space>";
-    "+"          = "give_ex";
-    "-"          = "remove_ex";
+    m = null;
+    u = null;
+    x = "cut";
+    d = "delete";
+    "<enter>" = "push $";
+    t = "push :touch<space>";
+    k = "push :mkdir<space>";
+    "+" = "give_ex";
+    "-" = "remove_ex";
     "<c-x><c-e>" = "fuzzy_edit";
     "<c-x><c-d>" = "fuzzy_cd";
   };
 
   cmdKeybindings = {
-    "<up>"   = "cmd-history-prev";
+    "<up>" = "cmd-history-prev";
     "<down>" = "cmd-history-next";
   };
 

@@ -2,18 +2,18 @@
   settings = {
     character = {
       success_symbol = "[λ](fg:purple)";
-      error_symbol   = "[λ](fg:red)";
-      vicmd_symbol   = "[λ](fg:purple)";
+      error_symbol = "[λ](fg:red)";
+      vicmd_symbol = "[λ](fg:purple)";
     };
 
     directory = {
       format = " in [$path]($style)[$read_only]($read_only_style) ";
-      truncation_length         = 1;
+      truncation_length = 1;
       fish_style_pwd_dir_length = 1;
     };
 
     hostname = {
-      format   = " on [$hostname]($style)";
+      format = " on [$hostname]($style)";
       ssh_only = false;
     };
 
@@ -22,7 +22,7 @@
     };
 
     username = {
-      format      = "[$user]($style)";
+      format = "[$user]($style)";
       show_always = true;
     };
   };

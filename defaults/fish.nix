@@ -1,21 +1,19 @@
 { pkgs, theme }:
-
 let
   colors = import (../themes + "/${theme}" + /fish.nix);
 in
-
 {
   shellAliases = {
-    cat     = "bat";
-    grep    = "grep --ignore-case --color=auto";
+    cat = "bat";
+    grep = "grep --ignore-case --color=auto";
     ipython = "ipython --no-confirm-exit";
-    ls      = "ls -Alhv --color --file-type --group-directories-first";
-    wget    = "wget --hsts-file=~/.cache/wget/wget-hsts";
+    ls = "ls -Alhv --color --file-type --group-directories-first";
+    wget = "wget --hsts-file=~/.cache/wget/wget-hsts";
   };
 
   shellAbbrs = {
     ipy = "ipython";
-    lg  = "lazygit";
+    lg = "lazygit";
     hms = "home-manager switch";
     hmn = "home-manager news";
   };
@@ -93,18 +91,18 @@ in
     {
       name = "bass";
       src = pkgs.fetchFromGitHub {
-        owner  = "edc";
-        repo   = "bass";
-        rev    = "2fd3d2157d5271ca3575b13daec975ca4c10577a";
+        owner = "edc";
+        repo = "bass";
+        rev = "2fd3d2157d5271ca3575b13daec975ca4c10577a";
         sha256 = "0mb01y1d0g8ilsr5m8a71j6xmqlyhf8w4xjf00wkk8k41cz3ypky";
       };
     }
     {
       name = "pisces";
-      src  = pkgs.fetchFromGitHub {
-        owner  = "laughedelic";
-        repo   = "pisces";
-        rev    = "v0.7.0";
+      src = pkgs.fetchFromGitHub {
+        owner = "laughedelic";
+        repo = "pisces";
+        rev = "v0.7.0";
         sha256 = "073wb83qcn0hfkywjcly64k6pf0d7z5nxxwls5sa80jdwchvd2rs";
       };
     }

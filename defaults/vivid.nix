@@ -1,9 +1,7 @@
 { theme }:
-
 let
   colors = import (../themes + "/${theme}" + /vivid.nix);
 in
-
 {
   filetypes = {
     core = {
@@ -164,19 +162,19 @@ in
   themes = {
     "${theme}" = {
       colors = {
-        black   = colors.black;
-        red     = colors.red;
-        green   = colors.green;
-        yellow  = colors.yellow;
-        blue    = colors.blue;
+        black = colors.black;
+        red = colors.red;
+        green = colors.green;
+        yellow = colors.yellow;
+        blue = colors.blue;
         magenta = colors.magenta;
-        cyan    = colors.cyan;
-        orange  = colors.orange;
-        gray    = colors.gray;
+        cyan = colors.cyan;
+        orange = colors.orange;
+        gray = colors.gray;
       };
 
       core = {
-        regular_file = {};
+        regular_file = { };
 
         directory = {
           foreground = "blue";
@@ -222,10 +220,10 @@ in
           background = "red";
         };
 
-        normal_text = {};
-        sticky = {};
-        sticky_other_writable = {};
-        other_writable = {};
+        normal_text = { };
+        sticky = { };
+        sticky_other_writable = { };
+        other_writable = { };
       };
 
       markup = {

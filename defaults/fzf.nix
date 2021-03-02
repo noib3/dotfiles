@@ -1,9 +1,7 @@
 { theme }:
-
 let
   colors = import (../themes + "/${theme}" + /fzf.nix);
 in
-
 {
   defaultCommand = "fd --base-directory=$HOME --hidden --type=f --color=always";
   defaultOptions = [

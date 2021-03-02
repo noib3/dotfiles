@@ -1,10 +1,9 @@
 { config, lib, pkgs, ... }:
-
 let
   unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
 
   theme = "onedark";
-  font  = "RobotoMono";
+  font = "RobotoMono";
 
   alacrittyConfig = {
     settings = lib.attrsets.recursiveUpdate
@@ -14,33 +13,34 @@ let
 
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores ;
+      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores;
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish.nix { pkgs = pkgs; theme = theme; })
-    (import ./fish.nix );
+    (import ./fish.nix);
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf.nix { pkgs = pkgs; })
-    (import ./lf.nix );
+    (import ./lf.nix);
 
-  batConfig      = import ../../defaults/bat.nix;
-  fzfConfig      = import ../../defaults/fzf.nix { theme = theme; };
-  gitConfig      = import ../../defaults/git.nix;
+  batConfig = import ../../defaults/bat.nix;
+  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
+  gitConfig = import ../../defaults/git.nix;
   starshipConfig = import ../../defaults/starship.nix;
-  vividConfig    = import ../../defaults/vivid.nix { theme = theme; };
+  vividConfig = import ../../defaults/vivid.nix { theme = theme; };
 
-in {
+in
+{
   imports = [
     ../../modules/programs/fd.nix
     ../../modules/programs/vivid.nix
   ];
 
   home = {
-    username      = "noibe";
+    username = "noibe";
     homeDirectory = "/Users/noibe";
-    stateVersion  = "21.03";
+    stateVersion = "21.03";
 
     packages = with pkgs; [
       # auto-selfcontrol
@@ -70,6 +70,7 @@ in {
       mediainfo
       mpv
       neovim-nightly
+      nixpkgs-fmt
       nodejs
       nodePackages.vim-language-server
       # nordvpn
@@ -77,7 +78,7 @@ in {
       osxfuse
       # pdftotext
       pfetch
-      (python39.withPackages(
+      (python39.withPackages (
         ps: with ps; [
           autopep8
           black
@@ -109,18 +110,18 @@ in {
     ];
 
     sessionVariables = {
-      COLORTERM    = "truecolor";
-      EDITOR       = "nvim";
-      HISTFILE     = "$HOME/.cache/bash/bash_history";
-      MANPAGER     = "nvim -c 'set ft=man' -";
-      LANG         = "en_US.UTF-8";
-      LC_ALL       = "en_US.UTF-8";
+      COLORTERM = "truecolor";
+      EDITOR = "nvim";
+      HISTFILE = "$HOME/.cache/bash/bash_history";
+      MANPAGER = "nvim -c 'set ft=man' -";
+      LANG = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
-      LS_COLORS    = "$(vivid generate ${theme})";
-      THEME        = "${theme}";
-      SECRETSDIR   = "$HOME/Sync/secrets";
-      SCRSHOTDIR   = "$HOME/Sync/screenshots";
-      SCRIPTSDIR   = "$HOME/Sync/scripts";
+      LS_COLORS = "$(vivid generate ${theme})";
+      THEME = "${theme}";
+      SECRETSDIR = "$HOME/Sync/secrets";
+      SCRSHOTDIR = "$HOME/Sync/screenshots";
+      SCRIPTSDIR = "$HOME/Sync/scripts";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
@@ -128,32 +129,32 @@ in {
 
     file = {
       "${config.xdg.configHome}/nvim" = {
-        source    = ../../defaults/nvim;
+        source = ../../defaults/nvim;
         recursive = true;
       };
 
       "${config.xdg.configHome}/firefox" = {
-        source    = ./firefox;
+        source = ./firefox;
         recursive = true;
       };
 
       "${config.xdg.configHome}/skhd" = {
-        source    = ./skhd;
+        source = ./skhd;
         recursive = true;
       };
 
       "${config.xdg.configHome}/spacebar" = {
-        source    = ./spacebar;
+        source = ./spacebar;
         recursive = true;
       };
 
       "${config.xdg.configHome}/tridactyl" = {
-        source    = ./tridactyl;
+        source = ./tridactyl;
         recursive = true;
       };
 
       "${config.xdg.configHome}/yabai" = {
-        source    = ./yabai;
+        source = ./yabai;
         recursive = true;
       };
     };
@@ -166,12 +167,12 @@ in {
 
     overlays = [
       (self: super: {
-        direnv   = unstable.direnv;
-        fzf      = unstable.fzf;
-        lf       = unstable.lf;
+        direnv = unstable.direnv;
+        fzf = unstable.fzf;
+        lf = unstable.lf;
         python39 = unstable.python39;
         starship = unstable.starship;
-        vimv     = unstable.vimv;
+        vimv = unstable.vimv;
       })
       (import (builtins.fetchTarball {
         url =
@@ -183,12 +184,12 @@ in {
   programs.home-manager = { enable = true; };
 
   programs.alacritty = alacrittyConfig // { enable = true; };
-  programs.bat       = batConfig       // { enable = true; };
-  programs.fd        = fdConfig        // { enable = true; };
-  programs.fish      = fishConfig      // { enable = true; };
-  programs.fzf       = fzfConfig       // { enable = true; };
-  programs.git       = gitConfig       // { enable = true; };
-  programs.lf        = lfConfig        // { enable = true; };
-  programs.starship  = starshipConfig  // { enable = true; };
-  programs.vivid     = vividConfig     // { enable = true; };
+  programs.bat = batConfig // { enable = true; };
+  programs.fd = fdConfig // { enable = true; };
+  programs.fish = fishConfig // { enable = true; };
+  programs.fzf = fzfConfig // { enable = true; };
+  programs.git = gitConfig // { enable = true; };
+  programs.lf = lfConfig // { enable = true; };
+  programs.starship = starshipConfig // { enable = true; };
+  programs.vivid = vividConfig // { enable = true; };
 }

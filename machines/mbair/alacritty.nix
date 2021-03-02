@@ -28,7 +28,7 @@
     {
       key = 23;
       mods = "Alt";
-      chars ="\\x7E"; # ~
+      chars = "\\x7E"; # ~
     }
     {
       key = 41;

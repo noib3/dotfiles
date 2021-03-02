@@ -1,25 +1,25 @@
 {
   normal = {
     family = "JetBrainsMono Nerd Font";
-    style  = "Regular";
+    style = "Regular";
   };
 
   bold = {
     family = "JetBrainsMono Nerd Font";
-    style  = "Extra Bold";
+    style = "Extra Bold";
   };
 
   italic = {
     family = "JetBrainsMono Nerd Font";
-    style  = "Italic";
+    style = "Italic";
   };
 
   bold_italic = {
     family = "JetBrainsMono Nerd Font";
-    style  = "Extra Bold";
+    style = "Extra Bold";
   };
 
-  size           = 19;
-  offset.y       = 1;
+  size = 19;
+  offset.y = 1;
   glyph_offset.y = 1;
 }

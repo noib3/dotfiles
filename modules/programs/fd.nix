@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-
 let
   cfg = config.programs.fd;
 
-in {
+in
+{
   meta.maintainers = [ maintainers.noib3 ];
 
   options.programs.fd = {
