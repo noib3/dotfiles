@@ -21,7 +21,8 @@ in
   };
 
   interactiveShellInit = ''
-    bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh
+    bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
+      || true
 
     set fish_greeting
 
