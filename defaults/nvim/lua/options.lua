@@ -1,33 +1,41 @@
-o  = vim.o
-bo = vim.bo
-wo = vim.wo
+local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
 
-o.autochdir     = true
-o.clipboard     = 'unnamedplus'
-o.completeopt   = 'menuone,noinsert'
-o.fillchars     = 'fold: ,vert: '
-o.listchars     = 'tab:⇥ ,space:·,eol:¬'
-o.hidden        = true
-o.ignorecase    = true
-o.laststatus    = 0
-o.mouse         = 'a'
-o.scrolloff     = 1
-o.showbreak     = '↪ '
-o.smartcase     = true
-o.splitright    = true
-o.splitbelow    = true
-o.termguicolors = true
+local function opt(scope, key, value)
+  scopes[scope][key] = value
+  if scope ~= 'o' then
+    scopes['o'][key] = value
+  end
+end
 
-bo.expandtab  = true
-bo.iskeyword  = '@,48-57,192-255'
-bo.shiftwidth = 2
--- bo.spellfile  = vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add'
-bo.swapfile   = false
-bo.tabstop    = 2
-bo.undofile   = true
+opt('o', 'autochdir', true)
+opt('o', 'clipboard', 'unnamedplus')
+opt('o', 'completeopt', 'menuone,noinsert')
+opt('o', 'fillchars', 'fold: ,vert: ')
+opt('o', 'listchars', 'tab:⇥ ,space:·,eol:¬')
+opt('o', 'hidden', true)
+opt('o', 'ignorecase', true)
+opt('o', 'laststatus', 0)
+opt('o', 'mouse', 'a')
+opt('o', 'scrolloff', 1)
+opt('o', 'showbreak', '↪ ')
+opt('o', 'smartcase', true)
+opt('o', 'splitright', true)
+opt('o', 'splitbelow', true)
+opt('o', 'termguicolors', true)
 
-wo.colorcolumn    = '80'
-wo.linebreak      = false
-wo.list           = true
-wo.number         = true
-wo.relativenumber = true
+opt('b', 'expandtab', true)
+opt('b', 'iskeyword', '@,48-57,192-255')
+opt('b', 'shiftwidth', 2)
+opt('b', 'swapfile', false)
+opt('b', 'tabstop', 2)
+opt('b', 'undofile', true)
+
+opt('w', 'colorcolumn', '80')
+opt('w', 'linebreak', false)
+opt('w', 'list', true)
+opt('w', 'number', true)
+opt('w', 'relativenumber', true)
+
+if vim.env.SECRETSDIR ~= nil then
+  opt('b', 'spellfile', vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add')
+end
