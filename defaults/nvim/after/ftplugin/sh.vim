@@ -1,1 +1,1 @@
-nmap <buffer> <silent> <C-t> :!%<CR>
+nmap <buffer> <silent> <C-t> :!./%<CR>

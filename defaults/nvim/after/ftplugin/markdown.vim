@@ -1,6 +1,6 @@
 setlocal spell
 setlocal spelllang=en_us,it
-setlocal listchars=tab:\⇥\ ,
+setlocal textwidth=79
 
 let b:delimitMate_quotes = "\" ' ` *"
 

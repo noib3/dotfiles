@@ -76,6 +76,7 @@ in
       # nordvpn
       openssh
       osxfuse
+      pandoc
       # pdftotext
       pfetch
       (python39.withPackages (
@@ -86,6 +87,7 @@ in
           ipython
           isort
           jedi
+          jupyter
         ]
       ))
       # redshift

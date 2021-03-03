@@ -6,19 +6,27 @@ yabai -m config window_placement second_child
 yabai -m config window_shadow on
 
 yabai -m config window_border              on
-yabai -m config window_border_width        5
+yabai -m config window_border_width        4
 yabai -m config normal_window_border_color 0xff${normal_window_border_color//#}
 yabai -m config active_window_border_color 0xff${active_window_border_color//#}
 
 yabai -m config layout          bsp
 
+# 1440x900
+yabai -m config external_bar    all:20:0
+yabai -m config top_padding     20
+yabai -m config bottom_padding  20
+yabai -m config left_padding    30
+yabai -m config right_padding   30
+yabai -m config window_gap      20
+
 # 2560x1440
-yabai -m config external_bar    all:26:0
-yabai -m config top_padding     30
-yabai -m config bottom_padding  30
-yabai -m config left_padding    40
-yabai -m config right_padding   40
-yabai -m config window_gap      30
+# yabai -m config external_bar    all:26:0
+# yabai -m config top_padding     30
+# yabai -m config bottom_padding  30
+# yabai -m config left_padding    40
+# yabai -m config right_padding   40
+# yabai -m config window_gap      30
 
 yabai -m rule --add app="Digital Colour Meter" manage=off
 yabai -m rule --add app="System Preferences" manage=off
