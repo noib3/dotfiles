@@ -10,22 +10,15 @@ return require('packer').startup(function()
   use {'nvim-lua/completion-nvim', config = [[require('config.completions')]]}
   use {'dense-analysis/ale', config = [[require('config.ale')]]}
 
+  -- Miscellaneous
   use {'Raimondi/delimitMate', config = [[require('config.delimitmate')]]}
-
   use {
     'junegunn/fzf.vim',
     requires = {'junegunn/fzf'},
     config = [[require('config.fzf')]]
   }
-
   use {'junegunn/goyo.vim', cmd = 'Goyo', config = [[require('config.goyo')]]}
-
-  use {
-    'iamcco/markdown-preview.nvim',
-    run = 'cd app && yarn install',
-    cmd = 'MarkdownPreview'
-  }
-
+  use { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install'}
   use {
     'akinsho/nvim-bufferline.lua',
     requires = {
@@ -34,14 +27,11 @@ return require('packer').startup(function()
     },
     config = [[require('config.bufferline')]],
   }
-
   use {'norcalli/nvim-colorizer.lua', config = [[require('config.colorizer')]]}
-
   use {
     'nvim-treesitter/nvim-treesitter',
     config = [[require('config.treesitter')]],
   }
-
   use {'qpkorr/vim-bufkill', cmd = 'BD'}
   use 'tpope/vim-commentary'
   use {'voldikss/vim-floaterm', config = [[require('config.floaterm')]]}

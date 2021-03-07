@@ -3,6 +3,7 @@ local fn  = vim.fn
 local cmd = vim.cmd
 
 vim.g.mapleader = ','
+vim.g.maplocalleader = ','
 
 -- Save the file
 map('n', '<C-s>', ':w<CR>', { silent = true })
