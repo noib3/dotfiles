@@ -103,6 +103,7 @@ in
       nodejs
       nodePackages.vim-language-server
       # nordvpn
+      ookla-speedtest-cli
       openssh
       osxfuse
       pandoc
@@ -116,7 +117,6 @@ in
       # skhd
       # skim
       # spacebar
-      # ookla-speedtest
       # sshfs
       syncthing
       # tastyworks
@@ -184,6 +184,7 @@ in
       firefox = super.callPackage ./overlays/firefox.nix { };
       fzf = unstable.fzf;
       lf = unstable.lf;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       starship = unstable.starship;
       vimv = unstable.vimv;
     })
