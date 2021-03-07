@@ -3,19 +3,7 @@
 with lib;
 let
   cfg = config.programs.vivid;
-
-  configFile = config: file:
-    pkgs.runCommand "${file}.yml"
-      {
-        buildInputs = [ pkgs.remarshal ];
-        preferLocalBuild = true;
-        allowSubstitutes = false;
-      } ''
-      remarshal -if json -of yaml \
-        < ${pkgs.writeText "${file}.json" (builtins.toJSON config)} \
-        > $out
-    '';
-
+  yaml = pkgs.formats.yaml { };
 in
 {
   meta.maintainers = [ mainteners.noib3 ];
@@ -31,15 +19,7 @@ in
     };
 
     filetypes = mkOption {
-      type = with types;
-        let
-          prim = either bool (either int str);
-          primOrPrimAttrs = either prim (attrsOf prim);
-          entry = either prim (listOf primOrPrimAttrs);
-          entryOrAttrsOf = t: either entry (attrsOf t);
-          entries = entryOrAttrsOf (entryOrAttrsOf entry);
-        in
-        attrsOf entries // { description = "Filetypes configuration"; };
+      type = yaml.type;
       default = { };
       example = literalExample ''
         {
@@ -60,31 +40,26 @@ in
     };
 
     themes = mkOption {
-      type = with types;
-        let
-          prim = either bool (either int str);
-          primOrPrimAttrs = either prim (attrsOf prim);
-          entry = either prim (listOf primOrPrimAttrs);
-          entryOrAttrsOf = t: either entry (attrsOf t);
-          entries = entryOrAttrsOf (entryOrAttrsOf entry);
-        in
-        attrsOf (attrsOf entries) // { description = "Filetypes configuration"; };
+      type = types.attrsOf (yaml.type);
       default = { };
       example = literalExample ''
         {
-          core = {
-            regular_file = [ "$fi" ];
-            directory = [ "$di" ];
-          };
-          text = {
-            readme = [ "README.md" ];
-            licenses = [ "LICENSE" ];
+          theme = {
+            colors = {
+              blue = "0000ff";
+            };
+            core = {
+              directory = {
+                foreground = "blue";
+                font-style = "bold";
+              };
+            };
           };
         }
       '';
       description = ''
-        Configuration written to
-        <filename>~/.config/vivid/filetypes.yml</filename>.
+        Theme files written to
+        <filename>~/.config/vivid/themes/<theme>.yml</filename>.
       '';
     };
   };
@@ -93,14 +68,13 @@ in
     home.packages = [ cfg.package ];
 
     xdg.configFile = {
-      "vivid/filetypes.yml" = mkIf (cfg.filetypes != { }) {
-        source = configFile cfg.filetypes "filetypes";
-      };
+      "vivid/filetypes.yml".source =
+        yaml.generate "filetypes.yml" cfg.filetypes;
     } // mapAttrs'
       (
         name: value: nameValuePair
           ("vivid/themes/${name}.yml")
-          ({ source = configFile cfg.themes."${name}" name; })
+          ({ source = yaml.generate "${name}.yml" cfg.themes."${name}"; })
       )
       cfg.themes;
   };

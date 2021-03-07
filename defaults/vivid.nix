@@ -54,13 +54,14 @@ in
         go = [ ".go" ];
         ipython = [ ".ipynb" ];
         javascript = [ ".js" ];
-        # latex = {
-        #   regular = [ ".tex" ];
-        #   class = [ ".cls" ];
-        #   package = [ ".sty" ];
-        #   special = [ "main.tex" ];
-        # };
+        latex = {
+          regular = [ ".tex" ];
+          class = [ ".cls" ];
+          package = [ ".sty" ];
+          special = [ "main.tex" ];
+        };
         ocaml = [ ".ml" ];
+        nix = [ ".nix" ];
         python = [ ".py" ];
         r = [ ".r" ];
         rust = [ ".rs" ];
@@ -241,20 +242,20 @@ in
       programming = {
         source = {
           foreground = "magenta";
-          # latex = {
-          #   foreground = "magenta";
-          #   special = {
-          #     font-style = "underline";
-          #     foreground = "cyan";
-          #   };
-          # };
+          latex = {
+            foreground = "magenta";
+            special = {
+              font-style = "underline";
+              foreground = "cyan";
+            };
+          };
         };
 
         tooling = {
           foreground = "gray";
-          # continuous-integration = {
-          #   foreground = "gray";
-          # };
+          continuous-integration = {
+            foreground = "gray";
+          };
         };
       };
 

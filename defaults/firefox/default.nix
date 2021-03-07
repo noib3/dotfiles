@@ -74,7 +74,6 @@ in
         "browser.tabs.loadInBackground" = false;
         "browser.urlbar.update2" = false;
         "browser.urlbar.shortcuts.bookmarks" = false;
-        "browser.urlbar.shortcuts.history" = false;
         "browser.urlbar.shortcuts.tabs" = false;
         "browser.search.hiddenOneOffs" =
           "Google"

@@ -13,11 +13,10 @@ let
     isort
     jedi
     jupyter
-    numpy
     matplotlib
+    numpy
   ];
-  python-with-my-packages = unstable.python39.withPackages
-    my-python-packages;
+  python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
   R-with-my-packages = with pkgs; rWrapper.override
     {
