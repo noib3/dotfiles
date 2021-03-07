@@ -65,6 +65,7 @@ in
       nixpkgs-fmt
       nodejs
       nodePackages.vim-language-server
+      ookla-speedtest-cli
       pfetch
       python-with-my-packages
       vimv
@@ -100,6 +101,7 @@ in
       direnv = unstable.direnv;
       fzf = unstable.fzf;
       lf = unstable.lf;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       starship = unstable.starship;
       vimv = unstable.vimv;
     })
