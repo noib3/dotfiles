@@ -1,33 +1,68 @@
 { config, lib, pkgs, ... }:
 let
-  unstable = import <nixpkgs-unstable> { config = { allowUnfree = true; }; };
+  unstable = import <nixos-unstable> { };
 
   theme = "onedark";
   font = "RobotoMono";
 
+  my-python-packages = python-packages: with python-packages; [
+    autopep8
+    black
+    flake8
+    ipython
+    isort
+    jedi
+    jupyter
+    numpy
+    matplotlib
+  ];
+  python-with-my-packages = unstable.python39.withPackages
+    my-python-packages;
+
+  R-with-my-packages = with pkgs; rWrapper.override
+    {
+      packages = with rPackages; [
+        rmarkdown
+        knitr
+      ];
+    };
+
   alacrittyConfig = {
     settings = lib.attrsets.recursiveUpdate
-      (import ../../defaults/alacritty.nix { font = font; theme = theme; })
+      (import ../../defaults/alacritty.nix {
+        font = font;
+        theme = theme;
+      })
       (import ./alacritty.nix);
   };
 
+  batConfig = import ../../defaults/bat.nix;
+
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores;
+      (import ../../defaults/fd.nix).ignores
+      ++ (import ./fd.nix).ignores;
   };
 
+  firefoxConfig = (import ../../defaults/firefox {
+    font = font;
+    theme = theme;
+  });
+
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix { pkgs = pkgs; theme = theme; })
+    (import ../../defaults/fish.nix { theme = theme; })
     (import ./fish.nix);
 
+  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
+
+  gitConfig = import ../../defaults/git.nix;
+
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix { pkgs = pkgs; })
+    (import ../../defaults/lf.nix)
     (import ./lf.nix);
 
-  batConfig = import ../../defaults/bat.nix;
-  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
-  gitConfig = import ../../defaults/git.nix;
   starshipConfig = import ../../defaults/starship.nix;
+
   vividConfig = import ../../defaults/vivid.nix { theme = theme; };
 
 in
@@ -45,17 +80,16 @@ in
     packages = with pkgs; [
       # auto-selfcontrol
       bash
-      buku
-      calcurse
+      bitwarden-cli
+      # buku # NOT SUPPORTED NEEDS OVERLAY
+      # calcurse # NOT SUPPORTED NEEDS OVERLAY
       chafa
       coreutils
       direnv
-      duti
+      # duti
       entr
-      # fd
       ffmpeg
       findutils
-      # firefox
       # font-jetbrains-mono-nerd-font
       # font-roboto-mono-nerd-font
       # font-sf-mono-nerd-font
@@ -63,10 +97,6 @@ in
       gotop
       jq
       lazygit
-      # logitech-options
-      # mactex-no-gui
-      # mas
-      # mysides
       mediainfo
       mpv
       neovim-nightly
@@ -79,17 +109,8 @@ in
       pandoc
       # pdftotext
       pfetch
-      (python39.withPackages (
-        ps: with ps; [
-          autopep8
-          black
-          flake8
-          ipython
-          isort
-          jedi
-          jupyter
-        ]
-      ))
+      python-with-my-packages
+      R-with-my-packages
       # redshift
       rsync
       # selfcontrol
@@ -98,12 +119,13 @@ in
       # spacebar
       # ookla-speedtest
       # sshfs
-      # syncthing
+      syncthing
       # tastyworks
       # tccutil
       terminal-notifier
+      texlive.combined.scheme-full
       transmission-remote-cli
-      # vimv
+      vimv
       vivid
       wget
       xmlstarlet
@@ -135,11 +157,6 @@ in
         recursive = true;
       };
 
-      "${config.xdg.configHome}/firefox" = {
-        source = ./firefox;
-        recursive = true;
-      };
-
       "${config.xdg.configHome}/skhd" = {
         source = ./skhd;
         recursive = true;
@@ -162,36 +179,62 @@ in
     };
   };
 
-  nixpkgs = {
-    config = {
-      allowUnsupportedSystem = true;
-    };
+  nixpkgs.overlays = [
+    (self: super: {
+      direnv = unstable.direnv;
+      firefox = super.callPackage ./overlays/firefox.nix { };
+      fzf = unstable.fzf;
+      lf = unstable.lf;
+      starship = unstable.starship;
+      vimv = unstable.vimv;
+    })
 
-    overlays = [
-      (self: super: {
-        direnv = unstable.direnv;
-        fzf = unstable.fzf;
-        lf = unstable.lf;
-        python39 = unstable.python39;
-        starship = unstable.starship;
-        vimv = unstable.vimv;
-      })
-      (import (builtins.fetchTarball {
-        url =
-          https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-      }))
-    ];
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
+  ];
+
+  programs.home-manager = {
+    enable = true;
   };
 
-  programs.home-manager = { enable = true; };
+  programs.alacritty = {
+    enable = true;
+  } // alacrittyConfig;
 
-  programs.alacritty = alacrittyConfig // { enable = true; };
-  programs.bat = batConfig // { enable = true; };
-  programs.fd = fdConfig // { enable = true; };
-  programs.fish = fishConfig // { enable = true; };
-  programs.fzf = fzfConfig // { enable = true; };
-  programs.git = gitConfig // { enable = true; };
-  programs.lf = lfConfig // { enable = true; };
-  programs.starship = starshipConfig // { enable = true; };
-  programs.vivid = vividConfig // { enable = true; };
+  programs.bat = {
+    enable = true;
+  } // batConfig;
+
+  programs.fd = {
+    enable = true;
+  } // fdConfig;
+
+  programs.firefox = {
+    enable = true;
+  } // firefoxConfig;
+
+  programs.fish = {
+    enable = true;
+  } // fishConfig;
+
+  programs.fzf = {
+    enable = true;
+  } // fzfConfig;
+
+  programs.git = {
+    enable = true;
+  } // gitConfig;
+
+  programs.lf = {
+    enable = true;
+  } // lfConfig;
+
+  programs.starship = {
+    enable = true;
+  } // starshipConfig;
+
+  programs.vivid = {
+    enable = true;
+  } // vividConfig;
 }

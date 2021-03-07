@@ -47,8 +47,8 @@
         )
         diskutil eject "$f" &>/dev/null \
           && lf -remote \
-              "send $id echo \"\033[32m$(basename $f) has been properly \
-      ejected\033[0m\"" \
+              "send $id echo \"\033[32m$(basename $f) has been ejected\
+      properly\033[0m\"" \
           && terminal-notifier \
               -title "Disk ejected" \
               -subtitle "$(basename $f) has been ejected" \

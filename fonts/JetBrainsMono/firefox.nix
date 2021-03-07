@@ -1,4 +1,4 @@
 {
-  font-family = "JetBrainsMono Nerd Font";
-  font-size = "19px";
+  family = "JetBrainsMono Nerd Font";
+  size = "19px";
 }

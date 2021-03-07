@@ -1,26 +1,42 @@
 { config, lib, pkgs, ... }:
 let
-  unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
+  unstable = import <nixos-unstable> { };
 
   theme = "onedark";
 
+  my-python-packages = python-packages: with python-packages; [
+    autopep8
+    black
+    flake8
+    ipython
+    isort
+    jedi
+    numpy
+  ];
+  python-with-my-packages = unstable.python39.withPackages my-python-packages;
+
+  batConfig = import ../../defaults/bat.nix;
+
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores ++ (import ./fd.nix).ignores;
+      (import ../../defaults/fd.nix).ignores
+      ++ (import ./fd.nix).ignores;
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix { pkgs = pkgs; theme = theme; })
+    (import ../../defaults/fish.nix { theme = theme; })
     (import ./fish.nix);
 
+  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
+
+  gitConfig = import ../../defaults/git.nix;
+
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix { pkgs = pkgs; })
+    (import ../../defaults/lf.nix)
     (import ./lf.nix);
 
-  batConfig = import ../../defaults/bat.nix;
-  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
-  gitConfig = import ../../defaults/git.nix;
   starshipConfig = import ../../defaults/starship.nix;
+
   vividConfig = import ../../defaults/vivid.nix { theme = theme; };
 
 in
@@ -50,16 +66,7 @@ in
       nodejs
       nodePackages.vim-language-server
       pfetch
-      (python39.withPackages (
-        ps: with ps; [
-          autopep8
-          black
-          flake8
-          ipython
-          isort
-          jedi
-        ]
-      ))
+      python-with-my-packages
       vimv
       vivid
       yarn
@@ -88,35 +95,53 @@ in
     };
   };
 
-  nixpkgs = {
-    config = {
-      allowUnsupportedSystem = true;
-    };
+  nixpkgs.overlays = [
+    (self: super: {
+      direnv = unstable.direnv;
+      fzf = unstable.fzf;
+      lf = unstable.lf;
+      starship = unstable.starship;
+      vimv = unstable.vimv;
+    })
 
-    overlays = [
-      (self: super: {
-        direnv = unstable.direnv;
-        fzf = unstable.fzf;
-        lf = unstable.lf;
-        python39 = unstable.python39;
-        starship = unstable.starship;
-        vimv = unstable.vimv;
-      })
-      (import (builtins.fetchTarball {
-        url =
-          https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-      }))
-    ];
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
+  ];
+
+  programs.home-manager = {
+    enable = true;
   };
 
-  programs.home-manager = { enable = true; };
+  programs.bat = {
+    enable = true;
+  } // batConfig;
 
-  programs.bat = batConfig // { enable = true; };
-  programs.fd = fdConfig // { enable = true; };
-  programs.fish = fishConfig // { enable = true; };
-  programs.fzf = fzfConfig // { enable = true; };
-  programs.git = gitConfig // { enable = true; };
-  programs.lf = lfConfig // { enable = true; };
-  programs.starship = starshipConfig // { enable = true; };
-  programs.vivid = vividConfig // { enable = true; };
+  programs.fd = {
+    enable = true;
+  } // fdConfig;
+
+  programs.fish = {
+    enable = true;
+  } // fishConfig;
+
+  programs.fzf = {
+    enable = true;
+  } // fzfConfig;
+
+  programs.git = {
+    enable = true;
+  } // gitConfig;
+
+  programs.lf = {
+    enable = true;
+  } // lfConfig;
+
+  programs.starship = {
+    enable = true;
+  } // starshipConfig;
+
+  programs.vivid = {
+    enable = true;
+  } // vividConfig;
 }

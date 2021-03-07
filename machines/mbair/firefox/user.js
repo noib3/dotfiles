@@ -1,9 +1,0 @@
-user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-user_pref("apz.allow_zooming", true);
-user_pref("browser.search.suggest.enabled", false);
-user_pref("browser.aboutConfig.showWarning", false);
-user_pref("browser.tabs.warnOnClose", false);
-user_pref("browser.newtabpage.pinned", "");
-user_pref("browser.tabs.loadInBackground", false);
-user_pref("browser.urlbar.update2", false);
-user_pref("browser.startup.page", 1);

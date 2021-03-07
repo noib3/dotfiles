@@ -1,4 +1,4 @@
 {
-  font-family = "RobotoMono Nerd Font";
-  font-size = "19px";
+  family = "RobotoMono Nerd Font";
+  size = "19px";
 }

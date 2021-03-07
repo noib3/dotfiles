@@ -1,4 +1,4 @@
 {
-  font-family = "SFMono Nerd Font";
-  font-size = "19px";
+  family = "SFMono Nerd Font";
+  size = "19px";
 }

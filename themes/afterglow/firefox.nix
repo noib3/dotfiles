@@ -12,4 +12,5 @@
   urlbar-selected-popup-url = "#6c99bb";
   sidebar-bg = "#4d5057";
   sidebar-fg = "#d6d6d6";
+  about-blank-bg = "#1a1a1a";
 }

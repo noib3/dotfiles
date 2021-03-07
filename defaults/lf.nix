@@ -1,5 +1,6 @@
-{ pkgs }:
-
+let
+  pkgs = import <nixpkgs> { };
+in
 {
   settings = {
     dircounts = true;

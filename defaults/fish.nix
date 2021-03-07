@@ -1,5 +1,6 @@
-{ pkgs, theme }:
+{ theme }:
 let
+  pkgs = import <nixpkgs> { };
   colors = import (../themes + "/${theme}" + /fish.nix);
 in
 {

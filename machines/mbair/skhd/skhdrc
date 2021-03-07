@@ -7,7 +7,7 @@ cmd - a : alacritty --command calcurse \
             -D "$PRIVATEDIR/calcurse"
 cmd - g : alacritty --command gotop
 cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
-ctrl - w : open -na /Applications/Firefox.app
+ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app
 
 cmd - d [
   "Firefox" : skhd --key "f4"
