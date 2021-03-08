@@ -1,10 +1,12 @@
-local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
+local scopes = {
+  o = vim.o,
+  b = vim.bo,
+  w = vim.wo,
+}
 
 local function opt(scope, key, value)
   scopes[scope][key] = value
-  if scope ~= 'o' then
-    scopes['o'][key] = value
-  end
+  if scope ~= 'o' then scopes['o'][key] = value end
 end
 
 opt('o', 'autochdir', true)
@@ -36,6 +38,6 @@ opt('w', 'list', true)
 opt('w', 'number', true)
 opt('w', 'relativenumber', true)
 
-if vim.env.SECRETSDIR ~= nil then
+if vim.env.SECRETSDIR then
   opt('b', 'spellfile', vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add')
 end

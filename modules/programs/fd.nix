@@ -3,7 +3,6 @@
 with lib;
 let
   cfg = config.programs.fd;
-
 in
 {
   meta.maintainers = [ maintainers.noib3 ];

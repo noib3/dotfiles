@@ -12,6 +12,7 @@
     "/Sync/memories/2018"
     "/Sync/memories/2019"
     "/Sync/memories/2020"
+    "/Sync/memories/2021/videos"
     "/Sync/private/calcurse"
     "/Sync/scripts/pfetch"
     "/Sync/scripts/vimv"

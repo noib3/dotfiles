@@ -118,16 +118,16 @@ alt + cmd - w : yabai -m window --close \
                   && yabai -m space recent --destroy
 
 # Screenshot the whole screen and send a notification (uses fish syntax)
-shift + cmd - 3 : \
-  set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    && screencapture -mx "$sshot" \
-    && terminal-notifier \
-          -title "New screenshot" \
-          -subtitle (basename "$sshot") \
-          -message "Saved in "(dirname "$sshot") \
-          -appIcon "$HOME/.config/skhd/picture-icon.png" \
-          -contentImage "$sshot" \
-          -execute "open \"$sshot\""
+# shift + cmd - 3 : \
+#   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
+#     && screencapture -mx "$sshot" \
+#     && terminal-notifier \
+#           -title "New screenshot" \
+#           -subtitle (basename "$sshot") \
+#           -message "Saved in "(dirname "$sshot") \
+#           -appIcon "$HOME/.config/skhd/picture-icon.png" \
+#           -contentImage "$sshot" \
+#           -execute "open \"$sshot\""
 
 # Screenshot a portion of the screen and send a notification if the screenshot
 # wasn't cancelled (uses fish syntax).

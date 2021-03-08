@@ -38,7 +38,6 @@ let
   starshipConfig = import ../../defaults/starship.nix;
 
   vividConfig = import ../../defaults/vivid.nix { theme = theme; };
-
 in
 {
   imports = [

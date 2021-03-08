@@ -53,7 +53,6 @@ let
       }
     }
   '';
-
 in
 {
   extensions = with (import ./extensions.nix); [
@@ -66,7 +65,6 @@ in
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         "apz.allow_zooming" = true;
-        "browser.search.suggest.enabled" = false;
         "browser.aboutConfig.showWarning" = false;
         "browser.tabs.warnOnClose" = false;
         "browser.newtabpage.pinned" = "";
@@ -84,6 +82,8 @@ in
           + ",DuckDuckGo"
           + ",eBay"
           + ",Wikipedia (en)";
+        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false;
+        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
       };
       userChrome = userChrome;
       userContent = userContent;

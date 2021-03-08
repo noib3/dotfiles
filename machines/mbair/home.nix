@@ -18,13 +18,12 @@ let
   ];
   python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
-  R-with-my-packages = with pkgs; rWrapper.override
-    {
-      packages = with rPackages; [
-        rmarkdown
-        knitr
-      ];
-    };
+  R-with-my-packages = with pkgs; rWrapper.override {
+    packages = with rPackages; [
+      rmarkdown
+      knitr
+    ];
+  };
 
   alacrittyConfig = {
     settings = lib.attrsets.recursiveUpdate
@@ -63,7 +62,6 @@ let
   starshipConfig = import ../../defaults/starship.nix;
 
   vividConfig = import ../../defaults/vivid.nix { theme = theme; };
-
 in
 {
   imports = [

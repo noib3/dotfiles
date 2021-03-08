@@ -1,13 +1,13 @@
 local map = vim.api.nvim_set_keymap
 
-require('bufferline').setup {
+require('bufferline').setup{
   options = {
-    numbers                 = 'ordinal',
-    number_style            = '',
-    close_icon              = ' ',
+    numbers = 'ordinal',
+    number_style = '',
+    close_icon = ' ',
     show_buffer_close_icons = false,
-    separator_style         = { ' ', ' ' },
-    always_show_bufferline  = false,
+    separator_style = {' ', ' '},
+    always_show_bufferline = false,
   }
 }
 
