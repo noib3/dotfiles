@@ -47,4 +47,4 @@ map('t', '<M-Esc>', '<C-\\><C-n>', {noremap=true})
 map('c', '<C-a>', '<C-b>', {})
 
 -- Substitute globally
-map('n', 'ss', '<Cmd>%s//g<Left><Left>', {})
+map('n', 'ss', ':%s//g<Left><Left>', {})
