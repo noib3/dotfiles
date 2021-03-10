@@ -49,6 +49,7 @@ in
       chafa
       direnv
       fd
+      file
       fish
       git
       gotop

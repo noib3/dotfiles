@@ -2,6 +2,7 @@
   ignores = [
     "/*"
     "!/dotfiles"
+    "!/Media"
     "!/Sync"
   ];
 }

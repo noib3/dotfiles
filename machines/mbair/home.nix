@@ -88,6 +88,7 @@ in
       # duti
       entr
       ffmpeg
+      file
       findutils
       # font-jetbrains-mono-nerd-font
       # font-roboto-mono-nerd-font
