@@ -1,0 +1,3 @@
+{
+  config = builtins.readFile ./skhdrc;
+}

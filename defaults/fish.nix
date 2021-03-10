@@ -1,8 +1,5 @@
-{ theme }:
-let
-  pkgs = import <nixpkgs> { };
-  colors = import (../themes + "/${theme}" + /fish.nix);
-in
+{ pkgs ? import <nixpkgs> { }, colors }:
+
 {
   shellAliases = {
     cat = "bat --color=auto";

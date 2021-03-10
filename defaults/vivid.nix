@@ -1,7 +1,5 @@
-{ theme }:
-let
-  colors = import (../themes + "/${theme}" + /vivid.nix);
-in
+{ colors }:
+
 {
   filetypes = {
     core = {
@@ -161,7 +159,7 @@ in
   };
 
   themes = {
-    "${theme}" = {
+    current = {
       colors = {
         black = colors.black;
         red = colors.red;

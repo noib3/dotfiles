@@ -3,7 +3,7 @@ let
   unstable = import <nixos-unstable> { };
 
   theme = "onedark";
-  font = "RobotoMono";
+  font = "roboto-mono";
 
   my-python-packages = python-packages: with python-packages; [
     autopep8
@@ -28,8 +28,8 @@ let
   alacrittyConfig = {
     settings = lib.attrsets.recursiveUpdate
       (import ../../defaults/alacritty.nix {
-        font = font;
-        theme = theme;
+        font = import (./fonts + "/${font}" + /alacritty.nix);
+        colors = import (../../themes + "/${theme}" + /alacritty.nix);
       })
       (import ./alacritty.nix);
   };
@@ -43,32 +43,52 @@ let
   };
 
   firefoxConfig = (import ../../defaults/firefox {
-    font = font;
-    theme = theme;
+    font = import (./fonts + "/${font}" + /firefox.nix);
+    colors = import (../../themes + "/${theme}" + /firefox.nix);
   });
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix { theme = theme; })
+    (import ../../defaults/fish.nix {
+      colors = import (../../themes + "/${theme}" + /fish.nix);
+    })
     (import ./fish.nix);
 
-  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
+  fzfConfig = (import ../../defaults/fzf.nix {
+    colors = import (../../themes + "/${theme}" + /fzf.nix);
+  });
 
   gitConfig = import ../../defaults/git.nix;
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix)
+    (import ../../defaults/lf.nix { })
     (import ./lf.nix);
+
+  spacebarConfig = (import ./spacebar.nix {
+    font = import (./fonts + "/${font}" + /spacebar.nix);
+    colors = import (./themes + "/${theme}" + /spacebar.nix);
+  });
+
+  skhdConfig = import ./skhd.nix;
 
   sshConfig = import ../../defaults/ssh.nix;
 
   starshipConfig = import ../../defaults/starship.nix;
 
-  vividConfig = import ../../defaults/vivid.nix { theme = theme; };
+  vividConfig = (import ../../defaults/vivid.nix {
+    colors = import (../../themes + "/${theme}" + /vivid.nix);
+  });
+
+  yabaiConfig = (import ./yabai.nix {
+    colors = import (./themes + "/${theme}" + /yabai.nix);
+  });
 in
 {
   imports = [
     ../../modules/programs/fd.nix
     ../../modules/programs/vivid.nix
+    ./modules/programs/skhd.nix
+    ./modules/programs/spacebar.nix
+    ./modules/programs/yabai.nix
   ];
 
   home = {
@@ -115,9 +135,9 @@ in
       # redshift
       rsync
       # selfcontrol
-      # skhd
+      skhd
       # skim
-      # spacebar
+      spacebar
       # sshfs
       syncthing
       # tastyworks
@@ -141,7 +161,7 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
-      LS_COLORS = "$(vivid generate ${theme})";
+      LS_COLORS = "$(vivid generate current)";
       THEME = "${theme}";
       SECRETSDIR = "$HOME/Sync/secrets";
       SCRSHOTDIR = "$HOME/Sync/screenshots";
@@ -157,23 +177,8 @@ in
         recursive = true;
       };
 
-      "${config.xdg.configHome}/skhd" = {
-        source = ./skhd;
-        recursive = true;
-      };
-
-      "${config.xdg.configHome}/spacebar" = {
-        source = ./spacebar;
-        recursive = true;
-      };
-
       "${config.xdg.configHome}/tridactyl" = {
         source = ./tridactyl;
-        recursive = true;
-      };
-
-      "${config.xdg.configHome}/yabai" = {
-        source = ./yabai;
         recursive = true;
       };
     };
@@ -232,6 +237,14 @@ in
     enable = true;
   } // lfConfig;
 
+  programs.skhd = {
+    enable = true;
+  } // skhdConfig;
+
+  programs.spacebar = {
+    enable = true;
+  } // spacebarConfig;
+
   programs.ssh = {
     enable = true;
   } // sshConfig;
@@ -243,4 +256,8 @@ in
   programs.vivid = {
     enable = true;
   } // vividConfig;
+
+  programs.yabai = {
+    enable = true;
+  } // yabaiConfig;
 }

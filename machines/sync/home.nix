@@ -18,20 +18,26 @@ let
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix { theme = theme; })
+    (import ../../defaults/fish.nix {
+      colors = import (../../themes + "/${theme}" + /fish.nix);
+    })
     (import ./fish.nix);
 
-  fzfConfig = import ../../defaults/fzf.nix { theme = theme; };
+  fzfConfig = (import ../../defaults/fzf.nix {
+    colors = import (../../themes + "/${theme}" + /fzf.nix);
+  });
 
   gitConfig = import ../../defaults/git.nix;
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix)
+    (import ../../defaults/lf.nix { })
     (import ./lf.nix);
 
   starshipConfig = import ../../defaults/starship.nix;
 
-  vividConfig = import ../../defaults/vivid.nix { theme = theme; };
+  vividConfig = (import ../../defaults/vivid.nix {
+    colors = import (../../themes + "/${theme}" + /vivid.nix);
+  });
 in
 {
   imports = [
@@ -75,7 +81,7 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
-      LS_COLORS = "$(vivid generate ${theme})";
+      LS_COLORS = "$(vivid generate current)";
       THEME = "${theme}";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always

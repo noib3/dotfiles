@@ -1,12 +1,9 @@
-{ font, theme }:
+{ font, colors }:
 let
-  colors = import (../../themes + "/${theme}" + /firefox.nix);
-  fontt = import (../../fonts + "/${font}" + /firefox.nix);
-
   userChrome = ''
     * {
-      font-family: "${fontt.family}";
-      font-size: ${fontt.size} !important;
+      font-family: "${font.family}";
+      font-size: ${font.size} !important;
     }
 
     :root {

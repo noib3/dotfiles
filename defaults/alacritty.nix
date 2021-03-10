@@ -1,8 +1,7 @@
-{ font, theme }:
+{ font, colors }:
 
 {
-  font = import (../fonts + "/${font}" + /alacritty.nix);
-  colors = import (../themes + "/${theme}" + /alacritty.nix);
-  cursor.style.blinking = "Never";
+  font = font;
+  colors = colors;
   window.decorations = "buttonless";
 }
