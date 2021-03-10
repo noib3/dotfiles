@@ -6,10 +6,10 @@
       identityFile = "~/.ssh/ocean_rsa";
     };
 
-    nix1 = {
+    sync = {
       user = "nix";
-      hostname = "142.93.34.161";
-      identityFile = "~/.ssh/treed-main_ecdsa";
+      hostname = "46.101.51.224";
+      identityFile = "~/.ssh/sync_ecdsa";
       serverAliveInterval = 120;
     };
   };

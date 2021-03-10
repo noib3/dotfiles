@@ -5,7 +5,7 @@ let
 in
 {
   shellAliases = {
-    cat = "bat";
+    cat = "bat --color=auto";
     grep = "grep --ignore-case --color=auto";
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first";
