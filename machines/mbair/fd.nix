@@ -17,7 +17,7 @@
     "/Sync/scripts/pfetch"
     "/Sync/scripts/vimv"
     "/Sync/university/*"
-    "!/Sync/university/magistrale-Bocconi/"
+    "!/Sync/university/magistrale-bocconi/"
 
     "*.aux"
     "*.bbl"

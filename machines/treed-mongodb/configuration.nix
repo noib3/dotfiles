@@ -1,7 +1,7 @@
-{ modulesPath, lib, pkgs, user, ... }:
+{ modulesPath, pkgs, user, ... }:
 
 {
-  imports = lib.optional (builtins.pathExists ./do-userdata.nix) ./do-userdata.nix ++ [
+  imports = [
     (modulesPath + "/virtualisation/digital-ocean-config.nix")
   ];
 

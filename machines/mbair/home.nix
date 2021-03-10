@@ -187,6 +187,7 @@ in
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       starship = unstable.starship;
       vimv = unstable.vimv;
+      yabai = unstable.yabai;
     })
 
     (import (builtins.fetchTarball {

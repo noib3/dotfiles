@@ -2,6 +2,5 @@
   ignores = [
     "/*"
     "!/dotfiles"
-    "!/treed"
   ];
 }
