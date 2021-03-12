@@ -81,8 +81,6 @@
 
     set -x FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND_EXT
     set -x FZF_ONLYDIRS_COMMAND $FZF_ONLYDIRS_COMMAND $FZF_ONLYDIRS_COMMAND_EXT
-
-    direnv hook fish | source
   '';
 
   plugins = [

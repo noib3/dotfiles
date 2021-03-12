@@ -1,0 +1,4 @@
+{
+  enableFishIntegration = true;
+  enableNixDirenvIntegration = true;
+}

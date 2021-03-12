@@ -1,7 +1,9 @@
 { font, colors }:
 
 {
-  font = font;
-  colors = colors;
-  window.decorations = "buttonless";
+  settings = {
+    font = font;
+    colors = colors;
+    window.decorations = "buttonless";
+  };
 }

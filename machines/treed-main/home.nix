@@ -11,6 +11,8 @@ let
 
   batConfig = import ../../defaults/bat.nix;
 
+  direnvConfig = import ../../defaults/direnv.nix;
+
   fdConfig = {
     ignores =
       (import ../../defaults/fd.nix).ignores
@@ -53,7 +55,6 @@ in
     packages = with pkgs; [
       bat
       chafa
-      direnv
       fd
       file
       fish
@@ -63,14 +64,11 @@ in
       mediainfo
       neovim-nightly
       nixpkgs-fmt
-      nodejs
-      nodePackages.vim-language-server
       ookla-speedtest-cli
       pfetch
       python-with-my-packages
       vimv
       vivid
-      yarn
     ];
 
     sessionVariables = {
@@ -118,6 +116,10 @@ in
   programs.bat = {
     enable = true;
   } // batConfig;
+
+  programs.direnv = {
+    enable = true;
+  } // direnvConfig;
 
   programs.fd = {
     enable = true;

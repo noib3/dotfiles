@@ -25,16 +25,16 @@ let
     ];
   };
 
-  alacrittyConfig = {
-    settings = lib.attrsets.recursiveUpdate
-      (import ../../defaults/alacritty.nix {
-        font = import (./fonts + "/${font}" + /alacritty.nix);
-        colors = import (../../themes + "/${theme}" + /alacritty.nix);
-      })
-      (import ./alacritty.nix);
-  };
+  alacrittyConfig = lib.attrsets.recursiveUpdate
+    (import ../../defaults/alacritty.nix {
+      font = import (./fonts + "/${font}" + /alacritty.nix);
+      colors = import (../../themes + "/${theme}" + /alacritty.nix);
+    })
+    (import ./alacritty.nix);
 
   batConfig = import ../../defaults/bat.nix;
+
+  direnvConfig = import ../../defaults/direnv.nix;
 
   fdConfig = {
     ignores =
@@ -74,6 +74,11 @@ let
 
   starshipConfig = import ../../defaults/starship.nix;
 
+  tridactylConfig = (import ../../defaults/tridactyl.nix {
+    font = import (./fonts + "/${font}" + /tridactyl.nix);
+    colors = import (../../themes + "/${theme}" + /tridactyl.nix);
+  });
+
   vividConfig = (import ../../defaults/vivid.nix {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
@@ -85,6 +90,7 @@ in
 {
   imports = [
     ../../modules/programs/fd.nix
+    ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
     ./modules/programs/skhd.nix
     ./modules/programs/spacebar.nix
@@ -104,7 +110,7 @@ in
       # calcurse # NOT SUPPORTED NEEDS OVERLAY
       chafa
       coreutils
-      direnv
+      doctl
       # duti
       entr
       ffmpeg
@@ -177,10 +183,10 @@ in
         recursive = true;
       };
 
-      "${config.xdg.configHome}/tridactyl" = {
-        source = ./tridactyl;
-        recursive = true;
-      };
+      # "${config.xdg.configHome}/tridactyl" = {
+      #   source = ./tridactyl;
+      #   recursive = true;
+      # };
     };
   };
 
@@ -212,6 +218,10 @@ in
   programs.bat = {
     enable = true;
   } // batConfig;
+
+  programs.direnv = {
+    enable = true;
+  } // direnvConfig;
 
   programs.fd = {
     enable = true;
@@ -252,6 +262,10 @@ in
   programs.starship = {
     enable = true;
   } // starshipConfig;
+
+  programs.tridactyl = {
+    enable = true;
+  } // tridactylConfig;
 
   programs.vivid = {
     enable = true;

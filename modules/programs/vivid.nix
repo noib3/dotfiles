@@ -74,7 +74,7 @@ in
       (
         name: value: nameValuePair
           ("vivid/themes/${name}.yml")
-          ({ source = yaml.generate "${name}.yml" cfg.themes."${name}"; })
+          ({ source = yaml.generate "${name}.yml" value; })
       )
       cfg.themes;
   };

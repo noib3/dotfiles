@@ -14,7 +14,7 @@
     bottom_padding = 20;
     left_padding = 30;
     right_padding = 30;
-    window_padding = 20;
+    window_gap = 20;
   };
 
   extraConfig = ''

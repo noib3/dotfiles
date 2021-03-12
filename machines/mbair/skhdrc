@@ -4,7 +4,7 @@ cmd - f : alacritty --command fish -c "lf $HOME/Downloads"
 cmd - p : alacritty --command fish -c "ipython --no-confirm-exit"
 cmd - a : alacritty --command calcurse \
             -C "$HOME/.config/calcurse" \
-            -D "$PRIVATEDIR/calcurse"
+            -D "$SECRETSDIR/calcurse"
 cmd - g : alacritty --command gotop
 cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app

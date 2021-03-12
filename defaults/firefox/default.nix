@@ -7,19 +7,19 @@ let
     }
 
     :root {
-      --color-unfocused-tabs-bg: ${colors.unfocused-tabs-bg};
-      --color-unfocused-tabs-fg: ${colors.unfocused-tabs-fg};
-      --color-focused-tabs-bg: ${colors.focused-tabs-bg};
-      --color-focused-tabs-fg: ${colors.focused-tabs-fg};
-      --color-urlbar-separator: ${colors.urlbar-separator};
-      --color-urlbar-bg: ${colors.urlbar-bg};
-      --color-urlbar-fg: ${colors.urlbar-fg};
-      --color-urlbar-popup-url: ${colors.urlbar-popup-url};
-      --color-urlbar-selected-bg: ${colors.urlbar-selected-bg};
-      --color-urlbar-selected-fg: ${colors.urlbar-selected-fg};
-      --color-urlbar-selected-popup-url: ${colors.urlbar-selected-popup-url};
-      --color-sidebar-bg: ${colors.sidebar-bg};
-      --color-sidebar-fg: ${colors.sidebar-fg};
+      __color_unfocused_tabs_bg: ${colors.unfocused_tabs_bg};
+      __color_unfocused_tabs_fg: ${colors.unfocused_tabs_fg};
+      __color_focused_tabs_bg: ${colors.focused_tabs_bg};
+      __color_focused_tabs_fg: ${colors.focused_tabs_fg};
+      __color_urlbar_separator: ${colors.urlbar_separator};
+      __color_urlbar_bg: ${colors.urlbar_bg};
+      __color_urlbar_fg: ${colors.urlbar_fg};
+      __color_urlbar_popup_url: ${colors.urlbar_popup_url};
+      __color_urlbar_selected_bg: ${colors.urlbar_selected_bg};
+      __color_urlbar_selected_fg: ${colors.urlbar_selected_fg};
+      __color_urlbar_selected_popup_url: ${colors.urlbar_selected_popup_url};
+      __color_sidebar_bg: ${colors.sidebar_bg};
+      __color_sidebar_fg: ${colors.sidebar_fg};
     }
   ''
   + builtins.readFile ./colors.css
@@ -46,7 +46,7 @@ let
   userContent = ''
     @-moz-document url-prefix(about:blank) {
       * {
-        background-color: ${colors.about-blank-bg} !important;
+        background-color: ${colors.about_blank_bg} !important;
       }
     }
   '';
