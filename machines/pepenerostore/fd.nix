@@ -1,0 +1,8 @@
+{
+  ignores = [
+    "/*"
+    "!/dotfiles"
+    "!/Media"
+    "!/Sync"
+  ];
+}
