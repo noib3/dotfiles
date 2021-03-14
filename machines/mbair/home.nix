@@ -5,6 +5,8 @@ let
   theme = "onedark";
   font = "roboto-mono";
 
+  email-accounts = import ../../defaults/email-accounts.nix;
+
   my-python-packages = python-packages: with python-packages; [
     autopep8
     black
@@ -63,6 +65,8 @@ let
     (import ../../defaults/lf.nix { })
     (import ./lf.nix);
 
+  neomuttConfig = import ../../defaults/neomutt.nix;
+
   spacebarConfig = (import ./spacebar.nix {
     font = import (./fonts + "/${font}" + /spacebar.nix);
     colors = import (./themes + "/${theme}" + /spacebar.nix);
@@ -96,6 +100,8 @@ in
     ./modules/programs/spacebar.nix
     ./modules/programs/yabai.nix
   ];
+
+  accounts.email.accounts = email-accounts;
 
   home = {
     username = "noibe";
@@ -182,11 +188,6 @@ in
         source = ../../defaults/nvim;
         recursive = true;
       };
-
-      # "${config.xdg.configHome}/tridactyl" = {
-      #   source = ./tridactyl;
-      #   recursive = true;
-      # };
     };
   };
 
@@ -246,6 +247,10 @@ in
   programs.lf = {
     enable = true;
   } // lfConfig;
+
+  programs.neomutt = {
+    enable = true;
+  } // neomuttConfig;
 
   programs.skhd = {
     enable = true;

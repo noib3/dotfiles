@@ -7,19 +7,19 @@ let
     }
 
     :root {
-      __color_unfocused_tabs_bg: ${colors.unfocused_tabs_bg};
-      __color_unfocused_tabs_fg: ${colors.unfocused_tabs_fg};
-      __color_focused_tabs_bg: ${colors.focused_tabs_bg};
-      __color_focused_tabs_fg: ${colors.focused_tabs_fg};
-      __color_urlbar_separator: ${colors.urlbar_separator};
-      __color_urlbar_bg: ${colors.urlbar_bg};
-      __color_urlbar_fg: ${colors.urlbar_fg};
-      __color_urlbar_popup_url: ${colors.urlbar_popup_url};
-      __color_urlbar_selected_bg: ${colors.urlbar_selected_bg};
-      __color_urlbar_selected_fg: ${colors.urlbar_selected_fg};
-      __color_urlbar_selected_popup_url: ${colors.urlbar_selected_popup_url};
-      __color_sidebar_bg: ${colors.sidebar_bg};
-      __color_sidebar_fg: ${colors.sidebar_fg};
+      --color-unfocused-tabs-bg: ${colors.unfocused_tabs_bg};
+      --color-unfocused-tabs-fg: ${colors.unfocused_tabs_fg};
+      --color-focused-tabs-bg: ${colors.focused_tabs_bg};
+      --color-focused-tabs-fg: ${colors.focused_tabs_fg};
+      --color-urlbar-separator: ${colors.urlbar_separator};
+      --color-urlbar-bg: ${colors.urlbar_bg};
+      --color-urlbar-fg: ${colors.urlbar_fg};
+      --color-urlbar-popup-url: ${colors.urlbar_popup_url};
+      --color-urlbar-selected-bg: ${colors.urlbar_selected_bg};
+      --color-urlbar-selected-fg: ${colors.urlbar_selected_fg};
+      --color-urlbar-selected-popup_url: ${colors.urlbar_selected_popup_url};
+      --color-sidebar-bg: ${colors.sidebar_bg};
+      --color-sidebar-fg: ${colors.sidebar_fg};
     }
   ''
   + builtins.readFile ./colors.css
