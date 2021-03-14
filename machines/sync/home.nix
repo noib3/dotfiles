@@ -58,7 +58,6 @@ in
       fd
       file
       fish
-      git
       gotop
       lazygit
       mediainfo
