@@ -2,7 +2,7 @@
   ignores = [
     "/*"
     "!/dotfiles"
-    "/pepenerostore"
+    "!/pepenerostore"
     "/dotfiles/machines/*"
     "!/dotfiles/machines/pepenerostore"
   ];

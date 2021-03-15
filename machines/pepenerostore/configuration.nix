@@ -29,11 +29,27 @@
 
   services.nginx = {
     enable = true;
+
+    recommendedGzipSettings = true;
     recommendedOptimisation = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+
     virtualHosts."pepenerostore.it" = {
-      # addSSL = true;
-      # enableACME = true;
+      enableACME = true;
+      forceSSL = true;
       root = "/home/nix/pepenerostore";
     };
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    certs = {
+      "pepenerostore.it".email = "info@pepenerostore.it";
+    };
+  };
+
+  systemd.services.nginx = {
+    serviceConfig.ProtectHome = "read-only";
   };
 }
