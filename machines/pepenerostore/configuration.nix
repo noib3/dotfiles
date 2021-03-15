@@ -1,7 +1,5 @@
 { modulesPath, pkgs, user, ... }:
-let
-  unstable = import <nixos-unstable> { };
-in
+
 {
   imports = [
     (modulesPath + "/virtualisation/digital-ocean-config.nix")
@@ -21,11 +19,21 @@ in
   networking = {
     hostName = "pepenerostore";
     firewall = {
-      allowedTCPPorts = [ 8384 ];
+      allowedTCPPorts = [ 80 443 ];
     };
   };
 
   programs.fish = {
     enable = true;
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedOptimisation = true;
+    virtualHosts."pepenerostore.it" = {
+      # addSSL = true;
+      # enableACME = true;
+      root = "/home/nix/pepenerostore";
+    };
   };
 }

@@ -2,8 +2,10 @@
   ignores = [
     "/*"
     "!/dotfiles"
-    "**/.stfolder"
+    "/dotfiles/machines/*"
+    "!/dotfiles/machines/sync"
     "!/Media"
     "!/Sync"
+    "**/.stfolder"
   ];
 }

@@ -31,7 +31,11 @@ in
 
   services.syncthing = {
     enable = true;
-
+    package = unstable.syncthing;
+    user = "nix";
+    dataDir = "/home/nix";
+    configDir = "/home/nix/.config/syncthing";
+    guiAddress = "0.0.0.0:8384";
     declarative = {
       # devices = {
       #   mbair = {
@@ -62,15 +66,8 @@ in
       #     ignorePerms = false;
       #   };
       # };
-
       overrideDevices = false;
       overrideFolders = false;
     };
-
-    guiAddress = "0.0.0.0:8384";
-    user = "nix";
-    dataDir = "/home/nix";
-    configDir = "/home/nix/.config/syncthing";
-    package = unstable.syncthing;
   };
 }
