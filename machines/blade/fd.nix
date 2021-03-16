@@ -2,8 +2,6 @@
   ignores = [
     "/*"
     "!/dotfiles"
-    "!/pepenerostore"
-    "/dotfiles/machines/*"
-    "!/dotfiles/machines/pepenerostore"
+    "!/Sync"
   ];
 }
