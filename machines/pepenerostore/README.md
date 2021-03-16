@@ -1,6 +1,6 @@
 ```sh
 cd ~
-git clone https://github.com/noib3/dotfiles
+git clone git@github.com:noib3/dotfiles.git
 mkdir -p ~/.config
 ln -sf ~/dotfiles/* ~/.config/nixpkgs/
 ln -sf ~/.config/nixpkgs/machines/pepenerostore/home.nix ~/.config/nixpkgs/home.nix

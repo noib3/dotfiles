@@ -134,6 +134,7 @@ in
       neovim-nightly
       nixpkgs-fmt
       nodejs
+      nodePackages.vscode-html-languageserver-bin
       nodePackages.vim-language-server
       # nordvpn
       ookla-speedtest-cli

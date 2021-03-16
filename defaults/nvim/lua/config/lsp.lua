@@ -34,6 +34,10 @@ local on_attach = function(client, bufnr)
   end
 end
 
+lspconfig.html.setup{
+  on_attach = on_attach,
+}
+
 lspconfig.vimls.setup{
-  on_attach = on_attach
+  on_attach = on_attach,
 }
