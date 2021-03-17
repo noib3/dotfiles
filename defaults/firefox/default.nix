@@ -3,6 +3,7 @@ let
   userChrome = ''
     * {
       font-family: "${font.family}";
+      font-variant: "Bold Italic";
       font-size: ${font.size} !important;
     }
 

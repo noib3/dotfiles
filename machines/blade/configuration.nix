@@ -1,42 +1,33 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
-
+let
+  unstable = import <nixos-unstable> { };
+in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
-    ];
+  imports = [
+    /etc/nixos/hardware-configuration.nix
+  ];
 
-  # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "blade"; # Define your hostname.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking = {
+    hostName = "blade";
+    useDHCP = false;
+    interfaces.enp2s0.useDHCP = true;
+    networkmanager.enable = true;
+    # firewall = {
+    #   allowedTCPPorts = [ 8384 ];
+    # };
+  };
 
-  # Set your time zone.
   time.timeZone = "Europe/Rome";
 
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
     font = "Lat2-Terminus16";
     keyMap = "us";
     colors = [
-      "5c6370"
+      "282c34"
       "e06c75"
       "98c379"
       "e5c07b"
@@ -44,7 +35,7 @@
       "c678dd"
       "56b6c2"
       "abb2bf"
-      "4b5263"
+      "282c34"
       "be5046"
       "98c379"
       "d19a66"
@@ -56,15 +47,22 @@
   };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.displayManager.startx.enable = true;
-  services.xserver.windowManager = {
-    bspwm.enable = true;
+  services.xserver = {
+    enable = true;
+    layout = "us";
+    libinput = {
+      enable = true;
+      naturalScrolling = true;
+    };
+    displayManager = {
+      defaultSession = "none+bspwm";
+      autoLogin = {
+        enable = true;
+        user = "noib3";
+      };
+    };
+    windowManager.bspwm.enable = true;
   };
-
-  # Configure keymap in X11
-  services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -73,13 +71,11 @@
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  services.xserver.libinput.enable = true;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.noib3 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" ];
+    home = "/home/noib3";
     shell = pkgs.fish;
   };
 
@@ -91,30 +87,62 @@
     enable = true;
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
+    evemu
+    git
     vim
   ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  # Swap Windows and alt keys
+  services.udev = {
+        # KEYBOARD_KEY_e05b=leftalt
+      # evdev:input:b0003v1532p026F*
+    extraHwdb = ''
+      evdev:input:*
+       KEYBOARD_KEY_38=leftmeta
+    '';
+  };
 
-  # List services that you want to enable:
+  services.syncthing = {
+    enable = true;
+    package = unstable.syncthing;
+    user = "noib3";
+    dataDir = "/home/noib3";
+    configDir = "/home/noib3/.config/syncthing";
+    declarative = {
+      # devices = {
+      #   mbair = {
+      #     name = "MacBook Air";
+      #     id = "V2JGYER-MUHWW7U-435IRVJ-4PTEXWD-OO3R3KM-5R5V5ZN-JJOFNC7-CRFENAA";
+      #   };
+      #   oneplus = {
+      #     name = "OnePlus Nord";
+      #     id = "MLUZ3TB-SCXVHEX-CKYU7IF-CUTRR2I-UIVCPTO-TQFNRWY-COD6CCN-US5JYQP";
+      #   };
+      # };
 
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+      # folders = {
+      #   Sync = {
+      #     path = "/home/nix/Sync";
+      #     id = "qu7hn-unrno";
+      #     label = "Sync";
+      #     rescanInterval = 10;
+      #     type = "sendreceive";
+      #     ignorePerms = false;
+      #   };
+      #   Camera = {
+      #     path = "/home/nix/Media/OnePlus-Nord/Camera";
+      #     id = "qu7hn-unrno";
+      #     label = "Sync";
+      #     rescanInterval = 10;
+      #     type = "receiveonly";
+      #     ignorePerms = false;
+      #   };
+      # };
+      overrideDevices = false;
+      overrideFolders = false;
+    };
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -123,6 +151,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.09"; # Did you read the comment?
-
 }
-

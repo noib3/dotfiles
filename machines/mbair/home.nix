@@ -41,7 +41,7 @@ let
   fdConfig = {
     ignores =
       (import ../../defaults/fd.nix).ignores
-      ++ (import ./fd.nix).ignores;
+      ++ (import ../../fd.nix).ignores;
   };
 
   firefoxConfig = (import ../../defaults/firefox {
@@ -69,10 +69,10 @@ let
 
   spacebarConfig = (import ./spacebar.nix {
     font = import (./fonts + "/${font}" + /spacebar.nix);
-    colors = import (./themes + "/${theme}" + /spacebar.nix);
+    colors = import (../../themes + "/${theme}" + /spacebar.nix);
   });
 
-  skhdConfig = import ./skhd.nix;
+  skhdConfig = import ../../defaults/skhd.nix;
 
   sshConfig = import ../../defaults/ssh.nix;
 
@@ -88,17 +88,17 @@ let
   });
 
   yabaiConfig = (import ./yabai.nix {
-    colors = import (./themes + "/${theme}" + /yabai.nix);
+    colors = import (../../themes + "/${theme}" + /yabai.nix);
   });
 in
 {
   imports = [
     ../../modules/programs/fd.nix
+    ../../modules/programs/skhd.nix
+    ../../modules/programs/spacebar.nix
     ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
-    ./modules/programs/skhd.nix
-    ./modules/programs/spacebar.nix
-    ./modules/programs/yabai.nix
+    ../../modules/programs/yabai.nix
   ];
 
   accounts.email.accounts = email-accounts;

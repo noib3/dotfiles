@@ -3,13 +3,25 @@ let
   unstable = import <nixos-unstable> { };
 
   theme = "onedark";
+  font = "roboto-mono";
 
   my-python-packages = python-packages: with python-packages; [
     ipython
   ];
   python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
+  alacrittyConfig = lib.attrsets.recursiveUpdate
+    (import ../../defaults/alacritty.nix {
+      font = import (./fonts + "/${font}" + /alacritty.nix);
+      colors = import (../../themes + "/${theme}" + /alacritty.nix);
+    })
+    (import ./alacritty.nix);
+
   batConfig = import ../../defaults/bat.nix;
+
+  bspwmConfig = (import ../../defaults/bspwm.nix {
+    colors = import (../../themes + "/${theme}" + /bspwm.nix);
+  });
 
   direnvConfig = import ../../defaults/direnv.nix;
 
@@ -18,6 +30,11 @@ let
       (import ../../defaults/fd.nix).ignores
       ++ (import ./fd.nix).ignores;
   };
+
+  firefoxConfig = (import ../../defaults/firefox {
+    font = import (./fonts + "/${font}" + /firefox.nix);
+    colors = import (../../themes + "/${theme}" + /firefox.nix);
+  });
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish.nix {
@@ -35,7 +52,11 @@ let
     (import ../../defaults/lf.nix { })
     (import ./lf.nix);
 
+  polybarConfig = import ../../defaults/polybar.nix;
+
   starshipConfig = import ../../defaults/starship.nix;
+
+  sxhkdConfig = import ../../defaults/sxhkd.nix;
 
   vividConfig = (import ../../defaults/vivid.nix {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
@@ -48,8 +69,8 @@ in
   ];
 
   home = {
-    username = "nix";
-    homeDirectory = "/home/nix";
+    username = "noib3";
+    homeDirectory = "/home/noib3";
     stateVersion = "21.03";
 
     packages = with pkgs; [
@@ -62,6 +83,12 @@ in
       lazygit
       mediainfo
       neovim-nightly
+      (nerdfonts.override {
+        fonts = [
+          "JetBrainsMono"
+          "RobotoMono"
+        ];
+      })
       nixpkgs-fmt
       ookla-speedtest-cli
       pfetch
@@ -108,9 +135,17 @@ in
     }))
   ];
 
+  fonts.fontconfig = {
+    enable = true;
+  };
+
   programs.home-manager = {
     enable = true;
   };
+
+  programs.alacritty = {
+    enable = true;
+  } // alacrittyConfig;
 
   programs.bat = {
     enable = true;
@@ -123,6 +158,10 @@ in
   programs.fd = {
     enable = true;
   } // fdConfig;
+
+  programs.firefox = {
+    enable = true;
+  } // firefoxConfig;
 
   programs.fish = {
     enable = true;
@@ -147,4 +186,19 @@ in
   programs.vivid = {
     enable = true;
   } // vividConfig;
+
+  services.polybar = {
+    enable = true;
+  } // polybarConfig;
+
+  services.sxhkd = {
+    enable = true;
+  } // sxhkdConfig;
+
+  xsession = {
+    enable = true;
+    windowManager.bspwm = {
+      enable = true;
+    } // bspwmConfig;
+  };
 }

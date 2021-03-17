@@ -39,7 +39,7 @@ in
     version = "1.21.0";
     addonId = "tridactyl.vim.betas.nonewtab@cmcaine.co.uk";
     url = "https://tridactyl.cmcaine.co.uk/betas/nonewtab/tridactyl_no_new_tab_beta-latest.xpi";
-    sha256 = "1w5qqjy66qbp1f7fkqlbgb9s18a4cbk7g53g0vfq2815nnm1zv5x";
+    sha256 = "1bpvjn5ngfph22c77rwpn38igr2fafkazca25952lm09hsdg30b4";
     meta = with pkgs.lib; {
       homepage = "https://github.com/cmcaine/tridactyl";
       description = ''
