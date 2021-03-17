@@ -15,9 +15,9 @@ in
     useDHCP = false;
     interfaces.enp2s0.useDHCP = true;
     networkmanager.enable = true;
-    # firewall = {
-    #   allowedTCPPorts = [ 8384 ];
-    # };
+    firewall = {
+      allowedTCPPorts = [ 8384 ];
+    };
   };
 
   time.timeZone = "Europe/Rome";
@@ -89,17 +89,16 @@ in
 
   environment.systemPackages = with pkgs; [
     evemu
+    evtest
     git
     vim
   ];
 
-  # Swap Windows and alt keys
   services.udev = {
-        # KEYBOARD_KEY_e05b=leftalt
-      # evdev:input:b0003v1532p026F*
     extraHwdb = ''
-      evdev:input:*
-       KEYBOARD_KEY_38=leftmeta
+      evdev:input:b0003v1532p026F*
+       KEYBOARD_KEY_700e2=leftmeta
+       KEYBOARD_KEY_700e3=leftalt
     '';
   };
 

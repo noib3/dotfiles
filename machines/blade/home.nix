@@ -58,6 +58,11 @@ let
 
   sxhkdConfig = import ../../defaults/sxhkd.nix;
 
+  tridactylConfig = (import ../../defaults/tridactyl.nix {
+    font = import (./fonts + "/${font}" + /tridactyl.nix);
+    colors = import (../../themes + "/${theme}" + /tridactyl.nix);
+  });
+
   vividConfig = (import ../../defaults/vivid.nix {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
@@ -65,6 +70,7 @@ in
 {
   imports = [
     ../../modules/programs/fd.nix
+    ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
   ];
 
@@ -178,6 +184,10 @@ in
   programs.lf = {
     enable = true;
   } // lfConfig;
+
+  programs.tridactyl = {
+    enable = true;
+  } // tridactylConfig;
 
   programs.starship = {
     enable = true;

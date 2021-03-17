@@ -1,9 +1,9 @@
 {
   ignores = [
     "/*"
+    "**/.stfolder"
     "!/Downloads"
     "!/Sync"
-
     "/Sync/finances/2017"
     "/Sync/finances/2018"
     "/Sync/finances/2019"
@@ -18,7 +18,6 @@
     "/Sync/scripts/vimv"
     "/Sync/university/*"
     "!/Sync/university/magistrale-bocconi/"
-
     "*.aux"
     "*.bbl"
     "*.bcf"
