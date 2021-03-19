@@ -7,6 +7,16 @@
 
     key_bindings = [
       {
+        key = "C";
+        mods = "Super";
+        action = "Copy";
+      }
+      {
+        key = "V";
+        mods = "Super";
+        action = "Paste";
+      }
+      {
         key = "D";
         mods = "Super";
         chars = "\\x18\\x04"; # C-x C-d

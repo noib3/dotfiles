@@ -35,10 +35,9 @@ in
     xdg.configFile = {
       "tridactyl/tridactylrc".text = cfg.config;
     } // mapAttrs'
-      (
-        name: value: nameValuePair
-          ("tridactyl/themes/${name}.css")
-          ({ text = value; })
+      (name: value: nameValuePair
+        ("tridactyl/themes/${name}.css")
+        ({ text = value; })
       )
       cfg.themes;
   };

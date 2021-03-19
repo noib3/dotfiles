@@ -35,10 +35,10 @@ return require('packer').startup(function()
     config = [[require('config.bufferline')]],
   }
   use {'norcalli/nvim-colorizer.lua', config=[[require('config.colorizer')]]}
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    config = [[require('config.treesitter')]],
-  }
+  -- use {
+  --   'nvim-treesitter/nvim-treesitter',
+  --   config = [[require('config.treesitter')]],
+  -- }
   use {'qpkorr/vim-bufkill', cmd='BD'}
   use {'tpope/vim-commentary'}
   use {'voldikss/vim-floaterm', config=[[require('config.floaterm')]]}

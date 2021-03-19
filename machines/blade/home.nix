@@ -52,7 +52,10 @@ let
     (import ../../defaults/lf.nix { })
     (import ./lf.nix);
 
-  polybarConfig = import ../../defaults/polybar.nix;
+  polybarConfig = (import ../../defaults/polybar.nix {
+    font = import (./fonts + "/${font}" + /polybar.nix);
+    colors = import (../../themes + "/${theme}" + /polybar.nix);
+  });
 
   starshipConfig = import ../../defaults/starship.nix;
 
@@ -81,6 +84,7 @@ in
 
     packages = with pkgs; [
       bat
+      calcurse
       chafa
       fd
       file
@@ -96,11 +100,13 @@ in
         ];
       })
       nixpkgs-fmt
+      noto-fonts-emoji
       ookla-speedtest-cli
       pfetch
       python-with-my-packages
       vimv
       vivid
+      xclip
     ];
 
     sessionVariables = {
@@ -113,17 +119,23 @@ in
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
       THEME = "${theme}";
+      SECRETSDIR = "$HOME/Sync/secrets";
+      SCRSHOTDIR = "$HOME/Sync/screenshots";
+      SCRIPTSDIR = "$HOME/Sync/scripts";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
     };
+  };
 
-    file = {
-      "${config.xdg.configHome}/nvim" = {
-        source = ../../defaults/nvim;
-        recursive = true;
-      };
-    };
+  xdg.configFile."calcurse" = {
+    source = ../../defaults/calcurse;
+    recursive = true;
+  };
+
+  xdg.configFile."nvim" = {
+    source = ../../defaults/nvim;
+    recursive = true;
   };
 
   nixpkgs.overlays = [

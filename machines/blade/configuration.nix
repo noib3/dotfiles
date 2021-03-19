@@ -69,7 +69,13 @@ in
 
   # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+
+  hardware.pulseaudio = {
+    enable = true;
+    package = pkgs.pulseaudioFull;
+  };
+
+  hardware.bluetooth.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.noib3 = {
@@ -90,6 +96,7 @@ in
   environment.systemPackages = with pkgs; [
     evemu
     evtest
+    gcc
     git
     vim
   ];

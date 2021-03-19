@@ -3,9 +3,14 @@
     # Reload sxhkd
     "super + Escape" = "pkill -USR1 -x sxhkd";
 
-    # Launch programs
+    # Open the terminal
     "super + Return" = "alacritty";
-    "ctrl + w" = "firefox";
+    "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
+    "super + a" = "alacritty --command calcurse -C $HOME/.config/calcurse -D $SECRETSDIR/calcurse";
+    "super + g" = "alacritty --command gotop";
+
+    # Open the web browser 
+    "alt + Return" = "firefox";
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
@@ -36,11 +41,10 @@
 
     # Move floating windows
 
-    # Send windows to spaces
+    # Focus or send to the given desktop
+    "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
 
-    # Focus spaces
-
-    # Move spaces
-
+    # Move desktops
+    "ctrl + super + {1,5}" = "bspc desktop -s '{1-5}'";
   };
 }

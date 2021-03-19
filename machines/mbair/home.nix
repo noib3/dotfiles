@@ -183,13 +183,11 @@ in
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
     };
+  };
 
-    file = {
-      "${config.xdg.configHome}/nvim" = {
-        source = ../../defaults/nvim;
-        recursive = true;
-      };
-    };
+  xdg.configFile."nvim" = {
+    source = ../../defaults/nvim;
+    recursive = true;
   };
 
   nixpkgs.overlays = [
