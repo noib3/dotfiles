@@ -20,6 +20,11 @@ let
     };
 in
 {
+  # To find the addonId of an extension first install it the usual imperative
+  # way. Then go in `about:memory` -> Show memory reports -> click `Measure`.
+  # Scroll down to the `Other measurements` section and look for the extensions
+  # block.
+
   bitwarden = buildFirefoxXpiAddon {
     pname = "bitwarden";
     version = "1.48.1";
@@ -30,6 +35,20 @@ in
       homepage = "https://bitwarden.com";
       description = "A secure and free password manager for all of your devices.";
       license = licenses.gpl3;
+      platforms = platforms.all;
+    };
+  };
+
+  downloads-sidebar = buildFirefoxXpiAddon {
+    pname = "downloads-sidebar";
+    version = "1.0.1";
+    addonId = "{bbb81fb3-49c1-4a42-bcc9-94bc93e19fb8}";
+    url = "https://addons.mozilla.org/firefox/downloads/file/3166696/downloads_sidebar-1.0.1-fx.xpi";
+    sha256 = "1bcmr3mq0ysjkvsdh3p2w5wp9a2d1745ldx3xj3wrx53dm477cy8";
+    meta = with pkgs.lib; {
+      homepage = "https://github.com/aesqe/firefox-downloads-sidebar";
+      description = "Display a list of your latest downloads in the Firefox sidebar.";
+      license = licenses.mit;
       platforms = platforms.all;
     };
   };

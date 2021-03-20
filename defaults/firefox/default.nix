@@ -58,6 +58,7 @@ in
 {
   extensions = with (import ./extensions.nix); [
     bitwarden
+    downloads-sidebar
     hide-scrollbars
     tridactyl-no-new-tab
   ];

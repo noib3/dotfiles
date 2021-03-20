@@ -13,6 +13,9 @@
     # "alt + Return" = "firefox";
     "alt + Return" = "qutebrowser";
 
+    # Launch the file opener
+    "super + space" = "rofi -show drun";
+
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
 
