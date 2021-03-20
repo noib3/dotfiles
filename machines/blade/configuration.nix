@@ -10,6 +10,31 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  sound.enable = true;
+
+  hardware = {
+    bluetooth.enable = true;
+    openrazer.enable = true;
+
+    pulseaudio = {
+      enable = true;
+      package = pkgs.pulseaudioFull;
+    };
+  };
+
+  users.users.noib3 = {
+    isNormalUser = true;
+    home = "/home/noib3";
+    shell = pkgs.fish;
+    # The plugdev group is needed by the openrazer-daemon service.
+    # See https://openrazer.github.io/#project for more details.
+    extraGroups = [ "wheel" "plugdev" ];
+  };
+
+  security.sudo = {
+    wheelNeedsPassword = false;
+  };
+
   networking = {
     hostName = "blade";
     useDHCP = false;
@@ -23,6 +48,25 @@ in
   time.timeZone = "Europe/Rome";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "us";
+
+  environment.systemPackages = with pkgs; [
+    evemu
+    evtest
+    gcc
+    git
+    libinput-gestures
+    vim
+  ];
+
+  programs.fish = {
+    enable = true;
+  };
+
+  services.logind = {
+    extraConfig = ''
+      IdleAction=ignore
+    '';
+  };
 
   services.xserver = {
     enable = true;
@@ -52,43 +96,6 @@ in
 
     windowManager.bspwm.enable = true;
   };
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-
-  hardware.pulseaudio = {
-    enable = true;
-    package = pkgs.pulseaudioFull;
-  };
-
-  hardware.bluetooth.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.noib3 = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    home = "/home/noib3";
-    shell = pkgs.fish;
-  };
-
-  security.sudo = {
-    wheelNeedsPassword = false;
-  };
-
-  programs.fish = {
-    enable = true;
-  };
-
-  environment.systemPackages = with pkgs; [
-    evemu
-    evtest
-    gcc
-    git
-    vim
-  ];
 
   services.udev = {
     extraHwdb = ''

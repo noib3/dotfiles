@@ -2,18 +2,18 @@
 
 {
   shellAliases = {
-    cat = "bat --color=auto";
-    grep = "grep --ignore-case --color=auto";
-    ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first";
     wget = "wget --hsts-file=~/.cache/wget/wget-hsts";
+    grep = "grep --ignore-case --color=auto";
+    ipython = "ipython --no-confirm-exit";
+    cat = "bat --color=auto";
   };
 
   shellAbbrs = {
-    ipy = "ipython";
-    lg = "lazygit";
     hms = "home-manager switch";
     hmn = "home-manager news";
+    ipy = "ipython";
+    lg = "lazygit";
   };
 
   interactiveShellInit = ''
@@ -112,37 +112,39 @@
 
     fuzzy_edit.body = ''
       set -l filenames (fzf --prompt="Edit> " --multi --height=8) \
-        && set -l filenames (echo "~/"(string escape -- $filenames) \
-                               | tr "\n" " " | sed 's/\s$//') \
+        && set -l filenames (echo "~/"(string escape -- $filenames) | tr "\n" " " | sed 's/\s$//') \
         && commandline $EDITOR" "$filenames \
         && commandline --function execute
+
       commandline --function repaint
     '';
 
     fuzzy_cd.body = ''
-      set -l dirname (eval (echo $FZF_ONLYDIRS_COMMAND) \
-                        | fzf --prompt="Cd> " --height=8) \
+      set -l dirname (eval (echo $FZF_ONLYDIRS_COMMAND) | fzf --prompt="Cd> " --height=8) \
         && cd $HOME/$dirname
+
       emit fish_prompt
       commandline -f repaint
     '';
 
     fuzzy_history.body = ''
       history merge
+
       set -l command_with_ts (
-        history --null --show-time="%m/%e %H:%M:%S | " \
-          | fzf --read0 --tiebreak=index --prompt="History> " --height=8 \
+        history --null --show-time="%B %d %T | " \
+          | fzf --read0 --tiebreak=index --prompt="History> " --height=8 --query=(commandline)\
           | string collect) \
         && set -l command (string split -m1 " | " $command_with_ts)[2] \
         && commandline $command
+
       commandline --function repaint
     '';
 
     fuzzy_search.body = ''
       set -l filenames (fzf --prompt="Paste> " --multi --height=8) \
-        && set -l filenames (echo "~/"(string escape -- $filenames) \
-                               | tr "\n" " " | sed 's/\s$//') \
+        && set -l filenames (echo "~/"(string escape -- $filenames) | tr "\n" " " | sed 's/\s$//') \
         && commandline --insert $filenames
+
       commandline --function repaint
     '';
   };

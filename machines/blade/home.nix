@@ -68,6 +68,10 @@ let
 
   sxhkdConfig = import ../../defaults/sxhkd;
 
+  sshConfig = lib.attrsets.recursiveUpdate
+    (import ../../defaults/ssh)
+    (import ./ssh.nix);
+
   tridactylConfig = (import ../../defaults/tridactyl {
     font = import (./fonts + "/${font}" + /tridactyl.nix);
     colors = import (../../themes + "/${theme}" + /tridactyl.nix);
@@ -226,13 +230,17 @@ in
     enable = true;
   } // rofiConfig;
 
-  programs.tridactyl = {
+  programs.ssh = {
     enable = true;
-  } // tridactylConfig;
+  } // sshConfig;
 
   programs.starship = {
     enable = true;
   } // starshipConfig;
+
+  programs.tridactyl = {
+    enable = true;
+  } // tridactylConfig;
 
   programs.vivid = {
     enable = true;
