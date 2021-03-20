@@ -31,9 +31,7 @@ let
 
   gitConfig = import ../../defaults/git.nix;
 
-  lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix { })
-    (import ./lf.nix);
+  lfConfig = import ../../defaults/lf.nix { };
 
   starshipConfig = import ../../defaults/starship.nix;
 

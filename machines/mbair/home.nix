@@ -5,7 +5,7 @@ let
   theme = "onedark";
   font = "roboto-mono";
 
-  email-accounts = import ../../defaults/email-accounts.nix;
+  email-accounts = import ../../defaults/email;
 
   my-python-packages = python-packages: with python-packages; [
     autopep8
@@ -28,19 +28,19 @@ let
   };
 
   alacrittyConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/alacritty.nix {
+    (import ../../defaults/alacritty {
       font = import (./fonts + "/${font}" + /alacritty.nix);
       colors = import (../../themes + "/${theme}" + /alacritty.nix);
     })
     (import ./alacritty.nix);
 
-  batConfig = import ../../defaults/bat.nix;
+  batConfig = import ../../defaults/bat;
 
-  direnvConfig = import ../../defaults/direnv.nix;
+  direnvConfig = import ../../defaults/direnv;
 
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores
+      (import ../../defaults/fd).ignores
       ++ (import ../../fd.nix).ignores;
   };
 
@@ -50,44 +50,44 @@ let
   });
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix {
+    (import ../../defaults/fish {
       colors = import (../../themes + "/${theme}" + /fish.nix);
     })
     (import ./fish.nix);
 
-  fzfConfig = (import ../../defaults/fzf.nix {
+  fzfConfig = (import ../../defaults/fzf {
     colors = import (../../themes + "/${theme}" + /fzf.nix);
   });
 
-  gitConfig = import ../../defaults/git.nix;
+  gitConfig = import ../../defaults/git;
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix { })
+    (import ../../defaults/lf { })
     (import ./lf.nix);
 
-  neomuttConfig = import ../../defaults/neomutt.nix;
+  neomuttConfig = import ../../defaults/neomutt;
 
-  spacebarConfig = (import ./spacebar.nix {
+  spacebarConfig = (import ./spacebar {
     font = import (./fonts + "/${font}" + /spacebar.nix);
     colors = import (../../themes + "/${theme}" + /spacebar.nix);
   });
 
-  skhdConfig = import ../../defaults/skhd.nix;
+  skhdConfig = import ../../defaults/skhd;
 
-  sshConfig = import ../../defaults/ssh.nix;
+  sshConfig = import ../../defaults/ssh;
 
-  starshipConfig = import ../../defaults/starship.nix;
+  starshipConfig = import ../../defaults/starship;
 
-  tridactylConfig = (import ../../defaults/tridactyl.nix {
+  tridactylConfig = (import ../../defaults/tridactyl {
     font = import (./fonts + "/${font}" + /tridactyl.nix);
     colors = import (../../themes + "/${theme}" + /tridactyl.nix);
   });
 
-  vividConfig = (import ../../defaults/vivid.nix {
+  vividConfig = (import ../../defaults/vivid {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
 
-  yabaiConfig = (import ./yabai.nix {
+  yabaiConfig = (import ./yabai {
     colors = import (../../themes + "/${theme}" + /yabai.nix);
   });
 in

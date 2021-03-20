@@ -11,23 +11,23 @@ let
   python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
   alacrittyConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/alacritty.nix {
+    (import ../../defaults/alacritty {
       font = import (./fonts + "/${font}" + /alacritty.nix);
       colors = import (../../themes + "/${theme}" + /alacritty.nix);
     })
     (import ./alacritty.nix);
 
-  batConfig = import ../../defaults/bat.nix;
+  batConfig = import ../../defaults/bat;
 
-  bspwmConfig = (import ../../defaults/bspwm.nix {
+  bspwmConfig = (import ../../defaults/bspwm {
     colors = import (../../themes + "/${theme}" + /bspwm.nix);
   });
 
-  direnvConfig = import ../../defaults/direnv.nix;
+  direnvConfig = import ../../defaults/direnv;
 
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores
+      (import ../../defaults/fd).ignores
       ++ (import ./fd.nix).ignores;
   };
 
@@ -37,47 +37,47 @@ let
   });
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix {
+    (import ../../defaults/fish {
       colors = import (../../themes + "/${theme}" + /fish.nix);
     })
     (import ./fish.nix);
 
-  fzfConfig = (import ../../defaults/fzf.nix {
+  fzfConfig = (import ../../defaults/fzf {
     colors = import (../../themes + "/${theme}" + /fzf.nix);
   });
 
-  gitConfig = import ../../defaults/git.nix;
+  gitConfig = import ../../defaults/git;
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf.nix { })
+    (import ../../defaults/lf { })
     (import ./lf.nix { });
 
-  polybarConfig = (import ../../defaults/polybar.nix {
+  polybarConfig = (import ../../defaults/polybar {
     font = import (./fonts + "/${font}" + /polybar.nix);
     colors = import (../../themes + "/${theme}" + /polybar.nix);
   });
 
-  qutebrowserConfig = (import ../../defaults/qutebrowser.nix {
+  qutebrowserConfig = (import ../../defaults/qutebrowser {
     font = import (./fonts + "/${font}" + /qutebrowser.nix);
     colors = import (../../themes + "/${theme}" + /qutebrowser.nix);
   });
 
-  rofiConfig = (import ../../defaults/rofi.nix);
+  rofiConfig = (import ../../defaults/rofi);
 
-  starshipConfig = import ../../defaults/starship.nix;
+  starshipConfig = import ../../defaults/starship;
 
-  sxhkdConfig = import ../../defaults/sxhkd.nix;
+  sxhkdConfig = import ../../defaults/sxhkd;
 
-  tridactylConfig = (import ../../defaults/tridactyl.nix {
+  tridactylConfig = (import ../../defaults/tridactyl {
     font = import (./fonts + "/${font}" + /tridactyl.nix);
     colors = import (../../themes + "/${theme}" + /tridactyl.nix);
   });
 
-  vividConfig = (import ../../defaults/vivid.nix {
+  vividConfig = (import ../../defaults/vivid {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
 
-  zathuraConfig = (import ../../defaults/zathura.nix {
+  zathuraConfig = (import ../../defaults/zathura {
     font = import (./fonts + "/${font}" + /zathura.nix);
     colors = import (../../themes + "/${theme}" + /zathura.nix);
   });
