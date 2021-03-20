@@ -9,33 +9,33 @@ let
   ];
   python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
-  batConfig = import ../../defaults/bat.nix;
+  batConfig = import ../../defaults/bat;
 
-  direnvConfig = import ../../defaults/direnv.nix;
+  direnvConfig = import ../../defaults/direnv;
 
   fdConfig = {
     ignores =
-      (import ../../defaults/fd.nix).ignores
-      ++ (import ./fd.nix).ignores;
+      (import ../../defaults/fd).ignores
+      ++ (import ./fd).ignores;
   };
 
   fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish.nix {
+    (import ../../defaults/fish {
       colors = import (../../themes + "/${theme}" + /fish.nix);
     })
     (import ./fish.nix);
 
-  fzfConfig = (import ../../defaults/fzf.nix {
+  fzfConfig = (import ../../defaults/fzf {
     colors = import (../../themes + "/${theme}" + /fzf.nix);
   });
 
-  gitConfig = import ../../defaults/git.nix;
+  gitConfig = import ../../defaults/git;
 
-  lfConfig = import ../../defaults/lf.nix { };
+  lfConfig = import ../../defaults/lf { };
 
-  starshipConfig = import ../../defaults/starship.nix;
+  starshipConfig = import ../../defaults/starship;
 
-  vividConfig = (import ../../defaults/vivid.nix {
+  vividConfig = (import ../../defaults/vivid {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
 in

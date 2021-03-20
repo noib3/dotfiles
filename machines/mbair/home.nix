@@ -74,7 +74,9 @@ let
 
   skhdConfig = import ../../defaults/skhd;
 
-  sshConfig = import ../../defaults/ssh;
+  sshConfig = lib.attrsets.recursiveUpdate
+    (import ../../defaults/ssh)
+    (import ./ssh.nix);
 
   starshipConfig = import ../../defaults/starship;
 
@@ -107,6 +109,13 @@ in
     username = "noibe";
     homeDirectory = "/Users/noibe";
     stateVersion = "21.03";
+
+    file = {
+      "/Users/noibe/.ssh" = {
+        source = "/Users/noibe/Sync/secrets/ssh-keys";
+        recursive = true;
+      };
+    };
 
     packages = with pkgs; [
       # auto-selfcontrol

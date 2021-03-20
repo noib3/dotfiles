@@ -98,6 +98,13 @@ in
     homeDirectory = "/home/noib3";
     stateVersion = "21.03";
 
+    file = {
+      "/home/noib3/.ssh" = {
+        source = "/home/noib3/Sync/secrets/ssh-keys";
+        recursive = true;
+      };
+    };
+
     packages = with pkgs; [
       bat
       calcurse

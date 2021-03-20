@@ -27,20 +27,20 @@ let
     }
   ''
   + builtins.readFile ./colors.css
-  + builtins.readFile ./tab-bar/debloat-tab-bar.css
-  + builtins.readFile ./tab-bar/tabs-layout.css
-  + builtins.readFile ./tab-bar/tabs-fill-available-width.css
-  + builtins.readFile ./tab-bar/numbered-tabs.css
-  + builtins.readFile ./tab-bar/tab-close-button-always-on-hover.css
-  + builtins.readFile ./tab-bar/hide-tabs-with-one-tab.css
-  + builtins.readFile ./nav-bar/debloat-nav-bar.css
-  + builtins.readFile ./nav-bar/nav-bar-layout.css
-  + builtins.readFile ./nav-bar/nav-bar-on-focus.css
-  + builtins.readFile ./url-bar/debloat-url-bar.css
-  + builtins.readFile ./url-bar/url-bar-layout.css
-  + builtins.readFile ./url-bar/remove-megabar.css
-  + builtins.readFile ./side-bar/debloat-side-bar.css
-  + builtins.readFile ./side-bar/side-bar-layout.css
+  + builtins.readFile ./tabbar/debloat-tabbar.css
+  + builtins.readFile ./tabbar/tabbar-layout.css
+  + builtins.readFile ./tabbar/tabs-fill-available-width.css
+  + builtins.readFile ./tabbar/numbered-tabs.css
+  + builtins.readFile ./tabbar/tab-close-button-always-on-hover.css
+  + builtins.readFile ./tabbar/hide-tabs-with-one-tab.css
+  + builtins.readFile ./navbar/debloat-navbar.css
+  + builtins.readFile ./navbar/navbar-layout.css
+  + builtins.readFile ./navbar/navbar-on-focus.css
+  + builtins.readFile ./urlbar/debloat-urlbar.css
+  + builtins.readFile ./urlbar/urlbar-layout.css
+  + builtins.readFile ./urlbar/remove-megabar.css
+  + builtins.readFile ./sidebar/debloat-sidebar.css
+  + builtins.readFile ./sidebar/sidebar-layout.css
   + ''
     #PersonalToolbar {
       display: none !important;
