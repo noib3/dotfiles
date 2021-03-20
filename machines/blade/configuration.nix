@@ -62,15 +62,8 @@ in
     enable = true;
   };
 
-  services.logind = {
-    extraConfig = ''
-      IdleAction=ignore
-    '';
-  };
-
   services.xserver = {
     enable = true;
-    layout = "us";
 
     # Length of time in milliseconds that a key must be depressed before
     # autorepeat starts.
@@ -79,6 +72,18 @@ in
     # Length of time in milliseconds that should elapse between
     # autorepeat-generated keystrokes.
     autoRepeatInterval = 30;
+
+    layout = "us";
+
+    # This together with 'xset s off' (executed on startup by the bspwm config)
+    # should disable every display power management option. See
+    # https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
+    # and https://shallowsky.com/linux/x-screen-blanking.html for more infos.
+    config = ''
+      Section "Extensions"
+          Option "DPMS" "off"
+      EndSection
+    '';
 
     libinput = {
       enable = true;

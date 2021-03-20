@@ -56,5 +56,6 @@
     };
   };
 
-  script = "polybar bar &";
+  script = "";
+  # script = "polybar bar &";
 }

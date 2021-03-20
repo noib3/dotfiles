@@ -18,4 +18,13 @@
       state = "tiled";
     };
   };
+
+  startupPrograms = [
+    "polybar bar"
+  ];
+
+  extraConfig = ''
+    # Turn off the screen saver (`man xset` for more infos).
+    xset s off
+  '';
 }
