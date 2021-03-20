@@ -2,8 +2,6 @@
 
 {
   config = ''
-    colorscheme current
-
     set modeindicator false
 
     bind j scrollline 5
@@ -14,7 +12,59 @@
     bind n findnext 1
     bind N findnext -1
     
-    source $SECRETSDIR/tridactyl/website-bindings
+    unbind --mode=normal t
+    unbind --mode=normal gr
+    unbind --mode=normal gt
+
+    bind gh open https://google.com
+    bind th tabopen https://google.com
+
+    bind gma open https://mail.protonmail.com/inbox
+    bind tma tabopen https://mail.protonmail.com/inbox
+
+    bind gkp open https://keep.google.com
+    bind tkp tabopen https://keep.google.com
+
+    bind gyt open https://youtube.com
+    bind tyt tabopen https://youtube.com
+
+    bind gre open https://reddit.com
+    bind tre tabopen https://reddit.com
+
+    bind gdf open https://github.com/noib3/dotfiles
+    bind tdf tabopen https://github.com/noib3/dotfiles
+
+    bind gbg open https://rarbgunblocked.org/torrents.php
+    bind tbg tabopen https://rarbgunblocked.org/torrents.php
+
+    bind glg open https://libgen.li
+    bind tlg tabopen https://libgen.li
+
+    bind gn26 open https://app.n26.com/account
+    bind tn26 tabopen https://app.n26.com/account
+
+    bind gwi open https://wise.com/user/account/
+    bind twi tabopen https://wise.com/user/account/
+
+    bind gt0 open https://www.tradezero.co/account/
+    bind tt0 tabopen https://www.tradezero.co/account/
+
+    bind gtw open https://manage.tastyworks.com/index.html
+    bind ttw tabopen https://manage.tastyworks.com/index.html
+
+    bind gtra open http://localhost:9091/transmission/web/
+    bind ttra tabopen http://localhost:9091/transmission/web/
+
+    bind gbm open http://localhost:5001
+    bind tbm tabopen http://localhost:5001
+
+    bind gsy open http://localhost:8384
+    bind tsy tabopen http://localhost:8384
+
+    bind grsy open https://46.101.51.224:8384
+    bind trsy tabopen https://46.101.51.224:8384
+
+    colorscheme current
   '';
 
   themes = {

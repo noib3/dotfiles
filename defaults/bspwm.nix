@@ -12,4 +12,10 @@
   monitors = {
     "focused" = [ "1" "2" "3" "4" "5" ];
   };
+
+  rules = {
+    "Zathura" = {
+      state = "tiled";
+    };
+  };
 }

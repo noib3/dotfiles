@@ -10,7 +10,8 @@
     "super + g" = "alacritty --command gotop";
 
     # Open the web browser 
-    "alt + Return" = "firefox";
+    # "alt + Return" = "firefox";
+    "alt + Return" = "qutebrowser";
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
@@ -31,7 +32,7 @@
     # "alt + shift + {k,j,h,l}" = "bspc node -n {north,south,west,east}";
 
     # Rotate trees
-    "alt + {_,shift + }r" = "bspc node -R {270,90}";
+    "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
     # Focus stacked windows
 

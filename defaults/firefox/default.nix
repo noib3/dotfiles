@@ -3,24 +3,27 @@ let
   userChrome = ''
     * {
       font-family: "${font.family}";
-      font-variant: "Bold Italic";
       font-size: ${font.size} !important;
     }
 
     :root {
-      --color-unfocused-tabs-bg: ${colors.unfocused_tabs_bg};
-      --color-unfocused-tabs-fg: ${colors.unfocused_tabs_fg};
-      --color-focused-tabs-bg: ${colors.focused_tabs_bg};
-      --color-focused-tabs-fg: ${colors.focused_tabs_fg};
-      --color-urlbar-separator: ${colors.urlbar_separator};
-      --color-urlbar-bg: ${colors.urlbar_bg};
-      --color-urlbar-fg: ${colors.urlbar_fg};
-      --color-urlbar-popup-url: ${colors.urlbar_popup_url};
-      --color-urlbar-selected-bg: ${colors.urlbar_selected_bg};
-      --color-urlbar-selected-fg: ${colors.urlbar_selected_fg};
-      --color-urlbar-selected-popup_url: ${colors.urlbar_selected_popup_url};
-      --color-sidebar-bg: ${colors.sidebar_bg};
-      --color-sidebar-fg: ${colors.sidebar_fg};
+      --color-unfocused-tabs-bg: ${colors.tabs.unfocused.bg};
+      --color-unfocused-tabs-fg: ${colors.tabs.unfocused.fg};
+
+      --color-focused-tabs-bg: ${colors.tabs.focused.bg};
+      --color-focused-tabs-fg: ${colors.tabs.focused.fg};
+
+      --color-urlbar-bg: ${colors.urlbar.bg};
+      --color-urlbar-fg: ${colors.urlbar.fg};
+      --color-urlbar-popup-url: ${colors.urlbar.url.fg};
+      --color-urlbar-separator: ${colors.urlbar.separator};
+
+      --color-urlbar-selected-bg: ${colors.urlbar.selected.bg};
+      --color-urlbar-selected-fg: ${colors.urlbar.selected.fg};
+      --color-urlbar-selected-popup_url: ${colors.urlbar.selected.fg};
+
+      --color-sidebar-bg: ${colors.sidebar.bg};
+      --color-sidebar-fg: ${colors.sidebar.fg};
     }
   ''
   + builtins.readFile ./colors.css
@@ -47,7 +50,7 @@ let
   userContent = ''
     @-moz-document url-prefix(about:blank) {
       * {
-        background-color: ${colors.about_blank_bg} !important;
+        background-color: ${colors.about-blank.bg} !important;
       }
     }
   '';
@@ -55,6 +58,7 @@ in
 {
   extensions = with (import ./extensions.nix); [
     bitwarden
+    hide-scrollbars
     tridactyl-no-new-tab
   ];
 
@@ -71,6 +75,7 @@ in
         "browser.urlbar.update2" = false;
         "browser.urlbar.shortcuts.bookmarks" = false;
         "browser.urlbar.shortcuts.tabs" = false;
+        "browser.urlbar.shortcuts.history" = false;
         "browser.search.hiddenOneOffs" =
           "Google"
           + ",Amazon.com"

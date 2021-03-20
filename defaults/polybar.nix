@@ -44,6 +44,7 @@
       poll-interval = 1;
       label-charging = "🔌 %percentage%%";
       label-discharging = "🔋 %percentage%%";
+      label-full = "🔌 %percentage%%";
     };
 
     "module/date" = {

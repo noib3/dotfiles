@@ -11,23 +11,24 @@
     };
   };
 
-  urlbar = {
+  completion = {
     bg = "#3e4452";
     fg = "#abb2bf";
     url.fg = "#6aafef";
-    separator = "#5c6073";
 
     selected = {
       bg = "#6aafef";
       fg = "#282c34";
-      # selected_popup_url = "#282c34";
+    };
+
+    category = {
+      bg = "#282c34";
+      fg = "#abb2bf";
     };
   };
 
-  sidebar = {
-    bg = "#282c34";
+  statusbar = {
+    bg = "#3e4452";
     fg = "#abb2bf";
   };
-
-  about-blank.bg = "#282c34";
 }

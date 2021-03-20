@@ -9,7 +9,7 @@
     info = "size";
     period = 1;
     shell = "bash";
-    timefmt = "2006-Jan-02 at 15:04:05";
+    timefmt = "January 02, 2006 at 15:04:05";
   };
 
   commands = {
@@ -25,10 +25,10 @@
       }}
     '';
 
-    touch = ''%touch "$@"   ; lf -remote "send $id select \"$@\""'';
+    touch = ''%touch "$@"; lf -remote "send $id select \"$@\""'';
     mkdir = ''%mkdir -p "$@"; lf -remote "send $id select \"$@\""'';
-    give_ex = ''%chmod +x $fx ; lf -remote "send $id reload"'';
-    remove_ex = ''%chmod -x $fx ; lf -remote "send $id reload"'';
+    give_ex = ''%chmod +x $fx; lf -remote "send $id reload"'';
+    remove_ex = ''%chmod -x $fx; lf -remote "send $id reload"'';
 
     fuzzy_edit = ''
       ''${{

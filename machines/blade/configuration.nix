@@ -21,39 +21,27 @@ in
   };
 
   time.timeZone = "Europe/Rome";
-
   i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "us";
-    colors = [
-      "282c34"
-      "e06c75"
-      "98c379"
-      "e5c07b"
-      "61afef"
-      "c678dd"
-      "56b6c2"
-      "abb2bf"
-      "282c34"
-      "be5046"
-      "98c379"
-      "d19a66"
-      "61afef"
-      "c678dd"
-      "56b6c2"
-      "3e4452"
-    ];
-  };
+  console.keyMap = "us";
 
-  # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
     layout = "us";
+
+    # Length of time in milliseconds that a key must be depressed before
+    # autorepeat starts.
+    autoRepeatDelay = 140;
+
+    # Length of time in milliseconds that should elapse between
+    # autorepeat-generated keystrokes.
+    autoRepeatInterval = 30;
+
     libinput = {
       enable = true;
       naturalScrolling = true;
+      disableWhileTyping = true;
     };
+
     displayManager = {
       defaultSession = "none+bspwm";
       autoLogin = {
@@ -61,6 +49,7 @@ in
         user = "noib3";
       };
     };
+
     windowManager.bspwm.enable = true;
   };
 
@@ -106,6 +95,7 @@ in
       evdev:input:b0003v1532p026F*
        KEYBOARD_KEY_700e2=leftmeta
        KEYBOARD_KEY_700e3=leftalt
+       KEYBOARD_KEY_700e6=rightmeta
     '';
   };
 

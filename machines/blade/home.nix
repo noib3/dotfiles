@@ -50,12 +50,19 @@ let
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf.nix { })
-    (import ./lf.nix);
+    (import ./lf.nix { });
 
   polybarConfig = (import ../../defaults/polybar.nix {
     font = import (./fonts + "/${font}" + /polybar.nix);
     colors = import (../../themes + "/${theme}" + /polybar.nix);
   });
+
+  qutebrowserConfig = (import ../../defaults/qutebrowser.nix {
+    font = import (./fonts + "/${font}" + /qutebrowser.nix);
+    colors = import (../../themes + "/${theme}" + /qutebrowser.nix);
+  });
+
+  rofiConfig = (import ../../defaults/rofi.nix);
 
   starshipConfig = import ../../defaults/starship.nix;
 
@@ -68,6 +75,11 @@ let
 
   vividConfig = (import ../../defaults/vivid.nix {
     colors = import (../../themes + "/${theme}" + /vivid.nix);
+  });
+
+  zathuraConfig = (import ../../defaults/zathura.nix {
+    font = import (./fonts + "/${font}" + /zathura.nix);
+    colors = import (../../themes + "/${theme}" + /zathura.nix);
   });
 in
 {
@@ -89,6 +101,7 @@ in
       fd
       file
       fish
+      feh
       gotop
       lazygit
       mediainfo
@@ -100,13 +113,16 @@ in
         ];
       })
       nixpkgs-fmt
+      nodejs
       noto-fonts-emoji
       ookla-speedtest-cli
       pfetch
       python-with-my-packages
+      sxiv
+      ueberzug
       vimv
-      vivid
       xclip
+      yarn
     ];
 
     sessionVariables = {
@@ -144,6 +160,7 @@ in
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      qutebrowser = unstable.qutebrowser;
       starship = unstable.starship;
       vimv = unstable.vimv;
     })
@@ -197,6 +214,18 @@ in
     enable = true;
   } // lfConfig;
 
+  programs.mpv = {
+    enable = true;
+  };
+
+  programs.qutebrowser = {
+    enable = true;
+  } // qutebrowserConfig;
+
+  programs.rofi = {
+    enable = true;
+  } // rofiConfig;
+
   programs.tridactyl = {
     enable = true;
   } // tridactylConfig;
@@ -208,6 +237,10 @@ in
   programs.vivid = {
     enable = true;
   } // vividConfig;
+
+  programs.zathura = {
+    enable = true;
+  } // zathuraConfig;
 
   services.polybar = {
     enable = true;

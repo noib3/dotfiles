@@ -57,33 +57,12 @@
           || lf -remote "send $id echoerr 'Error: could not eject disk'"
       }}
     '';
-
-    mount_ocean = ''
-      ''${{
-        mnt_dir="''${HOME}/ocean"
-        mkdir "''${mnt_dir}"
-        sshfs ocean: "''${mnt_dir}" -F "''${HOME}/.ssh/config" \
-          && lf -remote "send $id cd ''${mnt_dir}" \
-        lf -remote "send $id reload"
-      }}
-    '';
-
-    unmount_ocean = ''
-      ''${{
-        mnt_dir="''${HOME}/ocean"
-        lf -remote "send $id cd ''${HOME}"
-        umount -f "''${mnt_dir}" && rm -rf "''${mnt_dir}"
-        lf -remote "send $id reload"
-      }}
-    '';
   };
 
   keybindings = {
     P = "open_pdf_with_preview";
     s = "set_wallpaper";
     j = "eject_disk";
-    mo = "mount_ocean";
-    uo = "unmount_ocean";
     gvl = ''cd "/Volumes"'';
   };
 }
