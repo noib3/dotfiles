@@ -59,7 +59,9 @@ let
     colors = import (../../themes + "/${theme}" + /fzf.nix);
   });
 
-  gitConfig = import ../../defaults/git;
+  gitConfig = lib.attrsets.recursiveUpdate
+    (import ../../defaults/git)
+    (import ./git.nix);
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
@@ -74,9 +76,7 @@ let
 
   skhdConfig = import ../../defaults/skhd;
 
-  sshConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/ssh)
-    (import ./ssh.nix);
+  sshConfig = import ../../defaults/ssh;
 
   starshipConfig = import ../../defaults/starship;
 
