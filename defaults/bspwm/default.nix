@@ -24,6 +24,8 @@
   ];
 
   extraConfig = ''
+    feh --bg-fill /home/noib3/Sync/wallpapers/afterglow.png
+
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
   '';

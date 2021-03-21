@@ -54,6 +54,8 @@ let
     (import ../../defaults/lf { })
     (import ./lf.nix { });
 
+  picomConfig = import ../../defaults/picom;
+
   polybarConfig = (import ../../defaults/polybar {
     font = import (./fonts + "/${font}" + /polybar.nix);
     colors = import (../../themes + "/${theme}" + /polybar.nix);
@@ -256,6 +258,10 @@ in
   programs.zathura = {
     enable = true;
   } // zathuraConfig;
+
+  services.picom = {
+    enable = true;
+  } // picomConfig;
 
   services.polybar = {
     enable = true;

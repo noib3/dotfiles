@@ -1,7 +1,8 @@
 {
-  bg = "#3c3836";
+  bg = "#282828";
   fg = "#a89984";
-  /* border = "#"; */
+  border = "#3c3836";
+  focused_desktop_bg = "#3c3836";
   focused_desktop_fg = "#fabd2f";
-  # focused_desktop_bg = "#";
+  empty_desktop_fg = "#928374";
 }

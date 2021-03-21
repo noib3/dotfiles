@@ -27,7 +27,7 @@ return require('packer').startup(function()
   use {'iamcco/markdown-preview.nvim', run='cd app && yarn install'}
   use {
     'akinsho/nvim-bufferline.lua',
-    disable = true,
+    -- disable = true,
     requires = {
       'kyazdani42/nvim-web-devicons',
       config = [[require('config.devicons')]]

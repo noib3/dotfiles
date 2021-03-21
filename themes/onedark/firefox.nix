@@ -20,7 +20,6 @@
     selected = {
       bg = "#6aafef";
       fg = "#282c34";
-      # selected_popup_url = "#282c34";
     };
   };
 

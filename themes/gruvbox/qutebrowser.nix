@@ -11,22 +11,24 @@
     };
   };
 
-  urlbar = {
+  completion = {
     bg = "#3c3836";
     fg = "#ebdbb2";
     url.fg = "#83a598";
-    separator = "#a89984";
 
     selected = {
       bg = "#83a598";
       fg = "#3c3836";
     };
+
+    category = {
+      bg = "#282828";
+      fg = "#a89984";
+    };
   };
 
-  sidebar = {
+  statusbar = {
     bg = "#3c3836";
-    fg = "#ebddb2";
+    fg = "#ebdbb2";
   };
-
-  about-blank.bg = "#282828";
 }
