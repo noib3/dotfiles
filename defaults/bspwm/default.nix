@@ -1,4 +1,4 @@
-{ colors }:
+{ theme, colors }:
 
 {
   settings = {
@@ -24,7 +24,7 @@
   ];
 
   extraConfig = ''
-    feh --bg-fill /home/noib3/Sync/wallpapers/afterglow.png
+    feh --bg-fill /home/noib3/Sync/wallpapers/${theme}.png
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off

@@ -50,5 +50,17 @@
 
     # Move desktops
     "ctrl + super + {1,5}" = "bspc desktop -s '{1-5}'";
+
+    # Screenshot the whole screen
+    "super + shift + 3" = ''
+      set sshot /home/noib3/Sync/screenshots/(date +%4Y-%b-%d@%T).png \
+        && import -window root $sshot
+    '';
+
+    # Screenshot a portion of the screen
+    "super + shift + 4" = ''
+      set sshot /home/noib3/Sync/screenshots/(date +%4Y-%b-%d@%T).png \
+        && import $sshot
+    '';
   };
 }

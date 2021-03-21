@@ -21,6 +21,7 @@ let
 
   bspwmConfig = (import ../../defaults/bspwm {
     colors = import (../../themes + "/${theme}" + /bspwm.nix);
+    theme = theme;
   });
 
   direnvConfig = import ../../defaults/direnv;
@@ -116,6 +117,7 @@ in
       fish
       feh
       gotop
+      graphicsmagick-imagemagick-compat
       lazygit
       mediainfo
       neovim-nightly

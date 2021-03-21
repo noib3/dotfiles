@@ -2,7 +2,7 @@
 
 {
   shellAliases = {
-    ls = "ls -Alhv --color --file-type --group-directories-first";
+    ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
     wget = "wget --hsts-file=~/.cache/wget/wget-hsts";
     grep = "grep --ignore-case --color=auto";
     ipython = "ipython --no-confirm-exit";
