@@ -8,8 +8,8 @@
     };
 
     pepenerostore = {
-      user = "nix";
-      hostname = "139.59.168.21";
+      user = "pepe";
+      hostname = "138.68.144.16";
       identityFile = "~/.ssh/pepenerostore_ecdsa";
       serverAliveInterval = 120;
     };

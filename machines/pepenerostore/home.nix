@@ -46,8 +46,8 @@ in
   ];
 
   home = {
-    username = "nix";
-    homeDirectory = "/home/nix";
+    username = "pepe";
+    homeDirectory = "/home/pepe";
     stateVersion = "21.03";
 
     packages = with pkgs; [
