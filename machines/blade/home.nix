@@ -110,12 +110,17 @@ in
 
     packages = with pkgs; [
       bat
+      blueman
       calcurse
       chafa
+      evemu
+      evtest
       fd
+      feh
       file
       fish
-      feh
+      fusuma
+      gcc
       gotop
       graphicsmagick-imagemagick-compat
       lazygit
@@ -135,8 +140,10 @@ in
       python-with-my-packages
       sxiv
       ueberzug
+      unzip
       vimv
       xclip
+      xdotool
       yarn
     ];
 
@@ -161,6 +168,11 @@ in
 
   xdg.configFile."calcurse" = {
     source = ../../defaults/calcurse;
+    recursive = true;
+  };
+
+  xdg.configFile."fusuma" = {
+    source = ../../defaults/fusuma;
     recursive = true;
   };
 

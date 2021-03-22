@@ -1,0 +1,15 @@
+swipe:
+  3:
+    left:
+      command: "xdotool key shift+l"
+    right:
+      command: "xdotool key shift+h"
+  4:
+    up:
+      command: "xdotool key alt+f"
+    down:
+      command: "xdotool key alt+f"
+    left:
+      command: "xdotool key ctrl+shift+Right"
+    right:
+      command: "xdotool key ctrl+shift+Left"

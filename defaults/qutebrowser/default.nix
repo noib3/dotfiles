@@ -66,6 +66,11 @@ in
       timestamp_format = "";
     };
 
+    input.insert_mode = {
+      auto_load = true;
+      leave_on_load = true;
+    };
+
     scrolling = {
       bar = "never";
       smooth = true;
@@ -86,6 +91,8 @@ in
       mode_on_change = "restore";
       # Select the previously selected tab when the focused tab is removed.
       select_on_remove = "last-used";
+
+      close_mouse_button = "right";
     };
 
     url = {
@@ -220,6 +227,6 @@ in
 
     c.tabs.padding = {"bottom": 1, "left": 7, "right": 7, "top": 1}
 
-    config.load_autoconfig(False)
+    config.load_autoconfig(True)
   '';
 }

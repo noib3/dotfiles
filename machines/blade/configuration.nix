@@ -26,9 +26,11 @@ in
     isNormalUser = true;
     home = "/home/noib3";
     shell = pkgs.fish;
-    # The plugdev group is needed by the openrazer-daemon service.
-    # See https://openrazer.github.io/#project for more details.
-    extraGroups = [ "wheel" "plugdev" ];
+    # The input group is needed by libinput-gestures, while the plugdev group
+    # is needed by the openrazer-daemon service. See
+    # https://github.com/bulletmark/libinput-gestures and
+    # https://openrazer.github.io/#project for more details.
+    extraGroups = [ "wheel" "input" "plugdev" ];
   };
 
   security.sudo = {
@@ -50,11 +52,7 @@ in
   console.keyMap = "us";
 
   environment.systemPackages = with pkgs; [
-    evemu
-    evtest
-    gcc
     git
-    libinput-gestures
     vim
   ];
 

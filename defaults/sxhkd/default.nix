@@ -10,8 +10,8 @@
     "super + g" = "alacritty --command gotop";
 
     # Open the web browser 
-    # "alt + Return" = "firefox";
-    "alt + Return" = "qutebrowser";
+    # "alt + w" = "firefox";
+    "alt + w" = "qutebrowser";
 
     # Launch the file opener
     "super + space" = "rofi -show drun";
@@ -45,7 +45,10 @@
 
     # Move floating windows
 
-    # Focus or send to the given desktop
+    # Cycle desktops
+    "ctrl + shift + {Left,Right}" = "bspc desktop -f {prev,next}";
+
+    # Focus or send window to the given desktop
     "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
 
     # Move desktops
