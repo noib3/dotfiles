@@ -51,11 +51,8 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      bat
       chafa
-      fd
       file
-      fish
       gotop
       lazygit
       mediainfo
@@ -65,7 +62,6 @@ in
       pfetch
       python-with-my-packages
       vimv
-      vivid
     ];
 
     sessionVariables = {

@@ -157,9 +157,7 @@ in
       # redshift
       rsync
       # selfcontrol
-      skhd
       # skim
-      spacebar
       # sshfs
       syncthing
       # tastyworks
@@ -168,10 +166,8 @@ in
       texlive.combined.scheme-full
       transmission-remote-cli
       vimv
-      vivid
       wget
       xmlstarlet
-      yabai
       yarn
     ];
 

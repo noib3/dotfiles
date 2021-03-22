@@ -109,16 +109,13 @@ in
     };
 
     packages = with pkgs; [
-      bat
       blueman
       calcurse
       chafa
       evemu
       evtest
-      fd
       feh
       file
-      fish
       fusuma
       gcc
       gotop
