@@ -11,8 +11,6 @@ let
 
   batConfig = import ../../defaults/bat;
 
-  direnvConfig = import ../../defaults/direnv;
-
   fdConfig = {
     ignores =
       (import ../../defaults/fd).ignores
@@ -87,7 +85,6 @@ in
 
   nixpkgs.overlays = [
     (self: super: {
-      direnv = unstable.direnv;
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
@@ -107,10 +104,6 @@ in
   programs.bat = {
     enable = true;
   } // batConfig;
-
-  programs.direnv = {
-    enable = true;
-  } // direnvConfig;
 
   programs.fd = {
     enable = true;
