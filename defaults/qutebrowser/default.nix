@@ -112,7 +112,6 @@ in
     normal = {
       "<Super-r>" = "config-source";
 
-      "<Super-q>" = "quit";
       "<Super-c>" = "fake-key <Ctrl-c>";
 
       "<Super-Up>" = "scroll-to-perc 0";
@@ -185,7 +184,6 @@ in
     };
 
     command = {
-      "<Super-q>" = "quit";
       "<Super-c>" = "completion-item-yank";
       "<Super-v>" = "fake-key <Ctrl-v>"; # doesn't work ??
 
@@ -196,7 +194,6 @@ in
     };
 
     insert = {
-      "<Super-q>" = "quit";
       "<Super-c>" = "fake-key <Ctrl-c>";
       "<Super-v>" = "fake-key <Ctrl-v>";
 

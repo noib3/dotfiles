@@ -181,6 +181,7 @@ in
   nixpkgs.overlays = [
     (self: super: {
       direnv = unstable.direnv;
+      fish = unstable.fish;
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
@@ -269,6 +270,10 @@ in
   programs.zathura = {
     enable = true;
   } // zathuraConfig;
+
+  services.blueman-applet = {
+    enable = true;
+  };
 
   services.picom = {
     enable = true;

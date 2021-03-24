@@ -7,10 +7,10 @@ in
     /etc/nixos/hardware-configuration.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  sound.enable = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
   hardware = {
     bluetooth.enable = true;
@@ -20,21 +20,6 @@ in
       enable = true;
       package = pkgs.pulseaudioFull;
     };
-  };
-
-  users.users.noib3 = {
-    isNormalUser = true;
-    home = "/home/noib3";
-    shell = pkgs.fish;
-    # The input group is needed by libinput-gestures, while the plugdev group
-    # is needed by the openrazer-daemon service. See
-    # https://github.com/bulletmark/libinput-gestures and
-    # https://openrazer.github.io/#project for more details.
-    extraGroups = [ "wheel" "input" "plugdev" ];
-  };
-
-  security.sudo = {
-    wheelNeedsPassword = false;
   };
 
   networking = {
@@ -47,6 +32,12 @@ in
     };
   };
 
+  sound.enable = true;
+
+  security.sudo = {
+    wheelNeedsPassword = false;
+  };
+
   time.timeZone = "Europe/Rome";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "us";
@@ -56,20 +47,31 @@ in
     vim
   ];
 
-  programs.fish = {
-    enable = true;
+  users.users.noib3 = {
+    home = "/home/noib3";
+    shell = pkgs.fish;
+    # shell = "/home/noib3/.nix-profile/bin/fish";
+    isNormalUser = true;
+
+    # The input group is needed by libinput-gestures, while the plugdev group
+    # is needed by the openrazer-daemon service. See
+    # https://github.com/bulletmark/libinput-gestures and
+    # https://openrazer.github.io/#project for more details.
+    extraGroups = [ "wheel" "input" "plugdev" ];
   };
+
+  programs.fish.enable = true;
 
   services.xserver = {
     enable = true;
 
     # Length of time in milliseconds that a key must be depressed before
     # autorepeat starts.
-    autoRepeatDelay = 140;
+    autoRepeatDelay = 150;
 
     # Length of time in milliseconds that should elapse between
     # autorepeat-generated keystrokes.
-    autoRepeatInterval = 30;
+    autoRepeatInterval = 33;
 
     layout = "us";
 
@@ -99,6 +101,8 @@ in
 
     windowManager.bspwm.enable = true;
   };
+
+  services.blueman.enable = true;
 
   services.udev = {
     extraHwdb = ''

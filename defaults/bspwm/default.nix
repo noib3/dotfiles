@@ -22,7 +22,6 @@
   startupPrograms = [
     "fusuma"
     "polybar bar"
-    "blueman-applet"
   ];
 
   extraConfig = ''

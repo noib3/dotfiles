@@ -16,6 +16,20 @@
     lg = "lazygit";
   };
 
+  # shellInit = ''
+  #   set -x NIX_PATH \
+  #     /home/noib3/.nix-defexpr/channels \
+  #     nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos \
+  #     nixos-config=/etc/nixos/configuration.nix /nix/var/nix/profiles/per-user/root/channels
+
+  #   set -x PATH \
+  #     /run/wrappers/bin \
+  #     /home/noib3/.nix-profile/bin \
+  #     /etc/profiles/per-user/noib3/bin \
+  #     /nix/var/nix/profiles/default/bin \
+  #     /run/current-system/sw/bin
+  # '';
+
   interactiveShellInit = ''
     bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
       || true

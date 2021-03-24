@@ -20,6 +20,20 @@ nix-channel --update
 nix-shell '<home-manager>' -A install
 ```
 
+NOTE: if you get an error that tells you you ran out of space when
+installing/building something, increase the size of the `tmp` dir. For example
+in my case I did a
+```
+df -h
+```
+to list all the devices. It turns out that `/run/user/1000` is used as a tmp
+directory for building, so I did a
+```
+sudo mount -o remount,size=10G /run/user/1000
+```
+and everything was fine after that. If that directory doesn't work try a few
+others.
+
 Next clone this repository, symlink it into place and log out:
 
 ```sh
@@ -198,8 +212,8 @@ $ sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-
 Currently the use of `.htaccess` files is disabled. WordPress and many
 WordPress plugins use these files extensively for in-directory tweaks to the
 web server’s behavior. To allow them we need to edit our
-`/etc/apache2/sites-available/pepenerostore.conf` by setting the following
-block of text **inside** our `VirtualHost` block:
+`/etc/apache2/sites-available/pepenerostore.conf` by adding the following block
+of text:
 
 ```apache
 <Directory /var/www/pepenerostore.it/>
@@ -219,6 +233,8 @@ before enabling the changes we check that we haven't made any syntax errors
 ```sh
 $ sudo apache2ctl configtest
 ```
+
+and then we reload apache with `sudo systemctl restart apache2`.
 
 ### Downloading WordPress
 

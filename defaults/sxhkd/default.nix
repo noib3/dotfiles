@@ -34,6 +34,9 @@
     # Stack and unstack windows
     # "alt + shift + {k,j,h,l}" = "bspc node -n {north,south,west,east}";
 
+    # Kill windows
+    "super + q" = "bspc node -k";
+
     # Rotate trees
     "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
