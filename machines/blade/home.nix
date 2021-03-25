@@ -109,6 +109,7 @@ in
     };
 
     packages = with pkgs; [
+      bitwarden
       blueman
       calcurse
       chafa
@@ -187,6 +188,7 @@ in
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       qutebrowser = unstable.qutebrowser;
       starship = unstable.starship;
+      ueberzug = unstable.ueberzug;
       vimv = unstable.vimv;
     })
 

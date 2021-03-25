@@ -3,14 +3,13 @@
     # Reload sxhkd
     "super + Escape" = "pkill -USR1 -x sxhkd";
 
-    # Open the terminal
+    # Get a shell or launch some other terminal based program
     "super + Return" = "alacritty";
     "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
     "super + a" = "alacritty --command calcurse -C $HOME/.config/calcurse -D $SECRETSDIR/calcurse";
     "super + g" = "alacritty --command gotop";
 
     # Open the web browser 
-    # "alt + w" = "firefox";
     "alt + w" = "qutebrowser";
 
     # Launch the file opener
@@ -41,21 +40,32 @@
     "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
     # Focus stacked windows
+    # "alt + shift + {Up,Down}" = "";
 
     # Make windows larger
+    # "alt + {h,j,k,l}" = "bspc node -z {left,bottom,top,right} {-25 0,0 25,0 -25,25 0}";
+    "alt + h" = "bspc node -z left -25 0";
+    "alt + j" = "bspc node -z bottom 0 25";
+    "alt + k" = "bspc node -z top 0 -25";
+    "alt + l" = "bspc node -z right 25 0";
 
     # Make windows smaller
+    # "ctrl + {h,j,k,l}" = "bspc node -z {left,bottom,top,right} {25 0,0 -25,0 25,-25 0}";
+    "ctrl + h" = "bspc node -z right -25 0";
+    "ctrl + j" = "bspc node -z top 0 25";
+    "ctrl + k" = "bspc node -z bottom 0 -25";
+    "ctrl + l" = "bspc node -z left 25 0";
 
-    # Move floating windows
+    # Balance and mirror desktops
+    "alt + b" = "bspc node @/ -B";
+    "alt + y" = "bspc node @/ -F vertical";
+    "alt + x" = "bspc node @/ -F horizontal";
 
-    # Cycle desktops
+    # Focus or send window to the given desktop
     "ctrl + shift + {Left,Right}" = "bspc desktop -f {prev,next}";
 
     # Focus or send window to the given desktop
     "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
-
-    # Move desktops
-    "ctrl + super + {1,5}" = "bspc desktop -s '{1-5}'";
 
     # Screenshot the whole screen
     "super + shift + 3" = ''

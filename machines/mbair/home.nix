@@ -41,7 +41,7 @@ let
   fdConfig = {
     ignores =
       (import ../../defaults/fd).ignores
-      ++ (import ../../fd.nix).ignores;
+      ++ (import ./fd.nix).ignores;
   };
 
   firefoxConfig = (import ../../defaults/firefox {
@@ -69,7 +69,7 @@ let
 
   neomuttConfig = import ../../defaults/neomutt;
 
-  spacebarConfig = (import ./spacebar {
+  spacebarConfig = (import ../../defaults/spacebar {
     font = import (./fonts + "/${font}" + /spacebar.nix);
     colors = import (../../themes + "/${theme}" + /spacebar.nix);
   });
@@ -89,7 +89,7 @@ let
     colors = import (../../themes + "/${theme}" + /vivid.nix);
   });
 
-  yabaiConfig = (import ./yabai {
+  yabaiConfig = (import ../../defaults/yabai {
     colors = import (../../themes + "/${theme}" + /yabai.nix);
   });
 in
