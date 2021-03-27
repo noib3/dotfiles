@@ -29,5 +29,7 @@
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
+
+    systemctl --user start pulseaudio.service
   '';
 }

@@ -72,9 +72,6 @@ in
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
       THEME = "${theme}";
-      FZF_ONLYDIRS_COMMAND = ''
-        fd --base-directory=$HOME --hidden --type=d --color=always
-      '';
     };
   };
 

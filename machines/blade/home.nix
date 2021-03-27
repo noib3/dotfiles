@@ -5,6 +5,11 @@ let
   theme = "onedark";
   font = "roboto-mono";
 
+  sync-directory = "${config.home.homeDirectory}/Sync";
+  secrets-directory = "${sync-directory}/secrets";
+  screenshots-directory = "${sync-directory}/screenshots";
+  scripts-directory = "${sync-directory}/scripts";
+
   my-python-packages = python-packages: with python-packages; [
     ipython
   ];
@@ -15,7 +20,9 @@ let
       font = import (./fonts + "/${font}" + /alacritty.nix);
       colors = import (../../themes + "/${theme}" + /alacritty.nix);
     })
-    (import ./alacritty.nix);
+    (import ./alacritty.nix {
+      inherit pkgs;
+    });
 
   batConfig = import ../../defaults/bat;
 
@@ -60,6 +67,7 @@ let
   polybarConfig = (import ../../defaults/polybar {
     font = import (./fonts + "/${font}" + /polybar.nix);
     colors = import (../../themes + "/${theme}" + /polybar.nix);
+    scripts-directory = scripts-directory;
   });
 
   qutebrowserConfig = (import ../../defaults/qutebrowser {
@@ -67,11 +75,17 @@ let
     colors = import (../../themes + "/${theme}" + /qutebrowser.nix);
   });
 
-  rofiConfig = (import ../../defaults/rofi);
+  rofiConfig = (import ../../defaults/rofi {
+    font = import (./fonts + "/${font}" + /rofi.nix);
+    colors = import (../../themes + "/${theme}" + /rofi.nix);
+  });
 
   starshipConfig = import ../../defaults/starship;
 
-  sxhkdConfig = import ../../defaults/sxhkd;
+  sxhkdConfig = (import ../../defaults/sxhkd {
+    secrets-directory = secrets-directory;
+    screenshots-directory = screenshots-directory;
+  });
 
   sshConfig = import ../../defaults/ssh;
 
@@ -102,15 +116,14 @@ in
     stateVersion = "21.03";
 
     file = {
-      "/home/noib3/.ssh" = {
-        source = "/home/noib3/Sync/secrets/ssh-keys";
+      "${config.home.homeDirectory}/.ssh" = {
+        source = "${secrets-directory}/ssh-keys";
         recursive = true;
       };
     };
 
     packages = with pkgs; [
       bitwarden
-      blueman
       calcurse
       chafa
       evemu
@@ -148,16 +161,13 @@ in
     sessionVariables = {
       COLORTERM = "truecolor";
       EDITOR = "nvim";
-      HISTFILE = "$HOME/.cache/bash/bash_history";
+      HISTFILE = "${config.home.homeDirectory}/.cache/bash/bash_history";
       MANPAGER = "nvim -c 'set ft=man' -";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
-      LESSHISTFILE = "$HOME/.cache/less/lesshst";
+      LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
       THEME = "${theme}";
-      SECRETSDIR = "$HOME/Sync/secrets";
-      SCRSHOTDIR = "$HOME/Sync/screenshots";
-      SCRIPTSDIR = "$HOME/Sync/scripts";
       FZF_ONLYDIRS_COMMAND = ''
         fd --base-directory=$HOME --hidden --type=d --color=always
       '';
@@ -186,6 +196,7 @@ in
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      picom = unstable.picom;
       qutebrowser = unstable.qutebrowser;
       starship = unstable.starship;
       ueberzug = unstable.ueberzug;
@@ -272,10 +283,6 @@ in
   programs.zathura = {
     enable = true;
   } // zathuraConfig;
-
-  services.blueman-applet = {
-    enable = true;
-  };
 
   services.picom = {
     enable = true;

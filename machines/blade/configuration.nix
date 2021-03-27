@@ -102,8 +102,6 @@ in
     windowManager.bspwm.enable = true;
   };
 
-  services.blueman.enable = true;
-
   services.udev = {
     extraHwdb = ''
       evdev:input:b0003v1532p026F*

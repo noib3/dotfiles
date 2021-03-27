@@ -1,11 +1,20 @@
 {
-  fade = true;
-  fadeDelta = 2;
+  blur = true;
+  experimentalBackends = true;
 
-  shadow = true;
-  shadowOffsets = [ (-13) (-13) ];
+  opacityRule = [
+    "90:class_i ?= 'rofi'"
+  ];
+
+  fade = true;
+  fadeDelta = 3;
 
   extraOptions = ''
-    shadow-radius = 12;
+    blur:
+    {
+      method = "gaussian";
+      size = 10;
+      deviation = 5.0;
+    };
   '';
 }

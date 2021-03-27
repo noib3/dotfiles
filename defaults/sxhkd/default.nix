@@ -1,3 +1,5 @@
+{ secrets-directory, screenshots-directory }:
+
 {
   keybindings = {
     # Reload sxhkd
@@ -5,9 +7,12 @@
 
     # Get a shell or launch some other terminal based program
     "super + Return" = "alacritty";
-    "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
-    "super + a" = "alacritty --command calcurse -C $HOME/.config/calcurse -D $SECRETSDIR/calcurse";
     "super + g" = "alacritty --command gotop";
+    "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
+    "super + a" = ''
+      alacritty --command calcurse \
+        -C $HOME/.config/calcurse -D ${secrets-directory}/calcurse
+    '';
 
     # Open the web browser 
     "alt + w" = "qutebrowser";
@@ -17,6 +22,8 @@
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
+    "alt + d" = "bspc node -t tiled";
+    "alt + g" = "bspc node -t fullscreen";
 
     # Toggle float
     "alt + shift + f" = "bspc node -t ~float";
@@ -69,13 +76,13 @@
 
     # Screenshot the whole screen
     "super + shift + 3" = ''
-      set sshot /home/noib3/Sync/screenshots/(date +%4Y-%b-%d@%T).png \
+      set sshot ${screenshots-directory}/(date +%4Y-%b-%d@%T).png \
         && import -window root $sshot
     '';
 
     # Screenshot a portion of the screen
     "super + shift + 4" = ''
-      set sshot /home/noib3/Sync/screenshots/(date +%4Y-%b-%d@%T).png \
+      set sshot ${screenshots-directory}/(date +%4Y-%b-%d@%T).png \
         && import $sshot
     '';
   };

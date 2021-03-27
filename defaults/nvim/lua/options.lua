@@ -35,7 +35,6 @@ opt('b', 'undofile', true)
 opt('w', 'colorcolumn', '80')
 opt('w', 'linebreak', false)
 opt('w', 'list', true)
-opt('w', 'number', true)
 opt('w', 'relativenumber', true)
 
 if vim.env.SECRETSDIR then

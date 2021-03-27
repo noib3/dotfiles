@@ -152,6 +152,9 @@ in
       "gdf" = "open https://github.com/noib3/dotfiles";
       "tdf" = "open -t https://github.com/noib3/dotfiles";
 
+      "grhm" = "open https://github.com/nix-community/home-manager/find/master";
+      "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";
+
       "gbg" = "open https://rarbgunblocked.org/torrents.php";
       "tbg" = "open -t https://rarbgunblocked.org/torrents.php";
 
@@ -184,6 +187,8 @@ in
     };
 
     command = {
+      "<Super-w>" = "tab-close";
+
       "<Super-c>" = "completion-item-yank";
       "<Super-v>" = "fake-key <Ctrl-v>"; # doesn't work ??
 
@@ -194,6 +199,8 @@ in
     };
 
     insert = {
+      "<Super-w>" = "tab-close";
+
       "<Super-c>" = "fake-key <Ctrl-c>";
       "<Super-v>" = "fake-key <Ctrl-v>";
 

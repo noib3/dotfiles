@@ -1,7 +1,16 @@
+{ pkgs ? import <nixpkgs> { } }:
+
 {
   settings = {
+    shell = {
+      program = "${pkgs.fish}/bin/fish";
+      args = [
+        "--interactive"
+      ];
+    };
+
     window = {
-      padding.x = 5;
+      padding.x = 7;
       padding.y = 2;
     };
 
