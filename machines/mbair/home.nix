@@ -184,9 +184,6 @@ in
       SECRETSDIR = "$HOME/Sync/secrets";
       SCRSHOTDIR = "$HOME/Sync/screenshots";
       SCRIPTSDIR = "$HOME/Sync/scripts";
-      FZF_ONLYDIRS_COMMAND = ''
-        fd --base-directory=$HOME --hidden --type=d --color=always
-      '';
     };
   };
 

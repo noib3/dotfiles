@@ -11,6 +11,12 @@
     };
   };
 
+  hints = {
+    bg = "#3e4452";
+    fg = "#abb2bf";
+    match.fg = "#e5c07b";
+  };
+
   completion = {
     bg = "#3e4452";
     fg = "#abb2bf";
@@ -30,5 +36,14 @@
   statusbar = {
     bg = "#3e4452";
     fg = "#abb2bf";
+    private.bg = "#25003e";
+    private.fg = "#abb2bf";
+  };
+
+  messages = {
+    error = {
+      bg = "#be5046";
+      fg = "#abb2bf";
+    };
   };
 }

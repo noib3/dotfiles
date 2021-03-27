@@ -1,5 +1,7 @@
 { secrets-directory, screenshots-directory }:
-
+let
+  pa-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
+in
 {
   keybindings = {
     # Reload sxhkd
@@ -73,6 +75,10 @@
 
     # Focus or send window to the given desktop
     "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
+
+    # Control audio volume
+    "XF86Audio{LowerVolume,RaiseVolume}" = "pactl set-sink-volume ${pa-sink} {-,+}5%";
+    "XF86AudioMute" = "pactl set-sink-mute ${pa-sink} toggle";
 
     # Screenshot the whole screen
     "super + shift + 3" = ''

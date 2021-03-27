@@ -28,6 +28,12 @@ in
         selected.even.fg = colors.tabs.focused.fg;
       };
 
+      hints = {
+        bg = colors.hints.bg;
+        fg = colors.hints.fg;
+        match.fg = colors.hints.match.fg;
+      };
+
       completion = {
         category.bg = colors.completion.category.bg;
         category.fg = colors.completion.category.bg;
@@ -54,17 +60,40 @@ in
       statusbar = {
         normal.bg = colors.statusbar.bg;
         normal.fg = colors.statusbar.fg;
-        command.bg = colors.statusbar.bg;
-        command.fg = colors.statusbar.fg;
+        private.bg = colors.statusbar.private.bg;
+        private.fg = colors.statusbar.private.fg;
+        command = {
+          bg = colors.statusbar.bg;
+          fg = colors.statusbar.fg;
+          private.bg = colors.statusbar.private.bg;
+          private.fg = colors.statusbar.private.fg;
+        };
+      };
+
+      messages = {
+        error = {
+          bg = colors.messages.error.bg;
+          fg = colors.messages.error.fg;
+          border = colors.messages.error.bg;
+        };
       };
     };
 
     completion = {
-      # open_categories = [ ];
       show = "auto";
       shrink = true;
       timestamp_format = "";
+      scrollbar.padding = 0;
     };
+
+    hints = {
+      border = "none";
+      radius = 1;
+    };
+
+    messages.timeout = 1000;
+    content.autoplay = false;
+    downloads.remove_finished = 1000;
 
     input.insert_mode = {
       auto_load = true;
