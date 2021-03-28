@@ -42,6 +42,8 @@ in
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "us";
 
+  nixpkgs.config.allowUnfree = true;
+
   environment.systemPackages = with pkgs; [
     git
     vim
@@ -90,6 +92,8 @@ in
       naturalScrolling = true;
       disableWhileTyping = true;
     };
+
+    # videoDrivers = [ "nvidia" ];
 
     displayManager = {
       defaultSession = "none+bspwm";

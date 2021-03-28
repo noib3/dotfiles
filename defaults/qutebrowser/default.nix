@@ -118,8 +118,6 @@ in
       last_close = "close";
       # Restore the previously saved mode when switching tabs;
       mode_on_change = "restore";
-      # Select the previously selected tab when the focused tab is removed.
-      select_on_remove = "last-used";
 
       close_mouse_button = "right";
     };
@@ -219,7 +217,7 @@ in
       "<Super-w>" = "tab-close";
 
       "<Super-c>" = "completion-item-yank";
-      "<Super-v>" = "fake-key <Ctrl-v>"; # doesn't work ??
+      "<Super-v>" = "fake-key --global <Ctrl-v>";
 
       "<Super-Left>" = "rl-beginning-of-line";
       "<Super-Right>" = "rl-end-of-line";

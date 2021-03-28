@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Inspired by [1].
+
+function open {
+  text_files=()
+  image_files=()
+  for file in "$@"; do
+    case $(file -b --mime-type "$HOME/$file") in
+      text/*|application/json|inode/x-empty)
+        text_files+=($(echo "$HOME/$file" | sed "s/\ /\\\ /g"))
+        ;;
+      image/*)
+        setsid -f sxiv "$file"
+        # image_files+=("$f")
+        ;;
+      video/*)
+        setsid -f mpv --no-terminal "$file"
+        ;;
+      application/pdf)
+        setsid -f zathura "$file"
+        ;;
+    esac
+  done
+  # (( ${#image_files[@]} )) && open "${image_files[@]}"
+  if (( ${#text_files[@]} )); then
+    filenames="$(echo ${text_files[@]})"
+    alacritty -e sh -c "sleep 0.2 && $EDITOR $filenames"
+  fi
+}
+
+export -f open
+
+xdotool search --onlyvisible --classname "fuzzy-opener" windowunmap \
+  || xdotool search --classname "fuzzy-opener" windowmap \
+  || alacritty \
+      --class "fuzzy-opener" \
+      --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
+      -e sh -c 'fzf -m --prompt="Open> " --border=horizontal --print0 \
+                 | (nohup xargs -0 bash -c '\''open "$@"'\'' _ &>/dev/null &)'
+
+  # || alacritty \
+  #     --class "fuzzy-opener" \
+  #     --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
+  #     -e sh -c "fzf -m --prompt='Open> ' --border=horizontal > /proc/$$/fd/1" \
+  # | open
+
+# [1]: https://github.com/meribold/dotfiles/blob/master/home/bin/fzfmenu

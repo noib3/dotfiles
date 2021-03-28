@@ -1,0 +1,28 @@
+import:
+  - ~/Sync/scripts/fuzzy-opener/fonts/RobotoMono.yml
+  - ~/.config/alacritty/colorschemes/onedark.yml
+
+window:
+  dimensions:
+    columns: 50
+    lines: 9
+  decorations: buttonless
+  padding:
+    x: 10
+    y: 5
+
+key_bindings:
+  - { key: Q, mods: Super, action: Quit }
+  - { key: LBracket, mods: Alt|Shift, chars: "\x7B" } # {
+  - { key: RBracket, mods: Alt|Shift, chars: "\x7D" } # }
+  - { key: LBracket, mods: Alt, chars: "\x5B" } # [
+  - { key: RBracket, mods: Alt, chars: "\x5D" } # ]
+  - { key: 23, mods: Alt, chars: "\x7E" } # ~
+  - { key: 41, mods: Alt, chars: "\x40" } # @
+  - { key: 39, mods: Alt, chars: "\x23" } # #
+  - { key: 10, mods: Alt, chars: "\x60"} # `
+  - { key: Back, mods: Super, chars: "\x15" } # C-u
+  - { key: Up, mods: Super, chars: "\x15" } # C-u
+  - { key: Down, mods: Super, chars: "\x04" } # C-d
+  - { key: Left, mods: Super, chars: "\x01" } # C-a
+  - { key: Right, mods: Super, chars: "\x05" } # C-e

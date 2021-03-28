@@ -14,5 +14,6 @@
     "--color='prompt:4:regular'"
     "--color='pointer:1'"
     "--color='bg+:${colors.bgplus}'"
+    "--color='border:${colors.border}'"
   ];
 }

@@ -1,6 +1,6 @@
-{ secrets-directory, screenshots-directory }:
+{ secrets-directory, screenshots-directory, scripts-directory }:
 let
-  pa-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
+  pulseaudio-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
 in
 {
   keybindings = {
@@ -20,7 +20,8 @@ in
     "alt + w" = "qutebrowser";
 
     # Launch the file opener
-    "super + space" = "rofi -show drun";
+    # "super + space" = "rofi -show drun";
+    "super + space" = "${scripts-directory}/fuzzy-opener/fuzzy-opener";
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
@@ -77,8 +78,8 @@ in
     "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
 
     # Control audio volume
-    "XF86Audio{LowerVolume,RaiseVolume}" = "pactl set-sink-volume ${pa-sink} {-,+}5%";
-    "XF86AudioMute" = "pactl set-sink-mute ${pa-sink} toggle";
+    "XF86Audio{LowerVolume,RaiseVolume}" = "pactl set-sink-volume ${pulseaudio-sink} {-,+}5%";
+    "XF86AudioMute" = "pactl set-sink-mute ${pulseaudio-sink} toggle";
 
     # Screenshot the whole screen
     "super + shift + 3" = ''

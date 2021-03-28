@@ -8,12 +8,7 @@ let
   sync-directory = "${config.home.homeDirectory}/Sync";
   secrets-directory = "${sync-directory}/secrets";
   screenshots-directory = "${sync-directory}/screenshots";
-  scripts-directory = "${sync-directory}/scripts";
-
-  my-python-packages = python-packages: with python-packages; [
-    ipython
-  ];
-  python-with-my-packages = unstable.python39.withPackages my-python-packages;
+  scripts-directory = ./scripts;
 
   alacrittyConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/alacritty {
@@ -32,6 +27,8 @@ let
   });
 
   direnvConfig = import ../../defaults/direnv;
+
+  dunstConfig = import ../../defaults/dunst;
 
   fdConfig = {
     ignores =
@@ -85,6 +82,7 @@ let
   sxhkdConfig = (import ../../defaults/sxhkd {
     secrets-directory = secrets-directory;
     screenshots-directory = screenshots-directory;
+    scripts-directory = scripts-directory;
   });
 
   sshConfig = import ../../defaults/ssh;
@@ -116,9 +114,13 @@ in
     stateVersion = "21.03";
 
     file = {
-      "${config.home.homeDirectory}/.ssh" = {
+      ".ssh" = {
         source = "${secrets-directory}/ssh-keys";
         recursive = true;
+      };
+
+      ".icons/default" = {
+        source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
       };
     };
 
@@ -136,6 +138,7 @@ in
       gotop
       graphicsmagick-imagemagick-compat
       lazygit
+      libnotify
       mediainfo
       neovim-nightly
       (nerdfonts.override {
@@ -149,7 +152,11 @@ in
       noto-fonts-emoji
       ookla-speedtest-cli
       pfetch
-      python-with-my-packages
+      (python39.withPackages (
+        ps: with ps; [
+          ipython
+        ]
+      ))
       sxiv
       ueberzug
       unzip
@@ -172,9 +179,36 @@ in
     };
   };
 
+  xdg.configFile."alacritty/fuzzy-opener.yml" = {
+    text = lib.replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON
+      (import ./scripts/fuzzy-opener/alacritty.nix {
+        font = import (./fonts + "/${font}" + /alacritty.nix);
+        colors = import (../../themes + "/${theme}" + /alacritty.nix);
+      }));
+    # source =
+    #   let
+    #     yaml = pkgs.formats.yaml { };
+    #   in
+    #   yaml.generate "fuzzy-opener.yml"
+    #     (import ./scripts/fuzzy-opener/alacritty.nix {
+    #       font = import (./fonts + "/${font}" + /alacritty.nix);
+    #       colors = import (../../themes + "/${theme}" + /alacritty.nix);
+    #     });
+  };
+
   xdg.configFile."calcurse" = {
     source = ../../defaults/calcurse;
     recursive = true;
+  };
+
+  xdg.configFile."calcurse/hooks/post-save" = {
+    text = (import ./scripts/calcurse/post-save.nix {
+      secrets-directory = secrets-directory;
+    });
+  };
+
+  xdg.configFile."calcurse/hooks/calendar-icon.png" = {
+    source = ./scripts/calcurse/calendar-icon.png;
   };
 
   xdg.configFile."fusuma" = {
@@ -195,6 +229,7 @@ in
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       picom = unstable.picom;
+      python39 = unstable.python39;
       qutebrowser = unstable.qutebrowser;
       starship = unstable.starship;
       ueberzug = unstable.ueberzug;
@@ -281,6 +316,10 @@ in
   programs.zathura = {
     enable = true;
   } // zathuraConfig;
+
+  services.dunst = {
+    enable = true;
+  } // dunstConfig;
 
   services.picom = {
     enable = true;

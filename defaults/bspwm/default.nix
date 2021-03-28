@@ -17,6 +17,10 @@
     "Zathura" = {
       state = "tiled";
     };
+
+    "\\*:\"fuzzy-opener\"" = {
+      state = "fullscreen";
+    };
   };
 
   startupPrograms = [
@@ -25,7 +29,7 @@
   ];
 
   extraConfig = ''
-    feh --bg-fill /home/noib3/Sync/wallpapers/${theme}.png
+    feh --bg-fill --no-fehbg /home/noib3/Sync/wallpapers/${theme}.png
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
