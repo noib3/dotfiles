@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, font, colors, scripts-directory }:
+{ pkgs ? import <nixpkgs> { }, font, colors, scripts-dir }:
 
 {
   package = pkgs.polybar.override {
@@ -112,9 +112,9 @@
     "module/rofi-bluetooth" = {
       type = "custom/script";
       format-padding = 1;
-      exec = "${scripts-directory}/rofi-bluetooth/rofi-bluetooth --status";
+      exec = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth --status";
       interval = 1;
-      click-left = "${scripts-directory}/rofi-bluetooth/rofi-bluetooth &";
+      click-left = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth &";
     };
   };
 

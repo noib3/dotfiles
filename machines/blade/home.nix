@@ -2,19 +2,22 @@
 let
   unstable = import <nixos-unstable> { };
 
-  theme = "onedark";
   font = "roboto-mono";
+  theme = "onedark";
 
-  sync-directory = "${config.home.homeDirectory}/Sync";
-  secrets-directory = "${sync-directory}/secrets";
-  screenshots-directory = "${sync-directory}/screenshots";
-  scripts-directory = ./scripts;
-  qutebrowser-userscripts-directory = ./scripts/qutebrowser;
+  fonts-dir = ./fonts + "/${font}";
+  themes-dir = ../../themes + "/${theme}";
+
+  sync-dir = "${config.home.homeDirectory}/Sync";
+  secrets-dir = "${sync-dir}/secrets";
+  screenshots-dir = "${sync-dir}/screenshots";
+  scripts-dir = ./scripts;
+  qutebrowser-userscripts-dir = ./scripts/qutebrowser;
 
   alacrittyConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/alacritty {
-      font = import (./fonts + "/${font}" + /alacritty.nix);
-      colors = import (../../themes + "/${theme}" + /alacritty.nix);
+      font = import (fonts-dir + /alacritty.nix);
+      colors = import (themes-dir + /alacritty.nix);
     })
     (import ./alacritty.nix {
       inherit pkgs;
@@ -23,15 +26,15 @@ let
   batConfig = import ../../defaults/bat;
 
   bspwmConfig = (import ../../defaults/bspwm {
-    colors = import (../../themes + "/${theme}" + /bspwm.nix);
+    colors = import (themes-dir + /bspwm.nix);
     theme = theme;
   });
 
   direnvConfig = import ../../defaults/direnv;
 
   dunstConfig = (import ../../defaults/dunst {
-    font = import (./fonts + "/${font}" + /dunst.nix);
-    colors = import (../../themes + "/${theme}" + /dunst.nix);
+    font = import (fonts-dir + /dunst.nix);
+    colors = import (themes-dir + /dunst.nix);
   });
 
   fdConfig = {
@@ -41,18 +44,18 @@ let
   };
 
   firefoxConfig = (import ../../defaults/firefox {
-    font = import (./fonts + "/${font}" + /firefox.nix);
-    colors = import (../../themes + "/${theme}" + /firefox.nix);
+    font = import (fonts-dir + /firefox.nix);
+    colors = import (themes-dir + /firefox.nix);
   });
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
-      colors = import (../../themes + "/${theme}" + /fish.nix);
+      colors = import (themes-dir + /fish.nix);
     })
     (import ./fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
-    colors = import (../../themes + "/${theme}" + /fzf.nix);
+    colors = import (themes-dir + /fzf.nix);
   });
 
   gitConfig = lib.attrsets.recursiveUpdate
@@ -66,44 +69,44 @@ let
   picomConfig = import ../../defaults/picom;
 
   polybarConfig = (import ../../defaults/polybar {
-    font = import (./fonts + "/${font}" + /polybar.nix);
-    colors = import (../../themes + "/${theme}" + /polybar.nix);
-    scripts-directory = scripts-directory;
+    font = import (fonts-dir + /polybar.nix);
+    colors = import (themes-dir + /polybar.nix);
+    scripts-dir = scripts-dir;
   });
 
   qutebrowserConfig = (import ../../defaults/qutebrowser {
-    font = import (./fonts + "/${font}" + /qutebrowser.nix);
-    colors = import (../../themes + "/${theme}" + /qutebrowser.nix);
-    userscripts-directory = qutebrowser-userscripts-directory;
+    font = import (fonts-dir + /qutebrowser.nix);
+    colors = import (themes-dir + /qutebrowser.nix);
+    userscripts-dir = qutebrowser-userscripts-dir;
   });
 
   rofiConfig = (import ../../defaults/rofi {
-    font = import (./fonts + "/${font}" + /rofi.nix);
-    colors = import (../../themes + "/${theme}" + /rofi.nix);
+    font = import (fonts-dir + /rofi.nix);
+    colors = import (themes-dir + /rofi.nix);
   });
 
   starshipConfig = import ../../defaults/starship;
 
   sxhkdConfig = (import ../../defaults/sxhkd {
-    secrets-directory = secrets-directory;
-    screenshots-directory = screenshots-directory;
-    scripts-directory = scripts-directory;
+    secrets-dir = secrets-dir;
+    screenshots-dir = screenshots-dir;
+    scripts-dir = scripts-dir;
   });
 
   sshConfig = import ../../defaults/ssh;
 
   tridactylConfig = (import ../../defaults/tridactyl {
-    font = import (./fonts + "/${font}" + /tridactyl.nix);
-    colors = import (../../themes + "/${theme}" + /tridactyl.nix);
+    font = import (fonts-dir + /tridactyl.nix);
+    colors = import (themes-dir + /tridactyl.nix);
   });
 
   vividConfig = (import ../../defaults/vivid {
-    colors = import (../../themes + "/${theme}" + /vivid.nix);
+    colors = import (themes-dir + /vivid.nix);
   });
 
   zathuraConfig = (import ../../defaults/zathura {
-    font = import (./fonts + "/${font}" + /zathura.nix);
-    colors = import (../../themes + "/${theme}" + /zathura.nix);
+    font = import (fonts-dir + /zathura.nix);
+    colors = import (themes-dir + /zathura.nix);
   });
 in
 {
@@ -120,7 +123,7 @@ in
 
     file = {
       ".ssh" = {
-        source = "${secrets-directory}/ssh-keys";
+        source = "${secrets-dir}/ssh-keys";
         recursive = true;
       };
 
@@ -187,8 +190,8 @@ in
   xdg.configFile."alacritty/fuzzy-opener.yml" = {
     text = lib.replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON
       (import ./scripts/fuzzy-opener/alacritty.nix {
-        font = import (./fonts + "/${font}" + /alacritty.nix);
-        colors = import (../../themes + "/${theme}" + /alacritty.nix);
+        font = import (fonts-dir + /alacritty.nix);
+        colors = import (themes-dir + /alacritty.nix);
       }));
     # source =
     #   let
@@ -196,8 +199,8 @@ in
     #   in
     #   yaml.generate "fuzzy-opener.yml"
     #     (import ./scripts/fuzzy-opener/alacritty.nix {
-    #       font = import (./fonts + "/${font}" + /alacritty.nix);
-    #       colors = import (../../themes + "/${theme}" + /alacritty.nix);
+    #       font = import (fonts-dir + /alacritty.nix);
+    #       colors = import (themes-dir + /alacritty.nix);
     #     });
   };
 
@@ -223,7 +226,7 @@ in
   xdg.configFile."nvim/init.lua" = {
     text = (import ../../defaults/neovim/default.nix {
       inherit lib;
-      colors = import (../../themes + "/${theme}" + /neovim.nix);
+      colors = import (themes-dir + /neovim.nix);
     });
   };
 

@@ -1,4 +1,4 @@
-{ secrets-directory, screenshots-directory, scripts-directory }:
+{ secrets-dir, screenshots-dir, scripts-dir }:
 let
   pulseaudio-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
 in
@@ -13,7 +13,7 @@ in
     "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
     "super + a" = ''
       alacritty --command calcurse \
-        -C $HOME/.config/calcurse -D ${secrets-directory}/calcurse
+        -C $HOME/.config/calcurse -D ${secrets-dir}/calcurse
     '';
 
     # Open the web browser 
@@ -21,7 +21,7 @@ in
 
     # Launch the file opener
     # "super + space" = "rofi -show drun";
-    "super + space" = "${scripts-directory}/fuzzy-opener/fuzzy-opener";
+    "super + space" = "${scripts-dir}/fuzzy-opener/fuzzy-opener";
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
@@ -83,13 +83,13 @@ in
 
     # Screenshot the whole screen
     "super + shift + 3" = ''
-      set sshot ${screenshots-directory}/(date +%4Y-%b-%d@%T).png \
+      set sshot ${screenshots-dir}/(date +%4Y-%b-%d@%T).png \
         && import -window root $sshot
     '';
 
     # Screenshot a portion of the screen
     "super + shift + 4" = ''
-      set sshot ${screenshots-directory}/(date +%4Y-%b-%d@%T).png \
+      set sshot ${screenshots-dir}/(date +%4Y-%b-%d@%T).png \
         && import $sshot
     '';
   };
