@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+/usr/local/bin/terminal-notifier \
+  -title "Transmission" \
+  -subtitle "Torrent complete" \
+  -message "\'${TR_TORRENT_NAME}' has finished downloading" \
+  -appIcon "$(dirname $0)/transmission-logo.png"
+
+/usr/local/bin/transmission-remote --torrent "${TR_TORRENT_ID}" --remove

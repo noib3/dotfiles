@@ -9,6 +9,7 @@ let
   secrets-directory = "${sync-directory}/secrets";
   screenshots-directory = "${sync-directory}/screenshots";
   scripts-directory = ./scripts;
+  qutebrowser-userscripts-directory = ./scripts/qutebrowser;
 
   alacrittyConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/alacritty {
@@ -28,7 +29,10 @@ let
 
   direnvConfig = import ../../defaults/direnv;
 
-  dunstConfig = import ../../defaults/dunst;
+  dunstConfig = (import ../../defaults/dunst {
+    font = import (./fonts + "/${font}" + /dunst.nix);
+    colors = import (../../themes + "/${theme}" + /dunst.nix);
+  });
 
   fdConfig = {
     ignores =
@@ -70,6 +74,7 @@ let
   qutebrowserConfig = (import ../../defaults/qutebrowser {
     font = import (./fonts + "/${font}" + /qutebrowser.nix);
     colors = import (../../themes + "/${theme}" + /qutebrowser.nix);
+    userscripts-directory = qutebrowser-userscripts-directory;
   });
 
   rofiConfig = (import ../../defaults/rofi {
@@ -152,6 +157,7 @@ in
       noto-fonts-emoji
       ookla-speedtest-cli
       pfetch
+      pick-colour-picker
       (python39.withPackages (
         ps: with ps; [
           ipython
@@ -175,7 +181,6 @@ in
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
-      THEME = "${theme}";
     };
   };
 
@@ -201,12 +206,6 @@ in
     recursive = true;
   };
 
-  xdg.configFile."calcurse/hooks/post-save" = {
-    text = (import ./scripts/calcurse/post-save.nix {
-      secrets-directory = secrets-directory;
-    });
-  };
-
   xdg.configFile."calcurse/hooks/calendar-icon.png" = {
     source = ./scripts/calcurse/calendar-icon.png;
   };
@@ -217,8 +216,15 @@ in
   };
 
   xdg.configFile."nvim" = {
-    source = ../../defaults/nvim;
+    source = ../../defaults/neovim;
     recursive = true;
+  };
+
+  xdg.configFile."nvim/init.lua" = {
+    text = (import ../../defaults/neovim/default.nix {
+      inherit lib;
+      colors = import (../../themes + "/${theme}" + /neovim.nix);
+    });
   };
 
   nixpkgs.overlays = [

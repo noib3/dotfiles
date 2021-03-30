@@ -156,6 +156,16 @@ in
     };
   };
 
+  services.transmission = {
+    enable = true;
+    user = "noib3";
+    home = "/home/noib3";
+    settings = {
+      script-torrent-done-enabled = true;
+      script-torrent-done-filename = "/home/noib3/Sync/dotfiles/machines/blade/scripts/transmission/notify-done";
+    };
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave

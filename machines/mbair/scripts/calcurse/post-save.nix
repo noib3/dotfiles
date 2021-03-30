@@ -4,12 +4,11 @@
   #!/usr/bin/env bash
 
   function notify_commit() {
-    notify-send \
-      --expire-time=5000 \
-      --app-name="Calcurse's post-save hook" \
-      --icon="$(dirname $0)/calendar-icon.png" \
-      "Automatic commit script" \
-      "Pushing changes to GitHub..."
+    terminal-notifier \
+      -title "Calcurse's post-save hook" \
+      -subtitle "Automatic commit script" \
+      -message "Pushing changes to Github..." \
+      -appIcon "$(dirname $0)/calendar-icon.png"
   }
 
   function commit_new_entries() {

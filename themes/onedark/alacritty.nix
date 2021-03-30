@@ -9,6 +9,11 @@
     cursor = "#abb2bf";
   };
 
+  selection = {
+    text = "#abb2bf";
+    background = "#4b5263";
+  };
+
   normal = {
     black = "#5c6370";
     red = "#e06c75";

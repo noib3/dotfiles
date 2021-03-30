@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function notify_add() {
+  notify-send \
+    --expire-time=5000 \
+    --app-name="qutebrowser" \
+    --icon="$(dirname $0)/qutebrowser-logo.png" \
+    "Added new torrent" \
+    "${QUTE_URL} has started downloading"
+}
+
+function torrent_add() {
+  transmission-remote --add "${QUTE_URL}"
+}
+
+torrent_add && notify_add || true

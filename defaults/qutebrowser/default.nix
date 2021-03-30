@@ -1,4 +1,4 @@
-{ font, colors }:
+{ font, colors, userscripts-directory }:
 let
   home-page = "https://google.com";
 in
@@ -71,6 +71,12 @@ in
       };
 
       messages = {
+        info = {
+          bg = colors.statusbar.bg;
+          fg = colors.statusbar.fg;
+          border = colors.statusbar.bg;
+        };
+
         error = {
           bg = colors.messages.error.bg;
           fg = colors.messages.error.fg;
@@ -160,6 +166,8 @@ in
       "<Super-8>" = "tab-focus 8";
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
+
+      ",t" = "hint links userscript ${userscripts-directory}/torrent-add";
 
       "gh" = "open ${home-page}";
       "th" = "open -t ${home-page}";

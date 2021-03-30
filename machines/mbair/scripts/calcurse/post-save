@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 
-data_dir="${PRIVATEDIR}/calcurse"
-
 function notify_commit() {
   terminal-notifier \
     -title "Calcurse's post-save hook" \
     -subtitle "Automatic commit script" \
-    -message "Pushing ${data_dir} to Github..." \
+    -message "Pushing changes to Github..." \
     -appIcon "$(dirname $0)/calendar-icon.png"
 }
 
-function commit_calcurse() {
-  cd "${data_dir}"
+function commit_new_entries() {
+  cd "/Users/noibe/Sync/secrets/calcurse"
   git add .
-  git commit -m \
-    "$(date +%4Y-%b-%d@%T) Commit by post-save script"
+  git commit -m "$(date +%4Y-%b-%d@%T) Commit by calcurse's post-save hook"
   git push origin master
 }
 
 notify_commit
-commit_calcurse
+commit_new_entries

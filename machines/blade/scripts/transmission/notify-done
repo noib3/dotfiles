@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+function notify_done() {
+  /home/noib3/.nix-profile/bin/notify-send \
+    --expire-time=5000 \
+    --app-name="transmission-remote" \
+    --icon="$(dirname $0)/transmission-logo.png" \
+    "Torrent complete" \
+    "${TR_TORRENT_NAME} has finished downloading"
+}
+
+function torrent_remove() {
+  /run/current-system/sw/bin/transmission-remote --torrent "${TR_TORRENT_ID}" --remove
+}
+
+notify_done
+torrent_remove
