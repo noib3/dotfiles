@@ -32,7 +32,7 @@
   '';
 
   interactiveShellInit = ''
-    bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
+    bass source ~/.nix-profile/etc/profile.d/{nix,nix-daemon,hm-session-vars}.sh 2>/dev/null \
       || true
 
     set fish_greeting

@@ -63,6 +63,6 @@
     P = "open_pdf_with_preview";
     s = "set_wallpaper";
     j = "eject_disk";
-    gvl = ''cd "/Volumes"'';
+    gvl = "cd /Volumes";
   };
 }

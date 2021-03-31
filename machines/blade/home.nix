@@ -63,7 +63,7 @@ let
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
-    (import ./lf.nix { });
+    (import ./lf.nix);
 
   picomConfig = import ../../defaults/picom;
 
@@ -98,6 +98,8 @@ let
     font = import (fonts-dir + /tridactyl.nix);
     colors = import (themes-dir + /tridactyl.nix);
   });
+
+  udiskieConfig = import ../../defaults/udiskie;
 
   vividConfig = (import ../../defaults/vivid {
     colors = import (themes-dir + /vivid.nix);
@@ -156,6 +158,7 @@ in
       ))
       sxiv
       texlive.combined.scheme-full
+      tree-sitter
       ueberzug
       unzip
       vimv
@@ -198,7 +201,7 @@ in
       python39 = unstable.python39;
       qutebrowser = unstable.qutebrowser;
       starship = unstable.starship;
-      # texlive.combined.scheme-full = unstable.texlive.combined.scheme-full;
+      tree-sitter = unstable.tree-sitter;
       ueberzug = unstable.ueberzug;
       vimv = unstable.vimv;
     })
@@ -218,15 +221,15 @@ in
         font = import (fonts-dir + /alacritty.nix);
         colors = import (themes-dir + /alacritty.nix);
       }));
-    source =
-      let
-        yaml = pkgs.formats.yaml { };
-      in
-      yaml.generate "fuzzy-opener.yml"
-        (import ./scripts/fuzzy-opener/alacritty.nix {
-          font = import (fonts-dir + /alacritty.nix);
-          colors = import (themes-dir + /alacritty.nix);
-        });
+    # source =
+    #   let
+    #     yaml = pkgs.formats.yaml { };
+    #   in
+    #   yaml.generate "fuzzy-opener.yml"
+    #     (import ./scripts/fuzzy-opener/alacritty.nix {
+    #       font = import (fonts-dir + /alacritty.nix);
+    #       colors = import (themes-dir + /alacritty.nix);
+    #     });
   };
 
   xdg.configFile."calcurse" = {
@@ -346,6 +349,10 @@ in
   services.sxhkd = {
     enable = true;
   } // sxhkdConfig;
+
+  services.udiskie = {
+    enable = true;
+  } // udiskieConfig;
 
   xsession = {
     enable = true;

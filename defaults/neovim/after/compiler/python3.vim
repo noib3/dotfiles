@@ -1,7 +1,7 @@
-if exists("current_compiler")
+if exists('current_compiler')
   finish
 endif
-let current_compiler = "python3"
+let current_compiler = 'python3'
 
 let s:cpo_save = &cpo
 set cpo&vim

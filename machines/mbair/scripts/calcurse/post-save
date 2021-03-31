@@ -5,7 +5,7 @@ function notify_commit() {
     -title "calcurse's post-save hook" \
     -subtitle "Automatic commit script" \
     -message "Pushing changes to Github..." \
-    -appIcon "$(dirname $0)/calendar-icon.png"
+    -appIcon "$(dirname "$0")/calendar-icon.png"
 }
 
 function commit_new_entries() {

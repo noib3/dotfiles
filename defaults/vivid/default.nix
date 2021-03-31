@@ -52,6 +52,7 @@
         go = [ ".go" ];
         ipython = [ ".ipynb" ];
         javascript = [ ".js" ];
+        lua = [ ".lua" ];
         latex = {
           regular = [ ".tex" ];
           class = [ ".cls" ];

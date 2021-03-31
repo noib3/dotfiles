@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Inspired by [1].
-
 function open {
   text_files=()
   image_files=()
@@ -44,5 +42,3 @@ xdotool search --onlyvisible --classname "fuzzy-opener" windowunmap \
   #     --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
   #     -e sh -c "fzf -m --prompt='Open> ' --border=horizontal > /proc/$$/fd/1" \
   # | open
-
-# [1]: https://github.com/meribold/dotfiles/blob/master/home/bin/fzfmenu

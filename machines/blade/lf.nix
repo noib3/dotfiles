@@ -1,5 +1,3 @@
-{ pkgs ? import <nixpkgs> }:
-
 {
   commands = {
     open = ''
@@ -27,44 +25,17 @@
         [[ ''${#image_files[@]} -eq 0 ]] || setsid -f sxiv "''${text_files[@]}"
       }}
     '';
+
+    unmount_device = ''
+      %{{
+        udisksctl unmount -b "/dev/disk/by-label/''$(basename "$f")" \
+          && udisksctl power-off -b "/dev/disk/by-label/''$(basename "$f")"
+      }}
+    '';
   };
 
-  #previewer.source = pkgs.writeShellScript "pv.sh" ''
-  #  #!/usr/bin/env bash
-
-  #  FILE="$1"
-
-  #  function text_preview() {
-  #    bat "$FILE"
-  #  }
-
-  #  function pdf_preview() {
-  #    pdftotext "$FILE" -
-  #  }
-
-  #  function image_preview() {
-  #    chafa --fill=block --symbols=block "$FILE"
-  #  }
-
-  #  function video_preview() {
-  #    mediainfo "$FILE"
-  #  }
-
-  #  function audio_preview() {
-  #    mediainfo "$FILE"
-  #  }
-
-  #  function fallback_preview() {
-  #    text_preview
-  #  }
-
-  #  case "$(file -b --mime-type $FILE)" in
-  #    text/*) text_preview ;;
-  #    */pdf) pdf_preview ;;
-  #    image/*) image_preview ;;
-  #    video/*) video_preview ;;
-  #    audio/*) audio_preview ;;
-  #    *) fallback_preview ;;
-  #  esac
-  #'';
+  keybindings = {
+    "unm" = "unmount_device";
+    "gvl" = "cd /run/media/noib3";
+  };
 }

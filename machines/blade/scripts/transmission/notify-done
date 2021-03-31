@@ -4,7 +4,7 @@ function notify_done() {
   /home/noib3/.nix-profile/bin/notify-send \
     --expire-time=5000 \
     --app-name="transmission-remote" \
-    --icon="$(dirname $0)/transmission-logo.png" \
+    --icon="$(dirname "$0")/transmission-logo.png" \
     "Torrent complete" \
     "${TR_TORRENT_NAME} has finished downloading"
 }
