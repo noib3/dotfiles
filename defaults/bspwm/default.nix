@@ -1,4 +1,4 @@
-{ theme, colors }:
+{ colors }:
 
 {
   settings = {
@@ -29,7 +29,7 @@
   ];
 
   extraConfig = ''
-    feh --bg-fill --no-fehbg /home/noib3/Sync/wallpapers/${theme}.png
+    feh --bg-fill --no-fehbg ~/.config/wall.png
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off

@@ -13,7 +13,7 @@ opt('o', 'autochdir', true)
 opt('o', 'clipboard', 'unnamedplus')
 opt('o', 'completeopt', 'menuone,noinsert')
 opt('o', 'fillchars', 'fold: ,vert: ')
-opt('o', 'listchars', 'tab:⇥ ,space:·,eol:¬')
+opt('o', 'listchars', 'eol:¬,tab:⇥ ,space:·')
 opt('o', 'hidden', true)
 opt('o', 'ignorecase', true)
 opt('o', 'laststatus', 0)
@@ -38,6 +38,6 @@ opt('w', 'list', true)
 opt('w', 'number', true)
 opt('w', 'relativenumber', true)
 
-if vim.env.SECRETSDIR then
-  opt('b', 'spellfile', vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add')
-end
+-- if vim.env.SECRETSDIR then
+--   opt('b', 'spellfile', vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add')
+-- end

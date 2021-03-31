@@ -8,9 +8,9 @@ let
   fonts-dir = ./fonts + "/${font}";
   themes-dir = ../../themes + "/${theme}";
 
-  sync-dir = "${config.home.homeDirectory}/Sync";
-  secrets-dir = "${sync-dir}/secrets";
-  screenshots-dir = "${sync-dir}/screenshots";
+  sync-dir = config.home.homeDirectory + "/Sync";
+  secrets-dir = sync-dir + "/secrets";
+  screenshots-dir = sync-dir + "/screenshots";
   scripts-dir = ./scripts;
   qutebrowser-userscripts-dir = ./scripts/qutebrowser;
 
@@ -27,7 +27,6 @@ let
 
   bspwmConfig = (import ../../defaults/bspwm {
     colors = import (themes-dir + /bspwm.nix);
-    theme = theme;
   });
 
   direnvConfig = import ../../defaults/direnv;
@@ -121,17 +120,6 @@ in
     homeDirectory = "/home/noib3";
     stateVersion = "21.03";
 
-    file = {
-      ".ssh" = {
-        source = "${secrets-dir}/ssh-keys";
-        recursive = true;
-      };
-
-      ".icons/default" = {
-        source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
-      };
-    };
-
     packages = with pkgs; [
       bitwarden
       calcurse
@@ -167,6 +155,7 @@ in
         ]
       ))
       sxiv
+      texlive.combined.scheme-full
       ueberzug
       unzip
       vimv
@@ -185,23 +174,59 @@ in
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
     };
+
+    file = {
+      ".ssh" = {
+        source = "${secrets-dir}/ssh-keys";
+        recursive = true;
+      };
+
+      ".icons/default" = {
+        source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
+      };
+    };
+  };
+
+  nixpkgs.overlays = [
+    (self: super: {
+      direnv = unstable.direnv;
+      fish = unstable.fish;
+      fzf = unstable.fzf;
+      lf = unstable.lf;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      picom = unstable.picom;
+      python39 = unstable.python39;
+      qutebrowser = unstable.qutebrowser;
+      starship = unstable.starship;
+      # texlive.combined.scheme-full = unstable.texlive.combined.scheme-full;
+      ueberzug = unstable.ueberzug;
+      vimv = unstable.vimv;
+    })
+
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
+  ];
+
+  xdg.configFile."wall.png" = {
+    source = themes-dir + /wall.png;
   };
 
   xdg.configFile."alacritty/fuzzy-opener.yml" = {
-    text = lib.replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON
-      (import ./scripts/fuzzy-opener/alacritty.nix {
+    text = lib.replaceStrings [ "\\\\" ] [ "\\" ]
+      (builtins.toJSON (import ./scripts/fuzzy-opener/alacritty.nix {
         font = import (fonts-dir + /alacritty.nix);
         colors = import (themes-dir + /alacritty.nix);
       }));
-    # source =
-    #   let
-    #     yaml = pkgs.formats.yaml { };
-    #   in
-    #   yaml.generate "fuzzy-opener.yml"
-    #     (import ./scripts/fuzzy-opener/alacritty.nix {
-    #       font = import (fonts-dir + /alacritty.nix);
-    #       colors = import (themes-dir + /alacritty.nix);
-    #     });
+    source =
+      let
+        yaml = pkgs.formats.yaml { };
+      in
+      yaml.generate "fuzzy-opener.yml"
+        (import ./scripts/fuzzy-opener/alacritty.nix {
+          font = import (fonts-dir + /alacritty.nix);
+          colors = import (themes-dir + /alacritty.nix);
+        });
   };
 
   xdg.configFile."calcurse" = {
@@ -229,26 +254,6 @@ in
       colors = import (themes-dir + /neovim.nix);
     });
   };
-
-  nixpkgs.overlays = [
-    (self: super: {
-      direnv = unstable.direnv;
-      fish = unstable.fish;
-      fzf = unstable.fzf;
-      lf = unstable.lf;
-      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      picom = unstable.picom;
-      python39 = unstable.python39;
-      qutebrowser = unstable.qutebrowser;
-      starship = unstable.starship;
-      ueberzug = unstable.ueberzug;
-      vimv = unstable.vimv;
-    })
-
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
 
   fonts.fontconfig = {
     enable = true;

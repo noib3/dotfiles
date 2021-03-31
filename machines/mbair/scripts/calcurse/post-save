@@ -2,7 +2,7 @@
 
 function notify_commit() {
   terminal-notifier \
-    -title "Calcurse's post-save hook" \
+    -title "calcurse's post-save hook" \
     -subtitle "Automatic commit script" \
     -message "Pushing changes to Github..." \
     -appIcon "$(dirname $0)/calendar-icon.png"

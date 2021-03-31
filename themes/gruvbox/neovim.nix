@@ -1,5 +1,5 @@
 {
-  colorscheme = "onedark";
+  colorscheme = "gruvbox";
 
   terminal = {
     color0 = "#282828";

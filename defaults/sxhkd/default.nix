@@ -20,7 +20,6 @@ in
     "alt + w" = "qutebrowser";
 
     # Launch the file opener
-    # "super + space" = "rofi -show drun";
     "super + space" = "${scripts-dir}/fuzzy-opener/fuzzy-opener";
 
     # Toggle fullscreen

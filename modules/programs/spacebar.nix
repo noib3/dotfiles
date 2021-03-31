@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 
-# Adapted from https://github.com/LnL7/nix-darwin/blob/master/modules/services/spacebar/default.nix
+# Adapted from [1].
 
 with lib;
 let
@@ -63,3 +63,5 @@ in
     };
   };
 }
+
+# [1]: https://github.com/LnL7/nix-darwin/blob/master/modules/services/spacebar/default.nix
