@@ -6,6 +6,7 @@
     "--reverse"
     "--no-bold"
     "--info=inline"
+    "--height=8"
     "--hscroll-off=50"
     "--ansi"
     "--color='hl:-1:underline'"

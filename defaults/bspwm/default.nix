@@ -25,7 +25,6 @@
 
   startupPrograms = [
     "fusuma"
-    "polybar bar"
   ];
 
   extraConfig = ''
@@ -35,5 +34,6 @@
     xset s off
 
     systemctl --user start pulseaudio.service
+    systemctl --user restart polybar.service
   '';
 }

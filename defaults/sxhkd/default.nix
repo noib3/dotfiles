@@ -9,11 +9,10 @@ in
 
     # Get a shell or launch some other terminal based program
     "super + Return" = "alacritty";
-    "super + g" = "alacritty --command gotop";
-    "super + f" = "alacritty --command fish -c 'lf $HOME/Downloads'";
+    "super + g" = "alacritty -e gotop";
+    "super + f" = "alacritty -e fish -c 'lf $HOME/Downloads'";
     "super + a" = ''
-      alacritty --command calcurse \
-        -C $HOME/.config/calcurse -D ${secrets-dir}/calcurse
+      alacritty -e calcurse -C ~/.config/calcurse -D ${secrets-dir}/calcurse
     '';
 
     # Open the web browser 

@@ -38,4 +38,8 @@
     "unm" = "unmount_device";
     "gvl" = "cd /run/media/noib3";
   };
+
+  previewer.source = ./previewer;
+
+  extraConfig = "set cleaner ~/.config/lf/cleaner";
 }

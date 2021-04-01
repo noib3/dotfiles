@@ -4,6 +4,8 @@ let
 
   theme = "onedark";
 
+  themes-dir = ../../themes + "/${theme}";
+
   my-python-packages = python-packages: with python-packages; [
     ipython
   ];
@@ -19,12 +21,12 @@ let
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
-      colors = import (../../themes + "/${theme}" + /fish.nix);
+      colors = import (themes-dir + /fish.nix);
     })
     (import ./fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
-    colors = import (../../themes + "/${theme}" + /fzf.nix);
+    colors = import (themes-dir + /fzf.nix);
   });
 
   gitConfig = import ../../defaults/git;
@@ -34,7 +36,7 @@ let
   starshipConfig = import ../../defaults/starship;
 
   vividConfig = (import ../../defaults/vivid {
-    colors = import (../../themes + "/${theme}" + /vivid.nix);
+    colors = import (themes-dir + /vivid.nix);
   });
 in
 {
@@ -58,7 +60,11 @@ in
       nixpkgs-fmt
       ookla-speedtest-cli
       pfetch
-      python-with-my-packages
+      (python39.withPackages (
+        ps: with ps; [
+          ipython
+        ]
+      ))
       vimv
     ];
 
@@ -71,13 +77,7 @@ in
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "$HOME/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
-      THEME = "${theme}";
     };
-  };
-
-  xdg.configFile."nvim" = {
-    source = ../../defaults/nvim;
-    recursive = true;
   };
 
   nixpkgs.overlays = [
@@ -85,6 +85,7 @@ in
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      python39 = unstable.python39;
       starship = unstable.starship;
       vimv = unstable.vimv;
     })
@@ -93,6 +94,11 @@ in
       url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
     }))
   ];
+
+  xdg.configFile."nvim" = {
+    source = ../../defaults/neovim;
+    recursive = true;
+  };
 
   programs.home-manager = {
     enable = true;

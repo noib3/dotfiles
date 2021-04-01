@@ -3,26 +3,31 @@
 function openn {
   text_files=()
   image_files=()
-  for f in "$@"; do
-    case $(file -b --mime-type "$f") in
-      text/*|application/json|inode/x-empty) text_files+=($(echo "$f" | sed "s/\ /\\\ /g"));;
-      image/*) image_files+=("$f");;
-      video/*) open -n "$f";;
-      *) open "$f";;
+  while read file; do
+    case $(file -b --mime-type "$HOME/$file") in
+      text/*|application/json|inode/x-empty)
+        text_files+=($(echo "$HOME/$file" | sed "s/\ /\\\ /g"))
+        ;;
+      image/*)
+        image_files+=("$file")
+        ;;
+      video/*)
+        open -n "$file"
+        ;;
+      *)
+        open "$file"
+        ;;
     esac
   done
   (( ${#image_files[@]} )) && open "${image_files[@]}"
   if (( ${#text_files[@]} )); then
     filenames="$(echo ${text_files[@]})"
-    alacritty --command bash -c "sleep .5 && $EDITOR $filenames"
+    alacritty -e sh -c "sleep .5 && $EDITOR $filenames"
   fi
 }
 
-export -f openn
-
-alacritty --config-file "$(dirname $0)/fuzzy-opener.yml" \
-          --title "floating" \
-          --command bash -c 'printf "\e[5 q"; \
-                             fzf --prompt="Open> " --multi --print0 | \
-                             (nohup xargs -0 bash -c '\''openn "$@"'\'' \
-                              _ &>/dev/null &)'
+(alacritty \
+  --title 'fuzzy-opener' \
+  --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
+  -e sh -c 'fzf -m --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
+  | openn

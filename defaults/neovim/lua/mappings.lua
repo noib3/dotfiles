@@ -14,7 +14,7 @@ function q_if_one_buff_or_multpl_wins()
   if fn.len(fn.getbufinfo({buflisted=1})) == 1 or fn.winnr('$') > 1 then
     cmd('q')
   else
-    cmd('bd')
+    cmd('BD')
   end
 end
 
@@ -30,6 +30,9 @@ map('i', '<C-e>', '<C-o>A', {})
 
 -- Toggle folds
 map('n', '<Space>', 'za', {})
+
+-- Disable 's' in normal mode
+map('n', 's', '<NOP>', {})
 
 -- Navigate split windows
 map('n', '<S-Up>', '<C-w>k', {noremap=true})

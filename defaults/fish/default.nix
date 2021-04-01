@@ -32,9 +32,6 @@
   '';
 
   interactiveShellInit = ''
-    bass source ~/.nix-profile/etc/profile.d/{nix,nix-daemon,hm-session-vars}.sh 2>/dev/null \
-      || true
-
     set fish_greeting
 
     set fish_cursor_default block
@@ -87,15 +84,6 @@
 
   plugins = [
     {
-      name = "bass";
-      src = pkgs.fetchFromGitHub {
-        owner = "edc";
-        repo = "bass";
-        rev = "2fd3d2157d5271ca3575b13daec975ca4c10577a";
-        sha256 = "0mb01y1d0g8ilsr5m8a71j6xmqlyhf8w4xjf00wkk8k41cz3ypky";
-      };
-    }
-    {
       name = "pisces";
       src = pkgs.fetchFromGitHub {
         owner = "laughedelic";
@@ -113,18 +101,18 @@
     '';
 
     fuzzy_edit.body = ''
-      set -l filenames (fzf --prompt="Edit> " --multi --height=8) \
-        && set -l filenames (echo "~/"(string escape -- $filenames) \
+      set -l filenames (fzf -m --prompt="Edit> ") \
+        && set -l filenames (echo ~/(string escape -- $filenames) \
                               | tr "\n" " " | sed 's/\s$//') \
-        && commandline $EDITOR" "$filenames \
+        && commandline "$EDITOR $filenames" \
         && commandline --function execute
       commandline --function repaint
     '';
 
     fuzzy_cd.body = ''
       set -l dirname (eval (echo $FZF_ONLYDIRS_COMMAND) \
-                       | fzf --prompt="Cd> " --height=8) \
-        && cd $HOME/$dirname
+                       | fzf --prompt="Cd> ") \
+        && cd "$HOME/$dirname"
       emit fish_prompt
       commandline -f repaint
     '';
@@ -133,17 +121,17 @@
       history merge
       set -l command_with_ts (
         history --null --show-time="%B %d %T | " \
-          | fzf --read0 --tiebreak=index --prompt="History> " --height=8 --query=(commandline)\
+          | fzf --read0 --tiebreak=index --prompt="History> " --query=(commandline) \
           | string collect) \
         && set -l command (string split -m1 " | " $command_with_ts)[2] \
-        && commandline $command
+        && commandline "$command"
       commandline --function repaint
     '';
 
     fuzzy_search.body = ''
-      set -l filenames (fzf --prompt="Paste> " --multi --height=8) \
-        && set -l filenames (echo "~/"(string escape -- $filenames) | tr "\n" " " | sed 's/\s$//') \
-        && commandline --insert $filenames
+      set -l filenames (echo ~/(string escape -- (fzf -m --prompt="Paste> ")) \
+                         | tr "\n" " " | sed 's/\s$//') \
+        && commandline --insert "$filenames"
       commandline --function repaint
     '';
   };

@@ -19,7 +19,7 @@ let
       font = import (fonts-dir + /alacritty.nix);
       colors = import (themes-dir + /alacritty.nix);
     })
-    (import ./alacritty.nix {
+    (import ./overrides/alacritty {
       inherit pkgs;
     });
 
@@ -39,7 +39,7 @@ let
   fdConfig = {
     ignores =
       (import ../../defaults/fd).ignores
-      ++ (import ./fd.nix).ignores;
+      ++ (import ./overrides/fd).ignores;
   };
 
   firefoxConfig = (import ../../defaults/firefox {
@@ -51,7 +51,7 @@ let
     (import ../../defaults/fish {
       colors = import (themes-dir + /fish.nix);
     })
-    (import ./fish.nix);
+    (import ./overrides/fish);
 
   fzfConfig = (import ../../defaults/fzf {
     colors = import (themes-dir + /fzf.nix);
@@ -59,11 +59,11 @@ let
 
   gitConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/git)
-    (import ./git.nix);
+    (import ./overrides/git);
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
-    (import ./lf.nix);
+    (import ./overrides/lf);
 
   picomConfig = import ../../defaults/picom;
 
@@ -176,6 +176,7 @@ in
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
+      SECRETSDIR = "${secrets-dir}";
     };
 
     file = {

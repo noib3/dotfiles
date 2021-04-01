@@ -33,7 +33,7 @@
     fuzzy_edit = ''
       ''${{
         clear
-        filename="$(fzf --prompt="Edit> " --multi --height=8)" \
+        filename="$(fzf -m --prompt="Edit> ")" \
           && $EDITOR "''${HOME}/''${filename}" \
           || true
       }}
@@ -43,8 +43,8 @@
       ''${{
         clear
         dirname="$(eval $(echo $FZF_ONLYDIRS_COMMAND) \
-                    | fzf --prompt="Cd> " --height=8)" \
-          && dirname="$(echo ''${dirname} | sed 's/\ /\\\ /g')" \
+                    | fzf --prompt="Cd> " \
+                    | sed 's/\ /\\\ /g')" \
           && lf -remote "send $id cd ~/''${dirname}" \
           || true
       }}
@@ -71,41 +71,29 @@
   };
 
   previewer.source = pkgs.writeShellScript "pv.sh" ''
-    #!/usr/bin/env bash
+    #!/usr/bin/env sh
 
-    FILE="$1"
+    file="$1"
 
-    function text_preview() {
-      bat "$FILE"
-    }
-
-    function pdf_preview() {
-      pdftotext "$FILE" -
-    }
-
-    function image_preview() {
-      chafa --fill=block --symbols=block "$FILE"
-    }
-
-    function video_preview() {
-      mediainfo "$FILE"
-    }
-
-    function audio_preview() {
-      mediainfo "$FILE"
-    }
-
-    function fallback_preview() {
-      text_preview
-    }
-
-    case "$(file -b --mime-type $FILE)" in
-      text/*) text_preview ;;
-      */pdf) pdf_preview ;;
-      image/*) image_preview ;;
-      video/*) video_preview ;;
-      audio/*) audio_preview ;;
-      *) fallback_preview ;;
+    case "$(file -b --mime-type "$file")" in
+      text/*)
+        bat "$file"
+        ;;
+      */pdf)
+        pdftotext "$file" -
+        ;;
+      image/*)
+        chafa --fill=block --symbols=block "$file"
+        ;;
+      video/*)
+        mediainfo "$file"
+        ;;
+      audio/*)
+        mediainfo "$file"
+        ;;
+      *)
+        bat "$file"
+        ;;
     esac
   '';
 }

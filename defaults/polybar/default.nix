@@ -26,7 +26,7 @@
       underline-size = 2;
       wm-restack = "bspwm";
       modules-left = "bspwm";
-      modules-right = "rofi-bluetooth wireless-network wired-network pulseaudio battery date time";
+      modules-right = "rofi-bluetooth wireless-network wired-network battery date time";
     };
 
     "module/bspwm" = {
@@ -74,19 +74,6 @@
       label-full = "🔌 %percentage%%";
     };
 
-    "module/pulseaudio" = {
-      type = "internal/pulseaudio";
-      format-volume-padding = 1;
-      format-muted-padding = 1;
-      sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
-      use-ui-max = false;
-      format-volume = "<ramp-volume> <label-volume>";
-      ramp-volume-0 = "🔈";
-      ramp-volume-1 = "🔉";
-      ramp-volume-2 = "🔊";
-      label-muted = "🔇 %percentage%";
-    };
-
     "module/wired-network" = {
       type = "internal/network";
       format-connected-padding = 1;
@@ -94,8 +81,7 @@
       format-packetloss-padding = 1;
       interface = "enp2s0";
       ping-interval = 3;
-      label-connected = "%{F${colors.wired-network-icon-fg}}%{F-} %ifname%";
-      label-disconnected = " %ifname%";
+      label-connected = "%{F${colors.wired-network-icon-fg}}%{F-} eth";
     };
 
     "module/wireless-network" = {
@@ -118,5 +104,11 @@
     };
   };
 
-  script = "";
+  script = ''
+    PATH=$PATH:\
+    /run/wrappers/bin:\
+    /home/noib3/.nix-profile/bin:\
+    /etc/profiles/per-user/noib3/bin:\
+    /nix/var/nix/profiles/default/bin:/run/current-system/sw/bin polybar bar &
+  '';
 }
