@@ -1,17 +1,30 @@
-{ pkgs ? import <nixpkgs> { }, font, colors, scripts-dir }:
-
-{
-  package = pkgs.polybar.override {
-    pulseSupport = true;
+{ font, colors, scripts-dir }:
+let
+  f0 = {
+    family = font.font-0.family;
+    style = font.font-0.style;
+    size = builtins.toString font.font-0.size;
+    padding-top = builtins.toString font.font-0.padding-top;
   };
 
-  config = {
-    "colors" = {
-      blue = colors.bluetooth-icon-fg;
-    };
+  f2 = {
+    family = font.font-2.family;
+    style = font.font-2.style;
+    size = builtins.toString font.font-2.size;
+    padding-top = builtins.toString font.font-2.padding-top;
+  };
 
+  f3 = {
+    family = font.font-3.family;
+    style = font.font-3.style;
+    size = builtins.toString font.font-3.size;
+    padding-top = builtins.toString font.font-3.padding-top;
+  };
+in
+{
+  config = {
     "settings" = {
-      format-background = colors.focused-desktop-bg;
+      format-background = colors.module.bg;
     };
 
     "bar/bar" = {
@@ -19,30 +32,35 @@
       module-margin-left = 1;
       radius = 0;
       cursor-click = "pointer";
-      font-0 = "${font.family}:style=${font.style}:size=${font.size};3";
+      font-0 = "${f0.family}:style=${f0.style}:size=${f0.size};${f0.padding-top}";
       font-1 = "Noto Color Emoji:style=Regular:scale=9;2";
-      background = colors.bg;
-      foreground = colors.fg;
+      font-2 = "${f2.family}:style=${f2.style}:size=${f2.size};${f2.padding-top}";
+      font-3 = "${f3.family}:style=${f3.style}:size=${f3.size};${f3.padding-top}";
+      background = colors.bar.bg;
+      foreground = colors.bar.fg;
       underline-size = 2;
       wm-restack = "bspwm";
       modules-left = "bspwm";
-      modules-right = "rofi-bluetooth wireless-network wired-network battery date time";
+      modules-right = "bluetooth wifi ethernet battery date time";
     };
 
     "module/bspwm" = {
       type = "internal/bspwm";
-      format-background = colors.bg;
+      inline-mode = true;
+      format-background = colors.bar.bg;
       label-focused = "%name%";
       label-focused-padding = 1;
-      label-focused-background = colors.focused-desktop-bg;
-      label-focused-foreground = colors.focused-desktop-fg;
+      label-focused-background = colors.bspwm.focused.bg;
+      # TODO
+      label-focused-foreground = colors.bspwm.focused.fg;
       label-occupied = "%name%";
       label-occupied-padding = 1;
+      label-occupied-foreground = colors.bspwm.occupied.fg;
       label-urgent = "%name%!";
       label-urgent-padding = 1;
       label-empty = "%name%";
       label-empty-padding = 1;
-      label-empty-foreground = colors.empty-desktop-fg;
+      label-empty-foreground = colors.bspwm.empty.fg;
     };
 
     "module/time" = {
@@ -74,32 +92,34 @@
       label-full = "🔌 %percentage%%";
     };
 
-    "module/wired-network" = {
+    "module/ethernet" = {
       type = "internal/network";
       format-connected-padding = 1;
       format-disconnected-padding = 1;
       format-packetloss-padding = 1;
       interface = "enp2s0";
       ping-interval = 3;
-      label-connected = "%{F${colors.wired-network-icon-fg}} %{F-}";
+      label-connected = "%{F${colors.icons.ethernet.fg}}%{T3}%{T-}%{F-}";
     };
 
-    "module/wireless-network" = {
+    "module/wifi" = {
       type = "internal/network";
       format-connected-padding = 1;
       format-disconnected-padding = 1;
       format-packetloss-padding = 1;
       interface = "wlo1";
       ping-interval = 3;
-      label-connected = "%{F${colors.wireless-network-icon-fg}}直%{F-} %essid%";
-      label-disconnected = "%{F${colors.empty-desktop-fg}}睊%{F-}";
+      label-connected = "%{F${colors.icons.wifi.on.fg}}%{T4}直%{T-}%{F-} %essid%";
+      label-disconnected = "%{F${colors.icons.wifi.off.fg}}%{T4}睊%{T-}%{F-}";
     };
 
-    "module/rofi-bluetooth" = {
+    "module/bluetooth" = {
       type = "custom/script";
       format-padding = 1;
+      # TODO
       exec = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth --status";
       interval = 1;
+      # TODO
       click-left = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth &";
     };
   };

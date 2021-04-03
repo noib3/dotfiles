@@ -10,15 +10,14 @@ map('n', '<C-s>', '<Cmd>w<CR>', {silent=true})
 
 -- Quit if there's only one buffer open or if there are multiple windows open,
 -- else delete the current buffer.
-function q_if_one_buff_or_multpl_wins()
-  if fn.len(fn.getbufinfo({buflisted=1})) == 1 or fn.winnr('$') > 1 then
-    cmd('q')
-  else
-    cmd('BD')
-  end
-end
+-- map('n', '<C-w>',
+--     '"<Cmd>".(len(getbufinfo({"buflisted": 1})) == 1 || winnr("$") > 1 ? "q" : "bd")."<CR>"',
+--     {silent=true, expr=true})
 
-map('n', '<C-w>', '<Cmd>lua q_if_one_buff_or_multpl_wins()<CR>', {silent=true})
+-- Quit if there's only one buffer open, else delete the current buffer.
+map('n', '<C-w>',
+    '"<Cmd>".(len(getbufinfo({"buflisted": 1})) == 1 ? "q" : "bd")."<CR>"',
+    {silent=true, expr=true})
 
 -- Jump to the first non whitespace character in the line
 map('', '<C-a>', '^', {})

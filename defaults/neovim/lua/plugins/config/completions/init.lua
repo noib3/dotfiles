@@ -1,6 +1,6 @@
 vim.cmd('autocmd BufEnter * lua require"completion".on_attach()')
 
-require'completion'.addCompletionSource(
+require('completion').addCompletionSource(
   'vimtex', require'plugins.config.completions.sources.vimtex'.complete_item)
 
 vim.g.completion_chain_complete_list = {

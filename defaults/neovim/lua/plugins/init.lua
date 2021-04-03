@@ -14,6 +14,10 @@ return require('packer').startup(function()
   use {'dense-analysis/ale',
         config=[[require('plugins.config.ale')]]}
 
+  -- Snippets
+  use {'norcalli/snippets.nvim',
+        config=[[require('plugins.config.snippets')]]}
+
   -- Miscellaneous
   use {'Raimondi/delimitMate',
         config=[[require('plugins.config.delimitmate')]]}

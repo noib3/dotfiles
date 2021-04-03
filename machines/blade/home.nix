@@ -14,14 +14,18 @@ let
   scripts-dir = ./scripts;
   qutebrowser-userscripts-dir = ./scripts/qutebrowser;
 
-  alacrittyConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/alacritty {
-      font = import (fonts-dir + /alacritty.nix);
-      colors = import (colorschemes-dir + /alacritty.nix);
-    })
-    (import ./overrides/alacritty {
-      inherit pkgs;
-    });
+  alacrittyConfig =
+    let
+      default =
+        (import ../../defaults/alacritty {
+          inherit pkgs;
+          font = import (fonts-dir + /alacritty.nix);
+          colors = import (colorschemes-dir + /alacritty.nix);
+        });
+    in
+    lib.attrsets.recursiveUpdate
+      default
+      (import ./overrides/alacritty { default = default; });
 
   batConfig = import ../../defaults/bat;
 
@@ -36,11 +40,11 @@ let
     colors = import (colorschemes-dir + /dunst.nix);
   });
 
-  fdConfig = {
-    ignores =
-      (import ../../defaults/fd).ignores
-      ++ (import ./overrides/fd).ignores;
-  };
+  fdConfig =
+    let
+      default = import ../../defaults/fd;
+    in
+    import ./overrides/fd { default = default; };
 
   firefoxConfig = (import ../../defaults/firefox {
     font = import (fonts-dir + /firefox.nix);
@@ -64,6 +68,8 @@ let
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
     (import ./overrides/lf);
+
+  mpvConfig = import ../../defaults/mpv;
 
   picomConfig = import ../../defaults/picom;
 
@@ -312,7 +318,7 @@ in
 
   programs.mpv = {
     enable = true;
-  };
+  } // mpvConfig;
 
   programs.qutebrowser = {
     enable = true;

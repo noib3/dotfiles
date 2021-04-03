@@ -1,6 +1,6 @@
 local map = vim.api.nvim_set_keymap
 
-require('bufferline').setup{
+require('bufferline').setup {
   options = {
     numbers = 'ordinal',
     number_style = '',
@@ -12,6 +12,6 @@ require('bufferline').setup{
 }
 
 for i = 1,9 do
-  map('n', '<F'..i..'>', ':lua require"bufferline".go_to_buffer('..i..')<CR>',
-      { silent = true })
+  map('n', '<F'..i..'>',
+      ':lua require"bufferline".go_to_buffer('..i..')<CR>', {silent=true})
 end
