@@ -24,8 +24,8 @@
     };
 
     "VertSplit" = {
-      guifg = "NONE";
-      guibg = "#3c3836";
+      guifg = "#a89984";
+      guibg = "NONE";
     };
 
     "StatusLine" = {

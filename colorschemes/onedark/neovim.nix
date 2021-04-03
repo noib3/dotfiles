@@ -24,8 +24,8 @@
     };
 
     "VertSplit" = {
-      guifg = "NONE";
-      guibg = "#3e4452";
+      guifg = "#abb2bf";
+      guibg = "NONE";
     };
 
     "LspReferenceRead" = {

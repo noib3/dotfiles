@@ -25,7 +25,11 @@ if [ -n "$FIFO_UEBERZUG" ]; then
       bat "$file"
       ;;
     */pdf)
-      pdftotext "$file" -
+      cache="$(hash "$file").jpg"
+      cache "$cache" "$@"
+      pdftoppm -jpeg -f 1 -singlefile "$file" "$cache"
+      draw "$cache" "$@"
+      # pdftotext "$file" -
       ;;
     image/*)
       orientation="$(identify -format '%[EXIF:Orientation]\n' -- "$file")"

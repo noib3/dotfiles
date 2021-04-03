@@ -1,9 +1,6 @@
 local lspconfig = require('lspconfig')
 
 local on_attach = function(client, bufnr)
-  -- Use https://github.com/nvim-lua/completion-nvim for completions
-  require('completion').on_attach()
-
   local buf_opt = function(...) vim.api.nvim_buf_set_option(bufnr, ...) end
   local buf_map = function(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
@@ -35,6 +32,10 @@ local on_attach = function(client, bufnr)
 end
 
 lspconfig.html.setup{
+  on_attach = on_attach,
+}
+
+lspconfig.texlab.setup{
   on_attach = on_attach,
 }
 

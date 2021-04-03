@@ -12,7 +12,7 @@ end
 opt('o', 'autochdir', true)
 opt('o', 'clipboard', 'unnamedplus')
 opt('o', 'completeopt', 'menuone,noinsert')
-opt('o', 'fillchars', 'fold: ,vert: ')
+opt('o', 'fillchars', 'fold: ')
 opt('o', 'listchars', 'eol:¬,tab:⇥ ,space:·')
 opt('o', 'hidden', true)
 opt('o', 'ignorecase', true)

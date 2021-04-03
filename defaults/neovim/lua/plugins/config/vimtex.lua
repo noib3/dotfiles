@@ -14,5 +14,6 @@ g.vimtex_toc_config = {
 }
 
 -- g.vimtex_view_method = 'skim'
+-- g.vimtex_view_skim_reading_bar = 0
+
 g.vimtex_view_method = 'zathura'
-g.vimtex_view_skim_reading_bar = 0

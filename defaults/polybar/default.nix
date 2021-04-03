@@ -81,7 +81,7 @@
       format-packetloss-padding = 1;
       interface = "enp2s0";
       ping-interval = 3;
-      label-connected = "%{F${colors.wired-network-icon-fg}}%{F-} eth";
+      label-connected = "%{F${colors.wired-network-icon-fg}} %{F-}";
     };
 
     "module/wireless-network" = {
@@ -92,7 +92,7 @@
       interface = "wlo1";
       ping-interval = 3;
       label-connected = "%{F${colors.wireless-network-icon-fg}}直%{F-} %essid%";
-      label-disconnected = "睊 %ifname%";
+      label-disconnected = "%{F${colors.empty-desktop-fg}}睊%{F-}";
     };
 
     "module/rofi-bluetooth" = {

@@ -2,4 +2,4 @@ if !exists('current_compiler')
   compiler cargo
 endif
 
-nmap <buffer> <silent> <C-t> :make! <Bar> silent cc<CR>
+nmap <buffer> <silent> <C-t> <Cmd>make! <Bar> silent cc<CR>

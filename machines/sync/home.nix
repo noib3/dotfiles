@@ -2,9 +2,9 @@
 let
   unstable = import <nixos-unstable> { };
 
-  theme = "onedark";
+  colorscheme = "onedark";
 
-  themes-dir = ../../themes + "/${theme}";
+  colorschemes-dir = ../../colorschemes + "/${colorscheme}";
 
   my-python-packages = python-packages: with python-packages; [
     ipython
@@ -21,12 +21,12 @@ let
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
-      colors = import (themes-dir + /fish.nix);
+      colors = import (colorschemes-dir + /fish.nix);
     })
     (import ./fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
-    colors = import (themes-dir + /fzf.nix);
+    colors = import (colorschemes-dir + /fzf.nix);
   });
 
   gitConfig = import ../../defaults/git;
@@ -36,7 +36,7 @@ let
   starshipConfig = import ../../defaults/starship;
 
   vividConfig = (import ../../defaults/vivid {
-    colors = import (themes-dir + /vivid.nix);
+    colors = import (colorschemes-dir + /vivid.nix);
   });
 in
 {

@@ -1,4 +1,4 @@
-function! folding#MarkerFoldsText() " {{{1
+function! folds#MarkerFoldsText() " {{{1
   let l:line = getline(v:foldstart)
   let l:comment_char = substitute(&commentstring, '\s*%s', '', '')
   let l:fold_title =

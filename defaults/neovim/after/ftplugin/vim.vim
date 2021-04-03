@@ -1,4 +1,4 @@
-setlocal foldtext=folding#MarkerFoldsText()
+setlocal foldtext=folds#MarkerFoldsText()
 setlocal formatoptions-=ro
 setlocal iskeyword-=#
 setlocal matchpairs+=<:>
