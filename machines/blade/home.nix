@@ -225,8 +225,8 @@ in
     }))
   ];
 
-  xdg.configFile."wall.png" = {
-    source = colorschemes-dir + /wall.png;
+  xdg.configFile."wallpaper.png" = {
+    source = colorschemes-dir + /wallpaper.png;
   };
 
   xdg.configFile."alacritty/fuzzy-opener.yml" = {
@@ -270,6 +270,10 @@ in
       inherit lib;
       colors = import (colorschemes-dir + /neovim.nix);
     });
+  };
+
+  xdg.configFile."redshift/hooks/redshift-logo.png" = {
+    source = ./scripts/redshift/redshift-logo.png;
   };
 
   fonts.fontconfig = {

@@ -79,16 +79,30 @@ in
     "XF86Audio{LowerVolume,RaiseVolume}" = "pactl set-sink-volume ${pulseaudio-sink} {-,+}5%";
     "XF86AudioMute" = "pactl set-sink-mute ${pulseaudio-sink} toggle";
 
-    # Screenshot the whole screen
+    # Screenshot the whole screen and send a notification.
     "super + shift + 3" = ''
-      set sshot ${screenshots-dir}/(date +%4Y-%b-%d@%T).png \
-        && import -window root $sshot
+      set shot ${screenshots-dir}/(date +%F@%T).png \
+        && import -window root "$shot" \
+        && notify-send \
+              --expire-time=5000 \
+              --app-name="New screenshot" \
+              --icon="$shot" \
+              (basename "$shot") \
+              "Saved in "(dirname "$shot" | sed "s/.*"(whoami)"/~/")
     '';
 
-    # Screenshot a portion of the screen
+    # Screenshot a portion of the screen and send a notification if the
+    # screenshot wasn't cancelled.
     "super + shift + 4" = ''
-      set sshot ${screenshots-dir}/(date +%4Y-%b-%d@%T).png \
-        && import $sshot
+      set shot ${screenshots-dir}/(date +%F@%T).png \
+        && import $shot \
+        && ls "$shot" \
+        && notify-send \
+              --expire-time=5000 \
+              --app-name="New screenshot" \
+              --icon="$shot" \
+              (basename "$shot") \
+              "Saved in "(dirname "$shot" | sed "s/.*"(whoami)"/~/")
     '';
   };
 }

@@ -75,6 +75,7 @@
     bind -M insert \cX\cD fuzzy_cd
     bind -M insert \cX\cE fuzzy_edit
     bind -M insert \cX\cF fuzzy_history
+    bind -M insert \cX\cG fuzzy_kill
     bind -M insert \cS fuzzy_search
 
     function __reset_cursor_line --on-event="fish_prompt"
@@ -97,21 +98,24 @@
   functions = {
     clear_no_scrollback.body = ''
       clear && printf "\e[3J"
-      commandline --function repaint
+      commandline -f repaint
     '';
 
     fuzzy_edit.body = ''
-      set -l filenames (fzf -m --prompt="Edit> ") \
-        && set -l filenames (echo ~/(string escape -- $filenames) \
-                              | tr "\n" " " | sed 's/\s$//') \
+      set -l filenames (fzf -m --prompt='Edit> ' --preview='bat ~/{}') \
+        && set -l filenames (
+          echo ~/(string escape -- $filenames) \
+            | tr '\n' ' ' \
+            | sed 's/[[:space:]]*$//') \
         && commandline "$EDITOR $filenames" \
         && commandline --function execute
-      commandline --function repaint
+      commandline -f repaint
     '';
 
     fuzzy_cd.body = ''
-      set -l dirname (eval (echo $FZF_ONLYDIRS_COMMAND) \
-                       | fzf --prompt="Cd> ") \
+      set -l dirname (
+        eval $FZF_ONLYDIRS_COMMAND \
+          | fzf --prompt='Cd> ' --preview='ls --color=always ~/{}') \
         && cd "$HOME/$dirname"
       emit fish_prompt
       commandline -f repaint
@@ -119,20 +123,38 @@
 
     fuzzy_history.body = ''
       history merge
-      set -l command_with_ts (
-        history --null --show-time="%B %d %T | " \
-          | fzf --read0 --tiebreak=index --prompt="History> " --query=(commandline) \
+      set -l command (
+        history --null --show-time="%B %d %T " \
+          | sed -z 's/\(^.*[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\)/\x1b\[0;31m\1\x1b\[0m/g' \
+          | fzf --read0 --tiebreak=index --prompt='History> ' --query=(commandline) \
+          | sed 's/^.*[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} //' \
           | string collect) \
-        && set -l command (string split -m1 " | " $command_with_ts)[2] \
         && commandline "$command"
-      commandline --function repaint
+      commandline -f repaint
     '';
 
     fuzzy_search.body = ''
-      set -l filenames (echo ~/(string escape -- (fzf -m --prompt="Paste> ")) \
-                         | tr "\n" " " | sed 's/\s$//') \
+      set -l filenames (
+        echo ~/(string escape -- (fzf -m --prompt='Paste> ' --preview='bat {}')) \
+          | tr '\n' ' ' \
+          | sed 's/[[:space:]]*$//') \
         && commandline --insert "$filenames"
-      commandline --function repaint
+      commandline -f repaint
+    '';
+
+    fuzzy_kill.body = ''
+      set -l pids (
+        pgrep -a -u (whoami) \
+          | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' \
+          | fzf -m --phony --prompt='Kill> ' --bind 'change:reload(\
+              pgrep -a -u (whoami) {q} \
+                | sed "s/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/" \
+              || true)' \
+          | sed 's/\([0-9]\+\).*/\1/' \
+          | tr '\n' ' ' \
+          | sed 's/[[:space:]]*$//') \
+        && kill $pids
+      commandline -f repaint
     '';
   };
 }

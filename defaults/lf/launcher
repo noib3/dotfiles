@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-
+#!/bin/sh
 set -e
 
 if [ -n "$DISPLAY" ]; then

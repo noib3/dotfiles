@@ -1,19 +1,18 @@
-#!/usr/bin/env bash
+#!/run/current-system/sw/bin/bash
 
-event=$1
-new_period=$3
+PATH="$PATH:/run/current-system/sw/bin:/home/noib3/.nix-profile/bin"
 
-case "${event}" in
+function notify_change() {
+  notify-send \
+    --expire-time=5000 \
+    --app-name="Redshift" \
+    --icon="$(dirname "$0")/redshift-logo.png" \
+    "Switching temps..." \
+    "$1"
+}
+
+case "$1" in
   period-changed)
-    if [ "${new_period}" != "none" ]; then
-      new_period="$( \
-        echo ${new_period} \
-        | sed "s/night/Night time/;s/day/Day /;s/tr/Tr/" \
-      )"
-      /usr/local/bin/terminal-notifier \
-        -title "Redshift" \
-        -subtitle "Switching temps..." \
-        -message "${new_period}" \
-        -appIcon "$(dirname "$0")/redshift-logo.png"
-    fi
+    [ "$3" == "none" ] \
+      || notify_change "$(echo "$3" | sed 's/night/Night time/;s/day/Day /;s/tr/Tr/')"
 esac

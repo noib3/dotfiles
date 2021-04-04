@@ -35,6 +35,11 @@
         chars = "\\x18\\x12"; # C-x C-r
       }
       {
+        key = "K";
+        mods = "Super";
+        chars = "\\x18\\x07"; # C-x C-g
+      }
+      {
         key = "L";
         mods = "Super";
         chars = "\\x07"; # C-g

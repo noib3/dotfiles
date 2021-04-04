@@ -33,7 +33,7 @@
     fuzzy_edit = ''
       ''${{
         clear
-        filename="$(fzf -m --prompt="Edit> ")" \
+        filename="$(fzf -m --prompt='Edit> ' --preview='bat ~/{}')" \
           && $EDITOR "''${HOME}/''${filename}" \
           || true
       }}
@@ -42,9 +42,10 @@
     fuzzy_cd = ''
       ''${{
         clear
-        dirname="$(eval $(echo $FZF_ONLYDIRS_COMMAND) \
-                    | fzf --prompt="Cd> " \
-                    | sed 's/\ /\\\ /g')" \
+        dirname="$(\
+          eval $FZF_ONLYDIRS_COMMAND \
+            | fzf --prompt='Cd> ' --preview='ls --color=always ~/{}' \
+            | sed 's/\ /\\\ /g')" \
           && lf -remote "send $id cd ~/''${dirname}" \
           || true
       }}
@@ -70,30 +71,7 @@
     "<down>" = "cmd-history-next";
   };
 
-  previewer.source = pkgs.writeShellScript "pv.sh" ''
-    #!/usr/bin/env sh
+  previewer.source = ./previewer;
 
-    file="$1"
-
-    case "$(file -b --mime-type "$file")" in
-      text/*)
-        bat "$file"
-        ;;
-      */pdf)
-        pdftotext "$file" -
-        ;;
-      image/*)
-        chafa --fill=block --symbols=block "$file"
-        ;;
-      video/*)
-        mediainfo "$file"
-        ;;
-      audio/*)
-        mediainfo "$file"
-        ;;
-      *)
-        bat "$file"
-        ;;
-    esac
-  '';
+  extraConfig = "set cleaner ~/.config/lf/cleaner";
 }

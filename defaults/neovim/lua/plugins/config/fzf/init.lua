@@ -26,8 +26,10 @@ endfunction
 
 vim.cmd('command! -nargs=* -bang NicerRg call Nicer_Rg(<q-args>, <bang>0)')
 
-map('', '<C-x><C-e>', '<Cmd>FZF --prompt=Edit>\\  ~<CR>', {silent=true})
-map('i', '<C-x><C-e>', '<C-o><Cmd>FZF --prompt=Edit>\\  ~<CR>', {silent=true})
+map('', '<C-x><C-e>',
+    '<Cmd>FZF --prompt=Edit>\\  --preview=bat\\ {} ~<CR>', {silent=true})
+map('i', '<C-x><C-e>',
+    '<C-o><Cmd>FZF --prompt=Edit>\\  --preview=bat\\ {} ~<CR>', {silent=true})
 
 map('', '<C-x><C-r>', '<Cmd>NicerRg<CR>', {silent=true})
 map('i', '<C-x><C-r>', '<C-o><Cmd>NicerRg<CR>', {silent=true})

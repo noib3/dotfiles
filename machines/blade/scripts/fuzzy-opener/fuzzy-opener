@@ -23,14 +23,16 @@ function open {
   # (( ${#image_files[@]} )) && open "${image_files[@]}"
   if (( ${#text_files[@]} )); then
     filenames="$(echo ${text_files[@]})"
-    alacritty -e sh -c "sleep 0.2 && $EDITOR $filenames"
+    alacritty \
+      --class 'fuzzy-opened' \
+      -e sh -c "sleep 0.2 && $EDITOR $filenames"
   fi
 }
 
 xdotool search --onlyvisible --classname 'fuzzy-opener' windowunmap \
   || xdotool search --classname 'fuzzy-opener' windowmap \
   || (alacritty \
-      --class 'fuzzy-opener' \
-      --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
-      -e sh -c 'fzf -m --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
+        --class 'fuzzy-opener' \
+        --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
+        -e sh -c 'fzf -m --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
   | open

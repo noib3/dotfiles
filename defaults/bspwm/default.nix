@@ -21,6 +21,10 @@
     "\\*:\"fuzzy-opener\"" = {
       state = "fullscreen";
     };
+
+    "\\*:\"fuzzy-opened\"" = {
+      state = "fullscreen";
+    };
   };
 
   startupPrograms = [
@@ -28,7 +32,7 @@
   ];
 
   extraConfig = ''
-    feh --bg-fill --no-fehbg ~/.config/wall.png
+    feh --bg-fill --no-fehbg ~/.config/wallpaper.png
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
