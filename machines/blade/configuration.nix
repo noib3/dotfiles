@@ -119,6 +119,8 @@ in
 
   services.udisks2.enable = true;
 
+  services.tlp.enable = true;
+
   services.syncthing = {
     enable = true;
     package = unstable.syncthing;

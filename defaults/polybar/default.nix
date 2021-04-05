@@ -1,4 +1,4 @@
-{ font, colors, scripts-dir }:
+{ font, colors }:
 let
   f0 = {
     family = font.font-0.family;
@@ -31,6 +31,7 @@ in
       height = 25;
       module-margin-left = 1;
       radius = 0;
+      enable-ipc = true;
       cursor-click = "pointer";
       font-0 = "${f0.family}:style=${f0.style}:size=${f0.size};${f0.padding-top}";
       font-1 = "Noto Color Emoji:style=Regular:scale=9;2";
@@ -116,11 +117,9 @@ in
     "module/bluetooth" = {
       type = "custom/script";
       format-padding = 1;
-      # TODO
-      exec = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth --status";
+      exec = "rofi-bluetooth --status";
       interval = 1;
-      # TODO
-      click-left = "${scripts-dir}/rofi-bluetooth/rofi-bluetooth &";
+      click-left = "rofi-bluetooth &";
     };
   };
 

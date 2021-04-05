@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   unstable = import <nixos-unstable> { };
 
@@ -6,24 +6,21 @@ let
 
   colorschemes-dir = ../../colorschemes + "/${colorscheme}";
 
-  my-python-packages = python-packages: with python-packages; [
-    ipython
-  ];
-  python-with-my-packages = unstable.python39.withPackages my-python-packages;
-
   batConfig = import ../../defaults/bat;
 
-  fdConfig = {
-    ignores =
-      (import ../../defaults/fd).ignores
-      ++ (import ./fd.nix).ignores;
-  };
+  direnvConfig = import ../../defaults/direnv;
+
+  fdConfig =
+    let
+      default = import ../../defaults/fd;
+    in
+    import ./overrides/fd.nix { default = default; };
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
       colors = import (colorschemes-dir + /fish.nix);
     })
-    (import ./fish.nix);
+    (import ./overrides/fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
     colors = import (colorschemes-dir + /fzf.nix);
@@ -60,11 +57,6 @@ in
       nixpkgs-fmt
       ookla-speedtest-cli
       pfetch
-      (python39.withPackages (
-        ps: with ps; [
-          ipython
-        ]
-      ))
       vimv
     ];
 
@@ -85,7 +77,6 @@ in
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      python39 = unstable.python39;
       starship = unstable.starship;
       vimv = unstable.vimv;
     })
@@ -98,6 +89,13 @@ in
   xdg.configFile."nvim" = {
     source = ../../defaults/neovim;
     recursive = true;
+  };
+
+  xdg.configFile."nvim/lua/colorscheme/init.lua" = {
+    text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
+      inherit lib;
+      colors = import (colorschemes-dir + /neovim.nix);
+    });
   };
 
   programs.home-manager = {

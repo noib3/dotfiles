@@ -33,7 +33,7 @@
     fuzzy_edit = ''
       ''${{
         clear
-        filename="$(fzf -m --prompt='Edit> ' --preview='bat ~/{}')" \
+        filename="$(fzf -m --prompt='Edit> ')" \
           && $EDITOR "''${HOME}/''${filename}" \
           || true
       }}

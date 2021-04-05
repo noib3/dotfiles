@@ -1,4 +1,4 @@
-{ secrets-dir, screenshots-dir, scripts-dir }:
+{ secrets-dir, screenshots-dir }:
 let
   pulseaudio-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
 in
@@ -19,12 +19,15 @@ in
     "alt + w" = "qutebrowser";
 
     # Launch the file opener
-    "super + space" = "${scripts-dir}/fuzzy-opener/fuzzy-opener";
+    "super + space" = "fuzzy-opener";
 
     # Toggle fullscreen
     "alt + f" = "bspc node -t ~fullscreen";
     "alt + d" = "bspc node -t tiled";
     "alt + g" = "bspc node -t fullscreen";
+
+    # Toggle gaps, borders and polybar
+    "alt + s" = "toggle-gaps-borders-polybar {off,on}";
 
     # Toggle float
     "alt + shift + f" = "bspc node -t ~float";

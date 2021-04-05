@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Toggles window gaps, window borders and polybar.
+
+case "$1" in
+  on)
+    cmd="show"
+    gap=25
+    padding=25
+    width=2
+    ;;
+  off)
+    cmd="hide"
+    gap=0
+    padding=0
+    width=0
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+
+polybar-msg cmd "$cmd" \
+  && bspc config window_gap "$gap" \
+  && bspc config top_padding "$padding" \
+  && bspc config border_width "$width"

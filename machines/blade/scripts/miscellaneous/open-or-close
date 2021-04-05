@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Opens or closes a file. The window title has to match the file path for the
+# '--close' flag to work.
+
+action="$1"
+path="$2"
+
+([ "$action" == "--open" ] && ((nohup xdg-open "$path" &>/dev/null) &)) \
+  || ([ "$action" == "--close" ] && wmctrl -F -c "$path" || true)

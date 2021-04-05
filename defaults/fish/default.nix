@@ -6,7 +6,7 @@
     wget = "wget --hsts-file=~/.cache/wget/wget-hsts";
     grep = "grep --ignore-case --color=auto";
     ipython = "ipython --no-confirm-exit";
-    cat = "bat --color=auto";
+    cat = "bat";
   };
 
   shellAbbrs = {
@@ -102,7 +102,7 @@
     '';
 
     fuzzy_edit.body = ''
-      set -l filenames (fzf -m --prompt='Edit> ' --preview='bat ~/{}') \
+      set -l filenames (fzf -m --prompt='Edit> ') \
         && set -l filenames (
           echo ~/(string escape -- $filenames) \
             | tr '\n' ' ' \
@@ -135,7 +135,7 @@
 
     fuzzy_search.body = ''
       set -l filenames (
-        echo ~/(string escape -- (fzf -m --prompt='Paste> ' --preview='bat {}')) \
+        echo ~/(string escape -- (fzf -m --prompt='Paste> ')) \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//') \
         && commandline --insert "$filenames"

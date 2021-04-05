@@ -1,4 +1,5 @@
 local g = vim.g
+local fn = vim.fn
 
 g.vimtex_compiler_enabled = 0
 g.vimtex_format_enabled = 1
@@ -13,7 +14,11 @@ g.vimtex_toc_config = {
   tocdepth = 6,
 }
 
--- g.vimtex_view_method = 'skim'
--- g.vimtex_view_skim_reading_bar = 0
+local uname = fn.substitute(fn.system('uname'), '\n', '', '')
 
-g.vimtex_view_method = 'zathura'
+if uname == 'Darwin' then
+  g.vimtex_view_method = 'skim'
+  g.vimtex_view_skim_reading_bar = 0
+elseif uname == 'Linux' then
+  g.vimtex_view_method = 'zathura'
+end

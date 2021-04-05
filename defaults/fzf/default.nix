@@ -9,6 +9,7 @@
     "--height=8"
     "--hscroll-off=50"
     "--ansi"
+    "--preview-window=sharp"
     "--color='hl:-1:underline'"
     "--color='fg+:-1:regular:italic'"
     "--color='hl+:-1:underline:italic'"

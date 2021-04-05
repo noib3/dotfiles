@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   unstable = import <nixos-unstable> { };
 
@@ -11,8 +11,25 @@ let
   sync-dir = config.home.homeDirectory + "/Sync";
   secrets-dir = sync-dir + "/secrets";
   screenshots-dir = sync-dir + "/screenshots";
-  scripts-dir = ./scripts;
   qutebrowser-userscripts-dir = ./scripts/qutebrowser;
+
+  userScripts = {
+    fuzzy-opener = pkgs.writeScriptBin
+      "fuzzy-opener"
+      (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener);
+
+    open-or-close = pkgs.writeScriptBin
+      "open-or-close"
+      (builtins.readFile ./scripts/miscellaneous/open-or-close);
+
+    toggle-gbp = pkgs.writeScriptBin
+      "toggle-gaps-borders-polybar"
+      (builtins.readFile ./scripts/miscellaneous/toggle-gaps-borders-polybar);
+
+    rofi-bluetooth = pkgs.writeScriptBin
+      "rofi-bluetooth"
+      (builtins.readFile ./scripts/rofi-bluetooth/rofi-bluetooth);
+  };
 
   alacrittyConfig =
     let
@@ -25,7 +42,7 @@ let
     in
     lib.attrsets.recursiveUpdate
       default
-      (import ./overrides/alacritty { default = default; });
+      (import ./overrides/alacritty.nix { default = default; });
 
   batConfig = import ../../defaults/bat;
 
@@ -44,7 +61,7 @@ let
     let
       default = import ../../defaults/fd;
     in
-    import ./overrides/fd { default = default; };
+    import ./overrides/fd.nix { default = default; };
 
   firefoxConfig = (import ../../defaults/firefox {
     font = import (fonts-dir + /firefox.nix);
@@ -55,7 +72,7 @@ let
     (import ../../defaults/fish {
       colors = import (colorschemes-dir + /fish.nix);
     })
-    (import ./overrides/fish);
+    (import ./overrides/fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
     colors = import (colorschemes-dir + /fzf.nix);
@@ -63,11 +80,11 @@ let
 
   gitConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/git)
-    (import ./overrides/git);
+    (import ./overrides/git.nix);
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
-    (import ./overrides/lf);
+    (import ./overrides/lf.nix);
 
   mpvConfig = import ../../defaults/mpv;
 
@@ -76,7 +93,6 @@ let
   polybarConfig = (import ../../defaults/polybar {
     font = import (fonts-dir + /polybar.nix);
     colors = import (colorschemes-dir + /polybar.nix);
-    scripts-dir = scripts-dir;
   });
 
   qutebrowserConfig = (import ../../defaults/qutebrowser {
@@ -97,7 +113,6 @@ let
   sxhkdConfig = (import ../../defaults/sxhkd {
     secrets-dir = secrets-dir;
     screenshots-dir = screenshots-dir;
-    scripts-dir = scripts-dir;
   });
 
   sshConfig = import ../../defaults/ssh;
@@ -134,10 +149,10 @@ in
       bitwarden
       calcurse
       chafa
-      colorpicker
       evemu
       evtest
       feh
+      ffmpegthumbnailer
       file
       fusuma
       gcc
@@ -175,9 +190,15 @@ in
       ueberzug
       unzip
       vimv
+      wmctrl
       xclip
       xdotool
       yarn
+    ] ++ [
+      userScripts.fuzzy-opener
+      userScripts.open-or-close
+      userScripts.toggle-gbp
+      userScripts.rofi-bluetooth
     ];
 
     sessionVariables = {
@@ -274,6 +295,19 @@ in
 
   xdg.configFile."redshift/hooks/redshift-logo.png" = {
     source = ./scripts/redshift/redshift-logo.png;
+  };
+
+  xdg.dataFile."applications" = {
+    source = ./applications;
+    recursive = true;
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html" = [ "qutebrowser.desktop" ];
+      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+    };
   };
 
   fonts.fontconfig = {

@@ -1,4 +1,4 @@
-g = vim.g
+local g = vim.g
 
 g.ale_disable_lsp = 1
 g.ale_fix_on_save = 1

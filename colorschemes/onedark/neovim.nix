@@ -24,7 +24,7 @@
     };
 
     "VertSplit" = {
-      guifg = "#abb2bf";
+      guifg = "#5c6073";
       guibg = "NONE";
     };
 
