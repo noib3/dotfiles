@@ -18,21 +18,21 @@
 
   shellInit = ''
     set dircolor \
-      (echo $LS_COLORS | sed 's/\(^\|.*:\)di=\([^:]*\).*/\2/')
+      (echo $LS_COLORS | sed -r 's/(^|.*:)di=([^:]*).*/\2/')
     set fgodcolor \
-      (echo $LS_COLORS | sed 's/\(^\|.*:\)\*\.fgod=\([^:]*\).*/\2/')
+      (echo $LS_COLORS | sed -r 's/(^|.*:)\*\.fgod=([^:]*).*/\2/')
 
-    set -x FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND \
+    set -gx FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND \
       " | sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'"
 
-    set -x FZF_ONLYDIRS_COMMAND \
+    set -gx FZF_ONLYDIRS_COMMAND \
       "fd --base-directory=$HOME --hidden --type=d --color=always" \
       " | sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'" \
       " | sed 's/\(.*\)\x1b\["$fgodcolor"m/\1\x1b\["$dircolor"m/'"
   '';
 
   interactiveShellInit = ''
-    set fish_greeting
+    set fish_greeting ""
 
     set fish_cursor_default block
     set fish_cursor_insert line
@@ -78,9 +78,9 @@
     bind -M insert \cX\cG fuzzy_kill
     bind -M insert \cS fuzzy_search
 
-    function __reset_cursor_line --on-event="fish_prompt"
-      printf "\e[5 q"
-    end
+    # For some reason the pisces plugin needs to be sourced manually to become
+    # active.
+    source ~/.config/fish/conf.d/plugin-pisces.fish
   '';
 
   plugins = [
@@ -150,7 +150,7 @@
               pgrep -a -u (whoami) {q} \
                 | sed "s/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/" \
               || true)' \
-          | sed 's/\([0-9]\+\).*/\1/' \
+          | sed -r 's/([0-9]+).*/\1/' \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//') \
         && kill $pids

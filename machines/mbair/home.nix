@@ -48,11 +48,16 @@ let
     colors = import (colorschemes-dir + /firefox.nix);
   });
 
-  fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish {
-      colors = import (colorschemes-dir + /fish.nix);
-    })
-    (import ./overrides/fish.nix);
+  fishConfig =
+    let
+      default =
+        (import ../../defaults/fish {
+          colors = import (colorschemes-dir + /fish.nix);
+        });
+    in
+    lib.attrsets.recursiveUpdate
+      default
+      (import ./overrides/fish.nix { default = default; });
 
   fzfConfig = (import ../../defaults/fzf {
     colors = import (colorschemes-dir + /fzf.nix);
