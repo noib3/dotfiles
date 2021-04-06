@@ -73,5 +73,5 @@
 
   previewer.source = ./previewer;
 
-  extraConfig = "set cleaner ~/.config/lf/cleaner";
+  extraConfig = "set cleaner ${builtins.toString ./cleaner}";
 }

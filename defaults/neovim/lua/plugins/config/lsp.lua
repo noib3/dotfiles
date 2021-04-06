@@ -31,14 +31,14 @@ local on_attach = function(client, bufnr)
   end
 end
 
-lspconfig.html.setup{
+lspconfig.html.setup {
   on_attach = on_attach,
 }
 
-lspconfig.texlab.setup{
+lspconfig.texlab.setup {
   on_attach = on_attach,
 }
 
-lspconfig.vimls.setup{
+lspconfig.vimls.setup {
   on_attach = on_attach,
 }

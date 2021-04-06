@@ -1,3 +1,5 @@
+{ default }:
+
 {
   settings = {
     cursor.style.blinking = "Never";
@@ -49,6 +51,6 @@
         mods = "Alt";
         chars = "\\x60"; # `
       }
-    ];
+    ] ++ default.settings.key_bindings;
   };
 }

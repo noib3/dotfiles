@@ -70,6 +70,7 @@ in
         "apz.allow_zooming" = true;
         "browser.aboutConfig.showWarning" = false;
         "browser.tabs.warnOnClose" = false;
+        "browser.fullscreen.autohide" = false;
         "browser.newtabpage.pinned" = "";
         "browser.startup.homepage" = "https://google.com";
         "browser.tabs.loadInBackground" = false;

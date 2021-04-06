@@ -16,7 +16,8 @@ in
     '';
 
     # Open the web browser 
-    "alt + w" = "qutebrowser";
+    "alt + w" = "firefox";
+    # "alt + w" = "qutebrowser";
 
     # Launch the file opener
     "super + space" = "fuzzy-opener";

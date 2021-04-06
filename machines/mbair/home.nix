@@ -1,24 +1,17 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   unstable = import <nixos-unstable> { };
 
-  theme = "onedark";
   font = "roboto-mono";
+  colorscheme = "onedark";
+
+  fonts-dir = ./fonts + "/${font}";
+  colorschemes-dir = ../../colorschemes + "/${colorscheme}";
+
+  sync-dir = config.home.homeDirectory + "/Sync";
+  secrets-dir = sync-dir + "/secrets";
 
   email-accounts = import ../../defaults/email;
-
-  my-python-packages = python-packages: with python-packages; [
-    autopep8
-    black
-    flake8
-    ipython
-    isort
-    jedi
-    jupyter
-    matplotlib
-    numpy
-  ];
-  python-with-my-packages = unstable.python39.withPackages my-python-packages;
 
   R-with-my-packages = with pkgs; rWrapper.override {
     packages = with rPackages; [
@@ -27,51 +20,59 @@ let
     ];
   };
 
-  alacrittyConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/alacritty {
-      font = import (./fonts + "/${font}" + /alacritty.nix);
-      colors = import (../../themes + "/${theme}" + /alacritty.nix);
-    })
-    (import ./alacritty.nix);
+  alacrittyConfig =
+    let
+      default =
+        (import ../../defaults/alacritty {
+          inherit pkgs;
+          font = import (fonts-dir + /alacritty.nix);
+          colors = import (colorschemes-dir + /alacritty.nix);
+        });
+    in
+    lib.attrsets.recursiveUpdate
+      default
+      (import ./overrides/alacritty.nix { default = default; });
 
   batConfig = import ../../defaults/bat;
 
   direnvConfig = import ../../defaults/direnv;
 
-  fdConfig = {
-    ignores =
-      (import ../../defaults/fd).ignores
-      ++ (import ./fd.nix).ignores;
-  };
+  fdConfig =
+    let
+      default = import ../../defaults/fd;
+    in
+    import ./overrides/fd.nix { default = default; };
 
   firefoxConfig = (import ../../defaults/firefox {
-    font = import (./fonts + "/${font}" + /firefox.nix);
-    colors = import (../../themes + "/${theme}" + /firefox.nix);
+    font = import (fonts-dir + /firefox.nix);
+    colors = import (colorschemes-dir + /firefox.nix);
   });
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
-      colors = import (../../themes + "/${theme}" + /fish.nix);
+      colors = import (colorschemes-dir + /fish.nix);
     })
-    (import ./fish.nix);
+    (import ./overrides/fish.nix);
 
   fzfConfig = (import ../../defaults/fzf {
-    colors = import (../../themes + "/${theme}" + /fzf.nix);
+    colors = import (colorschemes-dir + /fzf.nix);
   });
 
   gitConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/git)
-    (import ./git.nix);
+    (import ./overrides/git.nix);
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
-    (import ./lf.nix);
+    (import ./overrides/lf.nix);
+
+  mpvConfig = import ../../defaults/mpv;
 
   neomuttConfig = import ../../defaults/neomutt;
 
   spacebarConfig = (import ../../defaults/spacebar {
-    font = import (./fonts + "/${font}" + /spacebar.nix);
-    colors = import (../../themes + "/${theme}" + /spacebar.nix);
+    font = import (fonts-dir + /spacebar.nix);
+    colors = import (colorschemes-dir + /spacebar.nix);
   });
 
   skhdConfig = import ../../defaults/skhd;
@@ -81,16 +82,16 @@ let
   starshipConfig = import ../../defaults/starship;
 
   tridactylConfig = (import ../../defaults/tridactyl {
-    font = import (./fonts + "/${font}" + /tridactyl.nix);
-    colors = import (../../themes + "/${theme}" + /tridactyl.nix);
+    font = import (fonts-dir + /tridactyl.nix);
+    colors = import (colorschemes-dir + /tridactyl.nix);
   });
 
   vividConfig = (import ../../defaults/vivid {
-    colors = import (../../themes + "/${theme}" + /vivid.nix);
+    colors = import (colorschemes-dir + /vivid.nix);
   });
 
   yabaiConfig = (import ../../defaults/yabai {
-    colors = import (../../themes + "/${theme}" + /yabai.nix);
+    colors = import (colorschemes-dir + /yabai.nix);
   });
 in
 {
@@ -109,13 +110,6 @@ in
     username = "noibe";
     homeDirectory = "/Users/noibe";
     stateVersion = "21.03";
-
-    file = {
-      "/Users/noibe/.ssh" = {
-        source = "/Users/noibe/Sync/secrets/ssh-keys";
-        recursive = true;
-      };
-    };
 
     packages = with pkgs; [
       # auto-selfcontrol
@@ -152,7 +146,19 @@ in
       pandoc
       # pdftotext
       pfetch
-      python-with-my-packages
+      (python39.withPackages (
+        ps: with ps; [
+          autopep8
+          black
+          flake8
+          ipython
+          isort
+          jedi
+          jupyter
+          matplotlib
+          numpy
+        ]
+      ))
       R-with-my-packages
       # redshift
       rsync
@@ -174,22 +180,21 @@ in
     sessionVariables = {
       COLORTERM = "truecolor";
       EDITOR = "nvim";
-      HISTFILE = "$HOME/.cache/bash/bash_history";
+      HISTFILE = "${config.home.homeDirectory}/.cache/bash/bash_history";
       MANPAGER = "nvim -c 'set ft=man' -";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
-      LESSHISTFILE = "$HOME/.cache/less/lesshst";
+      LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
-      THEME = "${theme}";
-      SECRETSDIR = "$HOME/Sync/secrets";
-      SCRSHOTDIR = "$HOME/Sync/screenshots";
-      SCRIPTSDIR = "$HOME/Sync/scripts";
+      SECRETSDIR = "${secrets-dir}";
     };
-  };
 
-  xdg.configFile."nvim" = {
-    source = ../../defaults/nvim;
-    recursive = true;
+    file = {
+      ".ssh" = {
+        source = "${secrets-dir}/ssh-keys";
+        recursive = true;
+      };
+    };
   };
 
   nixpkgs.overlays = [
@@ -199,6 +204,7 @@ in
       fzf = unstable.fzf;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      python39 = unstable.python39;
       starship = unstable.starship;
       vimv = unstable.vimv;
       yabai = unstable.yabai;
@@ -208,6 +214,18 @@ in
       url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
     }))
   ];
+
+  xdg.configFile."nvim" = {
+    source = ../../defaults/neovim;
+    recursive = true;
+  };
+
+  xdg.configFile."nvim/lua/colorscheme/init.lua" = {
+    text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
+      inherit lib;
+      colors = import (colorschemes-dir + /neovim.nix);
+    });
+  };
 
   programs.home-manager = {
     enable = true;
@@ -248,6 +266,10 @@ in
   programs.lf = {
     enable = true;
   } // lfConfig;
+
+  programs.mpv = {
+    enable = true;
+  } // mpvConfig;
 
   programs.neomutt = {
     enable = true;

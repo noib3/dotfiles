@@ -1,3 +1,5 @@
+{ default }:
+
 {
   ignores = [
     "/*"
@@ -30,5 +32,5 @@
     "*.synctex(busy)"
     "*.synctex.gz"
     "*.toc"
-  ];
+  ] ++ default.ignores;
 }

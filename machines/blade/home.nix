@@ -14,6 +14,10 @@ let
   qutebrowser-userscripts-dir = ./scripts/qutebrowser;
 
   userScripts = {
+    lf-launcher = pkgs.writeScriptBin
+      "lf"
+      (import ../../defaults/lf/launcher.nix { inherit pkgs; });
+
     fuzzy-opener = pkgs.writeScriptBin
       "fuzzy-opener"
       (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener);
@@ -195,6 +199,7 @@ in
       xdotool
       yarn
     ] ++ [
+      (pkgs.hiPrio userScripts.lf-launcher)
       userScripts.fuzzy-opener
       userScripts.open-or-close
       userScripts.toggle-gbp

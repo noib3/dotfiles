@@ -54,3 +54,8 @@
 .webextension-browser-action {
   display: none !important;
 }
+
+/* Minimize, restore and close buttons */
+#window-controls {
+  display: none !important;
+}

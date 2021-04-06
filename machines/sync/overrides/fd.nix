@@ -1,3 +1,5 @@
+{ default }:
+
 {
   ignores = [
     "/*"
@@ -7,5 +9,5 @@
     "!/Media"
     "!/Sync"
     "**/.stfolder"
-  ];
+  ] ++ default.ignores;
 }
