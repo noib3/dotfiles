@@ -10,7 +10,7 @@
               text_files+=("$file")
               ;;
             image/*)
-              setsid -f sxiv "$file"
+              setsid -f feh "$file"
               # image_files+=("$file")
               ;;
             video/*)
@@ -22,7 +22,7 @@
           esac
         done
         [[ ''${#text_files[@]} -eq 0 ]] || $EDITOR "''${text_files[@]}"
-        [[ ''${#image_files[@]} -eq 0 ]] || setsid -f sxiv "''${text_files[@]}"
+        [[ ''${#image_files[@]} -eq 0 ]] || setsid -f feh "''${text_files[@]}"
       }}
     '';
 

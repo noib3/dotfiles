@@ -11,13 +11,10 @@ in
     "super + Return" = "alacritty";
     "super + g" = "alacritty -e gotop";
     "super + f" = "alacritty -e fish -c 'lf $HOME/Downloads'";
-    "super + a" = ''
-      alacritty -e calcurse -C ~/.config/calcurse -D ${secrets-dir}/calcurse
-    '';
+    "super + a" = "alacritty -e calcurse -D ${secrets-dir}/calcurse";
 
     # Open the web browser 
-    "alt + w" = "firefox";
-    # "alt + w" = "qutebrowser";
+    "alt + w" = "qutebrowser";
 
     # Launch the file opener
     "super + space" = "fuzzy-opener";

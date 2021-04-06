@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   unstable = import <nixos-unstable> { };
 
@@ -32,7 +32,9 @@ let
 
     rofi-bluetooth = pkgs.writeScriptBin
       "rofi-bluetooth"
-      (builtins.readFile ./scripts/rofi-bluetooth/rofi-bluetooth);
+      (import ./scripts/rofi/rofi-bluetooth.nix {
+        colors = import (colorschemes-dir + /polybar.nix);
+      });
   };
 
   alacrittyConfig =
@@ -85,6 +87,8 @@ let
   gitConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/git)
     (import ./overrides/git.nix);
+
+  gpgAgentConfig = import ../../defaults/gpg/gpg-agent.nix;
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })
@@ -184,10 +188,10 @@ in
       (python39.withPackages (
         ps: with ps; [
           ipython
+          pynvim
         ]
       ))
       ripgrep
-      sxiv
       texlab
       texlive.combined.scheme-full
       tree-sitter
@@ -214,16 +218,11 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
+      XCOMPOSECACHE = "${config.home.homeDirectory}/.cache/compose";
       LS_COLORS = "$(vivid generate current)";
-      SECRETSDIR = "${secrets-dir}";
     };
 
     file = {
-      ".ssh" = {
-        source = "${secrets-dir}/ssh-keys";
-        recursive = true;
-      };
-
       ".icons/default" = {
         source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
       };
@@ -355,6 +354,10 @@ in
     enable = true;
   } // gitConfig;
 
+  programs.gpg = {
+    enable = true;
+  };
+
   programs.lf = {
     enable = true;
   } // lfConfig;
@@ -398,6 +401,10 @@ in
   services.picom = {
     enable = true;
   } // picomConfig;
+
+  services.gpg-agent = {
+    enable = true;
+  } // gpgAgentConfig;
 
   services.polybar = {
     enable = true;

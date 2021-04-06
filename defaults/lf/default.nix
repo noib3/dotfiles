@@ -42,11 +42,8 @@
     fuzzy_cd = ''
       ''${{
         clear
-        dirname="$(\
-          eval $FZF_ONLYDIRS_COMMAND \
-            | fzf --prompt='Cd> ' --preview='ls --color=always ~/{}' \
-            | sed 's/\ /\\\ /g')" \
-          && lf -remote "send $id cd ~/''${dirname}" \
+        dirname="$(eval "$FZF_ALT_C_COMMAND | fzf $FZF_ALT_C_OPTS")" \
+          && lf -remote "send $id cd \"~/''${dirname}\"" \
           || true
       }}
     '';

@@ -9,7 +9,7 @@ function open {
         text_files+=($(echo "$HOME/$file" | sed "s/\ /\\\ /g"))
         ;;
       image/*)
-        setsid -f sxiv "$HOME/$file"
+        setsid -f feh "$HOME/$file"
         # image_files+=("$f")
         ;;
       video/*)

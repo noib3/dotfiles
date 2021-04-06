@@ -16,22 +16,9 @@
     lg = "lazygit";
   };
 
-  shellInit = ''
-    set dircolor \
-      (echo $LS_COLORS | sed -r 's/(^|.*:)di=([^:]*).*/\2/')
-    set fgodcolor \
-      (echo $LS_COLORS | sed -r 's/(^|.*:)\*\.fgod=([^:]*).*/\2/')
-
-    set -gx FZF_DEFAULT_COMMAND $FZF_DEFAULT_COMMAND \
-      " | sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'"
-
-    set -gx FZF_ONLYDIRS_COMMAND \
-      "fd --base-directory=$HOME --hidden --type=d --color=always" \
-      " | sed 's/\x1b\["$dircolor"m/\x1b\["$fgodcolor"m/g'" \
-      " | sed 's/\(.*\)\x1b\["$fgodcolor"m/\1\x1b\["$dircolor"m/'"
-  '';
-
   interactiveShellInit = ''
+    set -gx GPG_TTY (tty)
+
     set fish_greeting ""
 
     set fish_cursor_default block
@@ -113,9 +100,7 @@
     '';
 
     fuzzy_cd.body = ''
-      set -l dirname (
-        eval $FZF_ONLYDIRS_COMMAND \
-          | fzf --prompt='Cd> ' --preview='ls --color=always ~/{}') \
+      set -l dirname (eval "$FZF_ALT_C_COMMAND | fzf $FZF_ALT_C_OPTS") \
         && cd "$HOME/$dirname"
       emit fish_prompt
       commandline -f repaint

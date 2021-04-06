@@ -35,9 +35,9 @@ lspconfig.html.setup {
   on_attach = on_attach,
 }
 
-lspconfig.texlab.setup {
-  on_attach = on_attach,
-}
+-- lspconfig.texlab.setup {
+--   on_attach = on_attach,
+-- }
 
 lspconfig.vimls.setup {
   on_attach = on_attach,

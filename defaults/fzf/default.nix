@@ -1,7 +1,11 @@
 { colors }:
 
 {
-  defaultCommand = "fd --base-directory=$HOME --hidden --type=f --color=always";
+  defaultCommand = ''
+    fd --base-directory=$HOME --hidden --type=f --color=always \
+      | sed 's/\x1b\[${colors.dir}m/\x1b\[${colors.fgod}m/g'
+  '';
+
   defaultOptions = [
     "--reverse"
     "--no-bold"
@@ -18,4 +22,17 @@
     "--color='bg+:${colors.bgplus}'"
     "--color='border:${colors.border}'"
   ];
+
+  changeDirWidgetCommand = ''
+    fd --base-directory=$HOME --hidden --type=d --color=always \
+      | sed 's/\x1b\[${colors.dir}m/\x1b\[${colors.fgod}m/g' \
+      | sed 's/\(.*\)\x1b\[${colors.fgod}m/\1\x1b\[${colors.dir}m/'
+  '';
+
+  changeDirWidgetOptions = [
+    "--prompt='Cd> '"
+    "--preview='ls --color=always ~/{}'"
+  ];
+
+  enableFishIntegration = true;
 }

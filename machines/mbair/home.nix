@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   unstable = import <nixos-unstable> { };
 
@@ -192,13 +192,6 @@ in
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
       SECRETSDIR = "${secrets-dir}";
-    };
-
-    file = {
-      ".ssh" = {
-        source = "${secrets-dir}/ssh-keys";
-        recursive = true;
-      };
     };
   };
 

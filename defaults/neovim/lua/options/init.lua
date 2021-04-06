@@ -37,7 +37,3 @@ opt('w', 'linebreak', false)
 opt('w', 'list', true)
 opt('w', 'number', true)
 opt('w', 'relativenumber', true)
-
-if vim.env.SECRETSDIR then
-  opt('b', 'spellfile', vim.env.SECRETSDIR .. '/nvim/spell/en.utf-8.add')
-end

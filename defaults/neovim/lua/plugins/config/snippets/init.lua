@@ -1,14 +1,6 @@
-local map = vim.api.nvim_set_keymap
+local g = vim.g
 
--- map('i', '<Tab>', '<Cmd>lua return require"snippets".expand_or_advance(1)<CR>', {noremap=true})
--- map('i', '<S-Tab>', '<Cmd>lua return require"snippets".advance_snippet(-1)<CR>', {noremap=true})
-
-require('snippets').snippets = {
-  _global = {
-    she = "#!/usr/bin/env bash\n";
-  };
-
-  python = {
-    she = "#!/usr/bin/env python3\n";
-  };
-}
+g.UltiSnipsExpandTrigger = '<Tab>'
+g.UltiSnipsJumpForwardTrigger = '<Tab>'
+g.UltiSnipsJumpBackwardTrigger = '<S-Tab>'
+g.UltiSnipsSnippetDirectories = {'lua/plugins/config/snippets/sources'}

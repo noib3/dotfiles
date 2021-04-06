@@ -15,7 +15,7 @@ return require('packer').startup(function()
         config=[[require('plugins.config.ale')]]}
 
   -- Snippets
-  use {'norcalli/snippets.nvim',
+  use {'SirVer/ultisnips',
         config=[[require('plugins.config.snippets')]]}
 
   -- Miscellaneous

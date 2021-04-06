@@ -155,8 +155,6 @@
         ];
       };
     };
-
-    fzf-grayed-out-dir = [ ".fgod" ];
   };
 
   themes = {
@@ -289,12 +287,6 @@
       unimportant = {
         foreground = "gray";
       };
-
-      fzf-grayed-out-dir = {
-        foreground = "gray";
-        font-style = "bold";
-      };
-
     };
   };
 }
