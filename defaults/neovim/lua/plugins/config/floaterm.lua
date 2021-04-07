@@ -7,10 +7,10 @@ g.floaterm_height = 0.8
 g.floaterm_opener = 'edit'
 g.floaterm_autoclose = 2
 
-map('n', 'll', ':lua open_lf_select_current_file()<CR>', { silent = true })
-map('n', 'lg', ':FloatermNew lazygit<CR>', { silent = true })
+map('n', 'll', '<Cmd>lua open_lf_select_current()<CR>', {silent=true})
+map('n', 'lg', '<Cmd>FloatermNew lazygit<CR>', {silent=true})
 
-function open_lf_select_current_file()
+function open_lf_select_current()
   local filename = vim.api.nvim_buf_get_name(0)
   local cmd = "FloatermNew lf"
   if filename ~= "" then

@@ -33,7 +33,7 @@
     fuzzy_edit = ''
       ''${{
         clear
-        filename="$(fzf -m --prompt='Edit> ')" \
+        filename="$(fzf --multi --prompt='Edit> ')" \
           && $EDITOR "''${HOME}/''${filename}" \
           || true
       }}

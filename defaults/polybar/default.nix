@@ -47,21 +47,28 @@ in
 
     "module/bspwm" = {
       type = "internal/bspwm";
-      inline-mode = true;
+      # inline-mode = true;
       format-background = colors.bar.bg;
+
       label-focused = "%name%";
       label-focused-padding = 1;
       label-focused-background = colors.bspwm.focused.bg;
-      # TODO
-      label-focused-foreground = colors.bspwm.focused.fg;
+
       label-occupied = "%name%";
       label-occupied-padding = 1;
       label-occupied-foreground = colors.bspwm.occupied.fg;
+
       label-urgent = "%name%!";
       label-urgent-padding = 1;
+
       label-empty = "%name%";
       label-empty-padding = 1;
       label-empty-foreground = colors.bspwm.empty.fg;
+
+      label-focused-empty = "%name%";
+      label-focused-empty-padding = 1;
+      label-focused-empty-background = colors.bspwm.focused.bg;
+      label-focused-empty-foreground = colors.bspwm.empty.fg;
     };
 
     "module/time" = {

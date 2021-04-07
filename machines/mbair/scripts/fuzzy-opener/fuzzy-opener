@@ -29,5 +29,5 @@ function openn {
 (alacritty \
   --title 'fuzzy-opener' \
   --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
-  -e sh -c 'fzf -m --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
+  -e sh -c 'fzf --multi --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
   | openn

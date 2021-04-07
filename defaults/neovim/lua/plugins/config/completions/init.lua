@@ -6,7 +6,7 @@ require('completion').addCompletionSource(
 vim.g.completion_chain_complete_list = {
   tex = {
     {complete_items = {'vimtex', 'lsp'}},
-  };
+  },
 }
 
 vim.g.completion_enable_auto_paren = 1

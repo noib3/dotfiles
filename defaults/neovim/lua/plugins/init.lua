@@ -22,8 +22,7 @@ return require('packer').startup(function()
   use {'Raimondi/delimitMate',
         config=[[require('plugins.config.delimitmate')]]}
 
-  use {'junegunn/fzf.vim',
-        requires = {'junegunn/fzf'},
+  use {'junegunn/fzf',
         config = [[require('plugins.config.fzf')]]}
 
   use {'junegunn/goyo.vim',

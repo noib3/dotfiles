@@ -4,7 +4,6 @@
   module.bg = "#3e4452";
 
   bspwm.focused.bg = "#3e4452";
-  bspwm.focused.fg = "#abb2bf";
   bspwm.occupied.fg = "#abb2bf";
   bspwm.empty.fg = "#5c6073";
 

@@ -89,7 +89,7 @@
     '';
 
     fuzzy_edit.body = ''
-      set -l filenames (fzf -m --prompt='Edit> ') \
+      set -l filenames (fzf --multi --prompt='Edit> ') \
         && set -l filenames (
           echo ~/(string escape -- $filenames) \
             | tr '\n' ' ' \
@@ -120,7 +120,7 @@
 
     fuzzy_search.body = ''
       set -l filenames (
-        echo ~/(string escape -- (fzf -m --prompt='Paste> ')) \
+        echo ~/(string escape -- (fzf --multi --prompt='Paste> ')) \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//') \
         && commandline --insert "$filenames"
@@ -131,7 +131,7 @@
       set -l pids (
         pgrep -a -u (whoami) \
           | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' \
-          | fzf -m --phony --prompt='Kill> ' --bind 'change:reload(\
+          | fzf --multi --phony --prompt='Kill> ' --bind='change:reload(\
               pgrep -a -u (whoami) {q} \
                 | sed "s/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/" \
               || true)' \
