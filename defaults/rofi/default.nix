@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, font, colors }:
+{ pkgs, font, colors }:
 
 {
   # theme = "${pkgs.rofi}/share/rofi/themes/android_notification";

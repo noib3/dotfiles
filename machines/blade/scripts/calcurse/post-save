@@ -4,7 +4,7 @@ function notify_commit() {
   notify-send \
     --expire-time=5000 \
     --app-name="calcurse's post-save hook" \
-    --icon="$(dirname "$0")/calendar-icon.png" \
+    --icon="/home/noib3/Sync/dotfiles/machines/blade/scripts/calcurse/calendar-icon.png" \
     "Automatic commit script" \
     "Pushing changes to GitHub..."
 }

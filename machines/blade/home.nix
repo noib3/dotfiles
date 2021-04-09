@@ -11,9 +11,16 @@ let
   sync-dir = config.home.homeDirectory + "/Sync";
   secrets-dir = sync-dir + "/secrets";
   screenshots-dir = sync-dir + "/screenshots";
-  qutebrowser-userscripts-dir = ./scripts/qutebrowser;
 
   userScripts = {
+    listen-node-add = pkgs.writeScriptBin
+      "listen-node-add"
+      (builtins.readFile ./scripts/bspwm/listen-node-add);
+
+    listen-node-remove = pkgs.writeScriptBin
+      "listen-node-remove"
+      (builtins.readFile ./scripts/bspwm/listen-node-remove);
+
     lf-launcher = pkgs.writeScriptBin
       "lf"
       (import ../../defaults/lf/launcher.nix { inherit pkgs; });
@@ -69,6 +76,7 @@ let
   direnvConfig = import ../../defaults/direnv;
 
   dunstConfig = (import ../../defaults/dunst {
+    inherit pkgs;
     font = import (fonts-dir + /dunst.nix);
     colors = import (colorschemes-dir + /dunst.nix);
   });
@@ -117,19 +125,21 @@ let
   qutebrowserConfig = (import ../../defaults/qutebrowser {
     font = import (fonts-dir + /qutebrowser.nix);
     colors = import (colorschemes-dir + /qutebrowser.nix);
-    userscripts-dir = qutebrowser-userscripts-dir;
   });
 
   redshiftConfig = import ../../defaults/redshift;
 
   rofiConfig = (import ../../defaults/rofi {
+    inherit pkgs;
     font = import (fonts-dir + /rofi.nix);
     colors = import (colorschemes-dir + /rofi.nix);
   });
 
   starshipConfig = import ../../defaults/starship;
 
-  sxhkdConfig = import ../../defaults/sxhkd;
+  sxhkdConfig = (import ../../defaults/sxhkd {
+    secrets-dir = secrets-dir;
+  });
 
   sshConfig = import ../../defaults/ssh;
 
@@ -154,6 +164,27 @@ in
     ../../modules/programs/fd.nix
     ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
+  ];
+
+  nixpkgs.overlays = [
+    (self: super: {
+      direnv = unstable.direnv;
+      fish = unstable.fish;
+      fzf = unstable.fzf;
+      lf = unstable.lf;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      picom = unstable.picom;
+      python39 = unstable.python39;
+      qutebrowser = unstable.qutebrowser;
+      starship = unstable.starship;
+      tree-sitter = unstable.tree-sitter;
+      ueberzug = unstable.ueberzug;
+      vimv = unstable.vimv;
+    })
+
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
   ];
 
   home = {
@@ -202,15 +233,20 @@ in
       ripgrep
       texlab
       texlive.combined.scheme-full
+      transmission-remote-gtk
       tree-sitter
       ueberzug
+      unclutter-xfixes
       unzip
       vimv
       wmctrl
+      xbanish
       xclip
       xdotool
       yarn
     ] ++ [
+      userScripts.listen-node-add
+      userScripts.listen-node-remove
       (pkgs.hiPrio userScripts.lf-launcher)
       userScripts.fuzzy-opener
       userScripts.file-open-close
@@ -228,97 +264,74 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
-      XCOMPOSECACHE = "${config.home.homeDirectory}/.cache/compose";
       LS_COLORS = "$(vivid generate current)";
     };
 
-    file = {
-      ".icons/default" = {
-        source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
-      };
+  };
+
+  xdg.configFile = {
+    "alacritty/fuzzy-opener.yml" = {
+      text = lib.replaceStrings [ "\\\\" ] [ "\\" ]
+        (builtins.toJSON (import ./scripts/fuzzy-opener/alacritty.nix {
+          font = import (fonts-dir + /alacritty.nix);
+          colors = import (colorschemes-dir + /alacritty.nix);
+        }));
+      # source =
+      #   let
+      #     yaml = pkgs.formats.yaml { };
+      #   in
+      #   yaml.generate "fuzzy-opener.yml"
+      #     (import ./scripts/fuzzy-opener/alacritty.nix {
+      #       font = import (fonts-dir + /alacritty.nix);
+      #       colors = import (colorschemes-dir + /alacritty.nix);
+      #     });
+    };
+
+    "calcurse" = {
+      source = ../../defaults/calcurse;
+      recursive = true;
+    };
+
+    "calcurse/hooks/post-save" = {
+      source = ./scripts/calcurse/post-save;
+    };
+
+    "fusuma" = {
+      source = ../../defaults/fusuma;
+      recursive = true;
+    };
+
+    "nvim" = {
+      source = ../../defaults/neovim;
+      recursive = true;
+    };
+
+    "nvim/lua/colorscheme/init.lua" = {
+      text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
+        inherit lib;
+        colors = import (colorschemes-dir + /neovim.nix);
+      });
+    };
+
+    "qutebrowser/userscripts" = {
+      source = ./scripts/qutebrowser;
+      recursive = true;
+    };
+
+    "redshift/hooks/notify-change" = {
+      source = ./scripts/redshift/notify-change;
+    };
+
+    "wallpaper.png" = {
+      source = colorschemes-dir + /wallpaper.png;
     };
   };
 
-  nixpkgs.overlays = [
-    (self: super: {
-      direnv = unstable.direnv;
-      fish = unstable.fish;
-      fzf = unstable.fzf;
-      lf = unstable.lf;
-      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      picom = unstable.picom;
-      python39 = unstable.python39;
-      qutebrowser = unstable.qutebrowser;
-      starship = unstable.starship;
-      tree-sitter = unstable.tree-sitter;
-      ueberzug = unstable.ueberzug;
-      vimv = unstable.vimv;
-    })
-
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
-
-  xdg.configFile."wallpaper.png" = {
-    source = colorschemes-dir + /wallpaper.png;
-  };
-
-  xdg.configFile."alacritty/fuzzy-opener.yml" = {
-    text = lib.replaceStrings [ "\\\\" ] [ "\\" ]
-      (builtins.toJSON (import ./scripts/fuzzy-opener/alacritty.nix {
-        font = import (fonts-dir + /alacritty.nix);
-        colors = import (colorschemes-dir + /alacritty.nix);
-      }));
-    # source =
-    #   let
-    #     yaml = pkgs.formats.yaml { };
-    #   in
-    #   yaml.generate "fuzzy-opener.yml"
-    #     (import ./scripts/fuzzy-opener/alacritty.nix {
-    #       font = import (fonts-dir + /alacritty.nix);
-    #       colors = import (colorschemes-dir + /alacritty.nix);
-    #     });
-  };
-
-  xdg.configFile."calcurse" = {
-    source = ../../defaults/calcurse;
-    recursive = true;
-  };
-
-  xdg.dataFile."calcurse" = {
-    source = "${secrets-dir}/calcurse";
-    recursive = true;
-  };
-
-  xdg.configFile."calcurse/hooks/calendar-icon.png" = {
-    source = ./scripts/calcurse/calendar-icon.png;
-  };
-
-  xdg.configFile."fusuma" = {
-    source = ../../defaults/fusuma;
-    recursive = true;
-  };
-
-  xdg.configFile."nvim" = {
-    source = ../../defaults/neovim;
-    recursive = true;
-  };
-
-  xdg.configFile."nvim/lua/colorscheme/init.lua" = {
-    text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
-      inherit lib;
-      colors = import (colorschemes-dir + /neovim.nix);
-    });
-  };
-
-  xdg.configFile."redshift/hooks/redshift-logo.png" = {
-    source = ./scripts/redshift/redshift-logo.png;
-  };
-
-  xdg.dataFile."applications" = {
-    source = ./applications;
-    recursive = true;
+  xdg.dataFile = {
+    "applications" = {
+      source = ./applications;
+      recursive = true;
+    };
   };
 
   xdg.mimeApps = {
@@ -439,8 +452,16 @@ in
 
   xsession = {
     enable = true;
+
     windowManager.bspwm = {
       enable = true;
     } // bspwmConfig;
+
+    pointerCursor = {
+      package = pkgs.vanilla-dmz;
+      name = "Vanilla-DMZ";
+      size = 16;
+      defaultCursor = "left_ptr";
+    };
   };
 }

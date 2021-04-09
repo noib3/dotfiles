@@ -1,6 +1,12 @@
-{ font, colors }:
+{ pkgs, font, colors }:
 
 {
+  iconTheme = {
+    package = pkgs.hicolor-icon-theme;
+    name = "hicolor";
+    size = "scalable";
+  };
+
   settings = {
     global = {
       font = "${font.family} ${font.size}";

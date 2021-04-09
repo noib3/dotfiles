@@ -1,3 +1,5 @@
+{ secrets-dir }:
+
 {
   keybindings = {
     # Reload sxhkd
@@ -5,7 +7,9 @@
 
     # Get a shell or launch some other terminal based program
     "super + Return" = "alacritty";
-    "super + {g,f,a}" = "alacritty -e {gotop,fish -c 'lf $HOME/Downloads',calcurse}";
+    "super + g" = "alacritty -e gotop";
+    "super + f" = "alacritty -e lf ~/Downloads";
+    "super + a" = "alacritty -e calcurse -C ~/.config/calcurse -D ${secrets-dir}/calcurse";
 
     # Open the web browser 
     "alt + w" = "qutebrowser";

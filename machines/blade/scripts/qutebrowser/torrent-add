@@ -4,7 +4,7 @@ function notify_add() {
   notify-send \
     --expire-time=5000 \
     --app-name="qutebrowser" \
-    --icon="$(dirname "$0")/qutebrowser-logo.png" \
+    --icon="qutebrowser" \
     "Added new torrent" \
     "${QUTE_URL} has started downloading"
 }

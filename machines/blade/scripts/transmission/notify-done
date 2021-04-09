@@ -1,16 +1,19 @@
+#!/run/current-system/sw/bin/bash
 #!/usr/bin/env bash
 
+PATH="$PATH:/run/current-system/sw/bin:/home/noib3/.nix-profile/bin"
+
 function notify_done() {
-  /home/noib3/.nix-profile/bin/notify-send \
+  notify-send \
     --expire-time=5000 \
     --app-name="transmission-remote" \
-    --icon="$(dirname "$0")/transmission-logo.png" \
+    --icon="transmission-remote-gtk" \
     "Torrent complete" \
     "${TR_TORRENT_NAME} has finished downloading"
 }
 
 function torrent_remove() {
-  /run/current-system/sw/bin/transmission-remote --torrent "${TR_TORRENT_ID}" --remove
+  transmission-remote --torrent "${TR_TORRENT_ID}" --remove
 }
 
 notify_done

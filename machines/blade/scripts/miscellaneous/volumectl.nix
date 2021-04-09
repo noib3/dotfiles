@@ -12,7 +12,7 @@ in
       pactl set-sink-volume ${pulseaudio-sink} +5%
       ;;
     mute)
-      pactl set-sink-volume ${pulseaudio-sink} toggle
+      pactl set-sink-mute ${pulseaudio-sink} toggle
       ;;
     *)
       exit 1

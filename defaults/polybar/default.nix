@@ -39,7 +39,6 @@ in
       font-3 = "${f3.family}:style=${f3.style}:size=${f3.size};${f3.padding-top}";
       background = colors.bar.bg;
       foreground = colors.bar.fg;
-      underline-size = 2;
       wm-restack = "bspwm";
       modules-left = "bspwm";
       modules-right = "bluetooth wifi ethernet battery date time";

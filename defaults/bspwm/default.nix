@@ -4,6 +4,7 @@
   settings = {
     "window_gap" = 25;
     "border_width" = 2;
+    "focus_follows_pointer" = true;
     "normal_border_color" = colors.normal_border;
     "active_border_color" = colors.active_border;
     "focused_border_color" = colors.focused_border;
@@ -29,6 +30,10 @@
 
   startupPrograms = [
     "fusuma"
+    "listen-node-add"
+    "listen-node-remove"
+    "unclutter -idle 10"
+    "xbanish"
   ];
 
   extraConfig = ''

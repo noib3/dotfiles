@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, default }:
+{ pkgs, default }:
 
 {
   shellAliases = {

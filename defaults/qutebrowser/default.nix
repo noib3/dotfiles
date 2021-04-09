@@ -1,4 +1,4 @@
-{ font, colors, userscripts-dir }:
+{ font, colors }:
 let
   home-page = "https://google.com";
 in
@@ -170,7 +170,7 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
-      ",t" = "hint links userscript ${userscripts-dir}/torrent-add";
+      ",t" = "hint links userscript torrent-add";
 
       "gh" = "open ${home-page}";
       "th" = "open -t ${home-page}";

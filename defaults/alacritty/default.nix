@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, font, colors }:
+{ pkgs, font, colors }:
 
 {
   settings = {
