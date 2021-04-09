@@ -9,6 +9,16 @@
       bg = "#797979";
       fg = "#d6d6d6";
     };
+
+    indicator.error = "#ac4142";
+    indicator.start = "#6c99bb";
+    indicator.stop = "#b4c973";
+  };
+
+  hints = {
+    bg = "#5a647e";
+    fg = "#d6d6d6";
+    match.fg = "#e5b567";
   };
 
   completion = {
@@ -30,5 +40,14 @@
   statusbar = {
     bg = "#5a647e";
     fg = "#d6d6d6";
+    private.bg = "#9e86c8";
+    private.fg = "#d6d6d6";
+  };
+
+  messages = {
+    error = {
+      bg = "#ac4142";
+      fg = "#d6d6d6";
+    };
   };
 }

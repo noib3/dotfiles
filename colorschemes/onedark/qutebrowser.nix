@@ -9,6 +9,10 @@
       bg = "#abb2bf";
       fg = "#282c34";
     };
+
+    indicator.error = "#be5046";
+    indicator.start = "#61afef";
+    indicator.stop = "#98c379";
   };
 
   hints = {

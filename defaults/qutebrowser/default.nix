@@ -26,6 +26,9 @@ in
         selected.odd.fg = colors.tabs.focused.fg;
         selected.even.bg = colors.tabs.focused.bg;
         selected.even.fg = colors.tabs.focused.fg;
+        indicator.error = colors.tabs.indicator.error;
+        indicator.start = colors.tabs.indicator.start;
+        indicator.stop = colors.tabs.indicator.stop;
       };
 
       hints = {

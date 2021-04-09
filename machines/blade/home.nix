@@ -22,13 +22,23 @@ let
       "fuzzy-opener"
       (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener);
 
-    open-or-close = pkgs.writeScriptBin
-      "open-or-close"
-      (builtins.readFile ./scripts/miscellaneous/open-or-close);
+    file-open-close = pkgs.writeScriptBin
+      "file-open-close"
+      (builtins.readFile ./scripts/miscellaneous/file-open-close);
+
+    take-screenshot = pkgs.writeScriptBin
+      "take-screenshot"
+      (import ./scripts/miscellaneous/take-screenshot.nix {
+        screenshots-dir = screenshots-dir;
+      });
 
     toggle-gbp = pkgs.writeScriptBin
-      "toggle-gaps-borders-polybar"
-      (builtins.readFile ./scripts/miscellaneous/toggle-gaps-borders-polybar);
+      "toggle-gaps-borders-paddings"
+      (builtins.readFile ./scripts/miscellaneous/toggle-gaps-borders-paddings);
+
+    volumectl = pkgs.writeScriptBin
+      "volumectl"
+      (import ./scripts/miscellaneous/volumectl.nix);
 
     rofi-bluetooth = pkgs.writeScriptBin
       "rofi-bluetooth"
@@ -76,6 +86,7 @@ let
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
+      inherit pkgs;
       colors = import (colorschemes-dir + /fish.nix);
     })
     (import ./overrides/fish.nix);
@@ -84,14 +95,14 @@ let
     colors = import (colorschemes-dir + /fzf.nix);
   });
 
-  gitConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/git)
-    (import ./overrides/git.nix);
+  gitConfig = import ../../defaults/git;
 
   gpgAgentConfig = import ../../defaults/gpg/gpg-agent.nix;
 
   lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf { })
+    (import ../../defaults/lf {
+      inherit pkgs;
+    })
     (import ./overrides/lf.nix);
 
   mpvConfig = import ../../defaults/mpv;
@@ -118,10 +129,7 @@ let
 
   starshipConfig = import ../../defaults/starship;
 
-  sxhkdConfig = (import ../../defaults/sxhkd {
-    secrets-dir = secrets-dir;
-    screenshots-dir = screenshots-dir;
-  });
+  sxhkdConfig = import ../../defaults/sxhkd;
 
   sshConfig = import ../../defaults/ssh;
 
@@ -205,8 +213,10 @@ in
     ] ++ [
       (pkgs.hiPrio userScripts.lf-launcher)
       userScripts.fuzzy-opener
-      userScripts.open-or-close
+      userScripts.file-open-close
+      userScripts.take-screenshot
       userScripts.toggle-gbp
+      userScripts.volumectl
       userScripts.rofi-bluetooth
     ];
 
@@ -273,6 +283,11 @@ in
 
   xdg.configFile."calcurse" = {
     source = ../../defaults/calcurse;
+    recursive = true;
+  };
+
+  xdg.dataFile."calcurse" = {
+    source = "${secrets-dir}/calcurse";
     recursive = true;
   };
 

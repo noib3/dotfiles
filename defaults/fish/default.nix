@@ -17,8 +17,6 @@
   };
 
   interactiveShellInit = ''
-    set -gx GPG_TTY (tty)
-
     set fish_greeting ""
 
     set fish_cursor_default block
@@ -64,10 +62,15 @@
     bind -M insert \cX\cF fuzzy_history
     bind -M insert \cX\cG fuzzy_kill
     bind -M insert \cS fuzzy_search
-
+  '' +
+  ''
     # For some reason the pisces plugin needs to be sourced manually to become
     # active.
     source ~/.config/fish/conf.d/plugin-pisces.fish
+  '' +
+  ''
+    set -gx GPG_TTY (tty)
+    ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
   '';
 
   plugins = [

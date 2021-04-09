@@ -8,5 +8,6 @@ vim.g.fzf_layout = {
   }
 }
 
--- For some reason the Lua equivalent of the function above doesn't work.
+-- For some reason the Lua equivalents of the functions defined in the
+-- following init.vim don't work (I get errors about funcrefs).
 vim.cmd('source ~/.config/nvim/lua/plugins/config/fzf/init.vim')

@@ -63,9 +63,7 @@ let
     colors = import (colorschemes-dir + /fzf.nix);
   });
 
-  gitConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/git)
-    (import ./overrides/git.nix);
+  gitConfig = import ../../defaults/git;
 
   lfConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/lf { })

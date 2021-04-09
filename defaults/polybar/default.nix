@@ -47,7 +47,6 @@ in
 
     "module/bspwm" = {
       type = "internal/bspwm";
-      # inline-mode = true;
       format-background = colors.bar.bg;
 
       label-focused = "%name%";
