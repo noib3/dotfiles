@@ -61,6 +61,7 @@
     bind -M insert \cX\cE fuzzy_edit
     bind -M insert \cX\cF fuzzy_history
     bind -M insert \cX\cG fuzzy_kill
+    bind -M insert \cX\cR fuzzy_ripgrep
     bind -M insert \cS fuzzy_search
   '' +
   ''
@@ -91,21 +92,22 @@
       commandline -f repaint
     '';
 
-    fuzzy_edit.body = ''
-      set -l filenames (fzf --multi --prompt='Edit> ') \
-        && set -l filenames (
-          echo ~/(string escape -- $filenames) \
-            | tr '\n' ' ' \
-            | sed 's/[[:space:]]*$//') \
-        && commandline "$EDITOR $filenames" \
-        && commandline --function execute
-      commandline -f repaint
-    '';
-
     fuzzy_cd.body = ''
       set -l dirname (eval "$FZF_ALT_C_COMMAND | fzf $FZF_ALT_C_OPTS") \
         && cd "$HOME/$dirname"
       emit fish_prompt
+      commandline -f repaint
+    '';
+
+    fuzzy_edit.body = ''
+      set -l filenames (
+        fzf --multi --prompt='Edit> ' \
+          | sed -r 's/\ /\\\ /g;s!(.*)!~/\1!' \
+          | tr '\n' ' ' \
+          | sed 's/[[:space:]]*$//')
+      test ! -z "$filenames" \
+        && commandline "$EDITOR $filenames" \
+        && commandline -f execute
       commandline -f repaint
     '';
 
@@ -121,27 +123,49 @@
       commandline -f repaint
     '';
 
-    fuzzy_search.body = ''
-      set -l filenames (
-        echo ~/(string escape -- (fzf --multi --prompt='Paste> ')) \
-          | tr '\n' ' ' \
-          | sed 's/[[:space:]]*$//') \
-        && commandline --insert "$filenames"
-      commandline -f repaint
-    '';
-
     fuzzy_kill.body = ''
+      set -l pgrep_prefix "pgrep -a -u "(whoami)
       set -l pids (
-        pgrep -a -u (whoami) \
-          | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' \
-          | fzf --multi --phony --prompt='Kill> ' --bind='change:reload(\
-              pgrep -a -u (whoami) {q} \
-                | sed "s/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/" \
-              || true)' \
+        eval "$pgrep_prefix" | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' \
+          | fzf --multi --prompt='Kill> ' --phony \
+              --bind="change:reload($pgrep_prefix {q} | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' || true)" \
           | sed -r 's/([0-9]+).*/\1/' \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//') \
         && kill $pids
+      commandline -f repaint
+    '';
+
+    fuzzy_ripgrep.body = ''
+      git status &>/dev/null
+      test $status -eq 0 \
+        && set -l dir (git rev-parse --show-toplevel) \
+        || set -l dir (pwd)
+      set -l rg_prefix \
+        "rg --smart-case --column --line-number --no-heading --color=always --"
+      set -l filenames (
+        eval "$rg_prefix \"\" $dir | sed \"s!$dir/!!\""  \
+          | fzf --multi --prompt='Rg> ' --phony --delimiter=: --with-nth=1,2,4 \
+              --bind="change:reload($rg_prefix {q} $dir | sed \"s!$dir/!!\" || true)" \
+              --preview='${builtins.toString ../neovim/lua/plugins/config/fzf/rg-previewer} {}' \
+              --preview-window=+{2}-/2 \
+          | sed -r "s!^([^:]*):([^:]*):([^:]*):.*\$!$dir/\1!;s/\ /\\\ /g;s!$HOME!~!" \
+          | tr '\n' ' ' \
+          | sed 's/[[:space:]]*$//')
+      test ! -z "$filenames" \
+        && commandline "$EDITOR $filenames" \
+        && commandline -f execute
+      commandline -f repaint
+    '';
+
+    fuzzy_search.body = ''
+      set -l filenames (
+        fzf --multi --prompt='Paste> ' \
+          | sed -r 's/\ /\\\ /g;s/(.*)/~\/\1/' \
+          | tr '\n' ' ' \
+          | sed 's/[[:space:]]*$//')
+      test ! -z "$filenames" \
+        && commandline "$filenames"
       commandline -f repaint
     '';
   };

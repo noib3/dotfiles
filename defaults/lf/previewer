@@ -30,6 +30,23 @@ y="$5"
 default_x="1920"
 default_y="1080"
 
+case "$file" in
+  *.7z|*.a|*.ace|*.alz|*.arc|*.arj|*.bz|*.bz2|*.cab|*.cpio|*.deb|*.gz|*.jar|\
+  *.lha|*.lrz|*.lz|*.lzh|*.lzma|*.lzo|*.rar|*.rpm|*.rz|*.t7z|*.tar|*.tbz|\
+  *.tbz2|*.tgz|*.tlz|*.txz|*.tZ|*.tzo|*.war|*.xz|*.Z|*.zip)
+    als -- "$file"
+    exit 0
+    ;;
+  *.svg)
+    if [ -n "$FIFO_UEBERZUG" ]; then
+      cache="$(hash "$file").jpg"
+      cache "$cache"
+      convert -- "$file" "$cache"
+      draw "$cache"
+    fi
+    ;;
+esac
+
 case "$(file -Lb --mime-type -- "$file")" in
   text/*)
     bat "$file"
@@ -78,7 +95,7 @@ case "$(file -Lb --mime-type -- "$file")" in
     mediainfo "$file"
     ;;
   *)
-    bat "$file"
+    file -Lb --mime-type -- "$file"
     ;;
 esac
 

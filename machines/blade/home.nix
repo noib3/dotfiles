@@ -193,6 +193,7 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
+      atool
       bitwarden
       calcurse
       chafa
@@ -231,6 +232,7 @@ in
         ]
       ))
       ripgrep
+      scrot
       texlab
       texlive.combined.scheme-full
       transmission-remote-gtk
@@ -243,6 +245,8 @@ in
       xbanish
       xclip
       xdotool
+      xorg.xev
+      xorg.xwininfo
       yarn
     ] ++ [
       userScripts.listen-node-add

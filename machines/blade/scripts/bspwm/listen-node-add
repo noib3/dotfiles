@@ -12,5 +12,5 @@ function kill_polybar_autohide() {
 
 bspc subscribe node_add \
   | while read line; do
-    [ $(wmctrl -l | wc -l) != 1 ] || kill_polybar_autohide
+      [ $(wmctrl -l | wc -l) != 1 ] || kill_polybar_autohide
     done

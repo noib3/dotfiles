@@ -52,13 +52,11 @@ in
   users.users.noib3 = {
     home = "/home/noib3";
     shell = pkgs.fish;
-    # shell = "/home/noib3/.nix-profile/bin/fish";
     isNormalUser = true;
 
     # The input group is needed by libinput-gestures, while the plugdev group
-    # is needed by the openrazer-daemon service. See
-    # https://github.com/bulletmark/libinput-gestures and
-    # https://openrazer.github.io/#project for more details.
+    # is needed by the openrazer-daemon service. See [1] and [2] for more
+    # details.
     extraGroups = [ "wheel" "input" "plugdev" ];
   };
 
@@ -181,3 +179,6 @@ in
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.09"; # Did you read the comment?
 }
+
+# [1]: https://github.com/bulletmark/libinput-gestures
+# [2]: # https://openrazer.github.io/#projectv

@@ -1,8 +1,8 @@
-let s:previewer = expand('<sfile>:p:h').'/previewer'
+let s:rg_previewer = expand('<sfile>:p:h').'/rg-previewer'
 
 function! s:open_edits(basedir, lines)
   let s:files = map(a:lines, 'a:basedir."/". v:val')
-  execute 'vsplit '.remove(s:files, 0)
+  execute 'edit '.remove(s:files, 0)
   for file in s:files | execute 'badd '.file | endfor
 endfunction
 
@@ -11,7 +11,7 @@ function! s:open_ripgreps(basedir, lines)
   let s:lnum = matchlist(a:lines[0], s:regex)[2]
   let s:col = matchlist(a:lines[0], s:regex)[3]
   let s:files = map(a:lines, 'a:basedir."/". matchlist(v:val, s:regex)[1]')
-  execute 'vsplit '.remove(s:files, 0)
+  execute 'edit '.remove(s:files, 0)
   call cursor(s:lnum, s:col)
   for file in s:files | execute 'badd '.file | endfor
 endfunction
@@ -38,7 +38,7 @@ function! s:fuzzy_ripgrep()
     \ 'options': ['--multi', '--prompt=Rg> ', '--phony',
                   \ '--bind=change:reload:'.s:reload_command,
                   \ '--delimiter=:', '--with-nth=1,2,4',
-                  \ '--preview='.fzf#shellescape(s:previewer).' {}',
+                  \ '--preview='.fzf#shellescape(s:rg_previewer).' {}',
                   \ '--preview-window=+{2}-/2'],
     \ 'dir': s:dir,
     \ 'sink*': function('<SID>open_ripgreps', [s:dir]),

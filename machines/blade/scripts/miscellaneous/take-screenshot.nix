@@ -8,12 +8,12 @@
   case "$1" in
     whole)
       function take_screenshot() {
-        import -window root "$filename"
+        scrot "$filename"
       }
       ;;
     portion)
       function take_screenshot() {
-        import "$filename" && ls "$filename"
+        scrot --select "$filename"
       }
       ;;
     *)
