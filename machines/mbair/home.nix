@@ -78,7 +78,9 @@ let
     colors = import (colorschemes-dir + /spacebar.nix);
   });
 
-  skhdConfig = import ../../defaults/skhd;
+  skhdConfig = (import ../../defaults/skhd {
+    secrets-dir = secrets-dir;
+  });
 
   sshConfig = import ../../defaults/ssh;
 

@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=qutebrowser
-Exec=/home/noib3/.nix-profile/bin/qutebrowser
-MimeType=x-scheme-handler/unknown;x-scheme-handler/about;x-scheme-handler/https;x-scheme-handler/http;text/html;

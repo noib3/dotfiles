@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function polybar_autohide() {
-  /home/noib3/hideIt.sh/hideIt.sh \
+  hideIt.sh \
     --name 'Polybar' \
     --region 0x0+1920+0 \
     --direction top \

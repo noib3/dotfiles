@@ -12,46 +12,56 @@ let
   secrets-dir = sync-dir + "/secrets";
   screenshots-dir = sync-dir + "/screenshots";
 
-  userScripts = {
-    listen-node-add = pkgs.writeScriptBin
+  userScripts = with pkgs; {
+    listen-node-add = writeScriptBin
       "listen-node-add"
       (builtins.readFile ./scripts/bspwm/listen-node-add);
 
-    listen-node-remove = pkgs.writeScriptBin
+    listen-node-remove = writeScriptBin
       "listen-node-remove"
       (builtins.readFile ./scripts/bspwm/listen-node-remove);
 
-    lf-launcher = pkgs.writeScriptBin
+    lf-launcher = writeScriptBin
       "lf"
       (import ../../defaults/lf/launcher.nix { inherit pkgs; });
 
-    fuzzy-opener = pkgs.writeScriptBin
+    fuzzy-opener = writeScriptBin
       "fuzzy-opener"
       (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener);
 
-    file-open-close = pkgs.writeScriptBin
+    file-open-close = writeScriptBin
       "file-open-close"
       (builtins.readFile ./scripts/miscellaneous/file-open-close);
 
-    take-screenshot = pkgs.writeScriptBin
+    take-screenshot = writeScriptBin
       "take-screenshot"
       (import ./scripts/miscellaneous/take-screenshot.nix {
         screenshots-dir = screenshots-dir;
       });
 
-    toggle-gbp = pkgs.writeScriptBin
+    toggle-gbp = writeScriptBin
       "toggle-gaps-borders-paddings"
       (builtins.readFile ./scripts/miscellaneous/toggle-gaps-borders-paddings);
 
-    volumectl = pkgs.writeScriptBin
+    volumectl = writeScriptBin
       "volumectl"
       (import ./scripts/miscellaneous/volumectl.nix);
 
-    rofi-bluetooth = pkgs.writeScriptBin
+    rofi-bluetooth = writeScriptBin
       "rofi-bluetooth"
       (import ./scripts/rofi/rofi-bluetooth.nix {
         colors = import (colorschemes-dir + /polybar.nix);
       });
+  };
+
+  desktopItems = with pkgs; {
+    qutebrowser = makeDesktopItem {
+      name = "qutebrowser";
+      desktopName = "qutebrowser";
+      exec = "${pkgs.qutebrowser}/bin/qutebrowser";
+      mimeType = "x-scheme-handler/unknown;x-scheme-handler/about;x-scheme-handler/https;x-scheme-handler/http;text/html";
+      icon = "qutebrowser";
+    };
   };
 
   alacrittyConfig =
@@ -65,7 +75,9 @@ let
     in
     lib.attrsets.recursiveUpdate
       default
-      (import ./overrides/alacritty.nix { default = default; });
+      (import ./overrides/alacritty.nix {
+        default = default;
+      });
 
   batConfig = import ../../defaults/bat;
 
@@ -171,6 +183,7 @@ in
       direnv = unstable.direnv;
       fish = unstable.fish;
       fzf = unstable.fzf;
+      hideIt = super.callPackage ./overlays/hideIt.nix { };
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       picom = unstable.picom;
@@ -206,6 +219,7 @@ in
       gcc
       gotop
       graphicsmagick-imagemagick-compat
+      hideIt
       lazygit
       libnotify
       mediainfo
@@ -258,6 +272,8 @@ in
       userScripts.toggle-gbp
       userScripts.volumectl
       userScripts.rofi-bluetooth
+    ] ++ [
+      desktopItems.qutebrowser
     ];
 
     sessionVariables = {
@@ -328,13 +344,6 @@ in
 
     "wallpaper.png" = {
       source = colorschemes-dir + /wallpaper.png;
-    };
-  };
-
-  xdg.dataFile = {
-    "applications" = {
-      source = ./applications;
-      recursive = true;
     };
   };
 

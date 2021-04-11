@@ -1,3 +1,5 @@
+{ secrets-dir }:
+
 {
   config = ''
     cmd - return : alacritty
@@ -5,8 +7,8 @@
     cmd - f : alacritty --command fish -c "lf $HOME/Downloads"
     cmd - p : alacritty --command fish -c "ipython --no-confirm-exit"
     cmd - a : alacritty --command calcurse \
-                -C "$HOME/.config/calcurse" \
-                -D "$SECRETSDIR/calcurse"
+                -C ~/.config/calcurse \
+                -D ${secrets-dir}/calcurse
     cmd - g : alacritty --command gotop
     cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
     ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app
@@ -119,30 +121,9 @@
                       && yabai -m space --focus prev \
                       && yabai -m space recent --destroy
 
-    # Screenshot the whole screen and send a notification (uses fish syntax)
-    # shift + cmd - 3 : \
-    #   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    #     && screencapture -mx "$sshot" \
-    #     && terminal-notifier \
-    #           -title "New screenshot" \
-    #           -subtitle (basename "$sshot") \
-    #           -message "Saved in "(dirname "$sshot") \
-    #           -appIcon "$HOME/.config/skhd/picture-icon.png" \
-    #           -contentImage "$sshot" \
-    #           -execute "open \"$sshot\""
-
-    # Screenshot a portion of the screen and send a notification if the screenshot
-    # wasn't cancelled (uses fish syntax).
-    # shift + cmd - 4 : \
-    #   set sshot "$SSHOTDIR"/(date +%4Y-%b-%d@%T).png \
-    #     && screencapture -imx "$sshot" \
-    #     && ls "$sshot" \
-    #     && terminal-notifier \
-    #           -title "New screenshot" \
-    #           -subtitle (basename "$sshot") \
-    #           -message "Saved in "(dirname "$sshot") \
-    #           -appIcon "$HOME/.config/skhd/picture-icon.png" \
-    #           -contentImage "$sshot" \
-    #           -execute "open \"$sshot\""
+    # Screenshot either the whole screen or a portion of it and send a
+    # notification.
+    shift + cmd - 3 : take-screenshot whole
+    shift + cmd - 4 : take-screenshot portion
   '';
 }

@@ -122,7 +122,7 @@ function! LaTeXFoldsText() "{{{1
     let l:fold_title = "Preamble"
   endif
 
-  return folds#FoldsTextFormat(l:fold_title)
+  return folds#format_fold_title(l:fold_title)
 endfunction " }}}1
 
 " Helper functions {{{1

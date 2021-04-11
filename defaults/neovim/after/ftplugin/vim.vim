@@ -1,4 +1,4 @@
-setlocal foldtext=folds#MarkerFoldsText()
+setlocal foldtext=folds#marker_folds_extract_title()
 setlocal formatoptions-=ro
 setlocal iskeyword-=#
 setlocal matchpairs+=<:>

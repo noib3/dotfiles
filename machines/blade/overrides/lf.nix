@@ -35,8 +35,8 @@
   };
 
   keybindings = {
-    "unm" = "unmount_device";
-    "gdl" = "cd ~/Downloads";
-    "gvl" = "cd /run/media/noib3";
+    unm = "unmount_device";
+    gdl = "cd ~/Downloads";
+    gvl = "cd /run/media/noib3";
   };
 }

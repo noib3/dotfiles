@@ -147,7 +147,7 @@
         eval "$rg_prefix \"\" $dir | sed \"s!$dir/!!\""  \
           | fzf --multi --prompt='Rg> ' --phony --delimiter=: --with-nth=1,2,4 \
               --bind="change:reload($rg_prefix {q} $dir | sed \"s!$dir/!!\" || true)" \
-              --preview='${builtins.toString ../neovim/lua/plugins/config/fzf/rg-previewer} {}' \
+              --preview="${builtins.toString ../neovim/lua/plugins/config/fzf/rg-previewer} $dir/{}" \
               --preview-window=+{2}-/2 \
           | sed -r "s!^([^:]*):([^:]*):([^:]*):.*\$!$dir/\1!;s/\ /\\\ /g;s!$HOME!~!" \
           | tr '\n' ' ' \
@@ -165,7 +165,7 @@
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//')
       test ! -z "$filenames" \
-        && commandline "$filenames"
+        && commandline --insert "$filenames"
       commandline -f repaint
     '';
   };

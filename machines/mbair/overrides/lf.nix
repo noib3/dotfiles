@@ -37,32 +37,14 @@
       }}
     '';
 
-    eject_disk = ''
-      ''${{
-        clear
-        space_left=$( \
-          diskutil info "$f" 2>/dev/null \
-          | sed -n "s/.*Volume Free Space:\s*//p" \
-          | awk '{print $1, $2}'\
-        )
-        diskutil eject "$f" &>/dev/null \
-          && lf -remote \
-              "send $id echo \"\033[32m$(basename $f) has been ejected\
-      properly\033[0m\"" \
-          && terminal-notifier \
-              -title "Disk ejected" \
-              -subtitle "$(basename $f) has been ejected" \
-              -message "There are ''${space_left} left on disk" \
-              -appIcon "''${HOME}/.config/lf/hard-disk-icon.png" \
-          || lf -remote "send $id echoerr 'Error: could not eject disk'"
-      }}
-    '';
+    unmount_device = ''$clear && unmount_device'';
   };
 
   keybindings = {
     P = "open_pdf_with_preview";
-    s = "set_wallpaper";
-    j = "eject_disk";
+    unm = "unmount_device";
+    gdl = "cd ~/Downloads";
     gvl = "cd /Volumes";
+    s = "set_wallpaper";
   };
 }
