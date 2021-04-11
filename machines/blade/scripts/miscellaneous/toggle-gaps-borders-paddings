@@ -3,7 +3,7 @@
 # Toggles window gaps, borders and paddings.
 
 polybar_height=25
-off_border_width=1
+off_border_width=0
 
 case "$1" in
   on)

@@ -14,12 +14,12 @@ in
 ''
   vim.api.nvim_exec([[
   augroup colorscheme
-  autocmd!
-  autocmd ColorScheme * hi Normal guibg=NONE
-  autocmd ColorScheme * hi Comment gui=italic
-  autocmd ColorScheme * hi goType gui=italic
-  autocmd ColorScheme * hi! link texComment Comment
-  ${highlights}
+    autocmd!
+    autocmd ColorScheme * hi Normal guibg=NONE
+    autocmd ColorScheme * hi Comment gui=italic
+    autocmd ColorScheme * hi goType gui=italic
+    autocmd ColorScheme * hi! link texComment Comment
+    ${highlights}
   augroup END
   ]], false)
 

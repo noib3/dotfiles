@@ -75,9 +75,7 @@ let
     in
     lib.attrsets.recursiveUpdate
       default
-      (import ./overrides/alacritty.nix {
-        default = default;
-      });
+      (import ./overrides/alacritty.nix { default = default; });
 
   batConfig = import ../../defaults/bat;
 
