@@ -14,6 +14,9 @@ return require('packer').startup(function()
   use {'dense-analysis/ale',
         config=[[require('plugins.config.ale')]]}
 
+  use {'onsails/lspkind-nvim',
+        config=[[require('plugins.config.lspkind')]]}
+
   -- Snippets
   use {'SirVer/ultisnips',
         config=[[require('plugins.config.snippets')]]}
@@ -30,6 +33,7 @@ return require('packer').startup(function()
         cmd='Goyo'}
 
   use {'iamcco/markdown-preview.nvim',
+        config=[[require('plugins.config.markdown-preview')]],
         run='cd app && yarn install'}
 
   use {'akinsho/nvim-bufferline.lua',

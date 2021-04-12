@@ -18,6 +18,7 @@ let
 
   fishConfig = lib.attrsets.recursiveUpdate
     (import ../../defaults/fish {
+      inherit pkgs;
       colors = import (colorschemes-dir + /fish.nix);
     })
     (import ./overrides/fish.nix);
@@ -28,7 +29,9 @@ let
 
   gitConfig = import ../../defaults/git;
 
-  lfConfig = import ../../defaults/lf { };
+  lfConfig = (import ../../defaults/lf {
+    inherit pkgs;
+  });
 
   starshipConfig = import ../../defaults/starship;
 
@@ -86,16 +89,18 @@ in
     }))
   ];
 
-  xdg.configFile."nvim" = {
-    source = ../../defaults/neovim;
-    recursive = true;
-  };
+  xdg.configFile = {
+    "nvim" = {
+      source = ../../defaults/neovim;
+      recursive = true;
+    };
 
-  xdg.configFile."nvim/lua/colorscheme/init.lua" = {
-    text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
-      inherit lib;
-      colors = import (colorschemes-dir + /neovim.nix);
-    });
+    "nvim/lua/colorscheme/init.lua" = {
+      text = (import ../../defaults/neovim/lua/colorscheme/default.nix {
+        inherit lib;
+        colors = import (colorschemes-dir + /neovim.nix);
+      });
+    };
   };
 
   programs.home-manager = {

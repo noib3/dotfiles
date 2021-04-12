@@ -187,8 +187,8 @@ in
       "gre" = "open https://reddit.com";
       "tre" = "open -t https://reddit.com";
 
-      "gdf" = "open https://github.com/noib3/dotfiles";
-      "tdf" = "open -t https://github.com/noib3/dotfiles";
+      "gdf" = "open https://github.com/noib3/dotfil3s";
+      "tdf" = "open -t https://github.com/noib3/dotfil3s";
 
       "grhm" = "open https://github.com/nix-community/home-manager/find/master";
       "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";

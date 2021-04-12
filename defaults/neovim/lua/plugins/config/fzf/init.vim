@@ -19,7 +19,8 @@ endfunction
 function! s:fuzzy_edit()
   let s:dir = '$HOME'
   let s:spec = {
-    \ 'options': ['--multi', '--prompt=Edit> ', '--preview=bat ~/{}'],
+    \ 'options': ['--multi', '--prompt=Edit> ', '--preview=bat ~/{}',
+                  \ '--preview-window=border-left'],
     \ 'sink*': function('<SID>open_edits', [s:dir]),
     \ }
   call fzf#run(fzf#wrap(s:spec))
@@ -35,11 +36,12 @@ function! s:fuzzy_ripgrep()
               \ systemlist('git rev-parse --show-toplevel')[0]
   let s:spec = {
     \ 'source': s:initial_command,
-    \ 'options': ['--multi', '--prompt=Rg> ', '--phony',
+    \ 'options': ['--multi', '--prompt=Rg> ', '--disabled',
                   \ '--bind=change:reload:'.s:reload_command,
                   \ '--delimiter=:', '--with-nth=1,2,4',
                   \ '--preview='.fzf#shellescape(s:rg_previewer).' {}',
-                  \ '--preview-window=+{2}-/2'],
+                  \ '--preview-window=+{2}-/2',
+                  \ '--preview-window=border-left'],
     \ 'dir': s:dir,
     \ 'sink*': function('<SID>open_ripgreps', [s:dir]),
     \ }

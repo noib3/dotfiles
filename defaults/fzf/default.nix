@@ -32,6 +32,7 @@
   changeDirWidgetOptions = [
     "--prompt='Cd> '"
     "--preview='ls --color=always ~/{}'"
+    "--preview-window=border-left"
   ];
 
   enableFishIntegration = true;

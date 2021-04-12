@@ -176,28 +176,6 @@ in
     ../../modules/programs/vivid.nix
   ];
 
-  nixpkgs.overlays = [
-    (self: super: {
-      direnv = unstable.direnv;
-      fish = unstable.fish;
-      fzf = unstable.fzf;
-      hideIt = super.callPackage ./overlays/hideIt.nix { };
-      lf = unstable.lf;
-      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      picom = unstable.picom;
-      python39 = unstable.python39;
-      qutebrowser = unstable.qutebrowser;
-      starship = unstable.starship;
-      tree-sitter = unstable.tree-sitter;
-      ueberzug = unstable.ueberzug;
-      vimv = unstable.vimv;
-    })
-
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
-
   home = {
     username = "noib3";
     homeDirectory = "/home/noib3";
@@ -234,6 +212,7 @@ in
       nodePackages.vim-language-server
       noto-fonts-emoji
       ookla-speedtest-cli
+      pandoc
       pfetch
       pick-colour-picker
       poppler_utils
@@ -246,7 +225,7 @@ in
       ripgrep
       scrot
       texlab
-      texlive.combined.scheme-full
+      unstable.texlive.combined.scheme-full
       transmission-remote-gtk
       tree-sitter
       ueberzug
@@ -284,8 +263,29 @@ in
       LESSHISTFILE = "${config.home.homeDirectory}/.cache/less/lesshst";
       LS_COLORS = "$(vivid generate current)";
     };
-
   };
+
+  nixpkgs.overlays = [
+    (self: super: {
+      direnv = unstable.direnv;
+      fish = unstable.fish;
+      fzf = unstable.fzf;
+      hideIt = super.callPackage ./overlays/hideIt.nix { };
+      lf = unstable.lf;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      picom = unstable.picom;
+      python39 = unstable.python39;
+      qutebrowser = unstable.qutebrowser;
+      starship = unstable.starship;
+      tree-sitter = unstable.tree-sitter;
+      ueberzug = unstable.ueberzug;
+      vimv = unstable.vimv;
+    })
+
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
+  ];
 
   xdg.configFile = {
     "alacritty/fuzzy-opener.yml" = {

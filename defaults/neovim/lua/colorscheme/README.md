@@ -4,7 +4,7 @@ on the global color scheme being used.
 
 For example when using the `afterglow` color scheme I might have
 ```nix
-  # In /colorschemes/afterglow/neovim.nix
+  # /colorschemes/afterglow/neovim.nix
   # ...
   highlights = {
     # ...
@@ -18,7 +18,7 @@ For example when using the `afterglow` color scheme I might have
 ```
 or, with `onedark`:
 ```nix
-  # In /colorschemes/onedark/neovim.nix
+  # /colorschemes/onedark/neovim.nix
   # ...
   highlights = {
     # ...

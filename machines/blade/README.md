@@ -1,3 +1,7 @@
+# `/machines/blade`
+
+Configuration deployed on a 15" 2021 Razer Blade running NixOS.
+
 # Preliminaries
 Every command that follows has to be run either as the root user or with
 `sudo`.
