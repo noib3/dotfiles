@@ -2,11 +2,15 @@
 
 Configuration deployed on a 15" 2021 Razer Blade running NixOS.
 
-# Preliminaries
+## Bootstrapping process
+
+### Preliminaries
+
 Every command that follows has to be run either as the root user or with
 `sudo`.
 
-# Partitioning
+### Partitioning
+
 Find the name of the disk you want to install NixOS on with `fdisk -l`.
 Assuming that disk is `/dev/sda`, create a GPT partition table (you can ignore
 `parted`'s message about needing to update /etc/fstab)
@@ -30,16 +34,18 @@ parted /dev/sda -- mkpart ESP fat32 1MiB 512MiB
 parted /dev/sda -- set 3 esp on
 ```
 
-# Formatting
+### Formatting
+
 ```
 mkfs.ext4 -L nixos /dev/sda1
 mkswap -L swap /dev/sda2
 mkfs.fat -F 32 -n boot /dev/sda3
 ```
 
-# Mounting
-(this needs to be modified: `configuration.nix` should be cloned from github,
-not edited manually)
+### Mounting
+
+(this needs to be modified: `configuration.nix` should be cloned from this
+repo, not edited manually)
 ```
 mount /dev/disk/by-label/nixos /mnt
 mkdir -p /mnt/boot
@@ -48,9 +54,10 @@ nixos-generate-config --root /mnt
 vim /mnt/etc/nixos/configuration.nix
 nixos-install
 ```
-set a password for the root user and you're ready to `reboot`.
+set a password for the root user, then `reboot`.
 
-# Adding channels
+### Adding channels
+
 ```
 nix-channel --add https://nixos.org/channels/nixos-20.09 nixos
 nix-channel --add https://nixos.org/channels/nixos-unstable nixos-unstable
@@ -64,37 +71,22 @@ sudo nix-channel --update
 nix-shell '<home-manager>' -A install
 ```
 
-# Switch to config
+### `home-manager switch`ing to this config
+
 ```
 nix-env -iA nixos.git
 cd ~
-git clone https://github.com/noib3/dotfiles.git
+git clone https://github.com/noib3/dotfil3s.git
 nix-env -e git-minimal
-mkdir -p ~/.config
+mkdir -p ~/.config/nixpkgs
 ln -sf ~/dotfiles/* ~/.config/nixpkgs/
 ln -sf ~/.config/nixpkgs/machines/blade/home.nix ~/.config/nixpkgs/home.nix
 home-manager switch
 rm ~/.bash-history
 ```
 
-# Wireless
-To list all the available wireless networks (`nmcli` = **n**etwork **m**anager
-**cli**)
-```
-nmcli dev wifi
-```
-and to connect to one
-```
-sudo nmcli device wifi connect <SSID> password <password>
-```
+### Remapping keys at the hardware level
 
-# GitHub ssh key
-You should now have a tty. Log in as a regular user. Create a new ssh key wit
-```
-ssh-keygen -t rsa -C "riccardo.mazzarini@pm.me"
-```
-
-# Remapping keys at the hardware level
 The following information is largely taken from
 [this](https://wiki.archlinux.org/index.php/Map_scancodes_to_keycodes) ArchWiki
 post and [this](https://unix.stackexchange.com/a/170357/368116) stackexchange

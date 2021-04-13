@@ -227,6 +227,7 @@ in
       texlab
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
+      tree
       tree-sitter
       ueberzug
       unclutter-xfixes

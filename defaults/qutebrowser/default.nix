@@ -199,6 +199,9 @@ in
       "glg" = "open https://libgen.li";
       "tlg" = "open -t https://libgen.li";
 
+      "g12ft" = "open https://12ft.io/";
+      "t12ft" = "open -t https://12ft.io/";
+
       "gn26" = "open https://app.n26.com/account";
       "tn26" = "open -t https://app.n26.com/account";
 

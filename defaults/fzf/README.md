@@ -15,7 +15,7 @@ documenting:
   before passing them to fzf.
 
   The following screenshots compare the outputs of a raw `fd` search versus a
-  `sed`-filtered one, i.e. basically (in pseudo-code):
+  `sed`-filtered one, basically (in pseudo-code):
   ```
   $ fd --type=files | fzf
   ```

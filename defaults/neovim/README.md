@@ -10,7 +10,7 @@ Hi, this is my neovim setup. Here's a quick showdown of what it can do:
 | ![fuzzy-edit](./screenshots/2021-04-12@15:41:09.png) |
 | *Use [fzf](https://github.com/junegunn/fzf/blob/master/README-VIM.md) to fuzzy search any file in ~ (check [this](https://github.com/noib3/dotfil3s/tree/master/defaults/neovim/lua/plugins/config/fzf) for my fzf setup inside neovim).* |
 | ![latex-zathura](./screenshots/2021-04-12@16:52:53.png) |
-| *Editing LaTeX code on the left and Zathura on the right (as a [wise man](https://www.youtube.com/watch?v=Mphdtdv2_xs) once said, wordcucks BTFO.)* |
+| *Editing LaTeX code on the left with Zathura on the right (as a [wise man](https://www.youtube.com/watch?v=Mphdtdv2_xs) once said, wordcucks BTFO)* |
 | ![markdown-preview](./screenshots/2021-04-12@16:48:58.png) |
 | *Real-time markdown previews in your browser* |
 

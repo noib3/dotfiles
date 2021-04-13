@@ -25,7 +25,7 @@ function! folds#format_fold_title(fold_title) " {{{1
     \ ? l:fold_title." "
     \ : substitute(l:fold_title, '\(.*\)\(.\{'.(-l:fill_num + 2).'\}\)', '\1...', '')
 
-  return "+".l:dashes." ".l:fold_title .repeat("·", l:fill_num)." ".l:fold_size." lines"
+  return "+".l:dashes." ".l:fold_title.repeat("·", l:fill_num)." ".l:fold_size." lines"
 endfunction " }}}1
 
 " vim:fdm=marker
