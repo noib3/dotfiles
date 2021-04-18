@@ -1,8 +1,6 @@
 { pkgs, font, colors }:
 
 {
-  # theme = "${pkgs.rofi}/share/rofi/themes/android_notification";
-
   font = "${font.family} ${font.style} ${font.size}";
   scrollbar = false;
   cycle = false;
@@ -30,24 +28,4 @@
       };
     };
   };
-
-  # theme =
-  #   let
-  #     inherit (pkgs.config.lib.formats.rasi) mkLiteral;
-  #   in
-  #   {
-  #     "*" = {
-  #       background-color = mkLiteral "#282c34";
-  #     };
-  #   };
-
-  # extraConfig = {
-  #   show-icons = true;
-  # };
-
-  #extraConfig = ''
-  #  #window {
-  #    background-color: rgba( 0, 0, 255, 100% );
-  #  }
-  #'';
 }

@@ -10,7 +10,7 @@ let
 
   sync-dir = config.home.homeDirectory + "/Sync";
   secrets-dir = sync-dir + "/secrets";
-  screenshots-dir = sync-dir + "/screenshots";
+  screenshots-dir = sync-dir + "/tmp/screenshots";
 
   userScripts = with pkgs; {
     listen-node-add = writeScriptBin
@@ -64,116 +64,122 @@ let
     };
   };
 
-  alacrittyConfig =
-    let
-      default =
-        (import ../../defaults/alacritty {
-          inherit pkgs;
-          font = import (fonts-dir + /alacritty.nix);
-          colors = import (colorschemes-dir + /alacritty.nix);
-        });
-    in
-    lib.attrsets.recursiveUpdate
-      default
-      (import ./overrides/alacritty.nix { default = default; });
+  configs = {
+    alacritty =
+      let
+        default =
+          (import ../../defaults/alacritty {
+            inherit pkgs;
+            font = import (fonts-dir + /alacritty.nix);
+            colors = import (colorschemes-dir + /alacritty.nix);
+          });
+      in
+      lib.attrsets.recursiveUpdate
+        default
+        (import ./overrides/alacritty.nix { default = default; });
 
-  batConfig = import ../../defaults/bat;
+    bat = import ../../defaults/bat;
 
-  bspwmConfig = (import ../../defaults/bspwm {
-    colors = import (colorschemes-dir + /bspwm.nix);
-  });
+    bspwm = (import ../../defaults/bspwm {
+      colors = import (colorschemes-dir + /bspwm.nix);
+    });
 
-  direnvConfig = import ../../defaults/direnv;
+    direnv = import ../../defaults/direnv;
 
-  dunstConfig = (import ../../defaults/dunst {
-    inherit pkgs;
-    font = import (fonts-dir + /dunst.nix);
-    colors = import (colorschemes-dir + /dunst.nix);
-  });
-
-  fdConfig =
-    let
-      default = import ../../defaults/fd;
-    in
-    import ./overrides/fd.nix { default = default; };
-
-  firefoxConfig = (import ../../defaults/firefox {
-    font = import (fonts-dir + /firefox.nix);
-    colors = import (colorschemes-dir + /firefox.nix);
-  });
-
-  fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish {
+    dunst = (import ../../defaults/dunst {
       inherit pkgs;
-      colors = import (colorschemes-dir + /fish.nix);
-    })
-    (import ./overrides/fish.nix);
+      font = import (fonts-dir + /dunst.nix);
+      colors = import (colorschemes-dir + /dunst.nix);
+    });
 
-  fzfConfig = (import ../../defaults/fzf {
-    colors = import (colorschemes-dir + /fzf.nix);
-  });
+    fd =
+      let
+        default = import ../../defaults/fd;
+      in
+      import ./overrides/fd.nix { default = default; };
 
-  gitConfig = import ../../defaults/git;
+    firefox = (import ../../defaults/firefox {
+      font = import (fonts-dir + /firefox.nix);
+      colors = import (colorschemes-dir + /firefox.nix);
+    });
 
-  gpgAgentConfig = import ../../defaults/gpg/gpg-agent.nix;
+    fish = lib.attrsets.recursiveUpdate
+      (import ../../defaults/fish {
+        inherit pkgs;
+        colors = import (colorschemes-dir + /fish.nix);
+      })
+      (import ./overrides/fish.nix);
 
-  lfConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/lf {
+    fzf = (import ../../defaults/fzf {
+      colors = import (colorschemes-dir + /fzf.nix);
+    });
+
+    fusuma = import ../../defaults/fusuma;
+
+    git = import ../../defaults/git;
+
+    gpgAgent = import ../../defaults/gpg/gpg-agent.nix;
+
+    lf = lib.attrsets.recursiveUpdate
+      (import ../../defaults/lf {
+        inherit pkgs;
+      })
+      (import ./overrides/lf.nix);
+
+    mpv = import ../../defaults/mpv;
+
+    picom = import ../../defaults/picom;
+
+    polybar = (import ../../defaults/polybar {
+      font = import (fonts-dir + /polybar.nix);
+      colors = import (colorschemes-dir + /polybar.nix);
+    });
+
+    qutebrowser = (import ../../defaults/qutebrowser {
+      font = import (fonts-dir + /qutebrowser.nix);
+      colors = import (colorschemes-dir + /qutebrowser.nix);
+    });
+
+    redshift = import ../../defaults/redshift;
+
+    rofi = (import ../../defaults/rofi {
       inherit pkgs;
-    })
-    (import ./overrides/lf.nix);
+      font = import (fonts-dir + /rofi.nix);
+      colors = import (colorschemes-dir + /rofi.nix);
+    });
 
-  mpvConfig = import ../../defaults/mpv;
+    starship = import ../../defaults/starship;
 
-  picomConfig = import ../../defaults/picom;
+    sxhkd = (import ../../defaults/sxhkd {
+      secrets-dir = secrets-dir;
+    });
 
-  polybarConfig = (import ../../defaults/polybar {
-    font = import (fonts-dir + /polybar.nix);
-    colors = import (colorschemes-dir + /polybar.nix);
-  });
+    ssh = import ../../defaults/ssh;
 
-  qutebrowserConfig = (import ../../defaults/qutebrowser {
-    font = import (fonts-dir + /qutebrowser.nix);
-    colors = import (colorschemes-dir + /qutebrowser.nix);
-  });
+    tridactyl = (import ../../defaults/tridactyl {
+      font = import (fonts-dir + /tridactyl.nix);
+      colors = import (colorschemes-dir + /tridactyl.nix);
+    });
 
-  redshiftConfig = import ../../defaults/redshift;
+    udiskie = import ../../defaults/udiskie;
 
-  rofiConfig = (import ../../defaults/rofi {
-    inherit pkgs;
-    font = import (fonts-dir + /rofi.nix);
-    colors = import (colorschemes-dir + /rofi.nix);
-  });
+    vivid = (import ../../defaults/vivid {
+      colors = import (colorschemes-dir + /vivid.nix);
+    });
 
-  starshipConfig = import ../../defaults/starship;
-
-  sxhkdConfig = (import ../../defaults/sxhkd {
-    secrets-dir = secrets-dir;
-  });
-
-  sshConfig = import ../../defaults/ssh;
-
-  tridactylConfig = (import ../../defaults/tridactyl {
-    font = import (fonts-dir + /tridactyl.nix);
-    colors = import (colorschemes-dir + /tridactyl.nix);
-  });
-
-  udiskieConfig = import ../../defaults/udiskie;
-
-  vividConfig = (import ../../defaults/vivid {
-    colors = import (colorschemes-dir + /vivid.nix);
-  });
-
-  zathuraConfig = (import ../../defaults/zathura {
-    font = import (fonts-dir + /zathura.nix);
-    colors = import (colorschemes-dir + /zathura.nix);
-  });
+    zathura = (import ../../defaults/zathura {
+      font = import (fonts-dir + /zathura.nix);
+      colors = import (colorschemes-dir + /zathura.nix);
+    });
+  };
 in
 {
   imports = [
     ../../modules/programs/fd.nix
     ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
+    ../../modules/services/fusuma.nix
+    ../../modules/services/mpris.nix
   ];
 
   home = {
@@ -184,8 +190,9 @@ in
     packages = with pkgs; [
       atool
       bitwarden
+      bitwarden-cli
       calcurse
-      chafa
+      calibre
       evemu
       evtest
       feh
@@ -218,12 +225,15 @@ in
       poppler_utils
       (python39.withPackages (
         ps: with ps; [
+          autopep8
           ipython
+          isort
           pynvim
         ]
       ))
       ripgrep
       scrot
+      sxiv
       texlab
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
@@ -315,9 +325,8 @@ in
       source = ./scripts/calcurse/post-save;
     };
 
-    "fusuma" = {
-      source = ../../defaults/fusuma;
-      recursive = true;
+    "fusuma/config.yml" = {
+      source = ../../defaults/fusuma/config.yml;
     };
 
     "nvim" = {
@@ -358,116 +367,128 @@ in
     enable = true;
   };
 
-  programs.home-manager = {
-    enable = true;
+  programs = {
+    home-manager = {
+      enable = true;
+    };
+
+    alacritty = {
+      enable = true;
+    } // configs.alacritty;
+
+    bat = {
+      enable = true;
+    } // configs.bat;
+
+    direnv = {
+      enable = true;
+    } // configs.direnv;
+
+    fd = {
+      enable = true;
+    } // configs.fd;
+
+    firefox = {
+      enable = true;
+    } // configs.firefox;
+
+    fish = {
+      enable = true;
+    } // configs.fish;
+
+    fzf = {
+      enable = true;
+    } // configs.fzf;
+
+    git = {
+      enable = true;
+    } // configs.git;
+
+    gpg = {
+      enable = true;
+    };
+
+    lf = {
+      enable = true;
+    } // configs.lf;
+
+    mpv = {
+      enable = true;
+    } // configs.mpv;
+
+    qutebrowser = {
+      enable = true;
+    } // configs.qutebrowser;
+
+    rofi = {
+      enable = true;
+    } // configs.rofi;
+
+    ssh = {
+      enable = true;
+    } // configs.ssh;
+
+    starship = {
+      enable = true;
+    } // configs.starship;
+
+    tridactyl = {
+      enable = true;
+    } // configs.tridactyl;
+
+    vivid = {
+      enable = true;
+    } // configs.vivid;
+
+    zathura = {
+      enable = true;
+    } // configs.zathura;
   };
 
-  programs.alacritty = {
-    enable = true;
-  } // alacrittyConfig;
+  services = {
+    dunst = {
+      enable = true;
+    } // configs.dunst;
 
-  programs.bat = {
-    enable = true;
-  } // batConfig;
+    # fusuma = {
+    #   enable = true;
+    # } // configs.fusuma;
 
-  programs.direnv = {
-    enable = true;
-  } // direnvConfig;
+    gpg-agent = {
+      enable = true;
+    } // configs.gpgAgent;
 
-  programs.fd = {
-    enable = true;
-  } // fdConfig;
+    mpris = {
+      enable = true;
+    };
 
-  programs.firefox = {
-    enable = true;
-  } // firefoxConfig;
+    picom = {
+      enable = true;
+    } // configs.picom;
 
-  programs.fish = {
-    enable = true;
-  } // fishConfig;
+    polybar = {
+      enable = true;
+    } // configs.polybar;
 
-  programs.fzf = {
-    enable = true;
-  } // fzfConfig;
+    redshift = {
+      enable = true;
+    } // configs.redshift;
 
-  programs.git = {
-    enable = true;
-  } // gitConfig;
+    sxhkd = {
+      enable = true;
+    } // configs.sxhkd;
 
-  programs.gpg = {
-    enable = true;
+    udiskie = {
+      enable = true;
+    } // configs.udiskie;
   };
-
-  programs.lf = {
-    enable = true;
-  } // lfConfig;
-
-  programs.mpv = {
-    enable = true;
-  } // mpvConfig;
-
-  programs.qutebrowser = {
-    enable = true;
-  } // qutebrowserConfig;
-
-  programs.rofi = {
-    enable = true;
-  } // rofiConfig;
-
-  programs.ssh = {
-    enable = true;
-  } // sshConfig;
-
-  programs.starship = {
-    enable = true;
-  } // starshipConfig;
-
-  programs.tridactyl = {
-    enable = true;
-  } // tridactylConfig;
-
-  programs.vivid = {
-    enable = true;
-  } // vividConfig;
-
-  programs.zathura = {
-    enable = true;
-  } // zathuraConfig;
-
-  services.dunst = {
-    enable = true;
-  } // dunstConfig;
-
-  services.picom = {
-    enable = true;
-  } // picomConfig;
-
-  services.gpg-agent = {
-    enable = true;
-  } // gpgAgentConfig;
-
-  services.polybar = {
-    enable = true;
-  } // polybarConfig;
-
-  services.redshift = {
-    enable = true;
-  } // redshiftConfig;
-
-  services.sxhkd = {
-    enable = true;
-  } // sxhkdConfig;
-
-  services.udiskie = {
-    enable = true;
-  } // udiskieConfig;
 
   xsession = {
     enable = true;
 
     windowManager.bspwm = {
       enable = true;
-    } // bspwmConfig;
+    } // configs.bspwm;
 
     pointerCursor = {
       package = pkgs.vanilla-dmz;

@@ -5,9 +5,9 @@
     "window_gap" = 25;
     "border_width" = 2;
     "focus_follows_pointer" = true;
-    "normal_border_color" = colors.normal_border;
-    "active_border_color" = colors.active_border;
-    "focused_border_color" = colors.focused_border;
+    "normal_border_color" = colors.border.normal;
+    "active_border_color" = colors.border.active;
+    "focused_border_color" = colors.border.focused;
   };
 
   monitors = {
@@ -43,6 +43,7 @@
     xset s off
 
     systemctl --user start pulseaudio.service
+    systemctl --user start mpris-proxy.service
     systemctl --user restart polybar.service
   '';
 }

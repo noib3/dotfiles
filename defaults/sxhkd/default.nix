@@ -14,7 +14,8 @@
     # Open the web browser 
     "alt + w" = "qutebrowser";
 
-    # Launch the file opener
+    # Launch the program and file openers
+    "super + o" = "rofi -modi drun -show drun -show-icons";
     "super + space" = "fuzzy-opener";
 
     # Toggle fullscreen

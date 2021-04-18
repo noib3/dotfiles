@@ -45,23 +45,34 @@ case "$file" in
       draw "$cache"
     fi
     ;;
+  *.epub)
+    if [ -n "$FIFO_UEBERZUG" ]; then
+      cache="$(hash "$file").jpg"
+      cache "$cache"
+      ebook-meta --get-cover="$cache" "$file" &>/dev/null
+      draw "$cache"
+    else
+      pandoc -s -t plain -- "$file"
+      exit 0
+    fi
+    ;;
 esac
 
 case "$(file -Lb --mime-type -- "$file")" in
-  text/*)
+  text/*|application/json)
     bat "$file"
     ;;
   */pdf)
     if [ -n "$FIFO_UEBERZUG" ]; then
-      cache="$(hash "$file")"
-      cache "$cache.jpg"
+      cache="$(hash "$file").jpg"
+      cache "$cache"
       pdftoppm -f 1 -l 1 \
         -scale-to-x "$default_x" \
         -scale-to-y -1 \
         -singlefile \
         -jpeg \
         -- "$file" "$cache"
-      draw "$cache.jpg"
+      draw "$cache"
     else
       pdftotext "$file" -
     fi

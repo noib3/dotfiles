@@ -119,7 +119,7 @@
     };
 
     office = {
-      document = [ ".pdf" ];
+      document = [ ".pdf" ".epub" ];
     };
 
     archives = {
@@ -269,7 +269,6 @@
           foreground = "cyan";
         };
       };
-
 
       office = {
         foreground = "cyan";

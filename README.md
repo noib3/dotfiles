@@ -1,8 +1,8 @@
 <h1 align="center">&#x1F3E1 dotfil3s</h1>
 
 <div align="center">
-  <a href=https://nixos.org/> <img src=https://img.shields.io/badge/Using%20NixOS-v20.09-blue?style=flat-square&logo=NixOS></a>
-  <a href=https://github.com/nix-community/home-manager> <img src=https://img.shields.io/badge/Powered%20by-home--manager-blueviolet?style=flat-square&logo=NixOS></a>
+  <a href=https://nixos.org/> <img src=https://img.shields.io/badge/Using%20NixOS-v20.09-blue?style=for-the-badge&logo=NixOS></a>
+  <a href=https://github.com/nix-community/home-manager> <img src=https://img.shields.io/badge/Powered%20by-home--manager-blueviolet?style=for-the-badge&logo=NixOS></a>
 </div>
 
 Hi, these are my dotfiles. Before talking about how the repository is

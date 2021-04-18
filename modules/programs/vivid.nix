@@ -6,7 +6,7 @@ let
   yaml = pkgs.formats.yaml { };
 in
 {
-  meta.maintainers = [ mainteners.noib3 ];
+  meta.maintainers = [ maintainers.noib3 ];
 
   options.programs.vivid = {
     enable = mkEnableOption "vivid";

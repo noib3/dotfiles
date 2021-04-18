@@ -14,6 +14,7 @@
   };
 
   ignores = [
+    ".direnv"
     ".envrc"
     "shell.nix"
   ];

@@ -1,20 +1,84 @@
 { config, pkgs, ... }:
 let
   unstable = import <nixos-unstable> { };
+
+  configs = {
+    syncthing = import ./overrides/syncthing.nix;
+    transmission = import ./overrides/transmission.nix;
+  };
+
+  falloutGrubTheme = pkgs.fetchgit {
+    url = "https://github.com/shvchk/fallout-grub-theme.git";
+    rev = "fe27cbc99e994d50bb4269a9388e3f7d60492ffa";
+    sha256 = "1z8zc4k2mh8d56ipql8vfljvdjczrrna5ckgzjsdyrndfkwv8ghw";
+  };
 in
 {
   imports = [
     /etc/nixos/hardware-configuration.nix
   ];
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
+  console.keyMap = "us";
+  i18n.defaultLocale = "en_US.UTF-8";
+  time.timeZone = "Europe/Rome";
+
+  users.users = {
+    "noib3" = {
+      home = "/home/noib3";
+      shell = pkgs.fish;
+      isNormalUser = true;
+      extraGroups = [
+        "wheel"
+        "input"
+        "plugdev"
+      ];
+    };
   };
 
+  nixpkgs.config.allowUnfree = true;
+
+  environment.systemPackages = with pkgs; [
+    git
+    vim
+  ];
+
+  boot = {
+    consoleLogLevel = 0;
+    kernelParams = [ "quiet" "udev.log_priority=3" ];
+    # Only available in the unstable branch for now. See [1].
+    # initrd.verbose = false;
+
+    loader = {
+      grub = {
+        enable = true;
+        devices = [ "nodev" ];
+        efiSupport = true;
+        useOSProber = true;
+        gfxmodeEfi = "1920x1080";
+        gfxmodeBios = "1920x1080";
+        splashImage = "${falloutGrubTheme}/background.png";
+        extraConfig = ''
+          set theme=($drive1)//themes/fallout-grub-theme/theme.txt
+        '';
+      };
+
+      efi.canTouchEfiVariables = true;
+    };
+  };
+
+  system.activationScripts.copyGrubTheme = ''
+    mkdir -p /boot/themes
+    cp -R ${falloutGrubTheme}/ /boot/themes/fallout-grub-theme
+  '';
+
   hardware = {
-    bluetooth.enable = true;
-    openrazer.enable = true;
+    bluetooth = {
+      enable = true;
+    };
+
+    openrazer = {
+      enable = true;
+    };
 
     pulseaudio = {
       enable = true;
@@ -32,153 +96,93 @@ in
     };
   };
 
-  sound.enable = true;
-
   security.sudo = {
     wheelNeedsPassword = false;
   };
 
-  time.timeZone = "Europe/Rome";
-  i18n.defaultLocale = "en_US.UTF-8";
-  console.keyMap = "us";
-
-  nixpkgs.config.allowUnfree = true;
-
-  environment.systemPackages = with pkgs; [
-    git
-    vim
-  ];
-
-  users.users.noib3 = {
-    home = "/home/noib3";
-    shell = pkgs.fish;
-    isNormalUser = true;
-
-    # The input group is needed by libinput-gestures, while the plugdev group
-    # is needed by the openrazer-daemon service. See [1] and [2] for more
-    # details.
-    extraGroups = [ "wheel" "input" "plugdev" ];
+  sound = {
+    enable = true;
   };
 
-  programs.fish.enable = true;
-
-  services.xserver = {
-    enable = true;
-
-    # Length of time in milliseconds that a key must be depressed before
-    # autorepeat starts.
-    autoRepeatDelay = 150;
-
-    # Length of time in milliseconds that should elapse between
-    # autorepeat-generated keystrokes.
-    autoRepeatInterval = 33;
-
-    layout = "us";
-
-    # This together with 'xset s off' (executed on startup by the bspwm config)
-    # should disable every display power management option. See
-    # https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
-    # and https://shallowsky.com/linux/x-screen-blanking.html for more infos.
-    config = ''
-      Section "Extensions"
-          Option "DPMS" "off"
-      EndSection
-    '';
-
-    libinput = {
+  programs = {
+    fish = {
       enable = true;
-      naturalScrolling = true;
-      disableWhileTyping = true;
     };
 
-    # videoDrivers = [ "nvidia" ];
+    xss-lock = {
+      enable = true;
+    };
+  };
 
-    displayManager = {
-      defaultSession = "none+bspwm";
-      autoLogin = {
+  services = {
+    geoclue2 = {
+      enable = true;
+    };
+
+    syncthing = {
+      enable = true;
+      package = unstable.syncthing;
+    } // configs.syncthing;
+
+    tlp = {
+      enable = true;
+    };
+
+    transmission = {
+      enable = true;
+    } // configs.transmission;
+
+    udisks2 = {
+      enable = true;
+    };
+
+    udev = {
+      extraHwdb = ''
+        evdev:input:b0003v1532p026F*
+         KEYBOARD_KEY_700e2=leftmeta
+         KEYBOARD_KEY_700e3=leftalt
+         KEYBOARD_KEY_700e6=rightmeta
+      '';
+    };
+
+    xserver = {
+      enable = true;
+      autoRepeatDelay = 150;
+      autoRepeatInterval = 33;
+      layout = "us";
+      # videoDrivers = [ "nvidia" ];
+
+      libinput = {
         enable = true;
-        user = "noib3";
+        naturalScrolling = true;
+        disableWhileTyping = true;
       };
-    };
 
-    windowManager.bspwm.enable = true;
-  };
+      displayManager = {
+        defaultSession = "none+bspwm";
+        autoLogin = {
+          enable = true;
+          user = "noib3";
+        };
+      };
 
-  services.udev = {
-    extraHwdb = ''
-      evdev:input:b0003v1532p026F*
-       KEYBOARD_KEY_700e2=leftmeta
-       KEYBOARD_KEY_700e3=leftalt
-       KEYBOARD_KEY_700e6=rightmeta
-    '';
-  };
+      windowManager = {
+        bspwm.enable = true;
+      };
 
-  services.geoclue2.enable = true;
-
-  services.udisks2.enable = true;
-
-  services.tlp.enable = true;
-
-  services.syncthing = {
-    enable = true;
-    package = unstable.syncthing;
-    user = "noib3";
-    dataDir = "/home/noib3";
-    configDir = "/home/noib3/.config/syncthing";
-    declarative = {
-      # devices = {
-      #   mbair = {
-      #     name = "MacBook Air";
-      #     id = "V2JGYER-MUHWW7U-435IRVJ-4PTEXWD-OO3R3KM-5R5V5ZN-JJOFNC7-CRFENAA";
-      #   };
-      #   oneplus = {
-      #     name = "OnePlus Nord";
-      #     id = "MLUZ3TB-SCXVHEX-CKYU7IF-CUTRR2I-UIVCPTO-TQFNRWY-COD6CCN-US5JYQP";
-      #   };
-      # };
-
-      # folders = {
-      #   Sync = {
-      #     path = "/home/nix/Sync";
-      #     id = "qu7hn-unrno";
-      #     label = "Sync";
-      #     rescanInterval = 10;
-      #     type = "sendreceive";
-      #     ignorePerms = false;
-      #   };
-      #   Camera = {
-      #     path = "/home/nix/Media/OnePlus-Nord/Camera";
-      #     id = "qu7hn-unrno";
-      #     label = "Sync";
-      #     rescanInterval = 10;
-      #     type = "receiveonly";
-      #     ignorePerms = false;
-      #   };
-      # };
-      overrideDevices = false;
-      overrideFolders = false;
+      # This together with 'xset s off'should disable every display power
+      # management option. See [2] and [3] for more infos.
+      config = ''
+        Section "Extensions"
+            Option "DPMS" "off"
+        EndSection
+      '';
     };
   };
 
-  services.transmission = {
-    enable = true;
-    user = "noib3";
-    home = "/home/noib3";
-    settings = {
-      incomplete-dir = "/home/noib3/.cache/transmission-incomplete";
-      script-torrent-done-enabled = true;
-      script-torrent-done-filename = "/home/noib3/Sync/dotfiles/machines/blade/scripts/transmission/notify-done";
-    };
-  };
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.09"; # Did you read the comment?
+  system.stateVersion = "20.09";
 }
 
-# [1]: https://github.com/bulletmark/libinput-gestures
-# [2]: # https://openrazer.github.io/#projectv
+# [1]: https://github.com/NixOS/nixpkgs/issues/32555
+# [2]: https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
+# [3]: https://shallowsky.com/linux/x-screen-blanking.html for more infos.

@@ -1,5 +1,7 @@
 {
-  normal_border = "#3c3836";
-  active_border = "#3c3836";
-  focused_border = "#a89984";
+  border = {
+    normal = "#3c3836";
+    active = "#3c3836";
+    focused = "#a89984";
+  };
 }

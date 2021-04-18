@@ -244,6 +244,8 @@ in
 
       "<Super-c>" = "fake-key <Ctrl-c>";
       "<Super-v>" = "fake-key <Ctrl-v>";
+      "<Super-x>" = "fake-key <Ctrl-x>";
+      "<Super-z>" = "fake-key <Ctrl-z>";
 
       "<Super-Left>" = "fake-key <Home>";
       "<Super-Right>" = "fake-key <End>";
