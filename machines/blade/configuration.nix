@@ -3,6 +3,7 @@ let
   unstable = import <nixos-unstable> { };
 
   configs = {
+    couchdb = import ./overrides/couchdb.nix;
     syncthing = import ./overrides/syncthing.nix;
     transmission = import ./overrides/transmission.nix;
   };
@@ -32,6 +33,14 @@ in
         "input"
         "plugdev"
       ];
+    };
+
+    "couchdb" = {
+      home = "/home/couchdb";
+      shell = pkgs.fish;
+      isSystemUser = true;
+      createHome = true;
+      extraGroups = [ "couchdb" ];
     };
   };
 
@@ -115,6 +124,11 @@ in
   };
 
   services = {
+    couchdb = {
+      enable = true;
+      package = unstable.couchdb3;
+    } // configs.couchdb;
+
     geoclue2 = {
       enable = true;
     };

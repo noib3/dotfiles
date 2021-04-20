@@ -37,10 +37,15 @@ return require('packer').startup(function()
         run='cd app && yarn install'}
 
   use {'akinsho/nvim-bufferline.lua',
-        -- disable = true,
+        disable = true,
         requires = {'kyazdani42/nvim-web-devicons',
                      config = [[require('plugins.config.devicons')]]},
         config = [[require('plugins.config.bufferline')]]}
+
+  use {'~/Sync/projects/cokeline.nvim',
+        requires = {'kyazdani42/nvim-web-devicons',
+                     config = [[require('plugins.config.devicons')]]},
+        config = [[require('plugins.config.cokeline')]]}
 
   use {'norcalli/nvim-colorizer.lua',
         config=[[require('plugins.config.colorizer')]]}

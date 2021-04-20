@@ -1,5 +1,5 @@
 :root {
-  --tab-min-height: 1.3em !important;
+  --tab-min-height: 1.25em !important;
 }
 
 /* https://www.reddit.com/r/FirefoxCSS/comments/k3gnwz/is_it_possible_to_specify_the_text_color_of/ge5cr5p?utm_source=share&utm_medium=web2x&context=3 */
@@ -19,6 +19,6 @@
 .tab-icon-image,
 .tab-icon-sound,
 .tab-close-button {
-  height: 1em !important;
-  width: 1em !important;
+  height: 1.1em !important;
+  width: 1.1em !important;
 }

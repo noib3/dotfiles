@@ -191,6 +191,7 @@ in
       atool
       bitwarden
       bitwarden-cli
+      buku
       calcurse
       calibre
       evemu
@@ -242,6 +243,7 @@ in
       ueberzug
       unclutter-xfixes
       unzip
+      vimiv-qt
       vimv
       wmctrl
       xbanish
@@ -290,6 +292,7 @@ in
       starship = unstable.starship;
       tree-sitter = unstable.tree-sitter;
       ueberzug = unstable.ueberzug;
+      vimiv-qt = unstable.vimiv-qt;
       vimv = unstable.vimv;
     })
 

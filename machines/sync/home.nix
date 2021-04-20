@@ -3,41 +3,42 @@ let
   unstable = import <nixos-unstable> { };
 
   colorscheme = "onedark";
-
   colorschemes-dir = ../../colorschemes + "/${colorscheme}";
 
-  batConfig = import ../../defaults/bat;
+  configs = {
+    bat = import ../../defaults/bat;
 
-  direnvConfig = import ../../defaults/direnv;
+    direnv = import ../../defaults/direnv;
 
-  fdConfig =
-    let
-      default = import ../../defaults/fd;
-    in
-    import ./overrides/fd.nix { default = default; };
+    fd =
+      let
+        default = import ../../defaults/fd;
+      in
+      import ./overrides/fd.nix { default = default; };
 
-  fishConfig = lib.attrsets.recursiveUpdate
-    (import ../../defaults/fish {
+    fish = lib.attrsets.recursiveUpdate
+      (import ../../defaults/fish {
+        inherit pkgs;
+        colors = import (colorschemes-dir + /fish.nix);
+      })
+      (import ./overrides/fish.nix);
+
+    fzf = (import ../../defaults/fzf {
+      colors = import (colorschemes-dir + /fzf.nix);
+    });
+
+    git = import ../../defaults/git;
+
+    lf = (import ../../defaults/lf {
       inherit pkgs;
-      colors = import (colorschemes-dir + /fish.nix);
-    })
-    (import ./overrides/fish.nix);
+    });
 
-  fzfConfig = (import ../../defaults/fzf {
-    colors = import (colorschemes-dir + /fzf.nix);
-  });
+    starship = import ../../defaults/starship;
 
-  gitConfig = import ../../defaults/git;
-
-  lfConfig = (import ../../defaults/lf {
-    inherit pkgs;
-  });
-
-  starshipConfig = import ../../defaults/starship;
-
-  vividConfig = (import ../../defaults/vivid {
-    colors = import (colorschemes-dir + /vivid.nix);
-  });
+    vivid = (import ../../defaults/vivid {
+      colors = import (colorschemes-dir + /vivid.nix);
+    });
+  };
 in
 {
   imports = [
@@ -109,33 +110,33 @@ in
 
   programs.bat = {
     enable = true;
-  } // batConfig;
+  } // configs.bat;
 
   programs.fd = {
     enable = true;
-  } // fdConfig;
+  } // configs.fd;
 
   programs.fish = {
     enable = true;
-  } // fishConfig;
+  } // configs.fish;
 
   programs.fzf = {
     enable = true;
-  } // fzfConfig;
+  } // configs.fzf;
 
   programs.git = {
     enable = true;
-  } // gitConfig;
+  } // configs.git;
 
   programs.lf = {
     enable = true;
-  } // lfConfig;
+  } // configs.lf;
 
   programs.starship = {
     enable = true;
-  } // starshipConfig;
+  } // configs.starship;
 
   programs.vivid = {
     enable = true;
-  } // vividConfig;
+  } // configs.vivid;
 }

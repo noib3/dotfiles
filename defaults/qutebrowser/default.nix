@@ -89,10 +89,15 @@ in
     };
 
     completion = {
-      show = "auto";
+      height = "30%";
+      open_categories = [ "history" ];
+      scrollbar = {
+        padding = 0;
+        width = 0;
+      };
+      show = "always";
       shrink = true;
       timestamp_format = "";
-      scrollbar.padding = 0;
     };
 
     hints = {
