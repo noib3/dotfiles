@@ -230,6 +230,9 @@ in
 
       "grsy" = "open https://46.101.51.224:8384";
       "trsy" = "open -t https://46.101.51.224:8384";
+
+      "gcdb" = "open http://localhost:5984/_utils/#";
+      "tcdb" = "open -t http://localhost:5984/_utils/#";
     };
 
     command = {

@@ -332,6 +332,10 @@ in
       source = ../../defaults/fusuma/config.yml;
     };
 
+    "lazygit/config.yml" = {
+      source = ../../defaults/lazygit/config.yml;
+    };
+
     "nvim" = {
       source = ../../defaults/neovim;
       recursive = true;

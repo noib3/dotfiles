@@ -19,6 +19,9 @@
             application/pdf)
               setsid -f zathura "$file"
               ;;
+            application/gzip)
+              tar -xzvf "$file"
+              ;;
           esac
         done
         [[ ''${#text_files[@]} -eq 0 ]] || $EDITOR "''${text_files[@]}"

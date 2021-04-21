@@ -29,6 +29,7 @@
     mkdir = ''%mkdir -p "$@"; lf -remote "send $id select \"$@\""'';
     give_ex = ''%chmod +x $fx; lf -remote "send $id reload"'';
     remove_ex = ''%chmod -x $fx; lf -remote "send $id reload"'';
+    make_tarball = ''$tar -czvf "$@" "$fx"; lf -remote "send $id select \"$@\""'';
 
     fuzzy_cd = ''
       ''${{
@@ -87,6 +88,7 @@
     k = "push :mkdir<space>";
     "+" = "give_ex";
     "-" = "remove_ex";
+    mtb = "push :make_tarball<space>.tar.gz<left><left><left><left><left><left><left>";
     "<c-x><c-d>" = "fuzzy_cd";
     "<c-x><c-e>" = "fuzzy_edit";
     "<c-x><c-r>" = "fuzzy_ripgrep";

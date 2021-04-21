@@ -3,7 +3,7 @@
     overrideDevices = false;
     devices = {
       sync = {
-        name = "Sync";
+        name = "sync";
         id = "AVKI7R6-5CCWZIJ-TCDXLT2-DWO5RIL-ZE4NGMR-3CBSLNK-VBRJLRU-WOBLVQB";
       };
     };
