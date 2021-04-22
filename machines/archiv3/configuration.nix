@@ -12,6 +12,13 @@ in
     (modulesPath + "/virtualisation/digital-ocean-config.nix")
   ];
 
+  swapDevices = [
+    {
+      device = "/var/swap";
+      size = 2048;
+    }
+  ];
+
   users.users = {
     "nix" = {
       home = "/home/nix";
@@ -34,27 +41,23 @@ in
   };
 
   networking = {
-    hostName = "sync";
+    hostName = "archiv3";
     firewall = {
-      allowedTCPPorts = [ 8384 ];
+      allowedTCPPorts = [ 5984 8384 ];
     };
   };
 
-  programs = {
-    fish = {
-      enable = true;
-    };
+  programs.fish = {
+    enable = true;
   };
 
-  services = {
-    couchdb = {
-      enable = true;
-      package = unstable.couchdb3;
-    } // configs.couchdb;
+  services.couchdb = {
+    enable = true;
+    package = unstable.couchdb3;
+  } // configs.couchdb;
 
-    syncthing = {
-      enable = true;
-      package = unstable.syncthing;
-    } // configs.syncthing;
-  };
+  services.syncthing = {
+    enable = true;
+    package = unstable.syncthing;
+  } // configs.syncthing;
 }

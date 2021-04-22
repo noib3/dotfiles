@@ -3,11 +3,11 @@
 {
   ignores = [
     "/*"
-    "!/dotfiles"
-    "/dotfiles/machines/*"
-    "!/dotfiles/machines/sync"
+    "!/dotfil3s"
+    "/dotfil3s/machines/*"
+    "!/dotfil3s/machines/archiv3"
     "!/Media"
-    "!/Sync"
+    "!/sync"
     "**/.stfolder"
   ] ++ default.ignores;
 }

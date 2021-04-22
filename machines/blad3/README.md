@@ -1,4 +1,4 @@
-# `/machines/blade`
+# `/machines/blad3`
 
 Configuration deployed on a 15" 2021 Razer Blade running NixOS.
 
@@ -79,8 +79,8 @@ cd ~
 git clone https://github.com/noib3/dotfil3s.git
 nix-env -e git-minimal
 mkdir -p ~/.config/nixpkgs
-ln -sf ~/dotfiles/* ~/.config/nixpkgs/
-ln -sf ~/.config/nixpkgs/machines/blade/home.nix ~/.config/nixpkgs/home.nix
+ln -sf ~/dotfil3s/* ~/.config/nixpkgs/
+ln -sf ~/.config/nixpkgs/machines/blad3/home.nix ~/.config/nixpkgs/home.nix
 home-manager switch
 rm ~/.bash-history
 ```

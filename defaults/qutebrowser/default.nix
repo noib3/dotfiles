@@ -100,19 +100,24 @@ in
       timestamp_format = "";
     };
 
+    content = {
+      javascript.can_access_clipboard = true;
+      autoplay = false;
+    };
+
+    downloads.remove_finished = 1000;
+
     hints = {
       border = "none";
       radius = 1;
     };
 
-    messages.timeout = 1000;
-    content.autoplay = false;
-    downloads.remove_finished = 1000;
-
     input.insert_mode = {
       auto_load = true;
       leave_on_load = true;
     };
+
+    messages.timeout = 1000;
 
     scrolling = {
       bar = "never";
@@ -120,19 +125,14 @@ in
     };
 
     statusbar = {
-      # Hide the statusbar when not in command mode.
       show = "never";
       widgets = [ ];
     };
 
     tabs = {
-      # Hide the tab bar if only one tab is open.
       show = "multiple";
-      # Close the window when the last tab is closed.
       last_close = "close";
-      # Restore the previously saved mode when switching tabs;
       mode_on_change = "restore";
-
       close_mouse_button = "right";
     };
 
@@ -222,17 +222,20 @@ in
       "gtra" = "open http://localhost:9091/transmission/web/";
       "ttra" = "open -t http://localhost:9091/transmission/web/";
 
-      "gbm" = "open http://localhost:5001";
-      "tbm" = "open -t http://localhost:5001";
+      "gbm" = "open http://localhost:5001/";
+      "tbm" = "open -t http://localhost:5001/";
 
-      "gsy" = "open http://localhost:8384";
-      "tsy" = "open -t http://localhost:8384";
+      "gsy" = "open http://localhost:8384/";
+      "tsy" = "open -t http://localhost:8384/";
 
-      "grsy" = "open https://46.101.51.224:8384";
-      "trsy" = "open -t https://46.101.51.224:8384";
+      "grsy" = "open https://46.101.51.224:8384/";
+      "trsy" = "open -t https://46.101.51.224:8384/";
 
       "gcdb" = "open http://localhost:5984/_utils/#";
       "tcdb" = "open -t http://localhost:5984/_utils/#";
+
+      "grcdb" = "open http://46.101.51.224:5984/_utils/#";
+      "trcdb" = "open -t http://46.101.51.224:5984/_utils/#";
     };
 
     command = {

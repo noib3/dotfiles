@@ -139,4 +139,9 @@ in
   programs.vivid = {
     enable = true;
   } // configs.vivid;
+
+  services.gpg-agent = {
+    enable = true;
+    enableSshSupport = true;
+  };
 }

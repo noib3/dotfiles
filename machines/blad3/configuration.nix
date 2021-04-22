@@ -96,7 +96,7 @@ in
   };
 
   networking = {
-    hostName = "blade";
+    hostName = "blad3";
     useDHCP = false;
     interfaces.enp2s0.useDHCP = true;
     networkmanager.enable = true;

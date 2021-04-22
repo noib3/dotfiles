@@ -32,9 +32,9 @@ WIP
 │   ├── ...
 │   └── zathura
 ├── machines
-│   ├── blade
-│   ├── mbair
-│   └── sync
+│   ├── archiv3
+│   ├── blad3
+│   └── mbair
 └── modules
     └── programs
         └── ...

@@ -8,7 +8,7 @@ let
   fonts-dir = ./fonts + "/${font}";
   colorschemes-dir = ../../colorschemes + "/${colorscheme}";
 
-  sync-dir = config.home.homeDirectory + "/Sync";
+  sync-dir = config.home.homeDirectory + "/sync";
   secrets-dir = sync-dir + "/secrets";
   screenshots-dir = sync-dir + "/tmp/screenshots";
 

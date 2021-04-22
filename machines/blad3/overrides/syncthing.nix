@@ -2,18 +2,18 @@
   declarative = {
     overrideDevices = false;
     devices = {
-      sync = {
-        name = "sync";
+      archiv3 = {
+        name = "archiv3";
         id = "AVKI7R6-5CCWZIJ-TCDXLT2-DWO5RIL-ZE4NGMR-3CBSLNK-VBRJLRU-WOBLVQB";
       };
     };
     overrideFolders = false;
     folders = {
-      "Sync" = {
-        path = "/home/noib3/Sync";
+      "sync" = {
+        path = "/home/noib3/sync";
         id = "qu7hn-unrno";
-        label = "Sync";
-        devices = [ "sync" ];
+        label = "sync";
+        devices = [ "archiv3" ];
         rescanInterval = 10;
         type = "sendonly";
         ignorePerms = false;

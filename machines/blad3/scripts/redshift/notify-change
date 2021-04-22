@@ -6,7 +6,7 @@ function notify_change() {
   notify-send \
     --expire-time=5000 \
     --app-name="Redshift" \
-    --icon="/home/noib3/Sync/dotfiles/machines/blade/scripts/redshift/redshift-logo.png" \
+    --icon="/home/noib3/Sync/dotfil3s/machines/blad3/scripts/redshift/redshift-logo.png" \
     "Switching temps..." \
     "$1"
 }
