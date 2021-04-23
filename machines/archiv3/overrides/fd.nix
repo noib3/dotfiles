@@ -8,6 +8,5 @@
     "!/dotfil3s/machines/archiv3"
     "!/Media"
     "!/sync"
-    "**/.stfolder"
   ] ++ default.ignores;
 }

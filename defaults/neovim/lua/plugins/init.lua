@@ -42,7 +42,7 @@ return require('packer').startup(function()
                      config = [[require('plugins.config.devicons')]]},
         config = [[require('plugins.config.bufferline')]]}
 
-  use {'~/Sync/projects/cokeline.nvim',
+  use {'~/sync/projects/cokeline.nvim',
         requires = {'kyazdani42/nvim-web-devicons',
                      config = [[require('plugins.config.devicons')]]},
         config = [[require('plugins.config.cokeline')]]}

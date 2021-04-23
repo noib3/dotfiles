@@ -3,7 +3,6 @@
 {
   ignores = [
     "/*"
-    "**/.stfolder"
     "!/Downloads"
     "!/sync"
     "/sync/fitness"

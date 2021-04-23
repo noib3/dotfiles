@@ -2,6 +2,7 @@
   ignores = [
     "**/.direnv"
     "**/.git"
+    "**/.stfolder"
     "*.aux"
     "*.bbl"
     "*.bcf"

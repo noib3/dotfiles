@@ -10,7 +10,7 @@ let
 
   sync-dir = config.home.homeDirectory + "/sync";
   secrets-dir = sync-dir + "/secrets";
-  screenshots-dir = sync-dir + "/tmp/screenshots";
+  screenshots-dir = sync-dir + "/screenshots";
 
   userScripts = with pkgs; {
     listen-node-add = writeScriptBin

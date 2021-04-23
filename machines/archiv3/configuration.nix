@@ -20,8 +20,8 @@ in
   ];
 
   users.users = {
-    "nix" = {
-      home = "/home/nix";
+    "noib3" = {
+      home = "/home/noib3";
       shell = pkgs.fish;
       isNormalUser = true;
       extraGroups = [ "wheel" ];
