@@ -10,9 +10,9 @@ let
   };
 
   configs = {
-    couchdb = lib.attrsets.recursiveUpdate
-      (import ../../defaults/couchdb)
-      (import ./overrides/couchdb.nix);
+    couchdb =
+      (import ../../defaults/couchdb { inherit lib; })
+      // (import ./overrides/couchdb.nix);
     syncthing = import ./overrides/syncthing.nix;
   };
 in
@@ -36,7 +36,7 @@ in
         shell = pkgs.fish;
         isNormalUser = true;
         extraGroups = [ "wheel" ];
-        openssh.authorizedKeys.keyfiles = [
+        openssh.authorizedKeys.keyFiles = [
           ./ssh-authorized-keys/noib3.pub
         ];
         password = user-passwords.noib3;

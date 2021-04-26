@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   version = "1.0.0";
 
   src = fetchurl {
-    url = "https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-${version}-x86_64-linux.tgz";
+    url = "https://install.speedtest.net/app/cli/ookla-speedtest-${version}-x86_64-linux.tgz";
     sha256 = "0s1icdqdkr1g4dsnsqvh1a4vp4b61vvrr7qx4gsf89s41n7h5qjz";
   };
 

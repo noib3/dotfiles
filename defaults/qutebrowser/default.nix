@@ -1,6 +1,7 @@
 { font, colors }:
 let
   home-page = "https://google.com";
+  archiv3-ipv4-address = "139.59.165.52";
 in
 {
   searchEngines = {
@@ -228,14 +229,14 @@ in
       "gsy" = "open http://localhost:8384/";
       "tsy" = "open -t http://localhost:8384/";
 
-      "grsy" = "open https://46.101.51.224:8384/";
-      "trsy" = "open -t https://46.101.51.224:8384/";
+      "grsy" = "open https://${archiv3-ipv4-address}:8384/";
+      "trsy" = "open -t https://${archiv3-ipv4-address}:8384/";
 
       "gcdb" = "open http://localhost:5984/_utils/#";
       "tcdb" = "open -t http://localhost:5984/_utils/#";
 
-      "grcdb" = "open http://46.101.51.224:5984/_utils/#";
-      "trcdb" = "open -t http://46.101.51.224:5984/_utils/#";
+      "grcdb" = "open http://${archiv3-ipv4-address}:5984/_utils/#";
+      "trcdb" = "open -t http://${archiv3-ipv4-address}:5984/_utils/#";
     };
 
     command = {
