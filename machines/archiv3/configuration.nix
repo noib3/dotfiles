@@ -1,9 +1,18 @@
-{ modulesPath, pkgs, user, ... }:
+{ modulesPath, lib, pkgs, ... }:
 let
   unstable = import <nixos-unstable> { };
 
+  user-passwords = {
+    "noib3" = lib.strings.removeSuffix "\n"
+      (builtins.readFile ./secrets/users.noib3.pwd);
+    "couchdb" = lib.strings.removeSuffix "\n"
+      (builtins.readFile ./secrets/users.couchdb.pwd);
+  };
+
   configs = {
-    couchdb = import ./overrides/couchdb.nix;
+    couchdb = lib.attrsets.recursiveUpdate
+      (import ../../defaults/couchdb)
+      (import ./overrides/couchdb.nix);
     syncthing = import ./overrides/syncthing.nix;
   };
 in
@@ -19,22 +28,34 @@ in
     }
   ];
 
-  users.users = {
-    "noib3" = {
-      home = "/home/noib3";
-      shell = pkgs.fish;
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-    };
+  users = {
+    mutableUsers = false;
+    users = {
+      "noib3" = {
+        home = "/home/noib3";
+        shell = pkgs.fish;
+        isNormalUser = true;
+        extraGroups = [ "wheel" ];
+        openssh.authorizedKeys.keyfiles = [
+          ./ssh-authorized-keys/noib3.pub
+        ];
+        password = user-passwords.noib3;
+      };
 
-    "couchdb" = {
-      home = "/home/couchdb";
-      shell = pkgs.fish;
-      isSystemUser = true;
-      createHome = true;
-      extraGroups = [ "couchdb" ];
+      "couchdb" = {
+        home = "/home/couchdb";
+        shell = pkgs.fish;
+        isSystemUser = true;
+        createHome = true;
+        extraGroups = [ "couchdb" ];
+        password = user-passwords.couchdb;
+      };
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    vim
+  ];
 
   security.sudo = {
     wheelNeedsPassword = false;
@@ -43,7 +64,10 @@ in
   networking = {
     hostName = "archiv3";
     firewall = {
-      allowedTCPPorts = [ 5984 8384 ];
+      allowedTCPPorts = [
+        5984
+        8384
+      ];
     };
   };
 

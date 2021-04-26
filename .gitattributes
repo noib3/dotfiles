@@ -1,0 +1,3 @@
+/defaults/couchdb/secrets/**
+/defaults/neovim/spell/**
+/machines/*/secrets/**

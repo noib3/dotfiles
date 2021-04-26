@@ -1,9 +1,16 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   unstable = import <nixos-unstable> { };
 
+  user-passwords = {
+    "noib3" = lib.strings.removeSuffix "\n"
+      (builtins.readFile ./secrets/users.noib3.pwd);
+    "couchdb" = lib.strings.removeSuffix "\n"
+      (builtins.readFile ./secrets/users.couchdb.pwd);
+  };
+
   configs = {
-    couchdb = import ./overrides/couchdb.nix;
+    couchdb = import ../../defaults/couchdb { inherit lib; };
     syncthing = import ./overrides/syncthing.nix;
     transmission = import ./overrides/transmission.nix;
   };
@@ -23,31 +30,35 @@ in
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "Europe/Rome";
 
-  users.users = {
-    "noib3" = {
-      home = "/home/noib3";
-      shell = pkgs.fish;
-      isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "input"
-        "plugdev"
-      ];
-    };
+  users = {
+    mutableUsers = false;
+    users = {
+      "noib3" = {
+        home = "/home/noib3";
+        shell = pkgs.fish;
+        isNormalUser = true;
+        extraGroups = [
+          "wheel"
+          "input"
+          "plugdev"
+        ];
+        password = user-passwords.noib3;
+      };
 
-    "couchdb" = {
-      home = "/home/couchdb";
-      shell = pkgs.fish;
-      isSystemUser = true;
-      createHome = true;
-      extraGroups = [ "couchdb" ];
+      "couchdb" = {
+        home = "/home/couchdb";
+        shell = pkgs.fish;
+        isSystemUser = true;
+        createHome = true;
+        extraGroups = [ "couchdb" ];
+        password = user-passwords.couchdb;
+      };
     };
   };
 
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    git
     vim
   ];
 

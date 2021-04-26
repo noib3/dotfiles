@@ -1,11 +1,17 @@
 {
-  sort = "reverse-date-received";
+  sidebar = {
+    enable = true;
+  };
 
-  # settings = {
-  #   copy = "no";
-  #   ssl_force_tls = "yes";
-  #   from = "riccardo.mazzarini98@gmail.com";
-  #   realname = "Riccardo Mazzarini";
-  #   folder = "imaps://imap.gmail.com:993";
-  # };
+  sort = "reverse-date-received";
+  # vimKeys = true;
+
+  settings = {
+    copy = "no";
+    ssl_force_tls = "yes";
+  };
+
+  extraConfig = ''
+    COLORFGBG="default;default"
+  '';
 }

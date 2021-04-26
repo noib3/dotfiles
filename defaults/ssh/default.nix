@@ -1,8 +1,8 @@
 {
   matchBlocks = {
     "archiv3" = {
-      user = "nix";
-      hostname = "46.101.51.224";
+      user = "noib3";
+      hostname = "139.59.165.52";
       serverAliveInterval = 120;
     };
   };

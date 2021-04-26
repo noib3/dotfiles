@@ -12,6 +12,8 @@ let
   secrets-dir = sync-dir + "/secrets";
   screenshots-dir = sync-dir + "/screenshots";
 
+  email-accounts = import ../../defaults/email-accounts;
+
   userScripts = with pkgs; {
     listen-node-add = writeScriptBin
       "listen-node-add"
@@ -33,6 +35,10 @@ let
       "file-open-close"
       (builtins.readFile ./scripts/miscellaneous/file-open-close);
 
+    neomutt-notify-new = writeScriptBin
+      "neomutt-notify-new"
+      (builtins.readFile ./scripts/neomutt/notify-new);
+
     take-screenshot = writeScriptBin
       "take-screenshot"
       (import ./scripts/miscellaneous/take-screenshot.nix {
@@ -41,7 +47,7 @@ let
 
     toggle-gbp = writeScriptBin
       "toggle-gaps-borders-paddings"
-      (builtins.readFile ./scripts/miscellaneous/toggle-gaps-borders-paddings);
+      (builtins.readFile ./scripts/bspwm/toggle-gaps-borders-paddings);
 
     volumectl = writeScriptBin
       "volumectl"
@@ -128,6 +134,10 @@ let
 
     mpv = import ../../defaults/mpv;
 
+    neomutt = import ../../defaults/neomutt;
+
+    password-store = import ../../defaults/password-store;
+
     picom = import ../../defaults/picom;
 
     polybar = (import ../../defaults/polybar {
@@ -182,6 +192,8 @@ in
     ../../modules/services/mpris.nix
   ];
 
+  accounts.email = email-accounts;
+
   home = {
     username = "noib3";
     homeDirectory = "/home/noib3";
@@ -201,12 +213,15 @@ in
       file
       fusuma
       gcc
+      git-crypt
       gotop
       graphicsmagick-imagemagick-compat
       hideIt
+      # hydroxide
       lazygit
       libnotify
       mediainfo
+      mkvtoolnix-cli
       neovim-nightly
       (nerdfonts.override {
         fonts = [
@@ -224,6 +239,7 @@ in
       pfetch
       pick-colour-picker
       poppler_utils
+      protonmail-bridge
       (python39.withPackages (
         ps: with ps; [
           autopep8
@@ -235,7 +251,6 @@ in
       ripgrep
       scrot
       sxiv
-      texlab
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
       tree
@@ -258,6 +273,7 @@ in
       (pkgs.hiPrio userScripts.lf-launcher)
       userScripts.fuzzy-opener
       userScripts.file-open-close
+      userScripts.neomutt-notify-new
       userScripts.take-screenshot
       userScripts.toggle-gbp
       userScripts.volumectl
@@ -284,6 +300,7 @@ in
       fish = unstable.fish;
       fzf = unstable.fzf;
       hideIt = super.callPackage ./overlays/hideIt.nix { };
+      # hydroxide = unstable.hydroxide;
       lf = unstable.lf;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       picom = unstable.picom;
@@ -422,6 +439,14 @@ in
     mpv = {
       enable = true;
     } // configs.mpv;
+
+    neomutt = {
+      enable = true;
+    } // configs.neomutt;
+
+    password-store = {
+      enable = true;
+    } // configs.password-store;
 
     qutebrowser = {
       enable = true;

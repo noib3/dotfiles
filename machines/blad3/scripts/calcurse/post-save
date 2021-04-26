@@ -10,7 +10,7 @@ function notify_commit() {
 }
 
 function commit_new_entries() {
-  cd "/home/noib3/Sync/secrets/calcurse"
+  cd "/home/noib3/sync/secrets/calcurse"
   git add .
   git commit -m "$(date +%4Y-%b-%d@%T) Commit by calcurse's post-save hook"
   git push origin master

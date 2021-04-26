@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+EMAILS_NEW="$1"
+EMAILS_UNDREAD="$2"
+
+function notify_new {
+  notify-send \
+    --expire-time=5000 \
+    --app-name="neomutt" \
+    --icon="/home/noib3/sync/dotfil3s/machines/blad3/scripts/neomutt/neomutt_logo.png" \
+    "A new email has arrived" \
+    "$EMAILS_NEW new emails, $EMAILS_UNDREAD unread"
+}
+
+notify_new
