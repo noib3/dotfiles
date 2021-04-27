@@ -54,6 +54,7 @@ in
     packages = with pkgs; [
       chafa
       file
+      git-crypt
       gotop
       lazygit
       mediainfo
@@ -127,6 +128,10 @@ in
   programs.git = {
     enable = true;
   } // configs.git;
+
+  programs.gpg = {
+    enable = true;
+  };
 
   programs.lf = {
     enable = true;
