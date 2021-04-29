@@ -8,6 +8,7 @@
     ifs = "\\n";
     info = "size";
     period = 1;
+    ratios = "1:2:2";
     shell = "bash";
     timefmt = "January 02, 2006 at 15:04:05";
   };

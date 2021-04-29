@@ -21,6 +21,11 @@
       python_binary = "python3";
     };
 
+    status = {
+      map_symbol = true;
+      disable = false;
+    };
+
     username = {
       format = "[$user]($style)";
       show_always = true;

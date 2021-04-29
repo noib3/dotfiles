@@ -36,16 +36,21 @@ return require('packer').startup(function()
         config=[[require('plugins.config.markdown-preview')]],
         run='cd app && yarn install'}
 
-  use {'akinsho/nvim-bufferline.lua',
-        disable = true,
-        requires = {'kyazdani42/nvim-web-devicons',
-                     config = [[require('plugins.config.devicons')]]},
-        config = [[require('plugins.config.bufferline')]]}
+  -- use {'akinsho/nvim-bufferline.lua',
+  --       requires={'kyazdani42/nvim-web-devicons',
+  --                  config=[[require('plugins.config.devicons')]]},
+  --       config=[[require('plugins.config.bufferline')]]}
 
   use {'~/sync/projects/cokeline.nvim',
-        requires = {'kyazdani42/nvim-web-devicons',
-                     config = [[require('plugins.config.devicons')]]},
-        config = [[require('plugins.config.cokeline')]]}
+        requires={'kyazdani42/nvim-web-devicons',
+                   config=[[require('plugins.config.devicons')]]},
+        config=[[require('plugins.config.cokeline')]]}
+
+  use {'glepnir/galaxyline.nvim',
+        branch=main,
+        requires={'kyazdani42/nvim-web-devicons',
+                   config=[[require('plugins.config.devicons')]]},
+        config=[[require('plugins.config.galaxyline')]]}
 
   use {'norcalli/nvim-colorizer.lua',
         config=[[require('plugins.config.colorizer')]]}

@@ -1,3 +1,6 @@
-/defaults/couchdb/secrets/** filter=git-crypt diff=git-crypt
-/defaults/neovim/spell/** filter=git-crypt diff=git-crypt
-/machines/*/secrets/** filter=git-crypt diff=git-crypt
+/defaults/calcurse/notes      filter=git-crypt diff=git-crypt
+/defaults/calcurse/apts       filter=git-crypt diff=git-crypt
+/defaults/calcurse/todo       filter=git-crypt diff=git-crypt
+/defaults/couchdb/secrets/*   filter=git-crypt diff=git-crypt
+/defaults/neovim/spell/*      filter=git-crypt diff=git-crypt
+/machines/*/secrets/**        filter=git-crypt diff=git-crypt
