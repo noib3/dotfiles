@@ -223,17 +223,14 @@ in
       "gtra" = "open http://localhost:9091/transmission/web/";
       "ttra" = "open -t http://localhost:9091/transmission/web/";
 
-      "gbm" = "open http://localhost:5001/";
-      "tbm" = "open -t http://localhost:5001/";
-
       "gsy" = "open http://localhost:8384/";
       "tsy" = "open -t http://localhost:8384/";
 
-      "grsy" = "open https://${archiv3-ipv4-address}:8384/";
-      "trsy" = "open -t https://${archiv3-ipv4-address}:8384/";
-
       "gcdb" = "open http://localhost:5984/_utils/#";
       "tcdb" = "open -t http://localhost:5984/_utils/#";
+
+      "grsy" = "open https://${archiv3-ipv4-address}:8384/";
+      "trsy" = "open -t https://${archiv3-ipv4-address}:8384/";
 
       "grcdb" = "open http://${archiv3-ipv4-address}:5984/_utils/#";
       "trcdb" = "open -t http://${archiv3-ipv4-address}:5984/_utils/#";
