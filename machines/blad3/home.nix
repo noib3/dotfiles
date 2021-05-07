@@ -214,6 +214,7 @@ in
       # hydroxide
       lazygit
       libnotify
+      lua5_4
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
@@ -284,6 +285,7 @@ in
       hideIt = super.callPackage ./overlays/hideIt.nix { };
       # hydroxide = unstable.hydroxide;
       lf = unstable.lf;
+      lua5_4 = unstable.lua5_4;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
       picom = unstable.picom;
       python39 = unstable.python39;

@@ -82,6 +82,7 @@
   keybindings = {
     m = null;
     u = null;
+    l = null;
     x = "cut";
     d = "delete";
     "<enter>" = "push $";
@@ -89,6 +90,7 @@
     k = "push :mkdir<space>";
     "+" = "give_ex";
     "-" = "remove_ex";
+    lg = "$lazygit";
     mtb = "push :make_tarball<space>.tar.gz<left><left><left><left><left><left><left>";
     "<c-x><c-d>" = "fuzzy_cd";
     "<c-x><c-e>" = "fuzzy_edit";
