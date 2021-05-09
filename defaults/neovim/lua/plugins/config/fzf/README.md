@@ -11,11 +11,11 @@ really a way to customize that.
 By default `fuzzy_ripgrep` opens the first file in a new buffer and adds all
 the remaining ones to the buffer list, but customizing this behavior is as easy
 as changing `init.vim`'s
-[L14-L16](https://github.com/noib3/dotfil3s/blob/master/defaults/neovim/lua/plugins/config/fzf/init.vim#L14-L16).
+[L14-L16](https://github.com/noib3/dotfiles/blob/master/defaults/neovim/lua/plugins/config/fzf/init.vim#L14-L16).
 
 For example, to open the first file in a vertical split adding all the
 others to the buffer list
-[L14](https://github.com/noib3/dotfil3s/blob/master/defaults/neovim/lua/plugins/config/fzf/init.vim#L14)
+[L14](https://github.com/noib3/dotfiles/blob/master/defaults/neovim/lua/plugins/config/fzf/init.vim#L14)
 can be changed to:
 ```vim
 " init.vim, line 14

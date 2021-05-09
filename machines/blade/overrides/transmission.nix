@@ -4,6 +4,6 @@
   settings = {
     incomplete-dir = "/home/noib3/.cache/transmission-incomplete";
     script-torrent-done-enabled = true;
-    script-torrent-done-filename = "/home/noib3/sync/dotfil3s/machines/blad3/scripts/transmission/notify-done";
+    script-torrent-done-filename = "/home/noib3/sync/dotfiles/machines/blade/scripts/transmission/notify-done";
   };
 }

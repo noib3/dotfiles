@@ -25,8 +25,8 @@ The main features are:
 **Note:** the actual formatting of the fold titles is highly dependent on the
 end user's taste and can be modified by changing the `return` statement of the
 `LaTeXFoldsExpr` function
-([L125](https://github.com/noib3/dotfil3s/blob/master/defaults/neovim/after/ftplugin/tex/folds.vim#L125)).
+([L125](https://github.com/noib3/dotfiles/blob/master/defaults/neovim/after/ftplugin/tex/folds.vim#L125)).
 
 For example, the formatting function used in the screenshot above is autoloaded
 from `folds#format_fold_title` and it's defined
-[here](https://github.com/noib3/dotfil3s/blob/master/defaults/neovim/autoload/folds.vim#L10).
+[here](https://github.com/noib3/dotfiles/blob/master/defaults/neovim/autoload/folds.vim#L10).

@@ -21,9 +21,9 @@ its features:
 # Additional settings
 
 Most settings are set by the
-[`profiles.home.settings`](https://github.com/noib3/dotfil3s/blob/master/defaults/firefox/default.nix#L69-L91)
+[`profiles.home.settings`](https://github.com/noib3/dotfiles/blob/master/defaults/firefox/default.nix#L69-L91)
 attribute inside the
-[`default.nix`](https://github.com/noib3/dotfil3s/blob/master/defaults/firefox/default.nix)
+[`default.nix`](https://github.com/noib3/dotfiles/blob/master/defaults/firefox/default.nix)
 file, but a few others have to be set manually. In `about:preferences`:
 
 1. General -> Default zoom -> 133%;

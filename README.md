@@ -1,4 +1,4 @@
-<h1 align="center">&#x1F3E1 dotfil3s</h1>
+<h1 align="center">&#x1F3E1 dotfiles</h1>
 
 <div align="center">
   <a href=https://nixos.org/> <img src=https://img.shields.io/badge/Using%20NixOS-v20.09-blue?style=for-the-badge&logo=NixOS></a>
@@ -33,7 +33,7 @@ WIP
 │   └── zathura
 ├── machines
 │   ├── archiv3
-│   ├── blad3
+│   ├── blade
 │   └── mbair
 └── modules
     └── programs
@@ -84,14 +84,14 @@ WIP
 
 ## Some `/defaults` you might like
 
-| ***My qutebrowser-inspired [firefox config](https://github.com/noib3/dotfil3s/blob/master/defaults/firefox)*** |
+| ***My qutebrowser-inspired [firefox config](https://github.com/noib3/dotfiles/blob/master/defaults/firefox)*** |
 |:--:|
 | ![bookmarks](./defaults/firefox/screenshots/fwf2b0tvihy51.png) |
 | ![urls](./defaults/firefox/screenshots/0199t0svihy51.png) |
-| ***My [fzf config](https://github.com/noib3/dotfil3s/blob/master/defaults/fzf)*** |
+| ***My [fzf config](https://github.com/noib3/dotfiles/blob/master/defaults/fzf)*** |
 | ![fuzzy_edit](./defaults/fzf/screenshots/2021-04-12@19:06:44.png) |
 | ![fuzzy_cd](./defaults/fzf/screenshots/2021-04-12@19:07:06.png) |
-| ***My [neovim config](https://github.com/noib3/dotfil3s/blob/master/defaults/neovim)*** |
+| ***My [neovim config](https://github.com/noib3/dotfiles/blob/master/defaults/neovim)*** |
 | ![fuzzy_edit](./defaults/neovim/screenshots/2021-04-12@15:40:08.png) |
 | ![fuzzy_cd](./defaults/neovim/screenshots/2021-04-12@15:41:09.png) |
-| ***My [qutebrowser config](https://github.com/noib3/dotfil3s/blob/master/defaults/qutebrowser)*** |
+| ***My [qutebrowser config](https://github.com/noib3/dotfiles/blob/master/defaults/qutebrowser)*** |

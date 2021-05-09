@@ -215,6 +215,7 @@ in
       lazygit
       libnotify
       lua5_4
+      jmtpfs
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
