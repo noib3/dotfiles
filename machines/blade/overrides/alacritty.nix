@@ -3,8 +3,8 @@
 {
   settings = {
     window = {
-      padding.x = 7;
-      padding.y = 2;
+      padding.x = 5;
+      padding.y = 0;
     };
 
     key_bindings = [

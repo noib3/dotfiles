@@ -2,28 +2,154 @@
 let
   unstable = import <nixos-unstable> { };
 
-  font = "roboto-mono";
   colorscheme = "onedark";
+  font = "roboto-mono";
 
   dirs = {
-    fonts = ./fonts + "/${font}";
-    colorschemes = ../../colorschemes + "/${colorscheme}";
+    colorscheme = ../../colorschemes + "/${colorscheme}";
+    defaults = ../../defaults;
+    font = ./fonts + "/${font}";
     screenshots = config.home.homeDirectory + "/sync/screenshots";
   };
 
-  email-accounts = import ../../defaults/email-accounts;
+  configs.alacritty =
+    let
+      default = (import (dirs.defaults + /alacritty) {
+        inherit pkgs;
+        font = import (dirs.font + /alacritty.nix);
+        colors = import (dirs.colorscheme + /alacritty.nix);
+      });
+    in
+    lib.attrsets.recursiveUpdate
+      default
+      (import ./overrides/alacritty.nix { default = default; });
+
+  configs.bat = import (dirs.defaults + /bat);
+
+  configs.bspwm = (import (dirs.defaults + /bspwm) {
+    colors = import (dirs.colorscheme + /bspwm.nix);
+  });
+
+  configs.direnv = import (dirs.defaults + /direnv);
+
+  configs.dunst = (import (dirs.defaults + /dunst) {
+    inherit pkgs;
+    font = import (dirs.font + /dunst.nix);
+    colors = import (dirs.colorscheme + /dunst.nix);
+  });
+
+  configs.fd =
+    let
+      default = import (dirs.defaults + /fd);
+    in
+    import ./overrides/fd.nix { default = default; };
+
+  configs.firefox = (import (dirs.defaults + /firefox) {
+    font = import (dirs.font + /firefox.nix);
+    colors = import (dirs.colorscheme + /firefox.nix);
+  });
+
+  configs.fish = lib.attrsets.recursiveUpdate
+    (import (dirs.defaults + /fish) {
+      inherit pkgs;
+      colors = import (dirs.colorscheme + /fish.nix);
+    })
+    (import ./overrides/fish.nix);
+
+  configs.fzf = (import (dirs.defaults + /fzf) {
+    colors = import (dirs.colorscheme + /fzf.nix);
+  });
+
+  configs.fusuma = import (dirs.defaults + /fusuma);
+
+  configs.git = import (dirs.defaults + /git);
+
+  configs.gpgAgent = import (dirs.defaults + /gpg/gpg-agent.nix);
+
+  configs.lf = lib.attrsets.recursiveUpdate
+    (import (dirs.defaults + /lf) { inherit pkgs; })
+    (import ./overrides/lf.nix);
+
+  configs.mpv = import (dirs.defaults + /mpv);
+
+  configs.picom = import (dirs.defaults + /picom);
+
+  configs.polybar = (import (dirs.defaults + /polybar) {
+    font = import (dirs.font + /polybar.nix);
+    colors = import (dirs.colorscheme + /polybar.nix);
+  });
+
+  configs.qutebrowser = (import (dirs.defaults + /qutebrowser) {
+    font = import (dirs.font + /qutebrowser.nix);
+    colors = import (dirs.colorscheme + /qutebrowser.nix);
+  });
+
+  configs.redshift = import (dirs.defaults + /redshift);
+
+  configs.starship = import (dirs.defaults + /starship);
+
+  configs.sxhkd = import (dirs.defaults + /sxhkd);
+
+  configs.ssh = import (dirs.defaults + /ssh);
+
+  configs.tridactyl = (import (dirs.defaults + /tridactyl) {
+    font = import (dirs.font + /tridactyl.nix);
+    colors = import (dirs.colorscheme + /tridactyl.nix);
+  });
+
+  configs.udiskie = import (dirs.defaults + /udiskie);
+
+  configs.vivid = (import (dirs.defaults + /vivid) {
+    colors = import (dirs.colorscheme + /vivid.nix);
+  });
+
+  configs.zathura = (import (dirs.defaults + /zathura) {
+    font = import (dirs.font + /zathura.nix);
+    colors = import (dirs.colorscheme + /zathura.nix);
+  });
+
+  languageServers = with pkgs; [
+    unstable.sumneko-lua-language-server
+    nodePackages.vim-language-server
+    nodePackages.vscode-html-languageserver-bin
+  ];
 
   userScripts = with pkgs; [
+    (hiPrio (writeScriptBin "dmenu"
+      (import (dirs.defaults + /dmenu) {
+        pkgs = unstable;
+        font = import (dirs.font + /dmenu.nix);
+        colors = import (dirs.colorscheme + /dmenu.nix);
+      })))
+
+    (writeScriptBin "dmenu-run"
+      (import (dirs.defaults + /dmenu) {
+        pkgs = unstable;
+        font = import (dirs.font + /dmenu.nix);
+        colors = import (dirs.colorscheme + /dmenu.nix);
+        cmd = "dmenu_run";
+        args = "-p \"Run> \"";
+      }))
+
+    (writeScriptBin "dmenu-xembed-qute"
+      (import (dirs.defaults + /dmenu) {
+        pkgs = unstable;
+        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
+        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
+        args = "-w \"$(xdotool getactivewindow)\"";
+      }))
+
+    (writeScriptBin "dmenu-open"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open)))
+
     (writeScriptBin "listen-node-add"
-      (builtins.readFile ./scripts/bspwm/listen-node-add))
+      (builtins.readFile (dirs.defaults + /bspwm/scripts/listen-node-add)))
 
     (writeScriptBin "listen-node-remove"
-      (builtins.readFile ./scripts/bspwm/listen-node-remove))
+      (builtins.readFile (dirs.defaults + /bspwm/scripts/listen-node-remove)))
 
     (hiPrio (writeScriptBin "lf"
-      (import ../../defaults/lf/launcher.nix {
-        inherit pkgs;
-      })))
+      (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
 
     (writeScriptBin "fuzzy-opener"
       (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener))
@@ -31,23 +157,20 @@ let
     (writeScriptBin "file-open-close"
       (builtins.readFile ./scripts/miscellaneous/file-open-close))
 
-    (writeScriptBin "neomutt-notify-new"
-      (builtins.readFile ./scripts/neomutt/notify-new))
-
     (writeScriptBin "take-screenshot"
       (import ./scripts/miscellaneous/take-screenshot.nix {
         screenshots-dir = dirs.screenshots;
       }))
 
     (writeScriptBin "toggle-gaps-borders-paddings"
-      (builtins.readFile ./scripts/bspwm/toggle-gaps-borders-paddings))
+      (builtins.readFile (dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings)))
 
     (writeScriptBin "volumectl"
       (import ./scripts/miscellaneous/volumectl.nix))
 
     (writeScriptBin "rofi-bluetooth"
       (import ./scripts/rofi/rofi-bluetooth.nix {
-        colors = import (dirs.colorschemes + /polybar.nix);
+        colors = import (dirs.colorscheme + /polybar.nix);
       }))
   ];
 
@@ -56,126 +179,15 @@ let
       name = "qutebrowser";
       desktopName = "qutebrowser";
       exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-      mimeType = "x-scheme-handler/unknown;x-scheme-handler/about;x-scheme-handler/https;x-scheme-handler/http;text/html";
+      mimeType = lib.concatStringsSep ";" [
+        "text/html"
+        "x-scheme-handler/about"
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/unknown"
+      ];
       icon = "qutebrowser";
     })
-  ];
-
-  configs = {
-    alacritty =
-      let
-        default =
-          (import ../../defaults/alacritty {
-            inherit pkgs;
-            font = import (dirs.fonts + /alacritty.nix);
-            colors = import (dirs.colorschemes + /alacritty.nix);
-          });
-      in
-      lib.attrsets.recursiveUpdate
-        default
-        (import ./overrides/alacritty.nix { default = default; });
-
-    bat = import ../../defaults/bat;
-
-    bspwm = (import ../../defaults/bspwm {
-      colors = import (dirs.colorschemes + /bspwm.nix);
-    });
-
-    direnv = import ../../defaults/direnv;
-
-    dunst = (import ../../defaults/dunst {
-      inherit pkgs;
-      font = import (dirs.fonts + /dunst.nix);
-      colors = import (dirs.colorschemes + /dunst.nix);
-    });
-
-    fd =
-      let
-        default = import ../../defaults/fd;
-      in
-      import ./overrides/fd.nix { default = default; };
-
-    firefox = (import ../../defaults/firefox {
-      font = import (dirs.fonts + /firefox.nix);
-      colors = import (dirs.colorschemes + /firefox.nix);
-    });
-
-    fish = lib.attrsets.recursiveUpdate
-      (import ../../defaults/fish {
-        inherit pkgs;
-        colors = import (dirs.colorschemes + /fish.nix);
-      })
-      (import ./overrides/fish.nix);
-
-    fzf = (import ../../defaults/fzf {
-      colors = import (dirs.colorschemes + /fzf.nix);
-    });
-
-    fusuma = import ../../defaults/fusuma;
-
-    git = import ../../defaults/git;
-
-    gpgAgent = import ../../defaults/gpg/gpg-agent.nix;
-
-    lf = lib.attrsets.recursiveUpdate
-      (import ../../defaults/lf {
-        inherit pkgs;
-      })
-      (import ./overrides/lf.nix);
-
-    mpv = import ../../defaults/mpv;
-
-    neomutt = import ../../defaults/neomutt;
-
-    password-store = import ../../defaults/password-store;
-
-    picom = import ../../defaults/picom;
-
-    polybar = (import ../../defaults/polybar {
-      font = import (dirs.fonts + /polybar.nix);
-      colors = import (dirs.colorschemes + /polybar.nix);
-    });
-
-    qutebrowser = (import ../../defaults/qutebrowser {
-      font = import (dirs.fonts + /qutebrowser.nix);
-      colors = import (dirs.colorschemes + /qutebrowser.nix);
-    });
-
-    redshift = import ../../defaults/redshift;
-
-    rofi = (import ../../defaults/rofi {
-      inherit pkgs;
-      font = import (dirs.fonts + /rofi.nix);
-      colors = import (dirs.colorschemes + /rofi.nix);
-    });
-
-    starship = import ../../defaults/starship;
-
-    sxhkd = import ../../defaults/sxhkd;
-
-    ssh = import ../../defaults/ssh;
-
-    tridactyl = (import ../../defaults/tridactyl {
-      font = import (dirs.fonts + /tridactyl.nix);
-      colors = import (dirs.colorschemes + /tridactyl.nix);
-    });
-
-    udiskie = import ../../defaults/udiskie;
-
-    vivid = (import ../../defaults/vivid {
-      colors = import (dirs.colorschemes + /vivid.nix);
-    });
-
-    zathura = (import ../../defaults/zathura {
-      font = import (dirs.fonts + /zathura.nix);
-      colors = import (dirs.colorschemes + /zathura.nix);
-    });
-  };
-
-  languageServers = with pkgs; [
-    sumneko-lua-language-server
-    nodePackages.vim-language-server
-    nodePackages.vscode-html-languageserver-bin
   ];
 in
 {
@@ -186,8 +198,6 @@ in
     ../../modules/services/fusuma.nix
     ../../modules/services/mpris.nix
   ];
-
-  accounts.email = email-accounts;
 
   home = {
     username = "noib3";
@@ -200,6 +210,7 @@ in
       bitwarden-cli
       calcurse
       calibre
+      dmenu
       evemu
       evtest
       feh
@@ -211,11 +222,11 @@ in
       gotop
       graphicsmagick-imagemagick-compat
       hideIt
-      # hydroxide
       lazygit
       libnotify
       lua5_4
       jmtpfs
+      jq # A cli JSON parser
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
@@ -232,6 +243,7 @@ in
       pandoc
       pfetch
       pick-colour-picker
+      pinentry_qt5 # GnuPG's cli interface to passphrase input
       poppler_utils
       protonmail-bridge
       (python39.withPackages (
@@ -242,6 +254,7 @@ in
           pynvim
         ]
       ))
+      unstable.rbw # An unofficial cli client for Bitwarden with better ergonomics
       ripgrep
       scrot
       sxiv
@@ -281,18 +294,12 @@ in
   nixpkgs.overlays = [
     (self: super: {
       direnv = unstable.direnv;
-      fish = unstable.fish;
       fzf = unstable.fzf;
       hideIt = super.callPackage ./overlays/hideIt.nix { };
-      # hydroxide = unstable.hydroxide;
       lf = unstable.lf;
       lua5_4 = unstable.lua5_4;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      picom = unstable.picom;
       python39 = unstable.python39;
-      qutebrowser = unstable.qutebrowser;
-      sumneko-lua-language-server = unstable.sumneko-lua-language-server;
-      starship = unstable.starship;
       tree-sitter = unstable.tree-sitter;
       ueberzug = unstable.ueberzug;
       vimiv-qt = unstable.vimiv-qt;
@@ -308,8 +315,8 @@ in
     "alacritty/fuzzy-opener.yml" = {
       text = lib.replaceStrings [ "\\\\" ] [ "\\" ]
         (builtins.toJSON (import ./scripts/fuzzy-opener/alacritty.nix {
-          font = import (dirs.fonts + /alacritty.nix);
-          colors = import (dirs.colorschemes + /alacritty.nix);
+          font = import (dirs.font + /alacritty.nix);
+          colors = import (dirs.colorscheme + /alacritty.nix);
         }));
       # source =
       #   let
@@ -317,37 +324,37 @@ in
       #   in
       #   yaml.generate "fuzzy-opener.yml"
       #     (import ./scripts/fuzzy-opener/alacritty.nix {
-      #       font = import (dirs.fonts + /alacritty.nix);
+      #       font = import (dirs.font + /alacritty.nix);
       #       colors = import (colorschemes + /alacritty.nix);
       #     });
     };
 
     "fusuma/config.yml" = {
-      source = ../../defaults/fusuma/config.yml;
+      source = (dirs.defaults + /fusuma/config.yml);
     };
 
     "lazygit/config.yml" = {
-      source = ../../defaults/lazygit/config.yml;
+      source = (dirs.defaults + /lazygit/config.yml);
     };
 
     "nvim" = {
-      source = ../../defaults/neovim;
+      source = (dirs.defaults + /neovim);
       recursive = true;
     };
 
     "nvim/lua/colorscheme/init.lua" = {
-      text = (import ../../defaults/neovim/lua/colorscheme {
+      text = (import (dirs.defaults + /neovim/lua/colorscheme) {
         inherit lib;
-        colors = import (dirs.colorschemes + /neovim.nix);
+        colors = import (dirs.colorscheme + /neovim.nix);
       });
     };
 
     "nvim/lua/options/spellfile.lua" = {
-      text = import ../../defaults/neovim/lua/options/spellfile.nix;
+      text = import (dirs.defaults + /neovim/lua/options/spellfile.nix);
     };
 
     "qutebrowser/userscripts" = {
-      source = ./scripts/qutebrowser;
+      source = (dirs.defaults + /qutebrowser/userscripts);
       recursive = true;
     };
 
@@ -356,7 +363,7 @@ in
     };
 
     "wallpaper.png" = {
-      source = dirs.colorschemes + /wallpaper.png;
+      source = dirs.colorscheme + /wallpaper.png;
     };
   };
 
@@ -372,129 +379,122 @@ in
     enable = true;
   };
 
-  programs = {
-    home-manager = {
-      enable = true;
-    };
-
-    alacritty = {
-      enable = true;
-    } // configs.alacritty;
-
-    bat = {
-      enable = true;
-    } // configs.bat;
-
-    direnv = {
-      enable = true;
-    } // configs.direnv;
-
-    fd = {
-      enable = true;
-    } // configs.fd;
-
-    firefox = {
-      enable = true;
-    } // configs.firefox;
-
-    fish = {
-      enable = true;
-    } // configs.fish;
-
-    fzf = {
-      enable = true;
-    } // configs.fzf;
-
-    git = {
-      enable = true;
-    } // configs.git;
-
-    gpg = {
-      enable = true;
-    };
-
-    lf = {
-      enable = true;
-    } // configs.lf;
-
-    mpv = {
-      enable = true;
-    } // configs.mpv;
-
-    neomutt = {
-      enable = true;
-    } // configs.neomutt;
-
-    password-store = {
-      enable = true;
-    } // configs.password-store;
-
-    qutebrowser = {
-      enable = true;
-    } // configs.qutebrowser;
-
-    rofi = {
-      enable = true;
-    } // configs.rofi;
-
-    ssh = {
-      enable = true;
-    } // configs.ssh;
-
-    starship = {
-      enable = true;
-    } // configs.starship;
-
-    tridactyl = {
-      enable = true;
-    } // configs.tridactyl;
-
-    vivid = {
-      enable = true;
-    } // configs.vivid;
-
-    zathura = {
-      enable = true;
-    } // configs.zathura;
+  programs.home-manager = {
+    enable = true;
   };
 
-  services = {
-    dunst = {
-      enable = true;
-    } // configs.dunst;
+  programs.alacritty = {
+    enable = true;
+    package = unstable.alacritty;
+  } // configs.alacritty;
 
-    # fusuma = {
-    #   enable = true;
-    # } // configs.fusuma;
+  programs.bat = {
+    enable = true;
+  } // configs.bat;
 
-    gpg-agent = {
-      enable = true;
-    } // configs.gpgAgent;
+  programs.direnv = {
+    enable = true;
+  } // configs.direnv;
 
-    mpris = {
-      enable = true;
-    };
+  programs.fd = {
+    enable = true;
+  } // configs.fd;
 
-    picom = {
-      enable = true;
-    } // configs.picom;
+  programs.firefox = {
+    enable = true;
+  } // configs.firefox;
 
-    polybar = {
-      enable = true;
-    } // configs.polybar;
+  programs.fish = {
+    enable = true;
+    package = unstable.fish;
+  } // configs.fish;
 
-    redshift = {
-      enable = true;
-    } // configs.redshift;
+  programs.fzf = {
+    enable = true;
+  } // configs.fzf;
 
-    sxhkd = {
-      enable = true;
-    } // configs.sxhkd;
+  programs.git = {
+    enable = true;
+  } // configs.git;
 
-    udiskie = {
-      enable = true;
-    } // configs.udiskie;
+  programs.gpg = {
+    enable = true;
   };
+
+  programs.lf = {
+    enable = true;
+  } // configs.lf;
+
+  programs.mpv = {
+    enable = true;
+  } // configs.mpv;
+
+  programs.qutebrowser = {
+    enable = true;
+    package = unstable.qutebrowser;
+  } // configs.qutebrowser;
+
+  programs.rofi = {
+    enable = true;
+  };
+
+  programs.ssh = {
+    enable = true;
+  } // configs.ssh;
+
+  programs.starship = {
+    enable = true;
+    package = unstable.starship;
+  } // configs.starship;
+
+  programs.tridactyl = {
+    enable = true;
+  } // configs.tridactyl;
+
+  programs.vivid = {
+    enable = true;
+  } // configs.vivid;
+
+  programs.zathura = {
+    enable = true;
+  } // configs.zathura;
+
+  services.dunst = {
+    enable = true;
+  } // configs.dunst;
+
+  # services.fusuma = {
+  #   enable = true;
+  # } // configs.fusuma;
+
+  services.gpg-agent = {
+    enable = true;
+  } // configs.gpgAgent;
+
+  services.mpris = {
+    enable = true;
+  };
+
+  services.picom = {
+    enable = true;
+    package = unstable.picom;
+  } // configs.picom;
+
+  services.polybar = {
+    enable = true;
+  } // configs.polybar;
+
+  services.redshift = {
+    enable = true;
+  } // configs.redshift;
+
+  services.sxhkd = {
+    enable = true;
+  } // configs.sxhkd;
+
+  services.udiskie = {
+    enable = true;
+  } // configs.udiskie;
 
   xsession = {
     enable = true;

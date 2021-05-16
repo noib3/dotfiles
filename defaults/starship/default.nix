@@ -1,9 +1,9 @@
 {
   settings = {
     character = {
-      success_symbol = "[λ](fg:purple)";
-      error_symbol = "[λ](fg:red)";
-      vicmd_symbol = "[λ](fg:purple)";
+      success_symbol = "[\\$](fg:cyan bold)";
+      error_symbol = "[\\$](fg:red bold)";
+      vicmd_symbol = "[\\$](fg:cyan bold)";
     };
 
     directory = {
@@ -23,7 +23,7 @@
 
     status = {
       map_symbol = true;
-      disable = false;
+      disabled = false;
     };
 
     username = {

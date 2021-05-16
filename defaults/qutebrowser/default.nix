@@ -118,8 +118,6 @@ in
       leave_on_load = true;
     };
 
-    messages.timeout = 1000;
-
     scrolling = {
       bar = "never";
       smooth = true;
@@ -176,6 +174,7 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
+      ",f" = "spawn --userscript bw-dmenu-pwd-fill";
       ",t" = "hint links userscript torrent-add";
 
       "gh" = "open ${home-page}";
@@ -281,7 +280,7 @@ in
     config.unbind("tl")
     config.unbind("gt")
 
-    c.tabs.padding = {"bottom": 1, "left": 7, "right": 7, "top": 1}
+    c.tabs.padding = {"bottom": 0, "left": 7, "right": 7, "top": 0}
 
     config.load_autoconfig(True)
   '';

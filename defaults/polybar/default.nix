@@ -28,13 +28,13 @@ in
     };
 
     "bar/bar" = {
-      height = 25;
+      height = 23;
       module-margin-left = 1;
       radius = 0;
       enable-ipc = true;
       cursor-click = "pointer";
       font-0 = "${f0.family}:style=${f0.style}:size=${f0.size};${f0.padding-top}";
-      font-1 = "Noto Color Emoji:style=Regular:scale=9;2";
+      font-1 = "Noto Color Emoji:style=Regular:scale=9;3";
       font-2 = "${f2.family}:style=${f2.style}:size=${f2.size};${f2.padding-top}";
       font-3 = "${f3.family}:style=${f3.style}:size=${f3.size};${f3.padding-top}";
       background = colors.bar.bg;

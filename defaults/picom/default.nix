@@ -3,7 +3,6 @@
   experimentalBackends = true;
 
   opacityRule = [
-    "90:class_i ?= 'rofi'"
     "90:class_i ?= 'fuzzy-opener'"
   ];
 

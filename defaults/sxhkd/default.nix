@@ -10,15 +10,15 @@
     "super + a" = ''
       alacritty -e calcurse \
         -C ${builtins.toString ../calcurse} \
-        -D ${builtins.toString ../calcurse}
+        -D ${builtins.toString ../../../calcurse}
     '';
 
     # Open the web browser 
     "alt + w" = "qutebrowser";
 
-    # Launch the program and file openers
-    "super + o" = "rofi -modi drun -show drun -show-icons";
-    "super + space" = "fuzzy-opener";
+    # Launch the program runner and the file opener
+    "super + o" = "dmenu-run";
+    "super + space" = "dmenu-open";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";

@@ -1,5 +1,5 @@
 {
   family = "JetBrainsMono Nerd Font";
   style = "Regular";
-  size = "22";
+  size = "19";
 }

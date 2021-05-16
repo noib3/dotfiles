@@ -36,5 +36,6 @@ opt('w', 'linebreak', false)
 opt('w', 'list', true)
 opt('w', 'number', true)
 opt('w', 'relativenumber', true)
+opt('w', 'wrap', false)
 
 require('options.spellfile')

@@ -2,7 +2,7 @@
 
 {
   settings = {
-    "window_gap" = 25;
+    "window_gap" = 22;
     "border_width" = 2;
     "focus_follows_pointer" = true;
     "normal_border_color" = colors.border.normal;
