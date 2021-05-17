@@ -1,0 +1,52 @@
+From 4d58bc01c9a31cdcaad540e67e5f60c87f488b55 Mon Sep 17 00:00:00 2001
+From: prenev <an2qzavok@gmail.com>
+Date: Sun, 1 Nov 2020 15:50:10 +0300
+Subject: [PATCH] tab-separate input lines and only display first parts
+
+---
+ dmenu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/dmenu.c b/dmenu.c
+index 65f25ce..d9e490a 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -30,6 +30,7 @@ enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
+
+ struct item {
+ 	char *text;
++	char *stext;
+ 	struct item *left, *right;
+ 	int out;
+ };
+@@ -123,7 +124,7 @@ drawitem(struct item *item, int x, int y, int w)
+ 	else
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+
+-	return drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
++	return drw_text(drw, x, y, w, bh, lrpad / 2, item->stext, 0);
+ }
+
+ static void
+@@ -165,7 +166,7 @@ drawmenu(void)
+ 		}
+ 		x += w;
+ 		for (item = curr; item != next; item = item->right)
+-			x = drawitem(item, x, 0, MIN(TEXTW(item->text), mw - x - TEXTW(">")));
++			x = drawitem(item, x, 0, MIN(TEXTW(item->stext), mw - x - TEXTW(">")));
+ 		if (next) {
+ 			w = TEXTW(">");
+ 			drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -534,6 +535,10 @@ readstdin(void)
+ 			*p = '\0';
+ 		if (!(items[i].text = strdup(buf)))
+ 			die("cannot strdup %u bytes:", strlen(buf) + 1);
++		if ((p = strchr(buf, '\t')))
++			*p = '\0';
++		if (!(items[i].stext = strdup(buf)))
++			die("cannot strdup %u bytes:", strlen(buf) + 1);
+ 		items[i].out = 0;
+ 		drw_font_getexts(drw->fonts, buf, strlen(buf), &tmpmax, NULL);
+ 		if (tmpmax > inputw) {
+--
+2.28.0

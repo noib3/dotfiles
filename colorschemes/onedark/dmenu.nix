@@ -16,8 +16,8 @@
     };
 
     selected = {
-      foreground = "#282c34";
-      background = "#abb2bf";
+      foreground = "#abb2bf";
+      background = "#32363e";
     };
   };
 }

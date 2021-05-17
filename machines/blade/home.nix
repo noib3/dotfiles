@@ -12,10 +12,70 @@ let
     screenshots = config.home.homeDirectory + "/sync/screenshots";
   };
 
+  devTools = with pkgs; [
+    gcc
+    gnumake
+  ];
+
+  languageServers = with pkgs; [
+    unstable.sumneko-lua-language-server
+    nodePackages.vim-language-server
+    nodePackages.vscode-html-languageserver-bin
+  ];
+
+  desktopItems = with pkgs; [
+    (makeDesktopItem {
+      name = "qutebrowser";
+      desktopName = "qutebrowser";
+      exec = "${pkgs.qutebrowser}/bin/qutebrowser";
+      mimeType = lib.concatStringsSep ";" [
+        "text/html"
+        "x-scheme-handler/about"
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/unknown"
+      ];
+      icon = "qutebrowser";
+    })
+  ];
+
+  userScripts = with pkgs; [
+    (writeScriptBin "dmenu-bluetooth"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
+
+    (writeScriptBin "dmenu-open"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open)))
+
+    (writeScriptBin "dmenu-wifi"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi)))
+
+    (hiPrio (writeScriptBin "lf"
+      (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
+
+    (writeScriptBin "file-open-close"
+      (builtins.readFile ./scripts/miscellaneous/file-open-close))
+
+    (writeScriptBin "take-screenshot"
+      (import ./scripts/miscellaneous/take-screenshot.nix {
+        screenshots-dir = dirs.screenshots;
+      }))
+
+    (writeScriptBin "toggle-gaps-borders-paddings"
+      (builtins.readFile (dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings)))
+
+    (writeScriptBin "volumectl"
+      (import ./scripts/miscellaneous/volumectl.nix))
+
+    (writeScriptBin "rofi-bluetooth"
+      (import ./scripts/rofi/rofi-bluetooth.nix {
+        colors = import (dirs.colorscheme + /polybar.nix);
+      }))
+  ];
+
   configs.alacritty =
     let
       default = (import (dirs.defaults + /alacritty) {
-        inherit pkgs;
+        pkgs = unstable;
         font = import (dirs.font + /alacritty.nix);
         colors = import (dirs.colorscheme + /alacritty.nix);
       });
@@ -107,88 +167,6 @@ let
     font = import (dirs.font + /zathura.nix);
     colors = import (dirs.colorscheme + /zathura.nix);
   });
-
-  languageServers = with pkgs; [
-    unstable.sumneko-lua-language-server
-    nodePackages.vim-language-server
-    nodePackages.vscode-html-languageserver-bin
-  ];
-
-  userScripts = with pkgs; [
-    (hiPrio (writeScriptBin "dmenu"
-      (import (dirs.defaults + /dmenu) {
-        pkgs = unstable;
-        font = import (dirs.font + /dmenu.nix);
-        colors = import (dirs.colorscheme + /dmenu.nix);
-      })))
-
-    (writeScriptBin "dmenu-run"
-      (import (dirs.defaults + /dmenu) {
-        pkgs = unstable;
-        font = import (dirs.font + /dmenu.nix);
-        colors = import (dirs.colorscheme + /dmenu.nix);
-        cmd = "dmenu_run";
-        args = "-p \"Run> \"";
-      }))
-
-    (writeScriptBin "dmenu-xembed-qute"
-      (import (dirs.defaults + /dmenu) {
-        pkgs = unstable;
-        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
-        args = "-w \"$(xdotool getactivewindow)\"";
-      }))
-
-    (writeScriptBin "dmenu-open"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open)))
-
-    (writeScriptBin "listen-node-add"
-      (builtins.readFile (dirs.defaults + /bspwm/scripts/listen-node-add)))
-
-    (writeScriptBin "listen-node-remove"
-      (builtins.readFile (dirs.defaults + /bspwm/scripts/listen-node-remove)))
-
-    (hiPrio (writeScriptBin "lf"
-      (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
-
-    (writeScriptBin "fuzzy-opener"
-      (builtins.readFile ./scripts/fuzzy-opener/fuzzy-opener))
-
-    (writeScriptBin "file-open-close"
-      (builtins.readFile ./scripts/miscellaneous/file-open-close))
-
-    (writeScriptBin "take-screenshot"
-      (import ./scripts/miscellaneous/take-screenshot.nix {
-        screenshots-dir = dirs.screenshots;
-      }))
-
-    (writeScriptBin "toggle-gaps-borders-paddings"
-      (builtins.readFile (dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings)))
-
-    (writeScriptBin "volumectl"
-      (import ./scripts/miscellaneous/volumectl.nix))
-
-    (writeScriptBin "rofi-bluetooth"
-      (import ./scripts/rofi/rofi-bluetooth.nix {
-        colors = import (dirs.colorscheme + /polybar.nix);
-      }))
-  ];
-
-  desktopItems = with pkgs; [
-    (makeDesktopItem {
-      name = "qutebrowser";
-      desktopName = "qutebrowser";
-      exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-      mimeType = lib.concatStringsSep ";" [
-        "text/html"
-        "x-scheme-handler/about"
-        "x-scheme-handler/http"
-        "x-scheme-handler/https"
-        "x-scheme-handler/unknown"
-      ];
-      icon = "qutebrowser";
-    })
-  ];
 in
 {
   imports = [
@@ -217,7 +195,6 @@ in
       ffmpegthumbnailer
       file
       fusuma
-      gcc
       git-crypt
       gotop
       graphicsmagick-imagemagick-compat
@@ -254,7 +231,6 @@ in
           pynvim
         ]
       ))
-      unstable.rbw # An unofficial cli client for Bitwarden with better ergonomics
       ripgrep
       scrot
       sxiv
@@ -275,6 +251,7 @@ in
       xorg.xwininfo
       yarn
     ]
+    ++ devTools
     ++ languageServers
     ++ userScripts
     ++ desktopItems;
@@ -293,6 +270,7 @@ in
 
   nixpkgs.overlays = [
     (self: super: {
+      dmenu = super.callPackage (dirs.defaults + /dmenu) { };
       direnv = unstable.direnv;
       fzf = unstable.fzf;
       hideIt = super.callPackage ./overlays/hideIt.nix { };

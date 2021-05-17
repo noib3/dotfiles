@@ -30,8 +30,6 @@
 
   startupPrograms = [
     "fusuma"
-    "listen-node-add"
-    "listen-node-remove"
     "unclutter -idle 10"
     "xbanish"
   ];
