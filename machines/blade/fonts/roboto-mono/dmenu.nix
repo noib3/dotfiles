@@ -1,5 +1,4 @@
 {
   family = "RobotoMono Nerd Font";
-  style = "Regular";
-  size = "17";
+  pixelsize = "17";
 }

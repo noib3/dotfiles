@@ -4,6 +4,6 @@
 
   dmenu = {
     family = "RobotoMono Nerd Font";
-    size = "17pt";
+    pixelsize = "17pt";
   };
 }

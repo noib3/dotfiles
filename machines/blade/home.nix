@@ -40,16 +40,22 @@ let
   ];
 
   userScripts = with pkgs; [
-    (writeScriptBin "dmenu-bluetooth"
+    (writeShellScriptBin "dmenu-bluetooth"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
 
-    (writeScriptBin "dmenu-open"
+    (writeShellScriptBin "dmenu-open"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open)))
 
-    (writeScriptBin "dmenu-wifi"
+    (writeShellScriptBin "dmenu-wifi"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi)))
 
-    (hiPrio (writeScriptBin "lf"
+    (writeShellScriptBin "dmenu-xembed-qute"
+      (import (dirs.defaults + /dmenu/scripts/dmenu-xembed-qute.nix) {
+        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
+        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
+      }))
+
+    (hiPrio (writeShellScriptBin "lf"
       (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
 
     (writeScriptBin "file-open-close"
@@ -270,7 +276,10 @@ in
 
   nixpkgs.overlays = [
     (self: super: {
-      dmenu = super.callPackage (dirs.defaults + /dmenu) { };
+      dmenu = super.callPackage (dirs.defaults + /dmenu) {
+        font = import (dirs.font + /dmenu.nix);
+        colors = import (dirs.colorscheme + /dmenu.nix);
+      };
       direnv = unstable.direnv;
       fzf = unstable.fzf;
       hideIt = super.callPackage ./overlays/hideIt.nix { };
@@ -321,14 +330,14 @@ in
     };
 
     "nvim/lua/colorscheme/init.lua" = {
-      text = (import (dirs.defaults + /neovim/lua/colorscheme) {
+      text = (import (dirs.defaults + /neovim/lua/colorscheme/init.lua.nix) {
         inherit lib;
         colors = import (dirs.colorscheme + /neovim.nix);
       });
     };
 
     "nvim/lua/options/spellfile.lua" = {
-      text = import (dirs.defaults + /neovim/lua/options/spellfile.nix);
+      text = import (dirs.defaults + /neovim/lua/options/spellfile.lua.nix);
     };
 
     "qutebrowser/userscripts" = {

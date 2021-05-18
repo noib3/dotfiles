@@ -1,23 +1,15 @@
 {
-  normal = {
-    foreground = "#abb2bf";
-    background = "#282c34";
-  };
-
-  selected = {
-    foreground = "#abb2bf";
-    background = "#3e4452";
-  };
+  normal.fg = "#abb2bf";
+  normal.bg = "#282c34";
+  selected.fg = "#abb2bf";
+  selected.bg = "#3e4452";
+  highlight.fg = "#e5c07b";
 
   qutebrowser = {
-    normal = {
-      foreground = "#abb2bf";
-      background = "#282c34";
-    };
-
-    selected = {
-      foreground = "#abb2bf";
-      background = "#32363e";
-    };
+    normal.fg = "#abb2bf";
+    normal.bg = "#282c34";
+    selected.fg = "#abb2bf";
+    selected.bg = "#32363e";
+    highlight.fg = "#e5c07b";
   };
 }

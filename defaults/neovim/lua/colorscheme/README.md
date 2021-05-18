@@ -1,4 +1,4 @@
-The purpose of this `default.nix` is to be able to define different highlight
+The purpose of this `init.lua.nix` is to be able to define different highlight
 groups, or the same highlight group but with different attributes, depending
 on the global color scheme being used.
 

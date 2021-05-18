@@ -25,7 +25,7 @@ function qute_echo_error() {
   key_id="$(keyctl request user bw_session)"
   session_key="$(keyctl pipe "$key_id")"
 } || {
-  bw_password="$(dmenu -P -p "Master password> " -w "$(xdotool getactivewindow)")" \
+  bw_password="$(dmenu-xembed-qute -P -p "Master password> ")" \
     || exit 0
   session_key="$(bw unlock --raw "$bw_password")" \
     || { qute_echo_error "$QUTE_WRONG_MASTER_PASS_MSG" && exit 0; }
@@ -46,7 +46,7 @@ case "$(echo "$items" | jq length)" in
     name="$(\
       echo "$items" \
       | jq -r '.[].name' \
-      | dmenu -l 5 -p "Login> " -w "$(xdotool getactivewindow)" \
+      | dmenu-xembed-qute -l 5 -p "Login> " \
       || exit 0 \
     )"
     login="$(echo "$items" | jq ".[] | select(.name == \"$name\") | .login")"

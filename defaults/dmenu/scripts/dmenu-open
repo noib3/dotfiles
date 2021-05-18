@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 function open {
   text_files=()
   image_files=()
@@ -31,14 +29,4 @@ function open {
   fi
 }
 
-fd --base-directory=$HOME --hidden --type=f \
-  | dmenu -p "Open> " \
-  | open
-
-# xdotool search --onlyvisible --classname 'fuzzy-opener' windowunmap \
-#   || xdotool search --classname 'fuzzy-opener' windowmap \
-#   || (alacritty \
-#         --class 'fuzzy-opener' \
-#         --config-file "$HOME/.config/alacritty/fuzzy-opener.yml" \
-#         -e sh -c 'fzf --multi --height=10 --prompt="Open> " --border=horizontal >&3') 3>&1 \
-#   | open
+fd --base-directory=$HOME --hidden --type=f | dmenu -p "Open> " | open

@@ -1,7 +1,6 @@
 { pkgs }:
 
 ''
-  #!/bin/sh
   set -e
 
   if [ -n "$DISPLAY" ]; then
