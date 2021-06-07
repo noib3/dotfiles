@@ -35,7 +35,7 @@
     fuzzy_cd = ''
       ''${{
         clear
-        dirname="$(eval "$FZF_ALT_C_COMMAND | fzf $FZF_ALT_C_OPTS")" \
+        dirname="$(eval "$FZF_ALT_C_COMMAND" | eval "fzf $FZF_ALT_C_OPTS")" \
           && lf -remote "send $id cd \"~/''${dirname}\"" \
           || true
       }}
@@ -62,13 +62,13 @@
         [ $? == 0 ] \
           && dir="$(git rev-parse --show-toplevel)" \
           || dir="$(pwd)"
-        rg_prefix="rg --smart-case --column --line-number --no-heading --color=always --"
+        rg_prefix="rg --column --color=always --"
         filenames=$(\
           eval "$rg_prefix \"\" $dir | sed \"s!$dir/!!\""  \
             | fzf --multi --prompt='Rg> ' --disabled --delimiter=: --with-nth=1,2,4 \
                 --bind="change:reload($rg_prefix {q} $dir | sed \"s!$dir/!!\" || true)" \
                 --preview="${builtins.toString ../neovim/lua/plugins/config/fzf/rg-previewer} $dir/{}" \
-                --preview-window=+{2}-/2 \
+                --preview-window=+{2}-/2 --preview-window=border-left \
             | sed -r "s!^([^:]*):([^:]*):([^:]*):.*\$!$dir/\1!;s/\ /\\\ /g;" \
             | tr '\n' ' ' \
             | sed 's/[[:space:]]*$//')

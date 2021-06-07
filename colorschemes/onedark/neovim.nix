@@ -15,12 +15,20 @@
   highlights = {
     "SpellBad" = {
       guifg = "#e06c75";
-      gui = "underline";
+      gui = "undercurl";
     };
 
     "SpellCap" = {
       guifg = "#d19a66";
       gui = "NONE";
+    };
+
+    "Statusline" = {
+      guibg = "#282c34";
+    };
+
+    "StatuslineNC" = {
+      guibg = "#282c34";
     };
 
     "VertSplit" = {

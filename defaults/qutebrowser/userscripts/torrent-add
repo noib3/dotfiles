@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
+QUTE_INVALID_LINK_MSG="Invalid magnet link"
+
 function notify_add() {
   notify-send \
     --expire-time=5000 \
     --app-name="qutebrowser" \
     --icon="qutebrowser" \
     "Added new torrent" \
-    "${QUTE_URL} has started downloading"
+    "$QUTE_URL has started downloading"
 }
 
 function torrent_add() {
-  transmission-remote --add "${QUTE_URL}"
+  transmission-remote --add "$QUTE_URL"
 }
 
-torrent_add && notify_add || true
+function qute_echo_error() {
+  echo "message-error \"$1\"" >> "$QUTE_FIFO"
+}
+
+torrent_add && notify_add || qute_echo_error "$QUTE_INVALID_LINK_MSG"

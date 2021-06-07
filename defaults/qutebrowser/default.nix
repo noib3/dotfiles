@@ -108,6 +108,24 @@ in
 
     downloads.remove_finished = 1000;
 
+    fileselect = {
+      handler = "external";
+      multiple_files.command = [
+        "alacritty"
+        "-e"
+        "lf"
+        "-selection-path"
+        "{}"
+      ];
+      single_file.command = [
+        "alacritty"
+        "-e"
+        "lf"
+        "-selection-path"
+        "{}"
+      ];
+    };
+
     hints = {
       border = "none";
       radius = 1;
@@ -192,8 +210,8 @@ in
       "gre" = "open https://reddit.com";
       "tre" = "open -t https://reddit.com";
 
-      "ggh" = "open https://github.com/noib3";
-      "tgh" = "open -t https://github.com/noib3";
+      "gub" = "open https://github.com/noib3";
+      "tub" = "open -t https://github.com/noib3";
 
       "grhm" = "open https://github.com/nix-community/home-manager/find/master";
       "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";
@@ -203,6 +221,9 @@ in
 
       "glg" = "open https://libgen.li";
       "tlg" = "open -t https://libgen.li";
+
+      "gfp" = "open https://www.myfitnesspal.com/food/diary";
+      "tfp" = "open -t https://www.myfitnesspal.com/food/diary";
 
       "g12ft" = "open https://12ft.io/";
       "t12ft" = "open -t https://12ft.io/";

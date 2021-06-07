@@ -17,7 +17,7 @@
     "alt + w" = "qutebrowser";
 
     # Launch the program runner and the file opener
-    "super + o" = "dmenu-run";
+    "super + o" = "dmenu_run -p 'Run> '";
     "super + space" = "dmenu-open";
 
     # Toggle fullscreen

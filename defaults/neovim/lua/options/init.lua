@@ -1,41 +1,31 @@
-local scopes = {
-  o = vim.o,
-  b = vim.bo,
-  w = vim.wo,
-}
-
-local function opt(scope, key, value)
-  scopes[scope][key] = value
-  if scope ~= 'o' then scopes['o'][key] = value end
-end
-
-opt('o', 'autochdir', true)
-opt('o', 'clipboard', 'unnamedplus')
-opt('o', 'completeopt', 'menuone,noinsert')
-opt('o', 'fillchars', 'fold: ')
-opt('o', 'listchars', 'eol:¬,tab:⇥ ,space:·')
-opt('o', 'hidden', true)
-opt('o', 'ignorecase', true)
-opt('o', 'mouse', 'nv')
-opt('o', 'scrolloff', 1)
-opt('o', 'showbreak', '↪ ')
-opt('o', 'smartcase', true)
-opt('o', 'splitright', true)
-opt('o', 'splitbelow', true)
-opt('o', 'termguicolors', true)
-
-opt('b', 'expandtab', true)
-opt('b', 'iskeyword', '@,48-57,192-255')
-opt('b', 'shiftwidth', 2)
-opt('b', 'swapfile', false)
-opt('b', 'tabstop', 2)
-opt('b', 'undofile', true)
-
-opt('w', 'colorcolumn', '80')
-opt('w', 'linebreak', false)
-opt('w', 'list', true)
-opt('w', 'number', true)
-opt('w', 'relativenumber', true)
-opt('w', 'wrap', false)
-
 require('options.spellfile')
+
+local opt = vim.opt
+
+opt.autochdir = true
+opt.clipboard = 'unnamedplus'
+opt.colorcolumn = '80'
+opt.completeopt = 'menuone,noinsert'
+opt.expandtab = true
+opt.fillchars = 'fold: '
+opt.linebreak = false
+opt.list = true
+opt.listchars = 'eol:¬,tab:⇥ ,space:·'
+opt.hidden = true
+opt.ignorecase = true
+opt.iskeyword = '@,48-57,192-255'
+opt.mouse = 'nv'
+opt.number = true
+opt.relativenumber = true
+opt.scrolloff = 1
+opt.shiftwidth = 2
+opt.showbreak = '↪ '
+opt.smartcase = true
+opt.splitright = true
+opt.splitbelow = true
+opt.swapfile = false
+opt.tabstop = 2
+opt.termguicolors = true
+opt.textwidth = 79
+opt.undofile = true
+opt.wrap = false

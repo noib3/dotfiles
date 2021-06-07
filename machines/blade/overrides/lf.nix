@@ -35,10 +35,13 @@
           && udisksctl power-off -b "/dev/disk/by-label/''$(basename "$f")"
       }}
     '';
+
+    drag_and_drop = ''%dragon -a -x "$fx"'';
   };
 
   keybindings = {
     unm = "unmount_device";
+    ag = "drag_and_drop";
     gdl = "cd ~/Downloads";
     gvl = "cd /run/media/noib3";
   };

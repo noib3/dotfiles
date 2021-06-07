@@ -1,107 +1,67 @@
 vim.cmd('packadd packer.nvim')
 
-return require('packer').startup(function()
-  -- Let Packer manage itself as an optional plugin
-  use {'wbthomason/packer.nvim', opt=true}
+local packer = require('packer')
+local configs = require('plugins/config')
 
-  -- Lsp, completions and linting
-  use {'neovim/nvim-lspconfig',
-        config = [[require('plugins.config.lsp')]]}
-
-  use {'nvim-lua/completion-nvim',
-        config = [[require('plugins.config.completions')]]}
-
-  use {'dense-analysis/ale',
-        config=[[require('plugins.config.ale')]]}
-
-  use {'onsails/lspkind-nvim',
-        config=[[require('plugins.config.lspkind')]]}
-
-  -- Snippets
-  use {'SirVer/ultisnips',
-        config=[[require('plugins.config.snippets')]]}
-
-  -- Miscellaneous
-  use {'Raimondi/delimitMate',
-        config=[[require('plugins.config.delimitmate')]]}
-
-  use {'junegunn/fzf',
-        config = [[require('plugins.config.fzf')]]}
-
-  use {'junegunn/goyo.vim',
-        config=[[require('plugins.config.goyo')]],
-        cmd='Goyo'}
-
-  use {'iamcco/markdown-preview.nvim',
-        config=[[require('plugins.config.markdown-preview')]],
-        run='cd app && yarn install'}
-
-  -- use {'akinsho/nvim-bufferline.lua',
-  --       requires={'kyazdani42/nvim-web-devicons',
-  --                  config=[[require('plugins.config.devicons')]]},
-  --       config=[[require('plugins.config.bufferline')]]}
-
-  use {'~/sync/projects/cokeline.nvim',
-        requires={'kyazdani42/nvim-web-devicons',
-                   config=[[require('plugins.config.devicons')]]},
-        config=[[require('plugins.config.cokeline')]]}
-
-  use {'glepnir/galaxyline.nvim',
-        branch=main,
-        requires={'kyazdani42/nvim-web-devicons',
-                   config=[[require('plugins.config.devicons')]]},
-        config=[[require('plugins.config.galaxyline')]]}
-
-  use {'norcalli/nvim-colorizer.lua',
-        config=[[require('plugins.config.colorizer')]]}
-
-  use {'nvim-treesitter/nvim-treesitter',
-        config = [[require('plugins.config.treesitter')]]}
-
+return packer.startup(function()
+  use {'wbthomason/packer.nvim', opt = true}
+  use {'dense-analysis/ale', config = configs.ale}
+  -- use {
+  --   'akinsho/nvim-bufferline.lua',
+  --   requires = {'kyazdani42/nvim-web-devicons', config = configs.devicons},
+  --   config = configs.bufferline,
+  -- }
+  use {
+    '~/sync/projects/cokeline.nvim',
+    requires = {'kyazdani42/nvim-web-devicons'},
+    config = configs.cokeline,
+  }
+  use {'norcalli/nvim-colorizer.lua', config = configs.colorizer}
+  use {'nvim-lua/completion-nvim', config = configs.completions}
+  use {'Raimondi/delimitMate', config = configs.delimitmate}
+  use {
+    'famiu/feline.nvim',
+    requires = {'kyazdani42/nvim-web-devicons', 'lewis6991/gitsigns.nvim'},
+    config = configs.feline,
+  }
+  use {'voldikss/vim-floaterm', config = configs.floaterm}
+  use {'junegunn/fzf', config = configs.fzf}
+  -- use {
+  --   'glepnir/galaxyline.nvim',
+  --    branch = main,
+  --    requires = {'kyazdani42/nvim-web-devicons', config = configs.devicons},
+  --    config = configs.galaxyline,
+  -- }
+  -- use {
+  --   'hoob3rt/lualine.nvim',
+  --    requires = {'kyazdani42/nvim-web-devicons', config = configs.devicons},
+  --    config = configs.lualine,
+  -- }
+  use {'embear/vim-localvimrc', config = configs.localvimrc}
+  use {'neovim/nvim-lspconfig', config = configs.lsp}
+  use {'onsails/lspkind-nvim', config = configs.lspkind}
+  use {
+    'iamcco/markdown-preview.nvim',
+    config = configs.markdown_preview,
+    run = 'cd app && yarn install',
+  }
+  use {'rust-lang/rust.vim', config = configs.rust, ft = 'rust'}
+  use {'Pocco81/TrueZen.nvim', config = configs.truezen}
+  use {'SirVer/ultisnips', config = configs.snippets}
+  use {'nvim-treesitter/nvim-treesitter', config = configs.treesitter}
+  use {'lervag/vimtex', config = configs.vimtex, ft = 'tex'}
+  use {'liuchengxu/vim-which-key', config = configs.which_key}
   use {'qpkorr/vim-bufkill'}
-
   use {'tpope/vim-commentary'}
-
-  use {'voldikss/vim-floaterm',
-        config=[[require('plugins.config.floaterm')]]}
-
   use {'farmergreg/vim-lastplace'}
-
-  use {'embear/vim-localvimrc',
-        config=[[require('plugins.config.localvimrc')]]}
-
   use {'tpope/vim-repeat'}
-
   use {'timakro/vim-searchant'}
-
   use {'mhinz/vim-startify'}
-
   use {'tpope/vim-surround'}
-
-  use {'liuchengxu/vim-which-key',
-        config=[[require('plugins.config.which-key')]]}
-
-  -- Scripting and profiling
   use {'tpope/vim-scriptease'}
-
-  use {'tweekmonster/startuptime.vim',
-        cmd='StartupTime'}
-
-  -- Filetype specific
-  use {'rust-lang/rust.vim',
-        ft='rust',
-        config=[[require('plugins.config.rust')]]}
-
-  use {'lervag/vimtex',
-        ft='tex',
-        config=[[require('plugins.config.vimtex')]]}
-
+  use {'tweekmonster/startuptime.vim', cmd = 'StartupTime'}
   use {'LnL7/vim-nix'}
-
-  -- Colorschemes
   use {'danilo-augusto/vim-afterglow'}
-
   use {'morhetz/gruvbox'}
-
   use {'joshdick/onedark.vim'}
 end)

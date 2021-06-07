@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# The autofill functionality of this script was taken almost entirely from [1].
+# The autofill functionality of this script was taken from
+# https://github.com/qutebrowser/qutebrowser/blob/master/misc/userscripts/password_fill
 
 set -e
 
@@ -101,7 +102,6 @@ cat <<EOF
   var forms = document.getElementsByTagName("form");
   for (i = 0; i < forms.length; i++) {
       if (hasPasswordField(forms[i])) {
-          passwordFieldFound = true;
           loadData2Form(forms[i]);
       }
   }
@@ -113,5 +113,3 @@ function printjs() {
 }
 
 echo "jseval --quiet $(printjs)" >> "$QUTE_FIFO"
-
-# [1]: https://github.com/qutebrowser/qutebrowser/blob/master/misc/userscripts/password_fill

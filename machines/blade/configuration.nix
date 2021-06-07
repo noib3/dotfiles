@@ -64,8 +64,7 @@ in
   boot = {
     consoleLogLevel = 0;
     kernelParams = [ "quiet" "udev.log_priority=3" ];
-    # Only available in the unstable branch for now. See [1].
-    # initrd.verbose = false;
+    initrd.verbose = false;
 
     loader.grub = {
       enable = true;
@@ -171,8 +170,10 @@ in
 
     libinput = {
       enable = true;
-      naturalScrolling = true;
-      disableWhileTyping = true;
+      touchpad = {
+        naturalScrolling = true;
+        disableWhileTyping = true;
+      };
     };
 
     displayManager = {
@@ -199,6 +200,5 @@ in
   system.stateVersion = "20.09";
 }
 
-# [1]: https://github.com/NixOS/nixpkgs/issues/32555
 # [2]: https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
 # [3]: https://shallowsky.com/linux/x-screen-blanking.html

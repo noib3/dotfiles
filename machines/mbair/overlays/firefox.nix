@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, undmg }:
+{ pkgs, stdenv, fetchurl, undmg }:
 
 stdenv.mkDerivation rec {
   pname = "firefox";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
     sha256 = "04jslsfg073xb965hvbm7vdrdymkaiyyrgclv9qdpcyplis82rxc";
   };
 
-  meta = with stdenv.lib; {
+  meta = with pkgs.lib; {
     description = "The Firefox web browser";
     homepage = "https://www.mozilla.org/en-US/firefox";
     maintainers = [ maintainers.noib3 ];

@@ -9,6 +9,7 @@ let
     colorscheme = ../../colorschemes + "/${colorscheme}";
     defaults = ../../defaults;
     font = ./fonts + "/${font}";
+    projects = config.home.homeDirectory + "/sync/projects";
     screenshots = config.home.homeDirectory + "/sync/screenshots";
   };
 
@@ -40,6 +41,9 @@ let
   ];
 
   userScripts = with pkgs; [
+    (writeShellScriptBin "peek"
+      (builtins.readFile (dirs.projects + "/peek/peek")))
+
     (writeShellScriptBin "dmenu-bluetooth"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
 
@@ -152,7 +156,9 @@ let
 
   configs.redshift = import (dirs.defaults + /redshift);
 
-  configs.starship = import (dirs.defaults + /starship);
+  configs.starship = (import (dirs.defaults + /starship) {
+    inherit lib;
+  });
 
   configs.sxhkd = import (dirs.defaults + /sxhkd);
 
@@ -195,6 +201,7 @@ in
       calcurse
       calibre
       dmenu
+      dragon-drop
       evemu
       evtest
       feh
@@ -271,6 +278,7 @@ in
       LS_COLORS = "$(vivid generate current)";
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
+      RIPGREP_CONFIG_PATH = dirs.defaults + /ripgrep/ripgreprc;
     };
   };
 

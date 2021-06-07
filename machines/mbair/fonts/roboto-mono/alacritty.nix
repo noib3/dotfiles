@@ -20,5 +20,5 @@
   };
 
   size = 19;
-  offset.y = 2;
+  offset.y = 1;
 }

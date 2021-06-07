@@ -4,7 +4,7 @@ vim.g.fzf_layout = {
     height = 9,
     yoffset = 0,
     highlight = 'FzfBorder',
-    border = 'bottom'
+    border = 'bottom',
   }
 }
 

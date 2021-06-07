@@ -64,15 +64,15 @@ case "$(file -Lb --mime-type -- "$file")" in
     ;;
   */pdf)
     if [ -n "$FIFO_UEBERZUG" ]; then
-      cache="$(hash "$file").jpg"
-      cache "$cache"
+      cache="$(hash "$file")"
+      cache "$cache.jpg"
       pdftoppm -f 1 -l 1 \
         -scale-to-x "$default_x" \
         -scale-to-y -1 \
         -singlefile \
         -jpeg \
         -- "$file" "$cache"
-      draw "$cache"
+      draw "$cache.jpg"
     else
       pdftotext "$file" -
     fi

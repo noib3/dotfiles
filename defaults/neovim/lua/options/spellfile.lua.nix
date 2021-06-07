@@ -1,3 +1,3 @@
 ''
-  vim.bo.spellfile = '${builtins.toString ../../spell/en.utf-8.add}'
+  vim.opt.spellfile = '${builtins.toString ../../spell/en.utf-8.add}'
 ''

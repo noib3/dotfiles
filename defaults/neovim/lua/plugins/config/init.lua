@@ -1,0 +1,25 @@
+local M = {}
+
+M.ale = require('plugins/config/ale')
+M.cokeline = require('plugins/config/cokeline')
+M.colorizer = require('plugins/config/colorizer')
+M.completions = require('plugins/config/completions')
+M.delimitmate = require('plugins/config/delimitmate')
+M.devicons = require('plugins/config/devicons')
+M.feline = require('plugins/config/feline')
+M.floaterm = require('plugins/config/floaterm')
+M.fzf = require('plugins/config/fzf')
+-- M.galaxyline = require('plugins/config/galaxyline')
+-- M.lualine = require('plugins/config/lualine')
+M.localvimrc = require('plugins/config/localvimrc')
+M.lsp = require('plugins/config/lsp')
+M.lspkind = require('plugins/config/lspkind')
+M.markdown_preview = require('plugins/config/markdown-preview')
+M.rust = require('plugins/config/rust')
+M.treesitter = require('plugins/config/treesitter')
+M.truezen = require('plugins/config/truezen')
+M.ultisnips = require('plugins/config/ultisnips')
+M.vimtex = require('plugins/config/vimtex')
+M.which_key = require('plugins/config/which-key')
+
+return M

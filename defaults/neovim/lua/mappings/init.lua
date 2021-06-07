@@ -22,7 +22,7 @@ map(
   {expr = true, silent = true}
 )
 
--- Jump to the first non whitespace character in the line
+-- Jump to the first non whitespace character in the line (with nowrap in mind)
 map('', '<C-a>', '0^', {})
 map('i', '<C-a>', '<C-o>0<C-o>I', {})
 

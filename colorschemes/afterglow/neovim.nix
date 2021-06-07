@@ -15,7 +15,7 @@
   highlights = {
     "SpellBad" = {
       guifg = "#ac4142";
-      gui = "underline";
+      gui = "undercurl";
     };
 
     "SpellCap" = {

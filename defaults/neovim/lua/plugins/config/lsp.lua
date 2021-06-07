@@ -6,7 +6,7 @@ local on_attach = function(client, bufnr)
 
   buf_opt('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  local opts = {noremap=true, silent=true}
+  local opts = {noremap = true, silent = true}
   buf_map('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_map('n', '<Leader>s', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   buf_map('n', '<Leader>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
