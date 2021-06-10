@@ -17,8 +17,13 @@
     "alt + w" = "qutebrowser";
 
     # Launch the program runner and the file opener
-    "super + o" = "dmenu_run -p 'Run> '";
+    "super + o" = "dmenu-run";
     "super + space" = "dmenu-open";
+
+    # Open wifi, bluetooth and shutdown menus
+    "alt + shift + w" = "dmenu-wifi";
+    "alt + shift + b" = "dmenu-bluetooth";
+    "alt + shift + s" = "dmenu-shutdown";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";

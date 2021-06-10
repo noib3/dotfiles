@@ -63,7 +63,12 @@ in
 
   boot = {
     consoleLogLevel = 0;
-    kernelParams = [ "quiet" "udev.log_priority=3" ];
+    kernelParams = [
+      "quiet"
+      "udev.log_priority=3"
+      "button.lid_init_state=open"
+    ];
+
     initrd.verbose = false;
 
     loader.grub = {
@@ -189,7 +194,7 @@ in
     };
 
     # This together with 'xset s off'should disable every display power
-    # management option. See [2] and [3] for more infos.
+    # management option. See [1] and [2] for more infos.
     config = ''
       Section "Extensions"
           Option "DPMS" "off"
@@ -200,5 +205,5 @@ in
   system.stateVersion = "20.09";
 }
 
-# [2]: https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
-# [3]: https://shallowsky.com/linux/x-screen-blanking.html
+# [1]: https://wiki.archlinux.org/index.php/Display_Power_Management_Signaling
+# [2]: https://shallowsky.com/linux/x-screen-blanking.html

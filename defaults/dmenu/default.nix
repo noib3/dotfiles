@@ -9,9 +9,14 @@ in
 stdenv.mkDerivation rec {
   name = "dmenu-5.0";
 
-  src = ./src;
+  src = ./source;
 
-  buildInputs = [ libX11 libXinerama zlib libXft ];
+  buildInputs = [
+    libX11
+    libXinerama
+    libXft
+    zlib
+  ];
 
   patches = [
     colors-font

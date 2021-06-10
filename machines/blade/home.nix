@@ -6,58 +6,70 @@ let
   font = "roboto-mono";
 
   dirs = {
-    colorscheme = ../../colorschemes + "/${colorscheme}";
     defaults = ../../defaults;
+    colorscheme = ../../colorschemes + "/${colorscheme}";
     font = ./fonts + "/${font}";
     projects = config.home.homeDirectory + "/sync/projects";
     screenshots = config.home.homeDirectory + "/sync/screenshots";
   };
 
-  devTools = with pkgs; [
-    gcc
-    gnumake
-  ];
+  desktop-items = with pkgs; {
+    qutebrowser = makeDesktopItem
+      {
+        name = "qutebrowser";
+        desktopName = "qutebrowser";
+        exec = "${pkgs.qutebrowser}/bin/qutebrowser";
+        mimeType = lib.concatStringsSep ";" [
+          "text/html"
+          "x-scheme-handler/about"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+          "x-scheme-handler/unknown"
+        ];
+        icon = "qutebrowser";
+      };
+  };
 
-  languageServers = with pkgs; [
-    unstable.sumneko-lua-language-server
-    nodePackages.vim-language-server
-    nodePackages.vscode-html-languageserver-bin
-  ];
+  scripts.dmenu = with pkgs; {
+    open = writeShellScriptBin "dmenu-open"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open.sh))
+    ;
 
-  desktopItems = with pkgs; [
-    (makeDesktopItem {
-      name = "qutebrowser";
-      desktopName = "qutebrowser";
-      exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-      mimeType = lib.concatStringsSep ";" [
-        "text/html"
-        "x-scheme-handler/about"
-        "x-scheme-handler/http"
-        "x-scheme-handler/https"
-        "x-scheme-handler/unknown"
-      ];
-      icon = "qutebrowser";
-    })
-  ];
+    run = writeShellScriptBin "dmenu-run"
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-run.sh))
+    ;
+
+    bluetooth = writers.writePython3Bin "dmenu-bluetooth"
+      {
+        libraries = with python38Packages; [
+          docopt
+        ];
+      }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth.py))
+    ;
+
+    xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
+      (import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
+        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
+        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
+      })
+    ;
+  };
 
   userScripts = with pkgs; [
     (writeShellScriptBin "peek"
       (builtins.readFile (dirs.projects + "/peek/peek")))
 
-    (writeShellScriptBin "dmenu-bluetooth"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
+    # (writeShellScriptBin "dmenu-bluetooth"
+    #   (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
 
-    (writeShellScriptBin "dmenu-open"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open)))
+    scripts.dmenu.open
+    scripts.dmenu.run
+    scripts.dmenu.bluetooth
+    scripts.dmenu.xembed-qutebrowser
 
-    (writeShellScriptBin "dmenu-wifi"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi)))
-
-    (writeShellScriptBin "dmenu-xembed-qute"
-      (import (dirs.defaults + /dmenu/scripts/dmenu-xembed-qute.nix) {
-        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
-      }))
+    # (writeShellScriptBin "dmenu-wifi"
+    #   (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi)))
 
     (hiPrio (writeShellScriptBin "lf"
       (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
@@ -75,11 +87,6 @@ let
 
     (writeScriptBin "volumectl"
       (import ./scripts/miscellaneous/volumectl.nix))
-
-    (writeScriptBin "rofi-bluetooth"
-      (import ./scripts/rofi/rofi-bluetooth.nix {
-        colors = import (dirs.colorscheme + /polybar.nix);
-      }))
   ];
 
   configs.alacritty =
@@ -136,6 +143,8 @@ let
 
   configs.gpgAgent = import (dirs.defaults + /gpg/gpg-agent.nix);
 
+  configs.lazygit = import (dirs.defaults + /lazygit);
+
   configs.lf = lib.attrsets.recursiveUpdate
     (import (dirs.defaults + /lf) { inherit pkgs; })
     (import ./overrides/lf.nix);
@@ -179,6 +188,17 @@ let
     font = import (dirs.font + /zathura.nix);
     colors = import (dirs.colorscheme + /zathura.nix);
   });
+
+  devTools = with pkgs; [
+    gcc
+    gnumake
+  ];
+
+  language-servers = with pkgs; [
+    unstable.sumneko-lua-language-server
+    nodePackages.vim-language-server
+    nodePackages.vscode-html-languageserver-bin
+  ];
 in
 {
   imports = [
@@ -195,6 +215,7 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
+      any-nix-shell
       atool
       bitwarden
       bitwarden-cli
@@ -208,11 +229,11 @@ in
       ffmpegthumbnailer
       file
       fusuma
+      glxinfo
       git-crypt
       gotop
       graphicsmagick-imagemagick-compat
       hideIt
-      lazygit
       libnotify
       lua5_4
       jmtpfs
@@ -220,6 +241,7 @@ in
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
+      networkmanager_dmenu
       (nerdfonts.override {
         fonts = [
           "JetBrainsMono"
@@ -263,11 +285,12 @@ in
       xorg.xev
       xorg.xwininfo
       yarn
+
+      desktop-items.qutebrowser
     ]
     ++ devTools
-    ++ languageServers
-    ++ userScripts
-    ++ desktopItems;
+    ++ language-servers
+    ++ userScripts;
 
     sessionVariables = {
       EDITOR = "nvim";
@@ -328,10 +351,6 @@ in
       source = (dirs.defaults + /fusuma/config.yml);
     };
 
-    "lazygit/config.yml" = {
-      source = (dirs.defaults + /lazygit/config.yml);
-    };
-
     "nvim" = {
       source = (dirs.defaults + /neovim);
       recursive = true;
@@ -354,7 +373,7 @@ in
     };
 
     "redshift/hooks/notify-change" = {
-      source = ./scripts/redshift/notify-change;
+      source = (dirs.defaults + /redshift/scripts/notify-change-linux.sh);
     };
 
     "wallpaper.png" = {
@@ -416,6 +435,10 @@ in
     enable = true;
   };
 
+  programs.lazygit = {
+    enable = true;
+  } // configs.lazygit;
+
   programs.lf = {
     enable = true;
   } // configs.lf;
@@ -428,10 +451,6 @@ in
     enable = true;
     package = unstable.qutebrowser;
   } // configs.qutebrowser;
-
-  programs.rofi = {
-    enable = true;
-  };
 
   programs.ssh = {
     enable = true;

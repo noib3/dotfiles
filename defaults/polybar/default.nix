@@ -117,14 +117,15 @@ in
       ping-interval = 3;
       label-connected = "%{F${colors.icons.wifi.on.fg}}%{T4}直%{T-}%{F-} %essid%";
       label-disconnected = "%{F${colors.icons.wifi.off.fg}}%{T4}睊%{T-}%{F-}";
+      click-left = "dmenu-wifi &";
     };
 
     "module/bluetooth" = {
       type = "custom/script";
       format-padding = 1;
-      exec = "rofi-bluetooth --status";
+      exec = "dmenu-bluetooth --status";
       interval = 1;
-      click-left = "rofi-bluetooth &";
+      click-left = "dmenu-bluetooth &";
     };
   };
 

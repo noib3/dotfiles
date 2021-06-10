@@ -5,6 +5,7 @@
     dircounts = true;
     drawbox = true;
     hidden = true;
+    icons = true;
     ifs = "\\n";
     info = "size";
     period = 1;
