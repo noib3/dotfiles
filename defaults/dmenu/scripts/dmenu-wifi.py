@@ -13,7 +13,7 @@ __email__ = 'riccardo.mazzarini@pm.me'
 # 5. sort networks by active connections, known connections, rest
 # 6. send notifications
 # 7. use emojis for password protected, active connection, maybe even wifi?
-# 8. use gi instead use nmcli via subprocess.run
+# 8. use gi instead of nmcli via subprocess.run
 
 
 class Network:
@@ -28,7 +28,7 @@ class Network:
         self.ssid = fields[0]
         self.bars = fields[1]
         self.signal = fields[2]
-        self.is_password_protected = not (fields[3] == '')
+        self.is_password_protected = fields[3] != ''
 
     def __is_connected(self) -> bool:
         active_connections_names = subprocess.run(

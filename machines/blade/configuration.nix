@@ -20,6 +20,14 @@ let
     rev = "fe27cbc99e994d50bb4269a9388e3f7d60492ffa";
     sha256 = "1z8zc4k2mh8d56ipql8vfljvdjczrrna5ckgzjsdyrndfkwv8ghw";
   };
+
+  nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+    exec -a "$0" "$@"
+  '';
 in
 {
   imports = [
@@ -58,6 +66,7 @@ in
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    nvidia-offload
     vim
   ];
 
@@ -98,6 +107,12 @@ in
 
   hardware.openrazer = {
     enable = true;
+  };
+
+  hardware.nvidia.prime = {
+    offload.enable = true;
+    intelBusId = "PCI:0:2:0";
+    nvidiaBusId = "PCI:1:0:0";
   };
 
   hardware.pulseaudio = {
@@ -149,9 +164,9 @@ in
     enable = true;
   };
 
-  services.transmission = {
-    enable = true;
-  } // configs.transmission;
+  # services.transmission = {
+  #   enable = true;
+  # } // configs.transmission;
 
   services.udisks2 = {
     enable = true;
@@ -171,7 +186,7 @@ in
     autoRepeatDelay = 150;
     autoRepeatInterval = 33;
     layout = "us";
-    # videoDrivers = [ "nvidia" ];
+    videoDrivers = [ "nvidia" ];
 
     libinput = {
       enable = true;

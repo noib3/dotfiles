@@ -4,17 +4,17 @@
     "super + Escape" = "pkill -USR1 -x sxhkd";
 
     # Get a shell or launch some other terminal based program
-    "super + Return" = "alacritty";
-    "super + g" = "alacritty -e gotop";
-    "super + f" = "alacritty -e lf ~/Downloads";
+    "super + Return" = "nvidia-offload alacritty";
+    "super + g" = "nvidia-offload alacritty -e gotop";
+    "super + f" = "nvidia-offload alacritty -e lf ~/Downloads";
     "super + a" = ''
-      alacritty -e calcurse \
+      nvidia-offload alacritty -e calcurse \
         -C ${builtins.toString ../calcurse} \
         -D ${builtins.toString ../../../calcurse}
     '';
 
     # Open the web browser 
-    "alt + w" = "qutebrowser";
+    "alt + w" = "nvidia-offload qutebrowser";
 
     # Launch the program runner and the file opener
     "super + o" = "dmenu-run";

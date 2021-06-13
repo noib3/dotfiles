@@ -300,6 +300,7 @@ in
       xorg.xwininfo
       yarn
 
+      pciutils # for lspci
       desktop-items.qutebrowser
     ]
     ++ devTools
