@@ -1,4 +1,4 @@
-{ colors, font }:
+{ font ,colors }:
 
 ''
   diff --git a/config.def.h b/config.def.h

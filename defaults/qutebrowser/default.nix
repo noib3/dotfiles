@@ -131,11 +131,6 @@ in
       radius = 1;
     };
 
-    input.insert_mode = {
-      auto_load = true;
-      leave_on_load = true;
-    };
-
     scrolling = {
       bar = "never";
       smooth = true;

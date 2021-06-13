@@ -1,0 +1,89 @@
+From 055e86dee88c5135b3d3a691942a915334d1b3a2 Mon Sep 17 00:00:00 2001
+From: Mathieu Moneyron <mathieu.moneyron@gmail.com>
+Date: Wed, 13 May 2020 17:28:37 +0200
+Subject: [PATCH] Added option to preselect an item by providing a number
+
+---
+ config.def.h |  3 +++
+ dmenu.1      |  5 +++++
+ dmenu.c      | 15 ++++++++++++++-
+ 3 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1edb647..95bee59 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -21,3 +21,6 @@ static unsigned int lines      = 0;
+  * for example: " /?\"&[]"
+  */
+ static const char worddelimiters[] = " ";
++
++/* -n option; preselected item starting from 0 */
++static unsigned int preselected = 0;
+diff --git a/dmenu.1 b/dmenu.1
+index 323f93c..6e1ee7f 100644
+--- a/dmenu.1
++++ b/dmenu.1
+@@ -22,6 +22,8 @@ dmenu \- dynamic menu
+ .IR color ]
+ .RB [ \-w
+ .IR windowid ]
++.RB [ \-n
++.IR number ]
+ .P
+ .BR dmenu_run " ..."
+ .SH DESCRIPTION
+@@ -80,6 +82,9 @@ prints version information to stdout, then exits.
+ .TP
+ .BI \-w " windowid"
+ embed into windowid.
++.TP
++.BI \-n " number"
++preseslected item starting from 0.
+ .SH USAGE
+ dmenu is completely controlled by the keyboard.  Items are selected using the
+ arrow keys, page up, page down, home, and end.
+diff --git a/dmenu.c b/dmenu.c
+index 65f25ce..0a02609 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -551,8 +551,19 @@ static void
+ run(void)
+ {
+ 	XEvent ev;
++	int i;
+
+ 	while (!XNextEvent(dpy, &ev)) {
++		if (preselected) {
++			for (i = 0; i < preselected; i++) {
++				if (sel && sel->right && (sel = sel->right) == next) {
++					curr = next;
++					calcoffsets();
++				}
++			}
++			drawmenu();
++			preselected = 0;
++		}
+ 		if (XFilterEvent(&ev, win))
+ 			continue;
+ 		switch(ev.type) {
+@@ -855,7 +866,7 @@ static void
+ usage(void)
+ {
+ 	fputs("usage: dmenu [-bfivP] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+-	      "             [-nb color] [-nf color] [-sb color] [-sf color]\n"
++	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-n number]\n"
+ 	      "             [-nhb color] [-nhf color] [-shb color] [-shf color] [-w windowid]\n", stderr);
+ }
+
+@@ -733,6 +744,8 @@ main(int argc, char *argv[])
+ 			colors[SchemeSel][ColFg] = argv[++i];
+ 		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
+ 			embed = argv[++i];
++		else if (!strcmp(argv[i], "-n"))   /* preselected item */
++			preselected = atoi(argv[++i]);
+ 		else
+ 			usage();
+
+--
+2.26.2

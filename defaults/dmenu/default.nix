@@ -1,42 +1,31 @@
-{ pkgs, stdenv, libX11, libXinerama, libXft, zlib, colors, font }:
+{ pkgs, font, colors }:
 let
-  colors-font = pkgs.writeText "dmenu-colors-font.diff"
-    (import ./patches/dmenu-colors-font.diff.nix {
-      inherit colors;
-      inherit font;
-    });
-in
-stdenv.mkDerivation rec {
-  name = "dmenu-5.0";
-
-  src = ./source;
-
-  buildInputs = [
-    libX11
-    libXinerama
-    libXft
-    zlib
-  ];
-
-  patches = [
-    colors-font
-  ];
-
-  postPatch = ''
-    sed -ri -e 's!\<(dmenu|dmenu_path|stest)\>!'"$out/bin"'/&!g' dmenu_run
-    sed -ri -e 's!\<stest\>!'"$out/bin"'/&!g' dmenu_path
-  '';
-
-  preConfigure = ''
-    sed -i "s@PREFIX = /usr/local@PREFIX = $out@g" config.mk
-  '';
-
-  makeFlags = [ "CC:=$(CC)" ];
-
-  meta = with pkgs.lib; {
-    description = "A generic, highly customizable, and efficient menu for the X Window System";
-    homepage = "https://tools.suckless.org/dmenu";
-    license = licenses.mit;
-    platforms = platforms.all;
+  patches = {
+    caseinsensitive = ./patches/dmenu-caseinsensitive-20200523-db6093f.diff;
+    fuzzyhighlight = ./patches/dmenu-fuzzyhighlight-4.9.diff;
+    fuzzymatch = ./patches/dmenu-fuzzymatch-4.9.diff;
+    listfullwidth = ./patches/dmenu-listfullwidth-5.0.diff;
+    numbers = ./patches/dmenu-numbers-4.9.diff;
+    password = ./patches/dmenu-password-5.0.diff;
+    preselect = ./patches/dmenu-preselect-20200513-db6093f.diff;
+    tsv = ./patches/dmenu-tsv-20201101-1a13d04.diff;
+    fontcolors = pkgs.writeText "dmenu-fontcolors.diff"
+      (import ./patches/dmenu-fontcolors.diff.nix {
+        inherit font;
+        inherit colors;
+      });
   };
-}
+in
+pkgs.dmenu.override ({
+  patches = [
+    patches.caseinsensitive
+    patches.fuzzyhighlight
+    patches.fuzzymatch
+    patches.listfullwidth
+    patches.numbers
+    patches.password
+    patches.preselect
+    patches.tsv
+    patches.fontcolors
+  ];
+})

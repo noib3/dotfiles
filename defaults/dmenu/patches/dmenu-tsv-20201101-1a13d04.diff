@@ -19,21 +19,21 @@ index 65f25ce..d9e490a 100644
  	struct item *left, *right;
  	int out;
  };
-@@ -123,7 +124,7 @@ drawitem(struct item *item, int x, int y, int w)
+@@ -171,7 +172,7 @@ drawitem(struct item *item, int x, int y, int w)
  	else
  		drw_setscheme(drw, scheme[SchemeNorm]);
 
--	return drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
-+	return drw_text(drw, x, y, w, bh, lrpad / 2, item->stext, 0);
+-	r = drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
++	r = drw_text(drw, x, y, w, bh, lrpad / 2, item->stext, 0);
+ 	drawhighlights(item, x, y, w);
+ 	return r;
  }
-
- static void
-@@ -165,7 +166,7 @@ drawmenu(void)
+@@ -238,7 +239,7 @@ drawmenu(void)
  		}
  		x += w;
  		for (item = curr; item != next; item = item->right)
--			x = drawitem(item, x, 0, MIN(TEXTW(item->text), mw - x - TEXTW(">")));
-+			x = drawitem(item, x, 0, MIN(TEXTW(item->stext), mw - x - TEXTW(">")));
+-			x = drawitem(item, x, 0, MIN(TEXTW(item->text), mw - x - TEXTW(">") - TEXTW(numbers)));
++			x = drawitem(item, x, 0, MIN(TEXTW(item->stext), mw - x - TEXTW(">") - TEXTW(numbers)));
  		if (next) {
  			w = TEXTW(">");
  			drw_setscheme(drw, scheme[SchemeNorm]);

@@ -4,8 +4,6 @@ Usage:
     dmenu-bluetooth [--status]
 """
 
-# Python rewrite of https://github.com/nickclyde/rofi-bluetooth for dmenu.
-
 import os
 import subprocess
 import sys
@@ -16,25 +14,27 @@ from docopt import docopt
 
 __author__ = 'Riccardo Mazzarini (noib3)'
 __email__ = 'riccardo.mazzarini@pm.me'
-__credits__ = ['Nick Clyde']
+
 
 # TODO
-# 1. pass any cli argument different from --status directly to dmenu
-
+# 1. What's the difference between 'discovering', 'pairing' and 'scanning' in
+# the main menu?
+# 2. remove as much overhead as possible
+# 3. refactor
+# 4. send notifications
+# 5. use emojis
 
 class Device:
     FORMAT_MENU = """\
 {connected}
 {paired}
 {trusted}
-{divider}
-{back}
-{exit}
 """
 
     def __init__(self, line: str):
-        self.address = line.split(' ')[1]
-        self.name = ' '.join(line.split(' ')[2:])
+        fields = line.split(' ')
+        self.address = fields[1]
+        self.name = ' '.join(fields[2:])
 
     def __get_info(self) -> str:
         return subprocess.run(
@@ -70,44 +70,40 @@ class Device:
     def show_menu(self):
         """A submenu for a specific device that allows connecting, pairing, and
         trusting."""
+        preselect_index = 0
         while True:
-            connected = 'Connected: {}'.format(
-                self.__is_connected() and 'yes' or 'no')
-            paired = 'Paired: {}'.format(
-                self.__is_paired() and 'yes' or 'no')
-            trusted = 'Trusted: {}'.format(
-                self.__is_trusted() and 'yes' or 'no')
+            connected = self.__is_connected() and 'Disconnect' or 'Connect'
+            paired = self.__is_paired() and 'Unpair' or 'Pair'
+            trusted = self.__is_trusted() and 'Untrust' or 'Trust'
 
             options = self.FORMAT_MENU.format(
                 connected=connected,
                 paired=paired,
                 trusted=trusted,
-                divider='-----------',
-                back='Back',
-                exit='Exit',
             )
 
             selection = subprocess.run(
-                ['dmenu', '-p', '{}> '.format(self.name), '-l', '6'],
+                ['dmenu', '-p', '{}> '.format(self.name),
+                 '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input=options,
             ).stdout.rstrip()
 
-            if selection == connected:
+            if not selection:
+                break
+
+            elif selection == connected:
+                preselect_index = 0
                 self.__toggle_connected()
 
             elif selection == paired:
+                preselect_index = 1
                 self.__toggle_paired()
 
             elif selection == trusted:
+                preselect_index = 2
                 self.__toggle_trusted()
-
-            elif selection == 'Back':
-                break
-
-            elif not selection or selection == 'Exit':
-                sys.exit()
 
 
 class Bluetooth:
@@ -116,14 +112,12 @@ class Bluetooth:
     ICON_DEVICE_CONNECTED = ''
 
     FORMAT_STATUS = '{icon}{info}'
-    FORMAT_MENU = """\
-{devices}
-{divider}
-{power}
-{discoverable}
-{pairable}
+    FORMAT_MAIN_MENU = """\
+{list_devices}
+{discovering}
+{pairing}
 {scanning}
-{exit}
+{power}
 """
 
     def __get_status(self) -> str:
@@ -131,15 +125,18 @@ class Bluetooth:
             ['bluetoothctl', 'show'],
             capture_output=True,
             text=True,
-        ).stdout
+        ).stdout.rstrip()
 
     def __get_paired_devices(self) -> List[Device]:
-        proc = subprocess.run(
+        devices = subprocess.run(
             ['bluetoothctl', 'paired-devices'],
             capture_output=True,
             text=True,
-        )
-        return [Device(line) for line in proc.stdout.split('\n') if line]
+        ).stdout.rstrip()
+        return [Device(line) for line in devices.split('\n') if line]
+
+    def __get_connected_devices(self) -> List[Device]:
+        return [d for d in self.__get_paired_devices() if d.is_connected()]
 
     def __is_on(self) -> bool:
         return 'Powered: yes' in self.__get_status()
@@ -157,11 +154,11 @@ class Bluetooth:
         toggle = self.__is_on() and 'off' or 'on'
         subprocess.run(['bluetoothctl', 'power', toggle])
 
-    def __toggle_discoverable(self):
+    def __toggle_discovering(self):
         toggle = self.__is_discoverable() and 'off' or 'on'
         subprocess.run(['bluetoothctl', 'discoverable', toggle])
 
-    def __toggle_pairable(self):
+    def __toggle_pairing(self):
         toggle = self.__is_pairable() and 'off' or 'on'
         subprocess.run(['bluetoothctl', 'pairable', toggle])
 
@@ -178,88 +175,116 @@ class Bluetooth:
             subprocess.Popen(['bluetoothctl', 'scan', 'on'])
             sleep(3)
 
+    def __show_devices_menu(self):
+        preselect_index = 0
+        while True:
+            paired_devices = self.__get_paired_devices()
+            device_names = [
+                '{}{}'.format(d.name, d.is_connected() and ' (c)' or '')
+                for d in paired_devices
+            ]
+
+            selection = subprocess.run(
+                ['dmenu', '-p', 'Devices> ', '-n', str(preselect_index)],
+                capture_output=True,
+                text=True,
+                input='\n'.join(device_names),
+            ).stdout.rstrip()
+
+            if not selection:
+                break
+
+            elif selection in device_names:
+                for i, d in enumerate(paired_devices):
+                    if d.name in selection:
+                        preselect_index = i
+                        d.show_menu()
+                        break
+
     def print_status(self):
         """Prints a short string with the current Bluetooth status."""
         if self.__is_on():
-            paired_devices = self.__get_paired_devices()
-            connected_devices = [d for d in paired_devices if d.is_connected()]
-
-            icon = (
-                len(connected_devices) != 0
-                and self.ICON_DEVICE_CONNECTED
-                or self.ICON_POWER_ON
-            )
-            info = ' ' + (
-                len(connected_devices) == 1
-                and connected_devices[0].name
-                or len(connected_devices)
-            )
+            connected_devices = self.__get_connected_devices()
+            if len(connected_devices) == 0:
+                icon = self.ICON_POWER_ON
+                info = ''
+            elif len(connected_devices) == 1:
+                icon = self.ICON_DEVICE_CONNECTED
+                info = ' {}'.format(connected_devices[0].name)
+            else:
+                icon = self.ICON_DEVICE_CONNECTED
+                info = ' {}'.format(len(connected_devices))
         else:
             icon = self.ICON_POWER_OFF
             info = ''
 
         print(self.FORMAT_STATUS.format(icon=icon, info=info))
 
-    def show_menu(self):
+    def show_main_menu(self):
         """Launches dmenu with the current Bluetooth status and options to
         connect."""
+        preselect_index = 0
         while True:
             if self.__is_on():
-                paired_devices = self.__get_paired_devices()
-                device_names = [d.name for d in paired_devices]
-                divider = '-----------'
-                power = 'Power: on'
-                discoverable = 'Discoverable: {}'.format(
-                    self.__is_discoverable() and 'yes' or 'no')
-                pairable = 'Pairable: {}'.format(
-                    self.__is_pairable() and 'yes' or 'no')
-                scanning = 'Scanning: {}'.format(
-                    self.__is_scanning() and 'yes' or 'no')
+                icon = (
+                    len(self.__get_connected_devices()) == 0
+                    and self.ICON_POWER_ON
+                    or self.ICON_DEVICE_CONNECTED
+                )
+                list_devices = 'List devices'
+                discovering = '{} discovering'.format(
+                    self.__is_discoverable() and 'Stop' or 'Start')
+                pairing = '{} pairing'.format(
+                    self.__is_pairable() and 'Stop' or 'Start')
+                scanning = '{} scanning'.format(
+                    self.__is_scanning() and 'Stop' or 'Start')
+                power = 'Turn off'
             else:
-                device_names = []
-                divider = ''
-                power = 'Power: off'
-                discoverable = ''
-                pairable = ''
+                icon = self.ICON_POWER_OFF
+                list_devices = ''
+                discovering = ''
+                pairing = ''
                 scanning = ''
+                power = 'Turn on'
 
-            options = '\n'.join([line for line in self.FORMAT_MENU.format(
-                devices='\n'.join(device_names),
-                divider=divider,
-                power=power,
-                discoverable=discoverable,
-                pairable=pairable,
+            options = '\n'.join([line for line in self.FORMAT_MAIN_MENU.format(
+                list_devices=list_devices,
+                discovering=discovering,
+                pairing=pairing,
                 scanning=scanning,
-                exit='Exit',
+                power=power,
             ).split('\n') if line])
 
             selection = subprocess.run(
-                ['dmenu', '-p', 'Bluetooth> ', '-l', '10'],
+                ['dmenu', '-p', '{} Bluetooth> '.format(icon),
+                 '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input=options,
             ).stdout.rstrip()
 
-            if selection == power:
-                self.__toggle_power()
+            if not selection:
+                sys.exit()
 
-            elif selection == discoverable:
-                self.__toggle_discoverable()
+            elif selection == list_devices:
+                preselect_index = 0
+                self.__show_devices_menu()
 
-            elif selection == pairable:
-                self.__toggle_pairable()
+            elif selection == discovering:
+                preselect_index = 1
+                self.__toggle_discovering()
+
+            elif selection == pairing:
+                preselect_index = 2
+                self.__toggle_pairing()
 
             elif selection == scanning:
+                preselect_index = 3
                 self.__toggle_scanning()
 
-            elif selection in device_names:
-                for d in paired_devices:
-                    if selection == d.name:
-                        d.show_menu()
-                        break
-
-            elif not selection or selection == 'Exit':
-                sys.exit()
+            elif selection == power:
+                preselect_index = 0
+                self.__toggle_power()
 
 
 if __name__ == '__main__':
@@ -268,4 +293,4 @@ if __name__ == '__main__':
     if args['--status']:
         bluetooth.print_status()
     else:
-        bluetooth.show_menu()
+        bluetooth.show_main_menu()

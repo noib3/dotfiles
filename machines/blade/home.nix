@@ -39,6 +39,15 @@ let
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-run.sh))
     ;
 
+    wifi = writers.writePython3Bin "dmenu-wifi"
+      {
+        libraries = with python38Packages; [
+          pygobject3
+        ];
+      }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi.py))
+    ;
+
     bluetooth = writers.writePython3Bin "dmenu-bluetooth"
       {
         libraries = with python38Packages; [
@@ -57,19 +66,14 @@ let
   };
 
   userScripts = with pkgs; [
-    (writeShellScriptBin "peek"
-      (builtins.readFile (dirs.projects + "/peek/peek")))
-
-    # (writeShellScriptBin "dmenu-bluetooth"
-    #   (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth)))
-
     scripts.dmenu.open
     scripts.dmenu.run
+    scripts.dmenu.wifi
     scripts.dmenu.bluetooth
     scripts.dmenu.xembed-qutebrowser
 
-    # (writeShellScriptBin "dmenu-wifi"
-    #   (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi)))
+    (writeShellScriptBin "peek"
+      (builtins.readFile (dirs.projects + "/peek/peek")))
 
     (hiPrio (writeShellScriptBin "lf"
       (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
@@ -189,6 +193,12 @@ let
     colors = import (dirs.colorscheme + /zathura.nix);
   });
 
+  dmenu = (import (dirs.defaults + /dmenu) {
+    inherit pkgs;
+    font = import (dirs.font + /dmenu.nix);
+    colors = import (dirs.colorscheme + /dmenu.nix);
+  });
+
   devTools = with pkgs; [
     gcc
     gnumake
@@ -233,7 +243,6 @@ in
       git-crypt
       gotop
       graphicsmagick-imagemagick-compat
-      hideIt
       libnotify
       lua5_4
       jmtpfs
@@ -299,6 +308,7 @@ in
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
       LS_COLORS = "$(vivid generate current)";
+      LF_ICONS = (builtins.readFile (dirs.defaults + /lf/LF_ICONS));
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
       RIPGREP_CONFIG_PATH = dirs.defaults + /ripgrep/ripgreprc;
@@ -307,13 +317,8 @@ in
 
   nixpkgs.overlays = [
     (self: super: {
-      dmenu = super.callPackage (dirs.defaults + /dmenu) {
-        font = import (dirs.font + /dmenu.nix);
-        colors = import (dirs.colorscheme + /dmenu.nix);
-      };
       direnv = unstable.direnv;
       fzf = unstable.fzf;
-      hideIt = super.callPackage ./overlays/hideIt.nix { };
       lf = unstable.lf;
       lua5_4 = unstable.lua5_4;
       ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
@@ -330,23 +335,6 @@ in
   ];
 
   xdg.configFile = {
-    "alacritty/fuzzy-opener.yml" = {
-      text = lib.replaceStrings [ "\\\\" ] [ "\\" ]
-        (builtins.toJSON (import ./scripts/fuzzy-opener/alacritty.nix {
-          font = import (dirs.font + /alacritty.nix);
-          colors = import (dirs.colorscheme + /alacritty.nix);
-        }));
-      # source =
-      #   let
-      #     yaml = pkgs.formats.yaml { };
-      #   in
-      #   yaml.generate "fuzzy-opener.yml"
-      #     (import ./scripts/fuzzy-opener/alacritty.nix {
-      #       font = import (dirs.font + /alacritty.nix);
-      #       colors = import (colorschemes + /alacritty.nix);
-      #     });
-    };
-
     "fusuma/config.yml" = {
       source = (dirs.defaults + /fusuma/config.yml);
     };
@@ -399,7 +387,6 @@ in
 
   programs.alacritty = {
     enable = true;
-    package = unstable.alacritty;
   } // configs.alacritty;
 
   programs.bat = {
