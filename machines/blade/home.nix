@@ -57,6 +57,9 @@ let
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth.py))
     ;
 
+    shutdown = writers.writePython3Bin "dmenu-shutdown" { }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-shutdown.py));
+
     xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
       (import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
         font = (import (dirs.font + /qutebrowser.nix)).dmenu;
@@ -70,6 +73,7 @@ let
     scripts.dmenu.run
     scripts.dmenu.wifi
     scripts.dmenu.bluetooth
+    scripts.dmenu.shutdown
     scripts.dmenu.xembed-qutebrowser
 
     (writeShellScriptBin "peek"
@@ -243,6 +247,7 @@ in
       git-crypt
       gotop
       graphicsmagick-imagemagick-compat
+      i3lock
       libnotify
       lua5_4
       jmtpfs
