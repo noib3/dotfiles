@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # The autofill functionality of this script was taken from
 # https://github.com/qutebrowser/qutebrowser/blob/master/misc/userscripts/password_fill
 

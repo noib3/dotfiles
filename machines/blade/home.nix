@@ -9,7 +9,6 @@ let
     defaults = ../../defaults;
     colorscheme = ../../colorschemes + "/${colorscheme}";
     font = ./fonts + "/${font}";
-    projects = config.home.homeDirectory + "/sync/projects";
     screenshots = config.home.homeDirectory + "/sync/screenshots";
   };
 
@@ -32,30 +31,18 @@ let
 
   scripts.dmenu = with pkgs; {
     open = writeShellScriptBin "dmenu-open"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open.sh))
-    ;
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open.sh));
 
     run = writeShellScriptBin "dmenu-run"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-run.sh))
-    ;
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-run.sh));
 
     wifi = writers.writePython3Bin "dmenu-wifi"
-      {
-        libraries = with python38Packages; [
-          pygobject3
-        ];
-      }
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi.py))
-    ;
+      { libraries = [ python38Packages.pygobject3 ]; }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi.py));
 
     bluetooth = writers.writePython3Bin "dmenu-bluetooth"
-      {
-        libraries = with python38Packages; [
-          docopt
-        ];
-      }
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth.py))
-    ;
+      { libraries = [ python38Packages.docopt ]; }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth.py));
 
     shutdown = writers.writePython3Bin "dmenu-shutdown" { }
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-shutdown.py));
@@ -64,8 +51,22 @@ let
       (import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
         font = (import (dirs.font + /qutebrowser.nix)).dmenu;
         colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
-      })
-    ;
+      });
+  };
+
+  scripts.qutebrowser = with pkgs; {
+    add-torrent = writeShellScriptBin "qute-torrent-add"
+      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/add-torrent.sh));
+
+    fill-bitwarden = writeShellScriptBin "qute-bitwarden-fill"
+      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.sh));
+  };
+
+  scripts.transmission = with pkgs; {
+    notify-done = writeShellScriptBin "transmission-notify-done"
+      (import (dirs.defaults + /transmission/scripts/notify-done-linux.sh.nix) {
+        inherit pkgs;
+      });
   };
 
   userScripts = with pkgs; [
@@ -76,8 +77,10 @@ let
     scripts.dmenu.shutdown
     scripts.dmenu.xembed-qutebrowser
 
-    (writeShellScriptBin "peek"
-      (builtins.readFile (dirs.projects + "/peek/peek")))
+    scripts.qutebrowser.add-torrent
+    scripts.qutebrowser.fill-bitwarden
+
+    scripts.transmission.notify-done
 
     (hiPrio (writeShellScriptBin "lf"
       (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
@@ -91,7 +94,8 @@ let
       }))
 
     (writeScriptBin "toggle-gaps-borders-paddings"
-      (builtins.readFile (dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings)))
+      (builtins.readFile (dirs.defaults +
+        /bspwm/scripts/toggle-gaps-borders-paddings.sh)))
 
     (writeScriptBin "volumectl"
       (import ./scripts/miscellaneous/volumectl.nix))
@@ -265,7 +269,6 @@ in
       nixpkgs-fmt
       nodejs
       noto-fonts-emoji
-      ookla-speedtest-cli
       pandoc
       pfetch
       pick-colour-picker
@@ -282,6 +285,7 @@ in
       ))
       ripgrep
       scrot
+      speedtest-cli
       sxiv
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
@@ -361,13 +365,11 @@ in
       text = import (dirs.defaults + /neovim/lua/options/spellfile.lua.nix);
     };
 
-    "qutebrowser/userscripts" = {
-      source = (dirs.defaults + /qutebrowser/userscripts);
-      recursive = true;
-    };
-
     "redshift/hooks/notify-change" = {
-      source = (dirs.defaults + /redshift/scripts/notify-change-linux.sh);
+      text = (import (dirs.defaults + /redshift/scripts/notify-change-linux.sh.nix) {
+        inherit pkgs;
+      });
+      executable = true;
     };
 
     "wallpaper.png" = {

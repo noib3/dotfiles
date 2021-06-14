@@ -3,7 +3,7 @@
 {
   settings = {
     window = {
-      padding.x = 5;
+      padding.x = 3;
       padding.y = 0;
     };
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 QUTE_INVALID_LINK_MSG="Invalid magnet link"
 
 function notify_add() {

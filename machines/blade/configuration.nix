@@ -2,17 +2,11 @@
 let
   unstable = import <nixos-unstable> { };
 
-  user-passwords = {
-    "noib3" = lib.strings.removeSuffix "\n"
-      (builtins.readFile ./secrets/users.noib3.pwd);
-    "couchdb" = lib.strings.removeSuffix "\n"
-      (builtins.readFile ./secrets/users.couchdb.pwd);
-  };
+  dirs.defaults = ../../defaults;
 
   configs = {
-    couchdb = import ../../defaults/couchdb { inherit lib; };
-    syncthing = import ./overrides/syncthing.nix;
-    transmission = import ./overrides/transmission.nix;
+    couchdb = (import (dirs.defaults + /couchdb) { inherit lib; });
+    transmission = import (dirs.defaults + /transmission);
   };
 
   falloutGrubTheme = pkgs.fetchgit {
@@ -39,8 +33,6 @@ in
   time.timeZone = "Europe/Rome";
 
   users = {
-    mutableUsers = false;
-
     users."noib3" = {
       home = "/home/noib3";
       shell = pkgs.fish;
@@ -50,7 +42,6 @@ in
         "input"
         "plugdev"
       ];
-      password = user-passwords.noib3;
     };
 
     users."couchdb" = {
@@ -59,7 +50,6 @@ in
       isSystemUser = true;
       createHome = true;
       extraGroups = [ "couchdb" ];
-      password = user-passwords.couchdb;
     };
   };
 
@@ -158,15 +148,15 @@ in
   services.syncthing = {
     enable = true;
     package = unstable.syncthing;
-  } // configs.syncthing;
+  };
 
   services.tlp = {
     enable = true;
   };
 
-  # services.transmission = {
-  #   enable = true;
-  # } // configs.transmission;
+  services.transmission = {
+    enable = true;
+  } // configs.transmission;
 
   services.udisks2 = {
     enable = true;

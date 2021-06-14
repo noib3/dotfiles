@@ -65,9 +65,9 @@
     ];
 
     character = {
-      success_symbol = "[\\$](fg:cyan bold)";
-      vicmd_symbol = "[\\$](fg:cyan bold)";
-      error_symbol = "[✖](fg:red bold)";
+      success_symbol = "[\\$](bold cyan)";
+      error_symbol = "[✖](bold red)";
+      vicmd_symbol = "[\\$](bold cyan)";
     };
 
     directory = {
