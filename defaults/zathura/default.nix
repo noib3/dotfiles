@@ -19,5 +19,6 @@
 
   extraConfig = ''
     map f toggle_fullscreen
+    map [fullscreen] f toggle_fullscreen
   '';
 }

@@ -187,8 +187,8 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
-      ",f" = "spawn --userscript ~/.nix-profile/bin/qute-bitwarden-fill";
-      ",t" = "hint links userscript ~/.nix-profile/bin/qute-torrent-add";
+      ",f" = "spawn --userscript ~/.nix-profile/bin/qute-fill-bitwarden";
+      ",t" = "hint links userscript ~/.nix-profile/bin/qute-add-torrent";
 
       "gh" = "open ${home-page}";
       "th" = "open -t ${home-page}";

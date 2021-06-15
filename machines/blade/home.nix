@@ -55,10 +55,10 @@ let
   };
 
   scripts.qutebrowser = with pkgs; {
-    add-torrent = writeShellScriptBin "qute-torrent-add"
+    add-torrent = writeShellScriptBin "qute-add-torrent"
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/add-torrent.sh));
 
-    fill-bitwarden = writeShellScriptBin "qute-bitwarden-fill"
+    fill-bitwarden = writeShellScriptBin "qute-fill-bitwarden"
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.sh));
   };
 

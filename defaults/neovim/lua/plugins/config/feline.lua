@@ -1,30 +1,58 @@
+local get_icon = require('nvim-web-devicons').get_icon
+
 local fn = vim.fn
 local g = vim.g
+local b = vim.b
 
 local colors = {
-  red     = g.terminal_color_1;
-  green   = g.terminal_color_2;
-  yellow  = g.terminal_color_3;
-  blue    = g.terminal_color_4;
-  magenta = g.terminal_color_5;
-  cyan    = g.terminal_color_6;
-  fg      = g.terminal_color_7,
-  bg      = '#2c323c',
-  gray    = '#5c6073',
+  bg = fn.synIDattr(fn.hlID('ColorColumn'), 'bg'),
+  red = g.terminal_color_1,
+  green = g.terminal_color_2,
+  yellow = g.terminal_color_3,
+  blue = g.terminal_color_4,
+  magenta = g.terminal_color_5,
+  cyan = g.terminal_color_6,
+  fg = g.terminal_color_7,
+  gray = fn.synIDattr(fn.hlID('Comment'), 'fg'),
 }
 
-local file_info = {
-  provider = 'file_info',
-  enabled = function()
-    return fn.empty(fn.expand('%:t')) ~= 1
-  end,
+local buffer_not_empty = function()
+  return fn.empty(fn.expand('%:t')) ~= 1
+end
+
+local get_devicon = function()
+  local filename = fn.expand('%:t')
+  local extension = fn.expand('%:e')
+  local icon, iconhl = get_icon(filename, extension, {default = true})
+  return {
+    icon = icon,
+    fg = fn.synIDattr(fn.hlID(iconhl), 'fg'),
+  }
+end
+
+local file_icon = {
+  provider = function() return get_devicon().icon end,
+  enabled = buffer_not_empty,
   hl = function()
-    local val = {}
-    val.fg = colors.fg
-    val.bg = colors.bg
-    return val
+    return {
+      fg = get_devicon().fg,
+      bg = colors.bg,
+    }
   end,
   left_sep = ' ',
+  right_sep = ' ',
+}
+
+local file_name = {
+  provider = function()
+    return fn.expand('%:t')
+  end,
+  enabled = buffer_not_empty,
+  hl = {
+    fg = colors.fg,
+    bg = colors.bg,
+  },
+  right_sep = '  ',
 }
 
 local file_encoding = {
@@ -37,7 +65,6 @@ local file_encoding = {
     bg = colors.bg,
     style = 'bold',
   },
-  left_sep = ' ',
 }
 
 local git_branch = {
@@ -51,10 +78,53 @@ local git_branch = {
   right_sep = ' ',
 }
 
+local git_diff_added = {
+  provider = 'git_diff_added',
+  icon = ' +',
+  hl = {
+    fg = colors.green,
+    bg = colors.bg,
+  },
+}
+
+local git_diff_changed = {
+  provider = 'git_diff_changed',
+  icon = ' ~',
+  hl = {
+    fg = colors.yellow,
+    bg = colors.bg,
+  },
+}
+
+local git_diff_removed = {
+  provider = 'git_diff_removed',
+  icon = ' -',
+  hl = {
+    fg = colors.red,
+    bg = colors.bg,
+  },
+}
+
+local space = {
+  provider = function() return ' ' end,
+  hl = {
+    fg = 'NONE',
+    bg = colors.bg,
+  },
+}
+
 local components = {
   left = {
-    active = {file_info, file_encoding},
-    inactive = {file_info, file_encoding},
+    active = {
+      file_icon,
+      file_name,
+      file_encoding,
+    },
+    inactive = {
+      file_icon,
+      file_name,
+      file_encoding,
+    },
   },
 
   mid = {
@@ -63,8 +133,20 @@ local components = {
   },
 
   right = {
-    active = {git_branch},
-    inactive = {git_branch},
+    active = {
+      git_branch,
+      git_diff_added,
+      git_diff_changed,
+      git_diff_removed,
+      space,
+    },
+    inactive = {
+      git_branch,
+      git_diff_added,
+      git_diff_changed,
+      git_diff_removed,
+      space,
+    },
   },
 }
 

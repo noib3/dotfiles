@@ -9,8 +9,4 @@ require('true-zen').setup({
       SignColumn = {},
     },
   },
-
-  integrations = {
-    integration_galaxyline = true,
-  },
 })
