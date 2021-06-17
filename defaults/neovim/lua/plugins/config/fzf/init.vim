@@ -1,5 +1,3 @@
-let s:rg_previewer = expand('<sfile>:p:h') . '/rg-previewer'
-
 function! s:open_edits(basedir, lines)
   let s:files = map(a:lines, 'a:basedir . "/" . v:val')
   execute 'edit ' . remove(s:files, 0)
@@ -35,7 +33,7 @@ function! s:fuzzy_edit()
 endfunction
 
 function! s:fuzzy_ripgrep()
-  " Passing ripgrep's output to sed to exclude empty lines
+  " Piping ripgrep's output into sed to filter empty lines
   let s:command_fmt =
     \ 'rg --column --color=always --iglob "!LICENSE" -- %s'
     \ . " | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d' || true"
@@ -51,10 +49,10 @@ function! s:fuzzy_ripgrep()
     \   '--multi',
     \   '--prompt=Rg> ',
     \   '--disabled',
-    \   '--bind=change:reload:' . s:reload_command,
     \   '--delimiter=:',
     \   '--with-nth=1,2,4',
-    \   '--preview=' . fzf#shellescape(s:rg_previewer) . ' {}',
+    \   '--bind=change:reload:' . s:reload_command,
+    \   '--preview=rg-previewer {}',
     \   '--preview-window=+{2}-/2',
     \   '--preview-window=border-left',
     \ ],

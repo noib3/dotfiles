@@ -76,6 +76,13 @@ local git_branch = {
     style = 'bold',
   },
   right_sep = ' ',
+  -- right_sep = function()
+  --   return (
+  --     b.gitsigns_status_dict.added
+  --     or b.gitsigns_status_dict.changed
+  --     or b.gitsigns_status_dict.removed
+  --   ) and ' ' or ''
+  -- end
 }
 
 local git_diff_added = {
@@ -107,6 +114,13 @@ local git_diff_removed = {
 
 local space = {
   provider = function() return ' ' end,
+  -- provider = function()
+  --   return (
+  --     b.gitsigns_status_dict.added
+  --     or b.gitsigns_status_dict.changed
+  --     or b.gitsigns_status_dict.removed
+  --   ) and ' ' or ''
+ -- end,
   hl = {
     fg = 'NONE',
     bg = colors.bg,

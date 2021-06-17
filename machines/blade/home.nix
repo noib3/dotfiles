@@ -33,8 +33,7 @@ let
     open = writeShellScriptBin "dmenu-open"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open.sh));
 
-    run = writeShellScriptBin "dmenu-run"
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-run.sh));
+    run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run> '";
 
     wifi = writers.writePython3Bin "dmenu-wifi"
       { libraries = [ python38Packages.pygobject3 ]; }
@@ -54,12 +53,24 @@ let
       });
   };
 
+  scripts.fzf = with pkgs; {
+    fuzzy-ripgrep = writeShellScriptBin "fuzzy-ripgrep"
+      (builtins.readFile (dirs.defaults + /fzf/scripts/fuzzy-ripgrep.sh));
+
+    rg-previewer = writeShellScriptBin "rg-previewer"
+      (builtins.readFile (dirs.defaults + /fzf/scripts/rg-previewer.sh));
+  };
+
   scripts.qutebrowser = with pkgs; {
     add-torrent = writeShellScriptBin "qute-add-torrent"
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/add-torrent.sh));
 
-    fill-bitwarden = writeShellScriptBin "qute-fill-bitwarden"
-      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.sh));
+    fill-bitwarden = writers.writePython3Bin "qute-fill-bitwarden"
+      { libraries = [ python38Packages.tldextract ]; }
+      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.py));
+
+    #     fill-bitwarden = writeShellScriptBin "qute-fill-bitwarden"
+    #       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.sh));
   };
 
   scripts.transmission = with pkgs; {
@@ -76,6 +87,9 @@ let
     scripts.dmenu.bluetooth
     scripts.dmenu.shutdown
     scripts.dmenu.xembed-qutebrowser
+
+    scripts.fzf.fuzzy-ripgrep
+    scripts.fzf.rg-previewer
 
     scripts.qutebrowser.add-torrent
     scripts.qutebrowser.fill-bitwarden
@@ -256,6 +270,7 @@ in
       lua5_4
       jmtpfs
       jq # A cli JSON parser
+      keyutils
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
