@@ -66,6 +66,7 @@ in
       "quiet"
       "udev.log_priority=3"
       "button.lid_init_state=open"
+      "vt.cur_default=0x700010"
     ];
 
     initrd.verbose = false;

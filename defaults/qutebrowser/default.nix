@@ -156,11 +156,6 @@ in
     zoom.default = "130%";
   };
 
-  keyMappings = {
-    "<Super-l>" = "o";
-    "<Super-t>" = "O";
-  };
-
   keyBindings = {
     normal = {
       "<Super-r>" = "config-source";
@@ -187,6 +182,8 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
+      "<Super-l>" = "spawn --userscript ~/.nix-profile/bin/qute-dmenu-open";
+      "<Super-t>" = "spawn --userscript ~/.nix-profile/bin/qute-dmenu-open -t";
       ",f" = "spawn --userscript ~/.nix-profile/bin/qute-fill-bitwarden";
       ",t" = "hint links userscript ~/.nix-profile/bin/qute-add-torrent";
 

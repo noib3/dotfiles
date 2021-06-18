@@ -65,12 +65,12 @@ let
     add-torrent = writeShellScriptBin "qute-add-torrent"
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/add-torrent.sh));
 
+    dmenu-open = writeShellScriptBin "qute-dmenu-open"
+      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/dmenu-open.sh));
+
     fill-bitwarden = writers.writePython3Bin "qute-fill-bitwarden"
       { libraries = [ python38Packages.tldextract ]; }
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.py));
-
-    #     fill-bitwarden = writeShellScriptBin "qute-fill-bitwarden"
-    #       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.sh));
   };
 
   scripts.transmission = with pkgs; {
@@ -92,6 +92,7 @@ let
     scripts.fzf.rg-previewer
 
     scripts.qutebrowser.add-torrent
+    scripts.qutebrowser.dmenu-open
     scripts.qutebrowser.fill-bitwarden
 
     scripts.transmission.notify-done
@@ -300,6 +301,7 @@ in
       ))
       ripgrep
       scrot
+      sqlite # for qute-dmenu-open
       speedtest-cli
       sxiv
       unstable.texlive.combined.scheme-full

@@ -14,7 +14,10 @@
   case "$1" in
     period-changed)
       [ "$3" == "none" ] || {
-        new_period="$(echo "$3" | sed 's/night/Night time/;s/day/Day /;s/tr/Tr/')"
+        new_period="$(\
+          echo "$3" \
+            | ${pkgs.gnused}/bin/sed 's/night/Night time/;s/day/Day /;s/tr/Tr/' \
+        )"
         notify_change "$new_period"
       }
   esac
