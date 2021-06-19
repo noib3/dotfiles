@@ -27,11 +27,20 @@
       }}
     '';
 
-    touch = ''%touch "$@"; lf -remote "send $id select \"$@\""'';
-    mkdir = ''%mkdir -p "$@"; lf -remote "send $id select \"$@\""'';
+    touch = ''%touch "$@"; lf -remote "send $id select '$@'"'';
+    mkdir = ''%mkdir -p "$@"; lf -remote "send $id select '$@'"'';
     give_ex = ''%chmod +x $fx; lf -remote "send $id reload"'';
     remove_ex = ''%chmod -x $fx; lf -remote "send $id reload"'';
-    make_tarball = ''$tar -czvf "$@" "$fx"; lf -remote "send $id select \"$@\""'';
+    make_tarball = ''
+      %{{
+        dirname="$@"
+        mkdir -p "$dirname"
+        cp $fx "$dirname"
+        tar -cvzf "$dirname.tar.gz" "$dirname"
+        rm -rf "$dirname"
+        lf -remote "send $id select '$dirname.tar.gz'"
+      }}
+    '';
 
     fuzzy_cd = ''
       ''${{
@@ -67,7 +76,7 @@
     "+" = "give_ex";
     "-" = "remove_ex";
     lg = "$lazygit";
-    mtb = "push :make_tarball<space>.tar.gz<left><left><left><left><left><left><left>";
+    mtb = "push :make_tarball<space>";
     "<c-x><c-d>" = "fuzzy_cd";
     "<c-x><c-e>" = "fuzzy_edit";
     "<c-x><c-r>" = "fuzzy_ripgrep";

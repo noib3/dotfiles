@@ -47,10 +47,12 @@ let
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-shutdown.py));
 
     xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
-      (import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
-        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-        colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
-      });
+      (
+        import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
+          font = (import (dirs.font + /qutebrowser.nix)).dmenu;
+          colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
+        }
+      );
   };
 
   scripts.fzf = with pkgs; {
@@ -75,9 +77,11 @@ let
 
   scripts.transmission = with pkgs; {
     notify-done = writeShellScriptBin "transmission-notify-done"
-      (import (dirs.defaults + /transmission/scripts/notify-done-linux.sh.nix) {
-        inherit pkgs;
-      });
+      (
+        import (dirs.defaults + /transmission/scripts/notify-done-linux.sh.nix) {
+          inherit pkgs;
+        }
+      );
   };
 
   userScripts = with pkgs; [
@@ -97,32 +101,51 @@ let
 
     scripts.transmission.notify-done
 
-    (hiPrio (writeShellScriptBin "lf"
-      (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })))
+    (
+      hiPrio (
+        writeShellScriptBin "lf"
+          (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })
+      )
+    )
 
-    (writeScriptBin "file-open-close"
-      (builtins.readFile ./scripts/miscellaneous/file-open-close))
+    (
+      writeScriptBin "file-open-close"
+        (builtins.readFile ./scripts/miscellaneous/file-open-close)
+    )
 
-    (writeScriptBin "take-screenshot"
-      (import ./scripts/miscellaneous/take-screenshot.nix {
-        screenshots-dir = dirs.screenshots;
-      }))
+    (
+      writeScriptBin "take-screenshot"
+        (
+          import ./scripts/miscellaneous/take-screenshot.nix {
+            screenshots-dir = dirs.screenshots;
+          }
+        )
+    )
 
-    (writeScriptBin "toggle-gaps-borders-paddings"
-      (builtins.readFile (dirs.defaults +
-        /bspwm/scripts/toggle-gaps-borders-paddings.sh)))
+    (
+      writeScriptBin "toggle-gaps-borders-paddings"
+        (
+          builtins.readFile (
+            dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings.sh
+          )
+        )
+    )
 
-    (writeScriptBin "volumectl"
-      (import ./scripts/miscellaneous/volumectl.nix))
+    (
+      writeScriptBin "volumectl"
+        (import ./scripts/miscellaneous/volumectl.nix)
+    )
   ];
 
   configs.alacritty =
     let
-      default = (import (dirs.defaults + /alacritty) {
-        pkgs = unstable;
-        font = import (dirs.font + /alacritty.nix);
-        colors = import (dirs.colorscheme + /alacritty.nix);
-      });
+      default = (
+        import (dirs.defaults + /alacritty) {
+          pkgs = unstable;
+          font = import (dirs.font + /alacritty.nix);
+          colors = import (dirs.colorscheme + /alacritty.nix);
+        }
+      );
     in
     lib.attrsets.recursiveUpdate
       default
@@ -130,17 +153,21 @@ let
 
   configs.bat = import (dirs.defaults + /bat);
 
-  configs.bspwm = (import (dirs.defaults + /bspwm) {
-    colors = import (dirs.colorscheme + /bspwm.nix);
-  });
+  configs.bspwm = (
+    import (dirs.defaults + /bspwm) {
+      colors = import (dirs.colorscheme + /bspwm.nix);
+    }
+  );
 
   configs.direnv = import (dirs.defaults + /direnv);
 
-  configs.dunst = (import (dirs.defaults + /dunst) {
-    inherit pkgs;
-    font = import (dirs.font + /dunst.nix);
-    colors = import (dirs.colorscheme + /dunst.nix);
-  });
+  configs.dunst = (
+    import (dirs.defaults + /dunst) {
+      inherit pkgs;
+      font = import (dirs.font + /dunst.nix);
+      colors = import (dirs.colorscheme + /dunst.nix);
+    }
+  );
 
   configs.fd =
     let
@@ -148,21 +175,27 @@ let
     in
     import ./overrides/fd.nix { default = default; };
 
-  configs.firefox = (import (dirs.defaults + /firefox) {
-    font = import (dirs.font + /firefox.nix);
-    colors = import (dirs.colorscheme + /firefox.nix);
-  });
+  configs.firefox = (
+    import (dirs.defaults + /firefox) {
+      font = import (dirs.font + /firefox.nix);
+      colors = import (dirs.colorscheme + /firefox.nix);
+    }
+  );
 
   configs.fish = lib.attrsets.recursiveUpdate
-    (import (dirs.defaults + /fish) {
-      inherit pkgs;
-      colors = import (dirs.colorscheme + /fish.nix);
-    })
+    (
+      import (dirs.defaults + /fish) {
+        inherit pkgs;
+        colors = import (dirs.colorscheme + /fish.nix);
+      }
+    )
     (import ./overrides/fish.nix);
 
-  configs.fzf = (import (dirs.defaults + /fzf) {
-    colors = import (dirs.colorscheme + /fzf.nix);
-  });
+  configs.fzf = (
+    import (dirs.defaults + /fzf) {
+      colors = import (dirs.colorscheme + /fzf.nix);
+    }
+  );
 
   configs.fusuma = import (dirs.defaults + /fusuma);
 
@@ -180,47 +213,61 @@ let
 
   configs.picom = import (dirs.defaults + /picom);
 
-  configs.polybar = (import (dirs.defaults + /polybar) {
-    font = import (dirs.font + /polybar.nix);
-    colors = import (dirs.colorscheme + /polybar.nix);
-  });
+  configs.polybar = (
+    import (dirs.defaults + /polybar) {
+      font = import (dirs.font + /polybar.nix);
+      colors = import (dirs.colorscheme + /polybar.nix);
+    }
+  );
 
-  configs.qutebrowser = (import (dirs.defaults + /qutebrowser) {
-    font = import (dirs.font + /qutebrowser.nix);
-    colors = import (dirs.colorscheme + /qutebrowser.nix);
-  });
+  configs.qutebrowser = (
+    import (dirs.defaults + /qutebrowser) {
+      font = import (dirs.font + /qutebrowser.nix);
+      colors = import (dirs.colorscheme + /qutebrowser.nix);
+    }
+  );
 
   configs.redshift = import (dirs.defaults + /redshift);
 
-  configs.starship = (import (dirs.defaults + /starship) {
-    inherit lib;
-  });
+  configs.starship = (
+    import (dirs.defaults + /starship) {
+      inherit lib;
+    }
+  );
 
   configs.sxhkd = import (dirs.defaults + /sxhkd);
 
   configs.ssh = import (dirs.defaults + /ssh);
 
-  configs.tridactyl = (import (dirs.defaults + /tridactyl) {
-    font = import (dirs.font + /tridactyl.nix);
-    colors = import (dirs.colorscheme + /tridactyl.nix);
-  });
+  configs.tridactyl = (
+    import (dirs.defaults + /tridactyl) {
+      font = import (dirs.font + /tridactyl.nix);
+      colors = import (dirs.colorscheme + /tridactyl.nix);
+    }
+  );
 
   configs.udiskie = import (dirs.defaults + /udiskie);
 
-  configs.vivid = (import (dirs.defaults + /vivid) {
-    colors = import (dirs.colorscheme + /vivid.nix);
-  });
+  configs.vivid = (
+    import (dirs.defaults + /vivid) {
+      colors = import (dirs.colorscheme + /vivid.nix);
+    }
+  );
 
-  configs.zathura = (import (dirs.defaults + /zathura) {
-    font = import (dirs.font + /zathura.nix);
-    colors = import (dirs.colorscheme + /zathura.nix);
-  });
+  configs.zathura = (
+    import (dirs.defaults + /zathura) {
+      font = import (dirs.font + /zathura.nix);
+      colors = import (dirs.colorscheme + /zathura.nix);
+    }
+  );
 
-  dmenu = (import (dirs.defaults + /dmenu) {
-    inherit pkgs;
-    font = import (dirs.font + /dmenu.nix);
-    colors = import (dirs.colorscheme + /dmenu.nix);
-  });
+  dmenu = (
+    import (dirs.defaults + /dmenu) {
+      inherit pkgs;
+      font = import (dirs.font + /dmenu.nix);
+      colors = import (dirs.colorscheme + /dmenu.nix);
+    }
+  );
 
   devTools = with pkgs; [
     gcc
@@ -228,9 +275,10 @@ let
   ];
 
   language-servers = with pkgs; [
-    unstable.sumneko-lua-language-server
+    sumneko-lua-language-server
+    nodePackages.bash-language-server
+    nodePackages.pyright
     nodePackages.vim-language-server
-    nodePackages.vscode-html-languageserver-bin
   ];
 in
 {
@@ -276,12 +324,14 @@ in
       mkvtoolnix-cli
       neovim-nightly
       networkmanager_dmenu
-      (nerdfonts.override {
-        fonts = [
-          "JetBrainsMono"
-          "RobotoMono"
-        ];
-      })
+      (
+        nerdfonts.override {
+          fonts = [
+            "JetBrainsMono"
+            "RobotoMono"
+          ];
+        }
+      )
       nixpkgs-fmt
       nodejs
       noto-fonts-emoji
@@ -291,14 +341,16 @@ in
       pinentry_qt5 # GnuPG's cli interface to passphrase input
       poppler_utils
       protonmail-bridge
-      (python39.withPackages (
-        ps: with ps; [
-          autopep8
-          ipython
-          isort
-          pynvim
-        ]
-      ))
+      (
+        python39.withPackages (
+          ps: with ps; [
+            autopep8
+            ipython
+            isort
+            pynvim
+          ]
+        )
+      )
       ripgrep
       scrot
       sqlite # for qute-dmenu-open
@@ -323,6 +375,9 @@ in
 
       pciutils # for lspci
       desktop-items.qutebrowser
+
+      proselint
+      tdrop
     ]
     ++ devTools
     ++ language-servers
@@ -343,22 +398,28 @@ in
   };
 
   nixpkgs.overlays = [
-    (self: super: {
-      direnv = unstable.direnv;
-      fzf = unstable.fzf;
-      lf = unstable.lf;
-      lua5_4 = unstable.lua5_4;
-      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      python39 = unstable.python39;
-      tree-sitter = unstable.tree-sitter;
-      ueberzug = unstable.ueberzug;
-      vimiv-qt = unstable.vimiv-qt;
-      vimv = unstable.vimv;
-    })
+    (
+      self: super: {
+        direnv = unstable.direnv;
+        fzf = unstable.fzf;
+        lf = unstable.lf;
+        lua5_4 = unstable.lua5_4;
+        ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+        python39 = unstable.python39;
+        tree-sitter = unstable.tree-sitter;
+        ueberzug = unstable.ueberzug;
+        vimiv-qt = unstable.vimiv-qt;
+        vimv = unstable.vimv;
+      }
+    )
 
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
+    (
+      import (
+        builtins.fetchTarball {
+          url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+        }
+      )
+    )
   ];
 
   xdg.configFile = {
@@ -372,20 +433,32 @@ in
     };
 
     "nvim/lua/colorscheme/init.lua" = {
-      text = (import (dirs.defaults + /neovim/lua/colorscheme/init.lua.nix) {
-        inherit lib;
-        colors = import (dirs.colorscheme + /neovim.nix);
-      });
+      text = (
+        import (dirs.defaults + /neovim/lua/colorscheme/init.lua.nix) {
+          inherit lib;
+          colors = import (dirs.colorscheme + /neovim.nix);
+        }
+      );
     };
 
     "nvim/lua/options/spellfile.lua" = {
       text = import (dirs.defaults + /neovim/lua/options/spellfile.lua.nix);
     };
 
+    "nvim/lua/plugins/config/lsp/sumneko_paths.lua" = {
+      text = (
+        import (dirs.defaults + /neovim/lua/plugins/config/lsp/sumneko_paths.lua.nix) {
+          inherit pkgs;
+        }
+      );
+    };
+
     "redshift/hooks/notify-change" = {
-      text = (import (dirs.defaults + /redshift/scripts/notify-change-linux.sh.nix) {
-        inherit pkgs;
-      });
+      text = (
+        import (dirs.defaults + /redshift/scripts/notify-change-linux.sh.nix) {
+          inherit pkgs;
+        }
+      );
       executable = true;
     };
 

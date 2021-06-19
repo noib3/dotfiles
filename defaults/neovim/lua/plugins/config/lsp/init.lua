@@ -1,3 +1,4 @@
+local sumneko_paths = require('plugins/config/lsp/sumneko_paths')
 local lspconfig = require('lspconfig')
 
 local on_attach = function(client, bufnr)
@@ -31,10 +32,40 @@ local on_attach = function(client, bufnr)
   end
 end
 
-lspconfig.html.setup {
+lspconfig.bashls.setup {
+  on_attach = on_attach,
+}
+
+lspconfig.pyright.setup {
   on_attach = on_attach,
 }
 
 lspconfig.vimls.setup {
   on_attach = on_attach,
 }
+
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, 'lua/?.lua')
+table.insert(runtime_path, 'lua/?/init.lua')
+
+lspconfig.sumneko_lua.setup({
+  cmd = {sumneko_paths.bin, '-E', sumneko_paths.main},
+  on_attach = on_attach,
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT',
+        path = runtime_path,
+      },
+      diagnostics = {
+        globals = {'vim'},
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+})

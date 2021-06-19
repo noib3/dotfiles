@@ -11,3 +11,6 @@ require('colorscheme')
 require('mappings')
 require('options')
 require('plugins')
+
+-- Automatically balance windows when terminal is resized
+cmd('autocmd VimResized * wincmd =')

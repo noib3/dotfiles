@@ -1,4 +1,4 @@
-require('options.spellfile')
+local spellfile = require('options/spellfile')
 
 local opt = vim.opt
 
@@ -21,6 +21,7 @@ opt.scrolloff = 1
 opt.shiftwidth = 2
 opt.showbreak = '↪ '
 opt.smartcase = true
+opt.spellfile = spellfile.spellfile
 opt.splitright = true
 opt.splitbelow = true
 opt.swapfile = false
@@ -28,4 +29,5 @@ opt.tabstop = 2
 opt.termguicolors = true
 opt.textwidth = 79
 opt.undofile = true
+opt.updatetime = 1500
 opt.wrap = false

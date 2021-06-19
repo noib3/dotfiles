@@ -10,15 +10,16 @@ case "$1" in
 esac
 
 history="$(\
-  sqlite3 -separator ' ' "$QUTE_DATA_DIR/history.sqlite" \
+  sqlite3 -separator $'\t' "$QUTE_DATA_DIR/history.sqlite" \
     'select title, url from CompletionHistory'\
 )"
 
 url="$(\
   echo "$history" \
+    | awk '! seen[$0]++' \
     | tac \
     | dmenu-xembed-qute -l 7 -F -p "$dmenu_prompt" \
-    | sed -E 's/[^ ]+ +//g' \
+    | sed -E 's/[^\t]+\t+//g' \
 )"
 
 [ -z "${url// }" ] && exit

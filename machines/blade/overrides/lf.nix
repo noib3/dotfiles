@@ -20,7 +20,13 @@
               setsid -f zathura "$file"
               ;;
             application/gzip)
-              tar -xzvf "$file"
+              tar -xvzf "$file"
+              ;;
+            application/xtar)
+              tar -xvf "$file"
+              ;;
+            application/zip)
+              unzip "$file"
               ;;
           esac
         done
@@ -36,7 +42,7 @@
       }}
     '';
 
-    drag_and_drop = ''%dragon -a -x "$fx"'';
+    drag_and_drop = ''%dragon -a -x $fx'';
   };
 
   keybindings = {

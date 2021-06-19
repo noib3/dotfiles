@@ -31,7 +31,7 @@
           && osascript -e \
               "tell application \"Finder\" to set desktop picture to POSIX file \
                 \"$f\"" &>/dev/null \
-          && lf -remote "send $id echo \"\033[32mWallpaper set correctly\033[0m\"" \
+          && lf -remote "send $id echo '\033[32mWallpaper set correctly\033[0m'" \
           || lf -remote "send $id echoerr 'Error: could not set wallpaper'"
         osascript -e "quit app \"Finder\"" &>/dev/null
       }}
