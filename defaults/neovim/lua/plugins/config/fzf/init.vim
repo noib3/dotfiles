@@ -24,9 +24,10 @@ function! s:fuzzy_edit()
     \ 'options': [
     \   '--multi',
     \   '--prompt=Edit> ',
-    \   '--preview=bat ~/{}',
+    \   '--preview=fzf-previewer {}',
     \   '--preview-window=border-left',
     \ ],
+    \ 'dir': s:dir,
     \ 'sink*': function('<SID>open_edits', [s:dir]),
     \ }
   call fzf#run(fzf#wrap(s:spec))

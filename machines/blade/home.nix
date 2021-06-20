@@ -59,6 +59,9 @@ let
     fuzzy-ripgrep = writeShellScriptBin "fuzzy-ripgrep"
       (builtins.readFile (dirs.defaults + /fzf/scripts/fuzzy-ripgrep.sh));
 
+    previewer = writeShellScriptBin "fzf-previewer"
+      (builtins.readFile (dirs.defaults + /fzf/scripts/previewer.sh));
+
     rg-previewer = writeShellScriptBin "rg-previewer"
       (builtins.readFile (dirs.defaults + /fzf/scripts/rg-previewer.sh));
   };
@@ -93,6 +96,7 @@ let
     scripts.dmenu.xembed-qutebrowser
 
     scripts.fzf.fuzzy-ripgrep
+    scripts.fzf.previewer
     scripts.fzf.rg-previewer
 
     scripts.qutebrowser.add-torrent
@@ -302,6 +306,7 @@ in
       bitwarden-cli
       calcurse
       calibre
+      chafa
       dmenu
       dragon-drop
       evemu

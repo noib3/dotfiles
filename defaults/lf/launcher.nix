@@ -5,6 +5,8 @@
 
   if [ -n "$DISPLAY" ]; then
     export FIFO_UEBERZUG="''${TMPDIR:-/tmp}/lf-ueberzug-$$"
+    export CACHE_DIR="$HOME/.cache/image-previews"
+    mkdir -p "$CACHE_DIR"
 
     cleanup() {
       exec 3>&-
@@ -15,10 +17,6 @@
     ueberzug layer -s <"$FIFO_UEBERZUG" &
     exec 3>"$FIFO_UEBERZUG"
     trap cleanup EXIT
-
-    if ! [ -d "$HOME/.cache/lf" ]; then
-      mkdir -p "$HOME/.cache/lf"
-    fi
 
     ${pkgs.lf}/bin/lf "$@" 3>&-
   else
