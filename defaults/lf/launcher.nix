@@ -5,8 +5,6 @@
 
   if [ -n "$DISPLAY" ]; then
     export FIFO_UEBERZUG="''${TMPDIR:-/tmp}/lf-ueberzug-$$"
-    export CACHE_DIR="$HOME/.cache/image-previews"
-    mkdir -p "$CACHE_DIR"
 
     cleanup() {
       exec 3>&-

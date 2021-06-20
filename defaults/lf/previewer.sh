@@ -1,9 +1,13 @@
+#!/usr/bin/env bash
+
 CACHE_DIR="$HOME/.cache/image-previews"
 mkdir -p "$CACHE_DIR"
 
 file="$1"
-width="$FZF_PREVIEW_COLUMNS"
-height="$FZF_PREVIEW_LINES"
+width="$2"
+height="$3"
+x="$4"
+y="$5"
 
 function hash() {
   local hash="$(
@@ -15,7 +19,16 @@ function hash() {
 }
 
 function draw() {
-  chafa --size "${width}x${height}" "$1"
+  if [ -n "$FIFO_UEBERZUG" ]; then
+    path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    printf \
+      '{"action": "add", "identifier": "preview", "x": %d, "y": %d, "width": %d, "height": %d, "scaler": "contain", "scaling_position_x": 0.5, "scaling_position_y": 0.5, "path": "%s"}\n' \
+      "$x" "$y" "$width" "$height" "$path" \
+      > "$FIFO_UEBERZUG"
+  else
+    chafa --size "${width}x${height}" "$1"
+  fi
+  exit 1
 }
 
 case "$file" in

@@ -55,12 +55,17 @@ let
       );
   };
 
+  scripts.lf = with pkgs; {
+    previewer = writeShellScriptBin "previewer"
+      (builtins.readFile (dirs.defaults + /lf/previewer.sh));
+  };
+
   scripts.fzf = with pkgs; {
     fuzzy-ripgrep = writeShellScriptBin "fuzzy-ripgrep"
       (builtins.readFile (dirs.defaults + /fzf/scripts/fuzzy-ripgrep.sh));
 
     previewer = writeShellScriptBin "fzf-previewer"
-      (builtins.readFile (dirs.defaults + /fzf/scripts/previewer.sh));
+      "previewer  \"$1\" \"$FZF_PREVIEW_COLUMNS\" \"$FZF_PREVIEW_LINES\"";
 
     rg-previewer = writeShellScriptBin "rg-previewer"
       (builtins.readFile (dirs.defaults + /fzf/scripts/rg-previewer.sh));
@@ -94,6 +99,8 @@ let
     scripts.dmenu.bluetooth
     scripts.dmenu.shutdown
     scripts.dmenu.xembed-qutebrowser
+
+    scripts.lf.previewer
 
     scripts.fzf.fuzzy-ripgrep
     scripts.fzf.previewer

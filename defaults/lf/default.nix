@@ -55,6 +55,8 @@
         clear
         readarray -t filenames < <(\
           fzf --multi --prompt='Edit> ' \
+            --preview='fzf-previewer ~/{}' \
+            --preview-window=border-left \
             | sed -r "s!^!$HOME/!"
         )
         [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"
@@ -87,7 +89,7 @@
     "<down>" = "cmd-history-next";
   };
 
-  previewer.source = ./previewer;
+  previewer.source = ./previewer.sh;
 
-  extraConfig = "set cleaner ${builtins.toString ./cleaner}";
+  extraConfig = "set cleaner ${builtins.toString ./cleaner.sh}";
 }
