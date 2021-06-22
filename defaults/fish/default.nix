@@ -104,7 +104,7 @@
     fuzzy_edit.body = ''
       set -l filenames (
         fzf --multi --prompt='Edit> ' \
-          --preview='fzf-previewer ~/{}' \
+          --preview='previewer ~/{}' \
           --preview-window=border-left \
           | sed 's/\ /\\\ /g;s!^!~/!' \
           | tr '\n' ' ' \
@@ -152,7 +152,7 @@
     fuzzy_search.body = ''
       set -l filenames (
         fzf --multi --prompt='Paste> ' \
-          --preview='fzf-previewer ~/{}' \
+          --preview='previewer ~/{}' \
           --preview-window=border-left \
           | sed 's/\ /\\\ /g;s!^!~/!' \
           | tr '\n' ' ' \

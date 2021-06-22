@@ -24,7 +24,7 @@ function! s:fuzzy_edit()
     \ 'options': [
     \   '--multi',
     \   '--prompt=Edit> ',
-    \   '--preview=fzf-previewer {}',
+    \   '--preview=previewer {}',
     \   '--preview-window=border-left',
     \ ],
     \ 'dir': s:dir,

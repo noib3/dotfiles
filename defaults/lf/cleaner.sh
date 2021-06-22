@@ -1,4 +1,6 @@
-#!/bin/sh
-if [ -n "$FIFO_UEBERZUG" ]; then
-  printf '{"action": "remove", "identifier": "preview"}\n' >"$FIFO_UEBERZUG"
+if [ -n "$UEBERZUG_FIFO" ]; then
+  declare -A -p cmd=(\
+    [action]=remove \
+    [identifier]=preview \
+  ) > "$UEBERZUG_FIFO"
 fi

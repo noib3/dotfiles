@@ -12,5 +12,5 @@ require('mappings')
 require('options')
 require('plugins')
 
--- Automatically balance windows when terminal is resized
+-- Rebalance splits after resizing terminal
 cmd('autocmd VimResized * wincmd =')

@@ -7,6 +7,7 @@ local configs = {
   colorizer = function() require('plugins/config/colorizer') end,
   completions = function() require('plugins/config/completions') end,
   delimitmate = function() require('plugins/config/delimitmate') end,
+  diffview = function() require('plugins/config/diffview') end,
   feline = function() require('plugins/config/feline') end,
   floaterm = function() require('plugins/config/floaterm') end,
   fzf = function() require('plugins/config/fzf') end,
@@ -39,6 +40,7 @@ return packer.startup(function()
   use {'norcalli/nvim-colorizer.lua', config = configs.colorizer}
   use {'nvim-lua/completion-nvim', config = configs.completions}
   use {'Raimondi/delimitMate', config = configs.delimitmate}
+  use {'sindrets/diffview.nvim', config = configs.diffview}
   use {
     'famiu/feline.nvim',
     requires = {'kyazdani42/nvim-web-devicons'},
@@ -62,7 +64,7 @@ return packer.startup(function()
   use {'rust-lang/rust.vim', config = configs.rust, ft = 'rust'}
   use {'nvim-treesitter/nvim-treesitter', config = configs.treesitter}
   use {'Pocco81/TrueZen.nvim', config = configs.truezen}
-  use {'SirVer/ultisnips', config = configs.ultisnips}
+  -- use {'SirVer/ultisnips', config = configs.ultisnips}
   use {'lervag/vimtex', config = configs.vimtex, ft = 'tex'}
   use {'liuchengxu/vim-which-key', config = configs.which_key}
   use {'qpkorr/vim-bufkill'}

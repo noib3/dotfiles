@@ -1,13 +1,23 @@
-#!/usr/bin/env bash
-
 CACHE_DIR="$HOME/.cache/image-previews"
 mkdir -p "$CACHE_DIR"
 
-file="$1"
-width="$2"
-height="$3"
-x="$4"
-y="$5"
+FILE="$1"
+
+if [ -n "$FZF_PREVIEW_COLUMNS" ]; then
+  # fzf previews
+  read TERMINAL_LINES TERMINAL_COLUMNS < <(</dev/tty stty size)
+  WIDTH="$FZF_PREVIEW_COLUMNS"
+  HEIGHT="$FZF_PREVIEW_LINES"
+  X=$((TERMINAL_COLUMNS - FZF_PREVIEW_COLUMNS - 1))
+  Y=0
+else
+  # lf previews
+  WIDTH="$2"
+  WIDTH=$((WIDTH - 1)) # if drawbox option is enabled
+  HEIGHT="$3"
+  X="$4"
+  Y="$5"
+fi
 
 function hash() {
   local hash="$(
@@ -19,70 +29,78 @@ function hash() {
 }
 
 function draw() {
-  if [ -n "$FIFO_UEBERZUG" ]; then
+  if [ -n "$UEBERZUG_FIFO" ]; then
     path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
-    printf \
-      '{"action": "add", "identifier": "preview", "x": %d, "y": %d, "width": %d, "height": %d, "scaler": "contain", "scaling_position_x": 0.5, "scaling_position_y": 0.5, "path": "%s"}\n' \
-      "$x" "$y" "$width" "$height" "$path" \
-      > "$FIFO_UEBERZUG"
+    declare -A -p cmd=(\
+      [action]=add \
+      [identifier]=preview \
+      [x]="$X" \
+      [y]="$Y" \
+      [width]="$WIDTH" \
+      [height]="$HEIGHT" \
+      [scaler]=contain \
+      [scaling_position_x]=0.5 \
+      [scaling_position_y]=0.5 \
+      [path]="$path" \
+    ) > "${UEBERZUG_FIFO}"
   else
-    chafa --size "${width}x${height}" "$1"
+    chafa --size "${WIDTH}x${HEIGHT}" "$1"
   fi
   exit 1
 }
 
-case "$file" in
+case "$FILE" in
   *.7z|*.a|*.ace|*.alz|*.arc|*.arj|*.bz|*.bz2|*.cab|*.cpio|*.deb|*.gz|*.jar|\
   *.lha|*.lrz|*.lz|*.lzh|*.lzma|*.lzo|*.rar|*.rpm|*.rz|*.t7z|*.tar|*.tbz|\
   *.tbz2|*.tgz|*.tlz|*.txz|*.tZ|*.tzo|*.war|*.xz|*.Z|*.zip)
-    als -- "$file"
+    als -- "$FILE"
     exit 0
     ;;
   *.svg)
-    cache="$(hash "$file").jpg"
+    cache="$(hash "$FILE").jpg"
     [ -f "$cache" ] \
-      || convert -- "$file" "$cache"
+      || convert -- "$FILE" "$cache"
     draw "$cache"
     exit 0
     ;;
   *.epub)
-    cache="$(hash "$file").jpg"
+    cache="$(hash "$FILE").jpg"
     [ -f "$cache" ] \
-      || ebook-meta --get-cover="$cache" "$file" &>/dev/null
+      || ebook-meta --get-cover="$cache" "$FILE" &>/dev/null
     draw "$cache"
     exit 0
     ;;
 esac
 
-case "$(file -Lb --mime-type -- "$file")" in
+case "$(file -Lb --mime-type -- "$FILE")" in
   text/*|application/json)
-    bat "$file"
+    bat "$FILE"
     ;;
   */pdf)
-    cache="$(hash "$file")"
+    cache="$(hash "$FILE")"
     [ -f "${cache}.jpg" ] \
       || pdftoppm -f 1 -l 1 \
           -scale-to-x '1920' \
           -scale-to-y -1 \
           -singlefile \
           -jpeg \
-          -- "$file" "$cache"
+          -- "$FILE" "$cache"
     draw "${cache}.jpg"
     ;;
   image/*)
-    draw "$file"
+    draw "$FILE"
     ;;
   video/*)
-    cache="$(hash "$file").jpg"
+    cache="$(hash "$FILE").jpg"
     [ -f "$cache" ] \
-      || ffmpegthumbnailer -i "$file" -o "$cache" -s 0
+      || ffmpegthumbnailer -i "$FILE" -o "$cache" -s 0
     draw "$cache"
     ;;
   audio/*)
-    mediainfo "$file"
+    mediainfo "$FILE"
     ;;
   *)
-    file -Lb --mime-type -- "$file"
+    file -Lb --mime-type -- "$FILE"
     ;;
 esac
 

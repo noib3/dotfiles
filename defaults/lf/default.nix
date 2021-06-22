@@ -1,4 +1,4 @@
-{ pkgs }:
+{ previewer, cleaner }:
 
 {
   settings = {
@@ -55,9 +55,9 @@
         clear
         readarray -t filenames < <(\
           fzf --multi --prompt='Edit> ' \
-            --preview='fzf-previewer ~/{}' \
-            --preview-window=border-left \
-            | sed -r "s!^!$HOME/!"
+            --preview 'previewer ~/{}' \
+            --preview-window border-left \
+            | sed -r "s!^!$HOME/!" \
         )
         [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"
       }}
@@ -89,7 +89,6 @@
     "<down>" = "cmd-history-next";
   };
 
-  previewer.source = ./previewer.sh;
-
-  extraConfig = "set cleaner ${builtins.toString ./cleaner.sh}";
+  previewer.source = "${previewer}/bin/previewer";
+  extraConfig = "set cleaner ${cleaner}/bin/cleaner";
 }

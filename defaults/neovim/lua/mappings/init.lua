@@ -1,6 +1,4 @@
 local map = vim.api.nvim_set_keymap
-local fn = vim.fn
-local cmd = vim.cmd
 
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
@@ -22,19 +20,30 @@ map(
   {expr = true, silent = true}
 )
 
--- Jump to the first non whitespace character in the line (with nowrap in mind)
-map('', '<C-a>', '0^', {})
-map('i', '<C-a>', '<C-o>0<C-o>I', {})
+-- Move between displayed lines instead of physical lines
+map('n', '<Up>', 'g<Up>', {noremap = true, silent = true})
+map('v', '<Up>', 'g<Up>', {noremap = true, silent = true})
+map('i', '<Up>', '<C-o>g<Up>', {noremap = true, silent = true})
 
--- Jump to the end of the line
-map('',  '<C-e>', '$', {})
-map('i', '<C-e>', '<C-o>A', {})
+map('n', '<Down>', 'g<Down>', {noremap = true, silent = true})
+map('v', '<Down>', 'g<Down>', {noremap = true, silent = true})
+map('i', '<Down>', '<C-o>g<Down>', {noremap = true, silent = true})
+
+-- Jump to the first non whitespace character in the displayed line
+map('n', '<C-a>', 'g^', {})
+map('v', '<C-a>', 'g^', {})
+map('i', '<C-a>', '<C-o>g^', {})
+
+-- Jump to the end of the displayed line
+map('n',  '<C-e>', 'g$', {})
+map('v',  '<C-e>', 'g$', {})
+map('i', '<C-e>', '<C-o>g$', {})
 
 -- Toggle folds
 map('n', '<Space>', 'za', {})
 
 -- Disable 's' in normal mode
-map('n', 's', '<NOP>', {})
+map('n', 's', '', {})
 
 -- Navigate split windows
 map('n', '<S-Up>', '<C-w>k', {noremap = true})

@@ -30,4 +30,3 @@ opt.termguicolors = true
 opt.textwidth = 79
 opt.undofile = true
 opt.updatetime = 1500
-opt.wrap = false

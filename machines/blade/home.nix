@@ -56,6 +56,9 @@ let
   };
 
   scripts.lf = with pkgs; {
+    cleaner = writeShellScriptBin "cleaner"
+      (builtins.readFile (dirs.defaults + /lf/cleaner.sh));
+
     previewer = writeShellScriptBin "previewer"
       (builtins.readFile (dirs.defaults + /lf/previewer.sh));
   };
@@ -64,11 +67,11 @@ let
     fuzzy-ripgrep = writeShellScriptBin "fuzzy-ripgrep"
       (builtins.readFile (dirs.defaults + /fzf/scripts/fuzzy-ripgrep.sh));
 
-    previewer = writeShellScriptBin "fzf-previewer"
-      "previewer  \"$1\" \"$FZF_PREVIEW_COLUMNS\" \"$FZF_PREVIEW_LINES\"";
-
     rg-previewer = writeShellScriptBin "rg-previewer"
       (builtins.readFile (dirs.defaults + /fzf/scripts/rg-previewer.sh));
+
+    ueberzug-previews = writeShellScriptBin "fzf-ueberzug-previews"
+      (builtins.readFile (dirs.defaults + /fzf/scripts/ueberzug-previews.sh));
   };
 
   scripts.qutebrowser = with pkgs; {
@@ -100,11 +103,12 @@ let
     scripts.dmenu.shutdown
     scripts.dmenu.xembed-qutebrowser
 
+    scripts.lf.cleaner
     scripts.lf.previewer
 
     scripts.fzf.fuzzy-ripgrep
-    scripts.fzf.previewer
     scripts.fzf.rg-previewer
+    scripts.fzf.ueberzug-previews
 
     scripts.qutebrowser.add-torrent
     scripts.qutebrowser.dmenu-open
@@ -115,7 +119,7 @@ let
     (
       hiPrio (
         writeShellScriptBin "lf"
-          (import (dirs.defaults + /lf/launcher.nix) { inherit pkgs; })
+          (import (dirs.defaults + /lf/launcher.sh.nix) { inherit pkgs; })
       )
     )
 
@@ -217,7 +221,10 @@ let
   configs.lazygit = import (dirs.defaults + /lazygit);
 
   configs.lf = lib.attrsets.recursiveUpdate
-    (import (dirs.defaults + /lf) { inherit pkgs; })
+    (import (dirs.defaults + /lf) {
+      previewer = scripts.lf.previewer;
+      cleaner = scripts.lf.cleaner;
+    })
     (import ./overrides/lf.nix);
 
   configs.mpv = import (dirs.defaults + /mpv);
@@ -314,6 +321,7 @@ in
       calcurse
       calibre
       chafa
+      delta
       dmenu
       dragon-drop
       evemu
