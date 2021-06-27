@@ -69,6 +69,8 @@ return packer.startup(function()
   use {'liuchengxu/vim-which-key', config = configs.which_key}
   use {'qpkorr/vim-bufkill'}
   use {'tpope/vim-commentary'}
+  use {'tpope/vim-eunuch'}
+  use {'tpope/vim-fugitive'}
   use {'farmergreg/vim-lastplace'}
   use {'tpope/vim-repeat'}
   use {'timakro/vim-searchant'}

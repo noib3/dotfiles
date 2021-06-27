@@ -1,4 +1,5 @@
-local map = vim.api.nvim_set_keymap
+local format = string.format
+local keymap = vim.api.nvim_set_keymap
 
 require('bufferline').setup {
   options = {
@@ -12,6 +13,10 @@ require('bufferline').setup {
 }
 
 for i = 1,9 do
-  map('n', '<F'..i..'>',
-      ':lua require"bufferline".go_to_buffer('..i..')<CR>', {silent=true})
+  keymap(
+    'n',
+    format('<F%s>', i),
+    format('<Cmd>lua require"bufferline".go_to_buffer(%s)<CR>', i),
+    {silent=true}
+  )
 end

@@ -1,5 +1,5 @@
-local keymap = vim.api.nvim_set_keymap
 local format = string.format
+local keymap = vim.api.nvim_set_keymap
 
 require('cokeline').setup({
   hide_when_one_buffer = true,

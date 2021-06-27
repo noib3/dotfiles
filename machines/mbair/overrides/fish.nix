@@ -6,11 +6,6 @@
     shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
   };
 
-  shellAbbrs = {
-    psh = "peek push";
-    pll = "peek pull";
-  };
-
   plugins =
     default.plugins ++ [
       {

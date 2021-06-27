@@ -50,7 +50,7 @@ let
       (
         import (dirs.defaults + /dmenu/scripts/dmenu-xembed.sh.nix) {
           font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-          colors = (import (dirs.colorscheme + /dmenu.nix)).qutebrowser;
+          colors = (import (dirs.colorscheme + /qutebrowser.nix)).dmenu;
         }
       );
   };

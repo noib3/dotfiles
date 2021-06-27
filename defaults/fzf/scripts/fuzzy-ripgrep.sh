@@ -1,21 +1,23 @@
-command_fmt="rg --column --color=always --iglob '!LICENSE' -- %s"\
-" | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d' || true"
+initial_query="rg --column --color=always -v '^[[:space:]]*$'"
 
-initial_command="$(printf "$command_fmt" '""')"
-reload_command="$(printf "$command_fmt" '{q}')"
+# Piping ripgrep's output into sed to filter empty lines
+reload_query=\
+'rg --column --color=always -- {q}'\
+" | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d'"\
+' || true'
 
 git status &> /dev/null
 [ $? != 0 ] || cd "$(git rev-parse --show-toplevel)"
 
 results="$(\
-  eval "$initial_command" \
+  eval "$initial_query" \
     | fzf \
         --multi \
         --prompt='Rg> ' \
         --disabled \
         --delimiter=':' \
         --with-nth='1,2,4' \
-        --bind="change:reload:$reload_command" \
+        --bind="change:reload:$reload_query" \
         --preview='rg-previewer {}' \
         --preview-window='+{2}-/2' \
         --preview-window='border-left' \

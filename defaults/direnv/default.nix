@@ -1,4 +1,4 @@
 {
+  nix-direnv.enable = true;
   enableFishIntegration = true;
-  enableNixDirenvIntegration = true;
 }

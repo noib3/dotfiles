@@ -34,25 +34,25 @@ function! s:fuzzy_edit()
 endfunction
 
 function! s:fuzzy_ripgrep()
+  let s:initial_query = "rg --column --color=always -v '^[[:space:]]*$'"
   " Piping ripgrep's output into sed to filter empty lines
-  let s:command_fmt =
-    \ 'rg --column --color=always --iglob "!LICENSE" -- %s'
-    \ . " | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d' || true"
-  let s:initial_command = printf(s:command_fmt, shellescape(''))
-  let s:reload_command = printf(s:command_fmt, '{q}')
+  let s:reload_query =
+    \ 'rg --column --color=always -- {q}'
+    \ . " | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d'"
+    \ . " || true"
   let s:dir =
     \ system('git status') =~ '^fatal'
     \ ? expand('%:p:h')
     \ : systemlist('git rev-parse --show-toplevel')[0]
   let s:spec = {
-    \ 'source': s:initial_command,
+    \ 'source': s:initial_query,
     \ 'options': [
     \   '--multi',
     \   '--prompt=Rg> ',
     \   '--disabled',
     \   '--delimiter=:',
     \   '--with-nth=1,2,4',
-    \   '--bind=change:reload:' . s:reload_command,
+    \   '--bind=change:reload:' . s:reload_query,
     \   '--preview=rg-previewer {}',
     \   '--preview-window=+{2}-/2',
     \   '--preview-window=border-left',

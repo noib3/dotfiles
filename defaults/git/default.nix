@@ -13,24 +13,22 @@
     };
 
     pager = {
-      diff = "delta --paging=never";
-      log = "delta --paging=never";
-      reflog = "delta --paging=never";
-      show = "delta --paging=never";
+      diff = "delta";
+      log = "delta";
+      reflog = "delta";
+      show = "delta";
     };
 
     interactive = {
-      diffFilter = "delta --color-only --paging=never";
+      diffFilter = "delta --color-only";
     };
 
     delta = {
-      features = "side-by-side line-numbers decorations";
-      whitespace-error-style = "22 reverse";
-
+      features = "line-numbers decorations";
+      syntax-theme = "TwoDark";
       decorations = {
+        file-style = "omit";
         commit-decoration-style = "bold yellow box ul";
-        file-style = "bold yellow ul";
-        file-decoration-style = "none";
       };
     };
   };

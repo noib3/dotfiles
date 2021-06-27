@@ -1,4 +1,5 @@
 local find = string.find
+local gsub = string.gsub
 local format = string.format
 
 local keymap = vim.api.nvim_set_keymap
@@ -21,7 +22,7 @@ function LfOpener(path)
     )
   end
   local filetype = fn.system(format('file -Lb --mime-type "%s"', path))
-  filetype = string.gsub(filetype, '\n', '')
+  filetype = gsub(filetype, '\n', '')
   if is_textfile(filetype) then
     cmd(format('%s %s', g.floaterm_opener, path))
   else

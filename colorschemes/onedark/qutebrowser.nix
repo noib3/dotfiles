@@ -50,4 +50,12 @@
       fg = "#abb2bf";
     };
   };
+
+  dmenu = {
+    normal.fg = "#abb2bf";
+    normal.bg = "#282c34";
+    selected.fg = "#abb2bf";
+    selected.bg = "#32363e";
+    highlight.fg = "#e5c07b";
+  };
 }
