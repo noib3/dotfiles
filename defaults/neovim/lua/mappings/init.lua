@@ -6,19 +6,27 @@ vim.g.maplocalleader = ','
 -- Save the file
 keymap('n', '<C-s>', '<Cmd>w<CR>', {silent = true})
 
--- Quit if there's only one buffer open, else delete the current buffer.
+-- Quit if there's only one buffer open, else delete the current buffer
+-- (without destroying the window it's in if there are multiple windows open).
 keymap(
   'n', '<C-w>',
-  "'<Cmd>' . (len(getbufinfo({'buflisted': 1})) == 1 ? 'q' : 'BD') . '<CR>'",
+  "'<Cmd>' . (len(getbufinfo({'buflisted': 1})) == 1 ? 'q' : winnr('$') > 1 ? 'BD' : 'bd') . '<CR>'",
   {expr = true, silent = true})
 
 -- Move between displayed lines instead of physical lines
 keymap('n', '<Up>', 'g<Up>', {noremap = true, silent = true})
 keymap('v', '<Up>', 'g<Up>', {noremap = true, silent = true})
-keymap('i', '<Up>', '<C-o>g<Up>', {noremap = true, silent = true})
+keymap(
+  'i', '<Up>', [[pumvisible() ? '<C-p>' : '<C-o>g<Up>']],
+  {expr = true, noremap = true, silent = true}
+)
+
 keymap('n', '<Down>', 'g<Down>', {noremap = true, silent = true})
 keymap('v', '<Down>', 'g<Down>', {noremap = true, silent = true})
-keymap('i', '<Down>', '<C-o>g<Down>', {noremap = true, silent = true})
+keymap(
+  'i', '<Down>', [[pumvisible() ? '<C-n>' : '<C-o>g<Down>']],
+  {expr = true, noremap = true, silent = true}
+)
 
 -- Jump to the first non whitespace character in the displayed line
 keymap('n', '<C-a>', 'g^', {})

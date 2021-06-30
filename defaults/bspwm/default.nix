@@ -2,7 +2,7 @@
 
 {
   settings = {
-    "window_gap" = 22;
+    "window_gap" = 25;
     "border_width" = 2;
     "focus_follows_pointer" = true;
     "normal_border_color" = colors.border.normal;
@@ -11,19 +11,25 @@
   };
 
   monitors = {
-    "focused" = [ "1" "2" "3" "4" "5" ];
+    "focused" = [ "1" "2" "3" "4" "5" "videos" ];
   };
 
   rules = {
+    "mpv" = {
+      state = "fullscreen";
+      desktop = "videos";
+      follow = true;
+    };
+
     "Zathura" = {
       state = "tiled";
     };
 
-    "\\*:\"fuzzy-opener\"" = {
+    "fuzzy-opener" = {
       state = "fullscreen";
     };
 
-    "\\*:\"fuzzy-opened\"" = {
+    "fuzzy-opened" = {
       state = "fullscreen";
     };
   };
@@ -35,8 +41,6 @@
   ];
 
   extraConfig = ''
-    feh --bg-fill --no-fehbg ~/.config/wallpaper.png
-
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
 

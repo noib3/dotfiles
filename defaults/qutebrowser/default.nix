@@ -1,4 +1,4 @@
-{ font, colors }:
+{ font, colors, scripts }:
 let
   home-page = "https://google.com";
   archiv3-ipv4-address = "139.59.165.52";
@@ -39,26 +39,27 @@ in
       };
 
       completion = {
-        category.bg = colors.completion.category.bg;
-        category.fg = colors.completion.category.bg;
-        category.border.top = colors.completion.bg;
-        category.border.bottom = colors.completion.bg;
+        category.bg = colors.completion.header.bg;
+        category.fg = colors.completion.urls.fg;
+        category.border.top = colors.completion.header.bg;
+        category.border.bottom = colors.completion.header.bg;
 
-        odd.bg = colors.completion.bg;
-        even.bg = colors.completion.bg;
+        odd.bg = colors.completion.odd.bg;
+        even.bg = colors.completion.even.bg;
 
         fg = [
           colors.completion.fg
-          colors.completion.url.fg
+          colors.completion.urls.fg
           colors.completion.fg
         ];
 
-        item.selected.bg = colors.completion.selected.bg;
-        item.selected.fg = colors.completion.selected.fg;
-        item.selected.border.top = colors.completion.bg;
-        item.selected.border.bottom = colors.completion.bg;
+        match.fg = colors.completion.match.fg;
 
-        item.selected.match.fg = colors.completion.selected.bg;
+        item.selected.bg = colors.completion.selected.bg;
+        item.selected.border.top = colors.completion.selected.bg;
+        item.selected.border.bottom = colors.completion.selected.bg;
+        item.selected.fg = colors.completion.selected.fg;
+        item.selected.match.fg = colors.completion.selected.match.fg;
       };
 
       statusbar = {
@@ -99,6 +100,7 @@ in
       show = "always";
       shrink = true;
       timestamp_format = "";
+      web_history.max_items = 7;
     };
 
     content = {
@@ -106,7 +108,7 @@ in
       autoplay = false;
     };
 
-    downloads.remove_finished = 1000;
+    downloads.remove_finished = 0;
 
     fileselect = {
       handler = "external";
@@ -156,6 +158,11 @@ in
     zoom.default = "130%";
   };
 
+  keyMappings = {
+    "<Super-l>" = "o";
+    "<Super-t>" = "O";
+  };
+
   keyBindings = {
     normal = {
       "<Super-r>" = "config-source";
@@ -182,10 +189,8 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
-      "<Super-l>" = "spawn --userscript ~/.nix-profile/bin/qute-dmenu-open";
-      "<Super-t>" = "spawn --userscript ~/.nix-profile/bin/qute-dmenu-open -t";
-      ",f" = "spawn --userscript ~/.nix-profile/bin/qute-fill-bitwarden";
-      ",t" = "hint links userscript ~/.nix-profile/bin/qute-add-torrent";
+      ",f" = "spawn --userscript ${scripts.fill-bitwarden}/bin/fill-bitwarden";
+      ",t" = "hint links userscript ${scripts.add-torrent}/bin/add-torrent";
 
       "gh" = "open ${home-page}";
       "th" = "open -t ${home-page}";

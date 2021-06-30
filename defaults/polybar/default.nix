@@ -28,7 +28,7 @@ in
     };
 
     "bar/bar" = {
-      height = 23;
+      height = 25;
       module-margin-left = 1;
       radius = 0;
       enable-ipc = true;
@@ -46,24 +46,25 @@ in
 
     "module/bspwm" = {
       type = "internal/bspwm";
+      ws-icon-0 = "1;1";
+      ws-icon-1 = "2;2";
+      ws-icon-2 = "3;3";
+      ws-icon-3 = "4;4";
+      ws-icon-4 = "5;5";
+      ws-icon-5 = "videos;%{T4}%{T-}";
       format-background = colors.bar.bg;
-
-      label-focused = "%name%";
+      label-focused = "%icon%";
       label-focused-padding = 1;
       label-focused-background = colors.bspwm.focused.bg;
-
-      label-occupied = "%name%";
+      label-occupied = "%icon%";
       label-occupied-padding = 1;
       label-occupied-foreground = colors.bspwm.occupied.fg;
-
-      label-urgent = "%name%!";
+      label-urgent = "%icon%!";
       label-urgent-padding = 1;
-
-      label-empty = "%name%";
+      label-empty = "%icon%";
       label-empty-padding = 1;
       label-empty-foreground = colors.bspwm.empty.fg;
-
-      label-focused-empty = "%name%";
+      label-focused-empty = "%icon%";
       label-focused-empty-padding = 1;
       label-focused-empty-background = colors.bspwm.focused.bg;
       label-focused-empty-foreground = colors.bspwm.empty.fg;

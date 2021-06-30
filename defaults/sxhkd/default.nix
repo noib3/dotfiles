@@ -28,11 +28,8 @@
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
 
-    # Toggle window gaps, borders and paddings
-    "alt + s" = "toggle-gaps-borders-paddings {off,on}";
-
     # Toggle float
-    "alt + shift + f" = "bspc node -t ~float";
+    "alt + shift + f" = "bspc node -t ~floating";
 
     # Focus windows
     "alt + {Up,Down,Left,Right}" = "bspc node -f {north,south,west,east}";
@@ -62,7 +59,7 @@
     "ctrl + shift + {Left,Right}" = "bspc desktop -f {prev,next}";
 
     # Focus or send window to the given desktop
-    "alt + {_,super + }{1-5}" = "bspc {desktop -f,node -d} '^{1-5}'";
+    "alt + {_,super + }{1-6}" = "bspc {desktop -f,node -d} '^{1-6}'";
 
     # Control audio volume
     "XF86Audio{LowerVolume,RaiseVolume,Mute}" = "volumectl {lower,raise,mute}";

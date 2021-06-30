@@ -4,12 +4,10 @@
       bg = "#282c34";
       fg = "#abb2bf";
     };
-
     focused = {
       bg = "#abb2bf";
       fg = "#282c34";
     };
-
     indicator.error = "#be5046";
     indicator.start = "#61afef";
     indicator.stop = "#98c379";
@@ -22,18 +20,16 @@
   };
 
   completion = {
-    bg = "#3e4452";
     fg = "#abb2bf";
-    url.fg = "#6aafef";
-
+    odd.bg = "#4b5263";
+    even.bg = "#3e4452";
+    header.bg = "#282c34";
+    urls.fg = "#6aafef";
+    match.fg = "#be5046";
     selected = {
-      bg = "#6aafef";
       fg = "#282c34";
-    };
-
-    category = {
-      bg = "#282c34";
-      fg = "#abb2bf";
+      bg = "#6aafef";
+      match.fg = "#be5046";
     };
   };
 

@@ -26,7 +26,7 @@ function LfOpener(path)
   if is_textfile(filetype) then
     cmd(format('%s %s', g.floaterm_opener, path))
   else
-    cmd(format('silent execute "!open %s"', path))
+    cmd(format('silent execute "!open %s"', fn.shellescape(path)))
   end
 end
 cmd('command! -nargs=* LfOpener call luaeval("LfOpener(_A)", <q-args>)')

@@ -54,7 +54,8 @@ class Device:
 
     def __toggle_connected(self):
         toggle = self.__is_connected() and 'disconnect' or 'connect'
-        subprocess.run(['bluetoothctl', toggle, self.address])
+        proc = subprocess.run(['bluetoothctl', toggle, self.address])
+        return toggle, proc.returncode
 
     def __toggle_paired(self):
         toggle = self.__is_paired() and 'remove' or 'pair'
@@ -95,7 +96,9 @@ class Device:
 
             elif selection == connected:
                 preselect_index = 0
-                self.__toggle_connected()
+                toggle, ret_code = self.__toggle_connected()
+                if toggle == 'connect' and ret_code == 0:
+                    sys.exit()
 
             elif selection == paired:
                 preselect_index = 1
@@ -152,7 +155,8 @@ class Bluetooth:
 
     def __toggle_power(self):
         toggle = self.__is_on() and 'off' or 'on'
-        subprocess.run(['bluetoothctl', 'power', toggle])
+        proc = subprocess.run(['bluetoothctl', 'power', toggle])
+        return toggle, proc.returncode
 
     def __toggle_discovering(self):
         toggle = self.__is_discoverable() and 'off' or 'on'
@@ -284,7 +288,9 @@ class Bluetooth:
 
             elif selection == power:
                 preselect_index = 0
-                self.__toggle_power()
+                toggle, ret_code = self.__toggle_power()
+                if toggle == 'off' and ret_code == 0:
+                    sys.exit()
 
 
 if __name__ == '__main__':

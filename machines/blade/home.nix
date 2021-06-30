@@ -3,7 +3,7 @@ let
   unstable = import <nixos-unstable> { };
 
   colorscheme = "onedark";
-  font = "roboto-mono";
+  font = "fira-code";
 
   dirs = {
     defaults = ../../defaults;
@@ -75,13 +75,10 @@ let
   };
 
   scripts.qutebrowser = with pkgs; {
-    add-torrent = writeShellScriptBin "qute-add-torrent"
+    add-torrent = writeShellScriptBin "add-torrent"
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/add-torrent.sh));
 
-    dmenu-open = writeShellScriptBin "qute-dmenu-open"
-      (builtins.readFile (dirs.defaults + /qutebrowser/scripts/dmenu-open.sh));
-
-    fill-bitwarden = writers.writePython3Bin "qute-fill-bitwarden"
+    fill-bitwarden = writers.writePython3Bin "fill-bitwarden"
       { libraries = [ python38Packages.tldextract ]; }
       (builtins.readFile (dirs.defaults + /qutebrowser/scripts/fill-bitwarden.py));
   };
@@ -110,46 +107,23 @@ let
     scripts.fzf.rg-previewer
     scripts.fzf.ueberzug-previews
 
-    scripts.qutebrowser.add-torrent
-    scripts.qutebrowser.dmenu-open
-    scripts.qutebrowser.fill-bitwarden
-
     scripts.transmission.notify-done
 
-    (
-      hiPrio (
-        writeShellScriptBin "lf"
-          (import (dirs.defaults + /lf/launcher.sh.nix) { inherit pkgs; })
-      )
-    )
+    (hiPrio (writeShellScriptBin "lf" (
+      import (dirs.defaults + /lf/launcher.sh.nix) { inherit pkgs; }
+    )))
 
-    (
-      writeScriptBin "file-open-close"
-        (builtins.readFile ./scripts/miscellaneous/file-open-close)
-    )
+    (writeScriptBin "file-open-close" (
+      builtins.readFile ./scripts/miscellaneous/file-open-close
+    ))
 
-    (
-      writeScriptBin "take-screenshot"
-        (
-          import ./scripts/miscellaneous/take-screenshot.nix {
-            screenshots-dir = dirs.screenshots;
-          }
-        )
-    )
+    (writeScriptBin "take-screenshot" (
+      import ./scripts/miscellaneous/take-screenshot.nix {
+        screenshots-dir = dirs.screenshots;
+      }
+    ))
 
-    (
-      writeScriptBin "toggle-gaps-borders-paddings"
-        (
-          builtins.readFile (
-            dirs.defaults + /bspwm/scripts/toggle-gaps-borders-paddings.sh
-          )
-        )
-    )
-
-    (
-      writeScriptBin "volumectl"
-        (import ./scripts/miscellaneous/volumectl.nix)
-    )
+    (writeScriptBin "volumectl" (import ./scripts/miscellaneous/volumectl.nix))
   ];
 
   configs.alacritty =
@@ -242,6 +216,7 @@ let
     import (dirs.defaults + /qutebrowser) {
       font = import (dirs.font + /qutebrowser.nix);
       colors = import (dirs.colorscheme + /qutebrowser.nix);
+      scripts = scripts.qutebrowser;
     }
   );
 
@@ -333,8 +308,9 @@ in
       glxinfo
       git-crypt
       gotop
+      gnome.gdm
       graphicsmagick-imagemagick-compat
-      i3lock
+      inkscape
       libnotify
       lua5_4
       jmtpfs
@@ -344,14 +320,13 @@ in
       mkvtoolnix-cli
       neovim-nightly
       networkmanager_dmenu
-      (
-        nerdfonts.override {
-          fonts = [
-            "JetBrainsMono"
-            "RobotoMono"
-          ];
-        }
-      )
+      (nerdfonts.override {
+        fonts = [
+          "FiraCode"
+          "JetBrainsMono"
+          "RobotoMono"
+        ];
+      })
       nixpkgs-fmt
       nodejs
       noto-fonts-emoji
@@ -361,29 +336,24 @@ in
       pinentry_qt5 # GnuPG's cli interface to passphrase input
       poppler_utils
       protonmail-bridge
-      (
-        python39.withPackages (
-          ps: with ps; [
-            autopep8
-            ipython
-            isort
-            pynvim
-          ]
-        )
-      )
+      (python39.withPackages (
+        ps: with ps; [
+          autopep8
+          ipython
+          isort
+          pynvim
+        ]
+      ))
       ripgrep
+      rustup
       scrot
-      sqlite # for qute-dmenu-open
       speedtest-cli
-      sxiv
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
       tree
-      tree-sitter
       ueberzug
       unclutter-xfixes
       unzip
-      vimiv-qt
       vimv
       wmctrl
       xbanish
@@ -397,7 +367,6 @@ in
       desktop-items.qutebrowser
 
       proselint
-      tdrop
     ]
     ++ devTools
     ++ language-servers
@@ -418,28 +387,25 @@ in
   };
 
   nixpkgs.overlays = [
-    (
-      self: super: {
-        direnv = unstable.direnv;
-        fzf = unstable.fzf;
-        lf = unstable.lf;
-        lua5_4 = unstable.lua5_4;
-        ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-        python39 = unstable.python39;
-        tree-sitter = unstable.tree-sitter;
-        ueberzug = unstable.ueberzug;
-        vimiv-qt = unstable.vimiv-qt;
-        vimv = unstable.vimv;
-      }
-    )
+    (self: super: {
+      direnv = unstable.direnv;
+      fzf = unstable.fzf;
+      lf = unstable.lf;
+      lua5_4 = unstable.lua5_4;
+      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
+      python39 = unstable.python39;
+      tree-sitter = unstable.tree-sitter;
+      ueberzug = unstable.ueberzug;
+      vimiv-qt = unstable.vimiv-qt;
+      vimv = unstable.vimv;
+    })
 
-    (
-      import (
-        builtins.fetchTarball {
-          url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-        }
-      )
-    )
+    (import (
+      builtins.fetchTarball {
+        url =
+          https://github.com/nix-community/neovim-nightly-overlay/archive/2aff1c0.tar.gz;
+      }
+    ))
   ];
 
   xdg.configFile = {
@@ -480,10 +446,6 @@ in
         }
       );
       executable = true;
-    };
-
-    "wallpaper.png" = {
-      source = dirs.colorscheme + /wallpaper.png;
     };
   };
 
@@ -628,5 +590,10 @@ in
       size = 16;
       defaultCursor = "left_ptr";
     };
+
+    profileExtra = ''
+      ${pkgs.feh}/bin/feh --bg-fill --no-fehbg \
+        ${builtins.toString (dirs.colorscheme + /background.png)}
+    '';
   };
 }

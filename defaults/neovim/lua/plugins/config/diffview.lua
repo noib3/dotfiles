@@ -9,13 +9,20 @@ local cmd = vim.cmd
 local fn = vim.fn
 
 function DiffviewOpenCurrent()
+  local echoerr = function(msg)
+    vim.api.nvim_echo({{msg, 'ErrorMsg'}}, true, {})
+  end
   local git_status = fn.system('git status')
   if find(git_status, 'fatal') then
-    cmd('echoerr "Not inside a git repo"')
+    echoerr('Not inside a git repo')
+    return
+  end
+  local filepath = vim.api.nvim_buf_get_name(0)
+  if filepath == '' then
+    echoerr('Current buffer not saved on disk')
     return
   end
   local git_root = fn.systemlist('git rev-parse --show-toplevel')[1]
-  local filepath = fn.expand('%:p')
   local git_path = gsub(filepath, git_root .. '/', '')
   cmd(format('execute "DiffviewOpen -- %s" | execute "DiffviewToggleFiles"', git_path))
 end

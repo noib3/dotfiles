@@ -2,17 +2,22 @@
 let
   unstable = import <nixos-unstable> { };
 
-  dirs.defaults = ../../defaults;
+  colorscheme = "onedark";
+
+  dirs = {
+    defaults = ../../defaults;
+    colorscheme = ../../colorschemes + "/${colorscheme}";
+  };
 
   configs = {
     couchdb = (import (dirs.defaults + /couchdb) { inherit lib; });
+    grub = (
+      import (dirs.defaults + /grub) {
+        colors = import (dirs.colorscheme + /grub.nix);
+        background-image = dirs.colorscheme + /background.png;
+      }
+    );
     transmission = import (dirs.defaults + /transmission);
-  };
-
-  falloutGrubTheme = pkgs.fetchgit {
-    url = "https://github.com/shvchk/fallout-grub-theme.git";
-    rev = "fe27cbc99e994d50bb4269a9388e3f7d60492ffa";
-    sha256 = "1z8zc4k2mh8d56ipql8vfljvdjczrrna5ckgzjsdyrndfkwv8ghw";
   };
 
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
@@ -78,19 +83,12 @@ in
       useOSProber = true;
       gfxmodeEfi = "1920x1080";
       gfxmodeBios = "1920x1080";
-      splashImage = "${falloutGrubTheme}/background.png";
-      extraConfig = ''
-        set theme=($drive1)//themes/fallout-grub-theme/theme.txt
-      '';
+      splashImage = dirs.colorscheme + /background.png;
+      theme = configs.grub;
     };
 
     loader.efi.canTouchEfiVariables = true;
   };
-
-  system.activationScripts.copyGrubTheme = ''
-    mkdir -p /boot/themes
-    cp -R ${falloutGrubTheme}/ /boot/themes/fallout-grub-theme
-  '';
 
   hardware.bluetooth = {
     enable = true;
@@ -130,10 +128,6 @@ in
   };
 
   programs.fish = {
-    enable = true;
-  };
-
-  programs.xss-lock = {
     enable = true;
   };
 
@@ -188,7 +182,6 @@ in
     };
 
     displayManager = {
-      defaultSession = "none+bspwm";
       autoLogin = {
         enable = true;
         user = "noib3";

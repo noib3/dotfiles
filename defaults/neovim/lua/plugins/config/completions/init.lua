@@ -29,8 +29,8 @@ keymap(
 )
 
 keymap(
-  'i', '<S-Tab>', [[pumvisible() ? '<C-p>' : '<S-Tab>']],
-  {expr = true, noremap = true, silent = true}
+  'i', '<S-Tab>', [[pumvisible() ? '<C-p>' : '<Plug>delimitMateS-Tab']],
+  {expr = true, silent = true}
 )
 
 keymap(

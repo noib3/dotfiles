@@ -10,7 +10,9 @@
   settings = {
     global = {
       font = "${font.family} ${font.size}";
-      geometry = "375x0-14+41";
+      geometry = "375x0-17+40";
+      frame_width = "2";
+      frame_color = "${colors.border}";
       icon_position = "left";
       max_icon_size = "50";
       horizontal_padding = 10;

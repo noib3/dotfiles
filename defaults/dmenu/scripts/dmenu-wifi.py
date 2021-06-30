@@ -194,7 +194,8 @@ class WiFi:
 
     def __toggle_power(self):
         toggle = self.__is_on() and 'off' or 'on'
-        subprocess.run(['nmcli', 'radio', 'wifi', toggle])
+        proc = subprocess.run(['nmcli', 'radio', 'wifi', toggle])
+        return toggle, proc.returncode
 
     def __show_networks_menu(self):
         preselect_index = 0
@@ -266,7 +267,9 @@ class WiFi:
 
             elif selection == power:
                 preselect_index = 0
-                self.__toggle_power()
+                toggle, ret_code = self.__toggle_power()
+                if toggle == 'off' and ret_code == 0:
+                    sys.exit()
 
 
 if __name__ == '__main__':

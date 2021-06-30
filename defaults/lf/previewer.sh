@@ -57,9 +57,9 @@ case "$FILE" in
     exit 0
     ;;
   *.svg)
-    cache="$(hash "$FILE").jpg"
+    cache="$(hash "$FILE").png"
     [ -f "$cache" ] \
-      || convert -- "$FILE" "$cache"
+      || inkscape -z -w 1024 -h 1024 "$FILE" -o "$cache"
     draw "$cache"
     exit 0
     ;;
