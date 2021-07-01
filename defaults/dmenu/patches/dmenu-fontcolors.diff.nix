@@ -5,12 +5,16 @@
   index fe056c0..5a25ab9 100644
   --- a/config.def.h
   +++ b/config.def.h
-  @@ -6,15 +6,15 @@ static int colorprompt = 1;                /* -p  option; if 1, prompt uses Sche
-   static int fuzzy = 1;                      /* -F  option; if 0, dmenu doesn't use fuzzy matching     */
+  @@ -3,24 +3,24 @@
+   
+   static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
+   static int colorprompt = 1;                /* -p  option; if 1, prompt uses SchemeSel, otherwise SchemeNorm */
+  -static int fuzzy = 1;                      /* -F  option; if 0, dmenu doesn't use fuzzy matching     */
+  +static int fuzzy = 0;                      /* -F  option; if 0, dmenu doesn't use fuzzy matching     */
    /* -fn option overrides fonts[0]; default X11 font or font set */
    static const char *fonts[] = {
   -	"monospace:size=10"
-  +	"${font.family}:pixelsize=${font.pixelsize}"
+  +	"${font.family}:size=${font.size}"
    };
    static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
    static const char *colors[SchemeLast][2] = {
@@ -26,4 +30,11 @@
    	[SchemeOut] = { "#000000", "#00ffff" },
    };
    /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
+   static unsigned int lines      = 0;
+   /* -h option; minimum height of a menu line */
+  -static unsigned int lineheight = 0;
+  +static unsigned int lineheight = ${font.lineheight};
+   static unsigned int min_lineheight = 8;
+   
+   /*
 ''

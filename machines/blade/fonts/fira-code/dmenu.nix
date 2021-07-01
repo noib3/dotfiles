@@ -1,4 +1,5 @@
 {
   family = "FiraCode Nerd Font";
-  pixelsize = "17";
+  size = "13";
+  lineheight = "25";
 }

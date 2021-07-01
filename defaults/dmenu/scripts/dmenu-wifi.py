@@ -73,12 +73,14 @@ class Network:
         if self.__is_connected():
             # NOTE: this assumes a connection's name is equal to the
             # corresponding network's SSID.
-            subprocess.run(['nmcli', 'connection', 'down', self.ssid])
+            toggle = 'disconnect'
+            proc = subprocess.run(['nmcli', 'connection', 'down', self.ssid])
         else:
+            toggle = 'connect'
             if self.__is_known():
                 # NOTE: this assumes a connection's name is equal to the
                 # corresponding network's SSID.
-                subprocess.run(['nmcli', 'connection', 'up', self.ssid])
+                proc = subprocess.run(['nmcli', 'connection', 'up', self.ssid])
             else:
                 if self.is_password_protected:
                     password = subprocess.run(
@@ -88,17 +90,18 @@ class Network:
                     ).stdout.rstrip()
                     # NOTE: this sets a new connection's name equal to the
                     # corresponding network's SSID.
-                    subprocess.run(
+                    proc = subprocess.run(
                         ['sudo', 'nmcli', 'device', 'wifi', 'connect',
                             self.ssid, 'password', password, 'name', self.ssid]
                     )
                 else:
                     # NOTE: this sets a new connection's name equal to the
                     # corresponding network's SSID.
-                    subprocess.run(
+                    proc = subprocess.run(
                         ['sudo', 'nmcli', 'device', 'wifi', 'connect',
                             self.ssid, 'name', self.ssid]
                     )
+        return toggle, proc.returncode
 
     def __forget(self):
         # NOTE: this assumes a connection's name is equal to the corresponding
@@ -151,7 +154,9 @@ class Network:
 
             elif selection == connected:
                 preselect_index = 0
-                self.__toggle_connected()
+                toggle, ret_code = self.__toggle_connected()
+                if toggle == 'connect' and ret_code == 0:
+                    sys.exit()
 
             elif selection == forget:
                 preselect_index = 1

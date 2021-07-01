@@ -4,6 +4,7 @@
 
   dmenu = {
     family = "FiraCode Nerd Font";
-    pixelsize = "17pt";
+    size = "12";
+    lineheight = "24";
   };
 }

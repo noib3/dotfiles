@@ -2,7 +2,8 @@
 
 ''
   dmenu \
-    -fn '${font.family}:pixelsize=${font.pixelsize}' \
+    -fn '${font.family}:size=${font.size}' \
+    -h '${font.lineheight}' \
     -nb '${colors.normal.bg}' \
     -nf '${colors.normal.fg}' \
     -sb '${colors.selected.bg}' \

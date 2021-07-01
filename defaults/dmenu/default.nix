@@ -4,6 +4,7 @@ let
     caseinsensitive = ./patches/dmenu-caseinsensitive-20200523-db6093f.diff;
     fuzzyhighlight = ./patches/dmenu-fuzzyhighlight-4.9.diff;
     fuzzymatch = ./patches/dmenu-fuzzymatch-4.9.diff;
+    lineheight = ./patches/dmenu-lineheight-5.0.diff;
     listfullwidth = ./patches/dmenu-listfullwidth-5.0.diff;
     numbers = ./patches/dmenu-numbers-4.9.diff;
     password = ./patches/dmenu-password-5.0.diff;
@@ -26,6 +27,7 @@ pkgs.dmenu.override ({
     patches.password
     patches.preselect
     patches.tsv
+    patches.lineheight
     patches.fontcolors
   ];
 })
