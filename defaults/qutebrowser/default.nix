@@ -108,7 +108,10 @@ in
       autoplay = false;
     };
 
-    downloads.remove_finished = 0;
+    downloads = {
+      position = "bottom";
+      remove_finished = 0;
+    };
 
     fileselect = {
       handler = "external";

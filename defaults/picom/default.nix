@@ -2,10 +2,6 @@
   blur = true;
   experimentalBackends = true;
 
-  opacityRule = [
-    "90:class_i ?= 'fuzzy-opener'"
-  ];
-
   fade = true;
   fadeDelta = 3;
 

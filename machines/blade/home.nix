@@ -207,7 +207,8 @@ let
 
   configs.polybar = (
     import (dirs.defaults + /polybar) {
-      font = import (dirs.font + /polybar.nix);
+      inherit lib;
+      fonts = import (dirs.font + /polybar.nix);
       colors = import (dirs.colorscheme + /polybar.nix);
     }
   );
@@ -308,7 +309,6 @@ in
       glxinfo
       git-crypt
       gotop
-      gnome.gdm
       graphicsmagick-imagemagick-compat
       inkscape
       libnotify

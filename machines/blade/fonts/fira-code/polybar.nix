@@ -1,22 +1,15 @@
 {
-  font-0 = {
+  main = {
     family = "FiraCode Nerd Font";
     style = "Regular";
-    size = 13;
-    padding-top = 3;
+    size = "13";
+    padding-top = "3";
   };
 
-  font-2 = {
+  icons = {
     family = "FiraCode Nerd Font Mono";
     style = "Regular";
-    size = 14;
-    padding-top = 3;
-  };
-
-  font-3 = {
-    family = "FiraCode Nerd Font Mono";
-    style = "Regular";
-    size = 19;
-    padding-top = 4;
+    size = "18";
+    padding-top = "4";
   };
 }

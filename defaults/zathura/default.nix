@@ -16,9 +16,4 @@
     selection-clipboard = "clipboard";
     highlight-transparency = "0.40";
   };
-
-  extraConfig = ''
-    map f toggle_fullscreen
-    map [fullscreen] f toggle_fullscreen
-  '';
 }

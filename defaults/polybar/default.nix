@@ -1,132 +1,213 @@
-{ font, colors }:
+{ lib, fonts, colors }:
+
 let
-  f0 = {
-    family = font.font-0.family;
-    style = font.font-0.style;
-    size = builtins.toString font.font-0.size;
-    padding-top = builtins.toString font.font-0.padding-top;
-  };
-
-  f2 = {
-    family = font.font-2.family;
-    style = font.font-2.style;
-    size = builtins.toString font.font-2.size;
-    padding-top = builtins.toString font.font-2.padding-top;
-  };
-
-  f3 = {
-    family = font.font-3.family;
-    style = font.font-3.style;
-    size = builtins.toString font.font-3.size;
-    padding-top = builtins.toString font.font-3.padding-top;
-  };
+  T1 = fonts.main;
+  T2 = fonts.icons;
 in
 {
-  config = {
-    "settings" = {
-      format-background = colors.module.bg;
-    };
-
+  settings = {
     "bar/bar" = {
       height = 25;
-      module-margin-left = 1;
-      radius = 0;
       enable-ipc = true;
       cursor-click = "pointer";
-      font-0 = "${f0.family}:style=${f0.style}:size=${f0.size};${f0.padding-top}";
-      font-1 = "Noto Color Emoji:style=Regular:scale=9;3";
-      font-2 = "${f2.family}:style=${f2.style}:size=${f2.size};${f2.padding-top}";
-      font-3 = "${f3.family}:style=${f3.style}:size=${f3.size};${f3.padding-top}";
+
+      # Make Polybar go under other windows when going fullscreen
+      wm-restack = "bspwm";
+
       background = colors.bar.bg;
       foreground = colors.bar.fg;
-      wm-restack = "bspwm";
-      modules-left = "bspwm";
-      modules-right = "bluetooth wifi ethernet battery date time";
+      font = [
+        "${T1.family}:style=${T1.style}:size=${T1.size};${T1.padding-top}"
+        "${T2.family}:style=${T2.style}:size=${T2.size};${T2.padding-top}"
+      ];
+
+      modules.left = lib.concatStringsSep " " [
+        "sysinfos"
+        "workspaces"
+        "window"
+      ];
+
+      modules.right = lib.concatStringsSep " " [
+        "bluetooth"
+        "wifi"
+        "ethernet"
+        "battery"
+        "datetime"
+        "notification-center"
+      ];
     };
 
-    "module/bspwm" = {
+    "module/sysinfos" = {
+      type = "custom/text";
+      content = {
+        text = "%{T2}%{T-}";
+        padding = 1;
+        foreground = colors.modules.sysinfos.icon;
+        background = colors.modules.sysinfos.bg;
+      };
+    };
+
+    "module/workspaces" = {
       type = "internal/bspwm";
-      ws-icon-0 = "1;1";
-      ws-icon-1 = "2;2";
-      ws-icon-2 = "3;3";
-      ws-icon-3 = "4;4";
-      ws-icon-4 = "5;5";
-      ws-icon-5 = "videos;%{T4}%{T-}";
-      format-background = colors.bar.bg;
-      label-focused = "%icon%";
-      label-focused-padding = 1;
-      label-focused-background = colors.bspwm.focused.bg;
-      label-occupied = "%icon%";
-      label-occupied-padding = 1;
-      label-occupied-foreground = colors.bspwm.occupied.fg;
-      label-urgent = "%icon%!";
-      label-urgent-padding = 1;
-      label-empty = "%icon%";
-      label-empty-padding = 1;
-      label-empty-foreground = colors.bspwm.empty.fg;
-      label-focused-empty = "%icon%";
-      label-focused-empty-padding = 1;
-      label-focused-empty-background = colors.bspwm.focused.bg;
-      label-focused-empty-foreground = colors.bspwm.empty.fg;
+      ws.icon = [
+        "1;1"
+        "2;2"
+        "3;3"
+        "4;4"
+        "5;5"
+        "videos;%{T2}%{T-}"
+      ];
+      label.focused = {
+        text = "%icon%";
+        padding = 1;
+        foreground = colors.modules.workspaces.focused.fg;
+      };
+      label.occupied = {
+        text = "%icon%";
+        padding = 1;
+        foreground = colors.modules.workspaces.occupied.fg;
+      };
+      label.empty = {
+        text = "%icon%";
+        padding = 1;
+        foreground = colors.modules.workspaces.empty.fg;
+      };
+      label.focused.empty = {
+        text = "%icon%";
+        padding = 1;
+        foreground = colors.modules.workspaces.focused.empty.fg;
+      };
+      label.urgent = {
+        text = "!%icon%";
+        padding = 1;
+      };
+      format.background = colors.modules.workspaces.bg;
     };
 
-    "module/time" = {
-      type = "internal/date";
-      format-padding = 1;
-      interval = 5;
-      time = "%R";
-      label = "🕑 %time%";
-    };
-
-    "module/date" = {
-      type = "internal/date";
-      format-padding = 1;
-      interval = 5;
-      date = "%a, %B %d";
-      label = "📆 %date%";
-    };
-
-    "module/battery" = {
-      type = "internal/battery";
-      format-charging-padding = 1;
-      format-discharging-padding = 1;
-      format-full-padding = 1;
-      battery = "BAT0";
-      adapter = "AC0";
-      poll-interval = 1;
-      label-charging = "🔌 %percentage%%";
-      label-discharging = "🔋 %percentage%%";
-      label-full = "🔌 %percentage%%";
-    };
-
-    "module/ethernet" = {
-      type = "internal/network";
-      format-connected-padding = 1;
-      format-disconnected-padding = 1;
-      format-packetloss-padding = 1;
-      interface = "enp2s0";
-      ping-interval = 3;
-      label-connected = "%{F${colors.icons.ethernet.fg}}%{T3}%{T-}%{F-}";
-    };
-
-    "module/wifi" = {
-      type = "internal/network";
-      format-connected-padding = 1;
-      format-disconnected-padding = 1;
-      format-packetloss-padding = 1;
-      interface = "wlo1";
-      ping-interval = 3;
-      label-connected = "%{F${colors.icons.wifi.on.fg}}%{T4}直%{T-}%{F-} %essid%";
-      label-disconnected = "%{F${colors.icons.wifi.off.fg}}%{T4}睊%{T-}%{F-}";
-      click-left = "dmenu-wifi &";
+    "module/window" = {
+      type = "internal/xwindow";
+      label.text = "%title%";
+      label.padding = 1;
     };
 
     "module/bluetooth" = {
       type = "custom/script";
-      format-padding = 1;
       exec = "dmenu-bluetooth --status";
       interval = 1;
-      click-left = "dmenu-bluetooth &";
+      click.left = "dmenu-bluetooth &";
+      label.padding = 1;
+      format.background = colors.modules.bluetooth.bg;
+    };
+
+    "module/wifi" = {
+      type = "internal/network";
+      interface = "wlo1";
+      ping-interval = 3;
+      click.left = "dmenu-wifi &";
+      label.connected = {
+        text = "%essid%";
+        foreground = colors.bar.fg;
+      };
+      label.disconnected = {
+        text = "";
+        foreground = colors.bar.fg;
+      };
+      format.connected = {
+        text = "%{T2}直%{T-} <label-connected>";
+        padding = 1;
+        foreground = colors.modules.wifi.on.icon;
+        background = colors.modules.wifi.bg;
+      };
+      format.disconnected = {
+        text = "%{T2}睊%{T-} <label-disconnected>";
+        padding = 1;
+        foreground = colors.modules.wifi.off.icon;
+        background = colors.modules.wifi.bg;
+      };
+    };
+
+    "module/ethernet" = {
+      type = "internal/network";
+      interface = "enp2s0";
+      ping-interval = 3;
+      label.connected = {
+        text = "";
+        padding = 1;
+        foreground = colors.modules.ethernet.icon;
+        background = colors.modules.ethernet.bg;
+      };
+    };
+
+    "module/battery" = {
+      type = "internal/battery";
+      battery = "BAT0";
+      adapter = "AC0";
+      poll-interval = 1;
+      label.charging = {
+        text = "%percentage%%";
+        foreground = colors.bar.fg;
+      };
+      label.discharging = {
+        text = "%percentage%%";
+        foreground = colors.bar.fg;
+      };
+      label.full = {
+        text = "%percentage%%";
+        foreground = colors.bar.fg;
+      };
+      format.charging = {
+        text = " <label-charging>";
+        padding = 1;
+        foreground = colors.modules.battery.charging.icon;
+        background = colors.modules.battery.bg;
+      };
+      format.discharging = {
+        text = "<ramp-capacity><label-discharging>";
+        padding = 1;
+        background = colors.modules.battery.bg;
+      };
+      format.full = {
+        text = " <label-full>";
+        padding = 1;
+        foreground = colors.modules.battery.full.icon;
+        background = colors.modules.battery.bg;
+      };
+      ramp-capacity.text = [
+        "  "
+        "  "
+        "  "
+        "  "
+        "  "
+      ];
+      ramp-capacity.foreground = colors.modules.battery.ok.icon;
+      ramp-capacity-0.foreground = colors.modules.battery.dying.icon;
+      ramp-capacity-1.foreground = colors.modules.battery.low.icon;
+    };
+
+    "module/datetime" = {
+      type = "internal/date";
+      time = "%a %B %d, %R";
+      interval = 5;
+      label = {
+        text = "%time%";
+        foreground = colors.bar.fg;
+      };
+      format = {
+        text = "%{T2}ﭷ%{T-} <label>";
+        padding = 1;
+        foreground = colors.modules.datetime.icon;
+        background = colors.modules.datetime.bg;
+      };
+    };
+
+    "module/notification-center" = {
+      type = "custom/text";
+      content = {
+        text = "%{T2}%{T-}";
+        padding = 1;
+        foreground = colors.modules.notification-center.icon;
+        background = colors.modules.notification-center.bg;
+      };
     };
   };
 
