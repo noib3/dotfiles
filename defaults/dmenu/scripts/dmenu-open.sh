@@ -29,4 +29,4 @@ function open {
   fi
 }
 
-fd --base-directory=$HOME --hidden --type=f | dmenu -p 'Open> ' | open
+fd --base-directory=$HOME --hidden --type=f | dmenu -p 'Open>' | open

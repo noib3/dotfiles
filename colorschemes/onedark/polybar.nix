@@ -1,54 +1,35 @@
-{
-  bar.bg = "#282c34";
-  bar.fg = "#abb2bf";
+rec {
+  bar.fg = "#9aa0ac";
+  bar.bg = "#0014161a";
 
-  modules.sysinfos = {
-    icon = "#abb2bf";
-    bg = "#282c34";
-  };
+  power.icon = bar.fg;
 
-  modules.workspaces = {
-    focused.fg = "#e5c07b";
-    occupied.fg = "#abb2bf";
+  workspaces = {
+    focused.bg = "#282c34";
+    occupied.fg = bar.fg;
     empty.fg = "#5c6073";
-    focused.empty.fg = "#282c34";
-    bg = "#3e4452";
   };
 
-  modules.bluetooth = {
-    on.icon = "#61afef";
-    off.icon = "#5c6073";
-    bg = "#3e4452";
+  bluetooth = {
+    icon.on = bar.fg;
+    icon.off = "#5c6073";
+    icon.connected = "#61afef";
   };
 
-  modules.wifi = {
-    on.icon = "#98c379";
-    off.icon = "#5c6073";
-    bg = "#3e4452";
+  wifi = {
+    icon.on = "#98c379";
+    icon.off = "#5c6073";
   };
 
-  modules.ethernet = {
-    icon = "#e5c07b";
-    bg = "#3e4452";
+  ethernet.icon = "#d19a66";
+
+  battery = {
+    icon.charging = "#56b6c2";
+    icon.dying = "#e06c75";
+    icon.low = "#e5c07b";
+    icon.ok = "#98c379";
   };
 
-  modules.battery = {
-    charging.icon = "#e5c07b";
-    dying.icon = "#e06c75";
-    low.icon = "#e5c07b";
-    ok.icon = "#98c379";
-    full.icon = "#98c379";
-    bg = "#3e4452";
-  };
-
-  modules.datetime = {
-    icon = "#e5c07b";
-    fg = "#abb2bf";
-    bg = "#3e4452";
-  };
-
-  modules.notification-center = {
-    icon = "#abb2bf";
-    bg = "#282c34";
-  };
+  datetime.icon = "#e5c07b";
+  notification-center.icon = bar.fg;
 }

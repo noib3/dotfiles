@@ -1,8 +1,9 @@
-{ colors }:
+{ colors, scripts }:
 
 {
   settings = {
     "window_gap" = 25;
+    "top_padding" = 20;
     "border_width" = 2;
     "focus_follows_pointer" = true;
     "normal_border_color" = colors.border.normal;
@@ -24,20 +25,13 @@
     "Zathura" = {
       state = "tiled";
     };
-
-    "fuzzy-opener" = {
-      state = "fullscreen";
-    };
-
-    "fuzzy-opened" = {
-      state = "fullscreen";
-    };
   };
 
   startupPrograms = [
     "fusuma"
     "unclutter -idle 10"
     "xbanish"
+    "${scripts.mpv-focus-prev}/bin/mpv-focus-prev"
   ];
 
   extraConfig = ''

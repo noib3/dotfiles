@@ -1,0 +1,64 @@
+diff --git a/config.def.h b/config.def.h
+index b3e8ecb..9231d6b 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -12,6 +12,7 @@ static const char *prompt      = NULL;      /* -p  option; prompt to the left of
+ static const char *colors[SchemeLast][2] = {
+ 	/*     fg         bg       */
+ 	[SchemeNorm] = { "#bbbbbb", "#222222" },
++	[SchemePrompt] = { "#bbbbbb", "#222222" },
+ 	[SchemeSel] = { "#eeeeee", "#005577" },
+ 	[SchemeSelHighlight] = { "#ffc978", "#005577" },
+ 	[SchemeNormHighlight] = { "#ffc978", "#222222" },
+diff --git a/dmenu.1 b/dmenu.1
+index a1b55b8..4b7f837 100644
+--- a/dmenu.1
++++ b/dmenu.1
+@@ -90,6 +90,12 @@ defines the normal foreground color.
+ .BI \-sb " color"
+ defines the selected background color.
+ .TP
++.BI \-pf " color"
++defines the prompt foreground color.
++.TP
++.BI \-pb " color"
++defines the prompt background color.
++.TP
+ .BI \-sf " color"
+ defines the selected foreground color.
+ .TP
+diff --git a/dmenu.c b/dmenu.c
+index 6cbf72f..f83e795 100644
+--- a/dmenu.c
++++ b/dmenu.c
+@@ -29,8 +29,8 @@
+ #define NUMBERSBUFSIZE        (NUMBERSMAXDIGITS * 2) + 1
+
+ /* enums */
+-enum { SchemeNorm, SchemeSel, SchemeNormHighlight, SchemeSelHighlight,
+-       SchemeOut, SchemeLast }; /* color schemes */
++enum { SchemeNorm, SchemePrompt, SchemeSel, SchemeNormHighlight,
++       SchemeSelHighlight, SchemeOut, SchemeLast }; /* color schemes */
+
+
+ struct item {
+@@ -205,7 +205,7 @@ drawmenu(void)
+
+ 	if (prompt && *prompt) {
+ 		if (colorprompt)
+-			drw_setscheme(drw, scheme[SchemeSel]);
++			drw_setscheme(drw, scheme[SchemePrompt]);
+ 		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
+ 	}
+ 	/* draw input field */
+@@ -918,6 +918,10 @@ main(int argc, char *argv[])
+ 			colors[SchemeNorm][ColBg] = argv[++i];
+ 		else if (!strcmp(argv[i], "-nf"))  /* normal foreground color */
+ 			colors[SchemeNorm][ColFg] = argv[++i];
++		else if (!strcmp(argv[i], "-pb"))  /* prompt background color */
++			colors[SchemePrompt][ColBg] = argv[++i];
++		else if (!strcmp(argv[i], "-pf"))  /* prompt foreground color */
++			colors[SchemePrompt][ColFg] = argv[++i];
+ 		else if (!strcmp(argv[i], "-sb"))  /* selected background color */
+ 			colors[SchemeSel][ColBg] = argv[++i];
+ 		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */

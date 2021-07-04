@@ -23,7 +23,7 @@
     # Open wifi, bluetooth and shutdown menus
     "alt + shift + w" = "dmenu-wifi";
     "alt + shift + b" = "dmenu-bluetooth";
-    "alt + shift + s" = "dmenu-shutdown";
+    "alt + shift + p" = "dmenu-powermenu";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";

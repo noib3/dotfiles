@@ -6,6 +6,8 @@
     -h '${font.lineheight}' \
     -nb '${colors.normal.bg}' \
     -nf '${colors.normal.fg}' \
+    -pb '${colors.prompt.bg}' \
+    -pf '${colors.prompt.fg}' \
     -sb '${colors.selected.bg}' \
     -sf '${colors.selected.fg}' \
     -nhb '${colors.normal.bg}' \

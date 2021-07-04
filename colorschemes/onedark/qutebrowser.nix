@@ -24,11 +24,11 @@
     odd.bg = "#4b5263";
     even.bg = "#3e4452";
     header.bg = "#282c34";
-    urls.fg = "#6aafef";
+    urls.fg = "#61afef";
     match.fg = "#be5046";
     selected = {
       fg = "#282c34";
-      bg = "#6aafef";
+      bg = "#61afef";
       match.fg = "#be5046";
     };
   };
@@ -50,6 +50,8 @@
   dmenu = {
     normal.fg = "#abb2bf";
     normal.bg = "#282c34";
+    prompt.fg = "#61afef";
+    prompt.bg = "#282c34";
     selected.fg = "#abb2bf";
     selected.bg = "#32363e";
     highlight.fg = "#e5c07b";

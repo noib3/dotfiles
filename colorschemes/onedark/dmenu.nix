@@ -1,7 +1,12 @@
-{
-  normal.fg = "#abb2bf";
-  normal.bg = "#282c34";
-  selected.fg = "#abb2bf";
-  selected.bg = "#3e4452";
-  highlight.fg = "#e5c07b";
+rec {
+  normal = {
+    fg = "#abb2bf";
+    bg = "#14161a";
+  };
+  prompt = normal;
+  selected = {
+    fg = "#abb2bf";
+    bg = "#282c34";
+  };
+  highlight.fg = "#579dd7";
 }

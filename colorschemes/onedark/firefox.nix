@@ -14,11 +14,11 @@
   urlbar = {
     bg = "#3e4452";
     fg = "#abb2bf";
-    url.fg = "#6aafef";
+    url.fg = "#61afef";
     separator = "#5c6073";
 
     selected = {
-      bg = "#6aafef";
+      bg = "#61afef";
       fg = "#282c34";
     };
   };

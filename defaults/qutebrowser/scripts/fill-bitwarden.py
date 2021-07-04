@@ -102,7 +102,7 @@ def get_bw_session_key() -> str:
         ).stdout.rstrip()
     else:
         proc = subprocess.run(
-            ['dmenu-xembed-qute', '-p', 'Master password> ', '-P'],
+            ['dmenu-xembed-qute', '-p', 'Master password>', '-P'],
             capture_output=True,
             text=True,
         )

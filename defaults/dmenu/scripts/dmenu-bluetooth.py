@@ -4,16 +4,27 @@ Usage:
     dmenu-bluetooth [--status]
 """
 
+import argparse
 import os
 import subprocess
 import sys
 from time import sleep
 from typing import List
 
-from docopt import docopt
-
 __author__ = 'Riccardo Mazzarini (noib3)'
 __email__ = 'riccardo.mazzarini@pm.me'
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-s',
+    '--status',
+    action='store_true',
+    help='show a short status message (useful for status bars like polybar)'
+)
+
+POWER_ON_FG = os.getenv('POWER_ON_FG', '')
+POWER_OFF_FG = os.getenv('POWER_OFF_FG', '')
+CONNECTED_FG = os.getenv('CONNECTED_FG', '')
 
 
 # TODO
@@ -84,7 +95,7 @@ class Device:
             )
 
             selection = subprocess.run(
-                ['dmenu', '-p', '{}> '.format(self.name),
+                ['dmenu', '-p', '{}>'.format(self.name),
                  '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
@@ -112,10 +123,10 @@ class Device:
 class Bluetooth:
     ICON_POWER_ON = ''
     ICON_POWER_OFF = ''
-    ICON_DEVICE_CONNECTED = ''
+    ICON_CONNECTED = ''
+    STATUS_FORMAT = '{icon}{info}'
 
-    FORMAT_STATUS = '{icon}{info}'
-    FORMAT_MAIN_MENU = """\
+    MAIN_MENU_FORMAT = """\
 {list_devices}
 {discovering}
 {pairing}
@@ -189,7 +200,7 @@ class Bluetooth:
             ]
 
             selection = subprocess.run(
-                ['dmenu', '-p', 'Devices> ', '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Devices>', '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input='\n'.join(device_names),
@@ -207,22 +218,35 @@ class Bluetooth:
 
     def print_status(self):
         """Prints a short string with the current Bluetooth status."""
+        def polybar_format(fg: str, msg: str) -> str:
+            fmt = '%{{F{fg}}}{msg}%{{F-}}'
+            return fmt.format(fg=fg, msg=msg)
+
+        info = ''
         if self.__is_on():
             connected_devices = self.__get_connected_devices()
             if len(connected_devices) == 0:
-                icon = self.ICON_POWER_ON
-                info = ''
-            elif len(connected_devices) == 1:
-                icon = self.ICON_DEVICE_CONNECTED
-                info = ' {}'.format(connected_devices[0].name)
+                icon = polybar_format(
+                    fg=POWER_ON_FG,
+                    msg=self.ICON_POWER_ON
+                )
             else:
-                icon = self.ICON_DEVICE_CONNECTED
-                info = ' {}'.format(len(connected_devices))
+                icon = polybar_format(
+                    fg=CONNECTED_FG,
+                    msg=self.ICON_CONNECTED
+                )
+                info = ' {}'.format(
+                    len(connected_devices) == 1
+                    and connected_devices[0].name
+                    or len(connected_devices)
+                )
         else:
-            icon = self.ICON_POWER_OFF
-            info = ''
+            icon = polybar_format(
+                fg=POWER_OFF_FG,
+                msg=self.ICON_POWER_OFF
+            )
 
-        print(self.FORMAT_STATUS.format(icon=icon, info=info))
+        print(self.STATUS_FORMAT.format(icon=icon, info=info))
 
     def show_main_menu(self):
         """Launches dmenu with the current Bluetooth status and options to
@@ -230,11 +254,6 @@ class Bluetooth:
         preselect_index = 0
         while True:
             if self.__is_on():
-                icon = (
-                    len(self.__get_connected_devices()) == 0
-                    and self.ICON_POWER_ON
-                    or self.ICON_DEVICE_CONNECTED
-                )
                 list_devices = 'List devices'
                 discovering = '{} discovering'.format(
                     self.__is_discoverable() and 'Stop' or 'Start')
@@ -244,14 +263,13 @@ class Bluetooth:
                     self.__is_scanning() and 'Stop' or 'Start')
                 power = 'Turn off'
             else:
-                icon = self.ICON_POWER_OFF
                 list_devices = ''
                 discovering = ''
                 pairing = ''
                 scanning = ''
                 power = 'Turn on'
 
-            options = '\n'.join([line for line in self.FORMAT_MAIN_MENU.format(
+            options = '\n'.join([line for line in self.MAIN_MENU_FORMAT.format(
                 list_devices=list_devices,
                 discovering=discovering,
                 pairing=pairing,
@@ -260,8 +278,7 @@ class Bluetooth:
             ).split('\n') if line])
 
             selection = subprocess.run(
-                ['dmenu', '-p', '{} Bluetooth> '.format(icon),
-                 '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Bluetooth>', '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input=options,
@@ -294,9 +311,9 @@ class Bluetooth:
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='dmenu-bluetooth 0.0.1')
+    args = parser.parse_args()
     bluetooth = Bluetooth()
-    if args['--status']:
+    if args.status:
         bluetooth.print_status()
     else:
         bluetooth.show_main_menu()

@@ -29,22 +29,26 @@ let
       };
   };
 
+  scripts.bspwm = with pkgs; {
+    mpv-focus-prev = writeShellScriptBin "mpv-focus-prev"
+      (builtins.readFile (dirs.defaults + /bspwm/scripts/mpv-focus-prev.sh));
+  };
+
   scripts.dmenu = with pkgs; {
     open = writeShellScriptBin "dmenu-open"
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-open.sh));
 
-    run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run> '";
+    run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
 
     wifi = writers.writePython3Bin "dmenu-wifi"
       { libraries = [ python38Packages.pygobject3 ]; }
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-wifi.py));
 
-    bluetooth = writers.writePython3Bin "dmenu-bluetooth"
-      { libraries = [ python38Packages.docopt ]; }
+    bluetooth = writers.writePython3Bin "dmenu-bluetooth" { }
       (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-bluetooth.py));
 
-    shutdown = writers.writePython3Bin "dmenu-shutdown" { }
-      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-shutdown.py));
+    powermenu = writers.writePython3Bin "dmenu-powermenu" { }
+      (builtins.readFile (dirs.defaults + /dmenu/scripts/dmenu-powermenu.py));
 
     xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
       (
@@ -97,7 +101,7 @@ let
     scripts.dmenu.run
     scripts.dmenu.wifi
     scripts.dmenu.bluetooth
-    scripts.dmenu.shutdown
+    scripts.dmenu.powermenu
     scripts.dmenu.xembed-qutebrowser
 
     scripts.lf.cleaner
@@ -113,17 +117,13 @@ let
       import (dirs.defaults + /lf/launcher.sh.nix) { inherit pkgs; }
     )))
 
-    (writeScriptBin "file-open-close" (
-      builtins.readFile ./scripts/miscellaneous/file-open-close
-    ))
-
     (writeScriptBin "take-screenshot" (
-      import ./scripts/miscellaneous/take-screenshot.nix {
+      import ./scripts/take-screenshot.nix {
         screenshots-dir = dirs.screenshots;
       }
     ))
 
-    (writeScriptBin "volumectl" (import ./scripts/miscellaneous/volumectl.nix))
+    (writeScriptBin "volumectl" (import ./scripts/volumectl.nix))
   ];
 
   configs.alacritty =
@@ -145,6 +145,7 @@ let
   configs.bspwm = (
     import (dirs.defaults + /bspwm) {
       colors = import (dirs.colorscheme + /bspwm.nix);
+      scripts = scripts.bspwm;
     }
   );
 
@@ -363,6 +364,7 @@ in
       xorg.xwininfo
       yarn
 
+      xdo # used by scripts.bspwm.mpv-focus-prev
       pciutils # for lspci
       desktop-items.qutebrowser
 
@@ -563,6 +565,9 @@ in
 
   services.polybar = {
     enable = true;
+    package = pkgs.polybar.override {
+      pulseSupport = true;
+    };
   } // configs.polybar;
 
   services.redshift = {

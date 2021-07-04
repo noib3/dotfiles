@@ -21,7 +21,7 @@ endif
 augroup tex
   autocmd!
   autocmd BufRead *.tex silent execute
-    \ '!file-open-close open ' . expand('%:p:r') . '.pdf'
+    \ '!nohup xdg-open "' . expand('%:p:r') . '.pdf" &>/dev/null &'
   autocmd BufUnload *.tex silent execute
-    \ '!file-open-close close ' . expand('%:p:r') . '.pdf'
+    \ '!wmctrl -F -c "' . expand('%:p:r') . '.pdf" || true'
 augroup END

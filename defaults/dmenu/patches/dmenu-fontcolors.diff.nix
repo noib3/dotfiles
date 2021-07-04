@@ -5,7 +5,7 @@
   index fe056c0..5a25ab9 100644
   --- a/config.def.h
   +++ b/config.def.h
-  @@ -3,24 +3,24 @@
+  @@ -3,25 +3,25 @@
    
    static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
    static int colorprompt = 1;                /* -p  option; if 1, prompt uses SchemeSel, otherwise SchemeNorm */
@@ -20,10 +20,12 @@
    static const char *colors[SchemeLast][2] = {
    	/*     fg         bg       */
   -	[SchemeNorm] = { "#bbbbbb", "#222222" },
+  -	[SchemePrompt] = { "#bbbbbb", "#222222" },
   -	[SchemeSel] = { "#eeeeee", "#005577" },
   -	[SchemeSelHighlight] = { "#ffc978", "#005577" },
   -	[SchemeNormHighlight] = { "#ffc978", "#222222" },
   +	[SchemeNorm] = { "${colors.normal.fg}", "${colors.normal.bg}" },
+  +	[SchemePrompt] = { "${colors.prompt.fg}", "${colors.prompt.bg}" },
   +	[SchemeSel] = { "${colors.selected.fg}", "${colors.selected.bg}" },
   +	[SchemeSelHighlight] = { "${colors.highlight.fg}", "${colors.selected.bg}" },
   +	[SchemeNormHighlight] = { "${colors.highlight.fg}", "${colors.normal.bg}" },

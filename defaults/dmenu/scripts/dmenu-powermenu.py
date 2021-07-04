@@ -1,12 +1,11 @@
 import subprocess
 import sys
 
-POWER_ICON = '⏻ '
+POWER_ICON = ' '
 FORMAT_MENU = """\
 {shutdown}
 {reboot}
 {suspend}
-{lock}
 """
 
 
@@ -22,23 +21,17 @@ def __suspend():
     subprocess.run(['systemctl', 'suspend'])
 
 
-def __lock():
-    subprocess.run(['i3lock'])
-
-
 def show_menu():
-    """Launches dmenu with the options to shutdown, reboot, suspend or lock the
+    """Launches dmenu with the options to shutdown, reboot or suspend the
     machine."""
     shutdown = 'Shutdown'
     reboot = 'Reboot'
     suspend = 'Suspend'
-    lock = 'Lock'
 
     options = FORMAT_MENU.format(
         shutdown=shutdown,
         reboot=reboot,
         suspend=suspend,
-        lock=lock,
     )
 
     selection = subprocess.run(
@@ -59,9 +52,6 @@ def show_menu():
 
     elif selection == suspend:
         __suspend()
-
-    elif selection == lock:
-        __lock()
 
 
 if __name__ == '__main__':

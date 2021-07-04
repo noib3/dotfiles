@@ -2,6 +2,7 @@
 let
   patches = {
     caseinsensitive = ./patches/dmenu-caseinsensitive-20200523-db6093f.diff;
+    colorprompt = ./patches/dmenu-colorprompt.diff;
     fuzzyhighlight = ./patches/dmenu-fuzzyhighlight-4.9.diff;
     fuzzymatch = ./patches/dmenu-fuzzymatch-4.9.diff;
     lineheight = ./patches/dmenu-lineheight-5.0.diff;
@@ -28,6 +29,7 @@ pkgs.dmenu.override ({
     patches.preselect
     patches.tsv
     patches.lineheight
+    patches.colorprompt
     patches.fontcolors
   ];
 })

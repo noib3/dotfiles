@@ -55,6 +55,7 @@ class Network:
         return self.ssid in known_connections_names.split('\n')
 
     def __is_autoconnected(self) -> bool:
+        autoconnected = False
         known_connections = subprocess.run(
             ['nmcli', '--color', 'no', '--terse',
                 '--fields', 'NAME,AUTOCONNECT', 'connection', 'show'],
@@ -67,7 +68,8 @@ class Network:
             # NOTE: this assumes a connection's name is equal to the
             # corresponding network's SSID.
             if self.ssid == name:
-                return autoconnect_flag == 'yes'
+                autoconnected = autoconnect_flag == 'yes'
+        return autoconnected
 
     def __toggle_connected(self):
         if self.__is_connected():
@@ -84,7 +86,7 @@ class Network:
             else:
                 if self.is_password_protected:
                     password = subprocess.run(
-                        ['dmenu', '-p', 'Password> ', '-P'],
+                        ['dmenu', '-p', 'Password>', '-P'],
                         capture_output=True,
                         text=True,
                     ).stdout.rstrip()
@@ -142,7 +144,7 @@ class Network:
 
             selection = subprocess.run(
                 ['dmenu', '-p',
-                 '{} {} ({}%)> '.format(self.bars, self.ssid, self.signal),
+                 '{} {} ({}%)>'.format(self.bars, self.ssid, self.signal),
                  '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
@@ -167,9 +169,7 @@ class Network:
                 self.__toggle_autoconnect()
 
 
-class WiFi:
-    ICON_POWER_ON = '直'
-    ICON_POWER_OFF = '睊'
+class Wifi:
     ICON_PROTECTED_NETWORK = ''
 
     FORMAT_MENU = """\
@@ -218,7 +218,7 @@ class WiFi:
             ]
 
             selection = subprocess.run(
-                ['dmenu', '-p', 'Networks> ', '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Networks>', '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input='\n'.join(network_infos),
@@ -242,11 +242,9 @@ class WiFi:
         preselect_index = 0
         while True:
             if self.__is_on():
-                icon = self.ICON_POWER_ON
                 list_networks = 'List networks'
                 power = 'Turn off'
             else:
-                icon = self.ICON_POWER_OFF
                 list_networks = ''
                 power = 'Turn on'
 
@@ -256,8 +254,7 @@ class WiFi:
             ).split('\n') if line])
 
             selection = subprocess.run(
-                ['dmenu', '-p', '{} WiFi> '.format(icon),
-                 '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Wifi>', '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input=options,
@@ -278,5 +275,5 @@ class WiFi:
 
 
 if __name__ == '__main__':
-    wifi = WiFi()
+    wifi = Wifi()
     wifi.show_main_menu()
