@@ -9,11 +9,14 @@ cmd('autocmd BufEnter * lua require"completion".on_attach()')
 
 add_source('vimtex', sources.vimtex.complete_item)
 
--- :help g:completion_chain_complete_list for a lot more customization options
 g.completion_chain_complete_list = {
   default = {
     {complete_items = {'path'}, triggered_only = {'/'}},
     {complete_items = {'lsp'}},
+  },
+
+  nix = {
+    {complete_items = {'path'}, triggered_only = {'/'}},
   },
 
   tex = {
@@ -21,6 +24,7 @@ g.completion_chain_complete_list = {
   },
 }
 
+g.completion_auto_change_source = 1
 g.completion_confirm_key = ''
 g.completion_enable_auto_paren = 1
 g.completion_enable_snippet = 'UltiSnips'

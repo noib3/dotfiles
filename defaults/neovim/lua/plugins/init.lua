@@ -17,6 +17,7 @@ local configs = {
   lspkind = function() require('plugins/config/lspkind') end,
   markdown_preview = function() require('plugins/config/markdown-preview') end,
   rust = function() require('plugins/config/rust') end,
+  shade = function() require('plugins/config/shade') end,
   treesitter = function() require('plugins/config/treesitter') end,
   truezen = function() require('plugins/config/truezen') end,
   ultisnips = function() require('plugins/config/ultisnips') end,
@@ -62,6 +63,7 @@ return packer.startup(function()
     run = 'cd app && yarn install',
   }
   use {'rust-lang/rust.vim', config = configs.rust, ft = 'rust'}
+  use {'sunjon/Shade.nvim', config = configs.shade}
   use {'nvim-treesitter/nvim-treesitter', config = configs.treesitter}
   use {'Pocco81/TrueZen.nvim', config = configs.truezen}
   -- use {'SirVer/ultisnips', config = configs.ultisnips}

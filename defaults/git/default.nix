@@ -13,7 +13,7 @@
     };
 
     pager = {
-      # diff = "delta";
+      diff = "delta";
       log = "delta";
       reflog = "delta";
       show = "delta";

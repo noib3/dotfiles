@@ -315,7 +315,6 @@ in
       libnotify
       lua5_4
       jmtpfs
-      jq # A cli JSON parser
       keyutils
       mediainfo
       mkvtoolnix-cli
@@ -385,29 +384,18 @@ in
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
       RIPGREP_CONFIG_PATH = dirs.defaults + /ripgrep/ripgreprc;
+      SYNCDIR = builtins.toString ../../..;
     };
   };
 
   nixpkgs.overlays = [
     (self: super: {
-      direnv = unstable.direnv;
-      fzf = unstable.fzf;
       lf = unstable.lf;
-      lua5_4 = unstable.lua5_4;
-      ookla-speedtest-cli = super.callPackage ./overlays/ookla-speedtest-cli.nix { };
-      python39 = unstable.python39;
-      tree-sitter = unstable.tree-sitter;
-      ueberzug = unstable.ueberzug;
-      vimiv-qt = unstable.vimiv-qt;
-      vimv = unstable.vimv;
     })
 
-    (import (
-      builtins.fetchTarball {
-        url =
-          https://github.com/nix-community/neovim-nightly-overlay/archive/2aff1c0.tar.gz;
-      }
-    ))
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
   ];
 
   xdg.configFile = {
@@ -427,10 +415,6 @@ in
           colors = import (dirs.colorscheme + /neovim.nix);
         }
       );
-    };
-
-    "nvim/lua/options/spellfile.lua" = {
-      text = import (dirs.defaults + /neovim/lua/options/spellfile.lua.nix);
     };
 
     "nvim/lua/plugins/config/lsp/sumneko_paths.lua" = {
@@ -494,6 +478,7 @@ in
 
   programs.fzf = {
     enable = true;
+    package = unstable.fzf;
   } // configs.fzf;
 
   programs.git = {

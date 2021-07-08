@@ -1,3 +1,0 @@
-/defaults/couchdb/secrets/*   filter=git-crypt diff=git-crypt
-/defaults/neovim/spell/*      filter=git-crypt diff=git-crypt
-/machines/*/secrets/**        filter=git-crypt diff=git-crypt

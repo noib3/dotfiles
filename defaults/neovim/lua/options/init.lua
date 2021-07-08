@@ -1,5 +1,3 @@
-local spellfile = require('options/spellfile')
-
 local opt = vim.opt
 
 opt.autochdir = true
@@ -21,7 +19,7 @@ opt.scrolloff = 1
 opt.shiftwidth = 2
 opt.showbreak = '↪ '
 opt.smartcase = true
-opt.spellfile = spellfile.spellfile
+opt.spellfile = string.format('{}/spell', vim.env.SYNCDIR)
 opt.splitright = true
 opt.splitbelow = true
 opt.swapfile = false

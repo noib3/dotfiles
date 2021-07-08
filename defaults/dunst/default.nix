@@ -10,7 +10,7 @@
   settings = {
     global = {
       font = "${font.family} ${font.size}";
-      geometry = "375x0-17+40";
+      geometry = "375x0-17+38";
       frame_width = "2";
       frame_color = "${colors.border}";
       icon_position = "left";

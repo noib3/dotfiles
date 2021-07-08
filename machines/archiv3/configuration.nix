@@ -2,13 +2,6 @@
 let
   unstable = import <nixos-unstable> { };
 
-  user-passwords = {
-    "noib3" = lib.strings.removeSuffix "\n"
-      (builtins.readFile ./secrets/users.noib3.pwd);
-    "couchdb" = lib.strings.removeSuffix "\n"
-      (builtins.readFile ./secrets/users.couchdb.pwd);
-  };
-
   configs = {
     couchdb =
       (import ../../defaults/couchdb { inherit lib; })
@@ -29,7 +22,6 @@ in
   ];
 
   users = {
-    mutableUsers = false;
     users = {
       "noib3" = {
         home = "/home/noib3";
@@ -39,7 +31,6 @@ in
         openssh.authorizedKeys.keyFiles = [
           ./ssh-authorized-keys/noib3.pub
         ];
-        password = user-passwords.noib3;
       };
 
       "couchdb" = {
@@ -48,7 +39,6 @@ in
         isSystemUser = true;
         createHome = true;
         extraGroups = [ "couchdb" ];
-        password = user-passwords.couchdb;
       };
     };
   };
