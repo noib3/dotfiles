@@ -1,18 +1,17 @@
-## :european_castle: dotfiles
+# :european_castle: dotfiles
 
-Hi, this is the repository where I keep the all the configuration files for
-the programs I use across my machines. I use
-[home-manager](https://github.com/nix-community/home-manager) to manage my
-user environments, which means most of the configuration files are written in
-Nix.
+Hi, this is the repository where I keep all the configuration files for the
+programs I use across my machines. I use
+[home-manager](https://github.com/nix-community/home-manager) to manage my user
+environments, which means most of the configuration files are written in Nix.
 
-### Repository structure
+## Repository structure
 
 The repository is structured as follows:
 
   * `/colorschemes`: every subfolder inside it represents a different color
-  scheme and it contains color specifications for various programs. For
-  example:
+  scheme and it contains a `background.png` file along with color
+  specifications for various programs. For example:
 
   ``` nix
   # /colorschemes/afterglow/bspwm.nix
@@ -39,12 +38,12 @@ The repository is structured as follows:
     * a `fonts` directory containing font size configurations for various
     fonts and programs;
 
-  along with other miscellaneous files related to that machine;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; along with other miscellaneous files related to that machine;
 
   * `/programs`: this is the heart of this repository as it is where the base
   configurations for all the programs I'm using live.
 
-### Gallery
+## Gallery
 
 The following screenshots were taken on the
 [blade](https://github.com/noib3/dotfiles/blob/master/machines/blade) machine
