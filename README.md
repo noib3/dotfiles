@@ -1,43 +1,20 @@
-# :art: dotfiles
+## :european_castle: dotfiles
 
-Hi, these are my dotfiles. Before talking about how the repository is
-structured, here's a quick showdown of the various programs I use on a
-day-to-day basis:
+Hi, this is the repository where I keep the all the configuration files for
+the programs I use across my machines. I use
+[home-manager](https://github.com/nix-community/home-manager) to manage my
+user environments, which means most of the configuration files are written in
+Nix.
 
-WIP
+### Repository structure
 
-## Motivation
+The repository is structured as follows:
 
-WIP
+  * `/colorschemes`: every subfolder inside it represents a different color
+  scheme and it contains color specifications for various programs. For
+  example:
 
-## Why NixOS and home-manager?
-
-WIP
-
-## File structure
-
-```
-.
-├── colorschemes
-│   ├── afterglow
-│   ├── gruvbox
-│   └── onedark
-├── defaults
-│   ├── alacritty
-│   ├── ...
-│   └── zathura
-├── machines
-│   ├── archiv3
-│   ├── blade
-│   └── mbair
-└── modules
-    └── programs
-        └── ...
-```
-
-* `/colorschemes`: it contains color specifications for various programs
-  divided into color schemes. For example:
-  ```nix
+  ``` nix
   # /colorschemes/afterglow/bspwm.nix
   {
     normal_border = "#393939";
@@ -45,7 +22,7 @@ WIP
     focused_border = "#797979";
   }
   ```
-  ```nix
+  ``` nix
   # /colorschemes/gruvbox/bspwm.nix
   {
     normal_border = "#3c3836";
@@ -54,39 +31,49 @@ WIP
   }
   ```
 
-* `/defaults`: this is where the base configurations for all the programs
-  live: the default firefox config is in `/defaults/firefox`, the default
-  neovim config is in `/defaults/neovim`, and so on;
+  * `/machines`: every subfolder inside it represents a different machine
+  (some using NixOS, others macOS) and it usually contains:
 
-* `/machines`: this is where machine-specific configurations live. I'm
-  currently managing three machines: a 2021 15" Razer Blade running NixOS, a
-  2012 13" MacBook Air running macOS and a DigitalOcean droplet running NixOS.
-  Each `/machines/<machine>` folder usually contains:
+    * that machine's `home.nix`, i.e. home-manager's entry point;
+    * a `configuration.nix` if that machine uses NixOS;
+    * a `fonts` directory containing font size configurations for various
+    fonts and programs;
 
-  * the machine's `home.nix` file (as well as a `configuration.nix` file if it
-    runs NixOS);
-  * a `fonts` directory containing font-specific program configurations;
-  * an `overrides` directory to extend program configurations beyond the base
-    configs located inside the `/defaults` folder;
-  * a `scripts` directory containing various shell scripts;
+  along with other miscellaneous files related to that machine;
 
-* `/modules`: it contains additional configuration modules for programs not yet
-  present in home-manager.
+  * `/programs`: this is the heart of this repository as it is where the base
+  configurations for all the programs I'm using live.
 
-## How it all fits together
+### Gallery
 
-WIP
+The following screenshots were taken on the
+[blade](https://github.com/noib3/dotfiles/blob/master/machines/blade) machine
+using the
+[onedark](https://github.com/noib3/dotfiles/blob/master/colorschemes/onedark)
+color scheme together with the [Fira
+Code](https://github.com/noib3/dotfiles/blob/master/machines/blade/fonts/fira-code)
+Nerd font.
 
-## Some `/defaults` you might like
+| *Clean* |
+| :--: |
+| ![clean](./machines/blade/screenshots/clean.png) |
 
-| ***My qutebrowser-inspired [firefox config](https://github.com/noib3/dotfiles/blob/master/defaults/firefox)*** |
-|:--:|
-| ![bookmarks](./defaults/firefox/screenshots/fwf2b0tvihy51.png) |
-| ![urls](./defaults/firefox/screenshots/0199t0svihy51.png) |
-| ***My [fzf config](https://github.com/noib3/dotfiles/blob/master/defaults/fzf)*** |
-| ![fuzzy_edit](./defaults/fzf/screenshots/2021-04-12@19:06:44.png) |
-| ![fuzzy_cd](./defaults/fzf/screenshots/2021-04-12@19:07:06.png) |
-| ***My [neovim config](https://github.com/noib3/dotfiles/blob/master/defaults/neovim)*** |
-| ![fuzzy_edit](./defaults/neovim/screenshots/2021-04-12@15:40:08.png) |
-| ![fuzzy_cd](./defaults/neovim/screenshots/2021-04-12@15:41:09.png) |
-| ***My [qutebrowser config](https://github.com/noib3/dotfiles/blob/master/defaults/qutebrowser)*** |
+| *System infos* |
+| :--: |
+| ![sysinfos](./machines/blade/screenshots/sysinfos.png) |
+
+| *Notifications* |
+| :--: |
+| ![notifications](./machines/blade/screenshots/notifications.png) |
+
+| *qutebrowser* |
+| :--: |
+| ![qutebrowser](./machines/blade/screenshots/qutebrowser.png) |
+
+| *Editing this README inside neovim with markdown previews* |
+| :--: |
+| ![qutebrowser](./machines/blade/screenshots/markdown-preview.png) |
+
+| *Fzf inside neovim with ueberzug image previews* |
+| :--: |
+| ![qutebrowser](./machines/blade/screenshots/neovim-fzf-image-previews.png) |
