@@ -1,5 +1,5 @@
 {
-  ignores = [
+  ignored = [
     "**/.direnv"
     "**/.git"
     "**/.stfolder"

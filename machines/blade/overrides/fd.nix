@@ -1,9 +1,9 @@
 { default }:
 
 {
-  ignores = [
+  ignored = [
     "/*"
     "!/Downloads"
     "!/sync"
-  ] ++ default.ignores;
+  ] ++ default.ignored;
 }

@@ -5,17 +5,15 @@ let
   cfg = config.services.fusuma;
   yaml = pkgs.formats.yaml { };
 
-  json = pkgs.writeText "config.json" (builtins.toJSON cfg.settings);
-  cfgyaml = pkgs.runCommand "configuration.yaml" { preferLocalBuild = true; } ''
-    ${pkgs.remarshal}/bin/json2yaml -i ${json} -o $out
-  '';
+  # json = pkgs.writeText "config.json" (builtins.toJSON cfg.settings);
+  # cfgyaml = pkgs.runCommand "configuration.yaml" { preferLocalBuild = true; } ''
+  #   ${pkgs.remarshal}/bin/json2yaml -i ${json} -o $out
+  # '';
 
 in
 {
-  meta.maintainers = [ maintainers.noib3 ];
-
   options.services.fusuma = {
-    enable = mkEnableOption "Multitouch gesture recognizer";
+    enable = mkEnableOption "Enable fusuma service";
 
     package = mkOption {
       type = types.package;
@@ -29,13 +27,11 @@ in
       default = { };
       example = literalExample ''
         {
-          core = {
-            regular_file = [ "$fi" ];
-            directory = [ "$di" ];
-          };
-          text = {
-            readme = [ "README.md" ];
-            licenses = [ "LICENSE" ];
+          swipe = {
+            "3" = {
+              left.command = "xdotool key shift+l";
+              right.command = "xdotool key shift+h";
+            };
           };
         }
       '';
@@ -49,12 +45,14 @@ in
   config = mkIf cfg.enable {
     home.packages = [ cfg.package ];
 
-    xdg.configFile."fusuma/config.yml".source = cfgyaml;
-
     # xdg.configFile = {
-    #   "fusuma/config.yml".source =
-    #     yaml.generate "config.yml" cfg.settings;
+    #   "fusuma/config.yml".source = cfgyaml;
     # };
+
+    xdg.configFile = {
+      "fusuma/config.yml".source =
+        yaml.generate "config.yml" cfg.settings;
+    };
 
     systemd.user.services.fusuma = {
       Unit = {
@@ -62,7 +60,7 @@ in
       };
 
       Service = {
-        ExecStart = "${pkgs.fusuma}/bin/fusuma";
+        ExecStart = "${cfg.package}/bin/fusuma";
       };
 
       Install = {
@@ -70,4 +68,8 @@ in
       };
     };
   };
+
+  meta.maintainers = with lib.maintainers; [
+    noib3
+  ];
 }

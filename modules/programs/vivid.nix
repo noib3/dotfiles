@@ -6,8 +6,6 @@ let
   yaml = pkgs.formats.yaml { };
 in
 {
-  meta.maintainers = [ maintainers.noib3 ];
-
   options.programs.vivid = {
     enable = mkEnableOption "vivid";
 
@@ -44,7 +42,7 @@ in
       default = { };
       example = literalExample ''
         {
-          theme = {
+          mytheme = {
             colors = {
               blue = "0000ff";
             };
@@ -78,4 +76,9 @@ in
       )
       cfg.themes;
   };
+
+  meta.maintainers = with lib.maintainers; [
+    noib3
+  ];
+
 }

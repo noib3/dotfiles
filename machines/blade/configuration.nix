@@ -5,19 +5,19 @@ let
   colorscheme = "onedark";
 
   dirs = {
-    defaults = ../../defaults;
+    programs = ../../programs;
     colorscheme = ../../colorschemes + "/${colorscheme}";
   };
 
   configs = {
-    couchdb = (import (dirs.defaults + /couchdb) { inherit lib; });
+    couchdb = import (dirs.programs + /couchdb);
     grub = (
-      import (dirs.defaults + /grub) {
+      import (dirs.programs + /grub) {
         colors = import (dirs.colorscheme + /grub.nix);
         background-image = dirs.colorscheme + /background.png;
       }
     );
-    transmission = import (dirs.defaults + /transmission);
+    transmission = import (dirs.programs + /transmission);
   };
 
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''

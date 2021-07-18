@@ -210,8 +210,8 @@ in
       "gre" = "open https://reddit.com";
       "tre" = "open -t https://reddit.com";
 
-      "gub" = "open https://github.com/noib3";
-      "tub" = "open -t https://github.com/noib3";
+      "gtb" = "open https://github.com/noib3";
+      "ttb" = "open -t https://github.com/noib3";
 
       "grhm" = "open https://github.com/nix-community/home-manager/find/master";
       "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";
@@ -224,6 +224,9 @@ in
 
       "gfp" = "open https://www.myfitnesspal.com/food/diary";
       "tfp" = "open -t https://www.myfitnesspal.com/food/diary";
+
+      "gyab" = "open https://youatb.unibocconi.it/";
+      "tyab" = "open -t https://youatb.unibocconi.it/";
 
       "g12ft" = "open https://12ft.io/";
       "t12ft" = "open -t https://12ft.io/";

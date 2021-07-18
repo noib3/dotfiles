@@ -1,5 +1,9 @@
-{ colors, scripts }:
+{ pkgs, colors }:
 
+let
+  mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
+    (builtins.readFile (./scripts/mpv-focus-prev.sh));
+in
 {
   settings = {
     "window_gap" = 25;
@@ -28,10 +32,10 @@
   };
 
   startupPrograms = [
-    "fusuma"
+    # "fusuma"
     "unclutter -idle 10"
     "xbanish"
-    "${scripts.mpv-focus-prev}/bin/mpv-focus-prev"
+    "${mpv-focus-prev}/bin/mpv-focus-prev"
   ];
 
   extraConfig = ''
@@ -39,7 +43,6 @@
     xset s off
 
     systemctl --user start pulseaudio.service
-    systemctl --user start mpris-proxy.service
     systemctl --user restart polybar.service
   '';
 }

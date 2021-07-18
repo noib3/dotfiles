@@ -12,7 +12,7 @@ in
       fd, A simple, fast and user-friendly alternative to 'find'
     '';
 
-    ignores = mkOption {
+    ignored = mkOption {
       type = types.listOf types.str;
       default = [ ];
       example = [
@@ -29,8 +29,8 @@ in
   config = mkIf cfg.enable {
     home.packages = [ pkgs.fd ];
 
-    xdg.configFile."fd/ignore" = mkIf (cfg.ignores != [ ]) {
-      text = concatStringsSep "\n" cfg.ignores + "\n";
+    xdg.configFile."fd/ignore" = mkIf (cfg.ignored != [ ]) {
+      text = concatStringsSep "\n" cfg.ignored + "\n";
     };
   };
 }
