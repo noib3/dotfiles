@@ -20,7 +20,6 @@ results="$(\
         --bind="change:reload:$reload_query" \
         --preview='rg-previewer {}' \
         --preview-window='+{2}-/2' \
-        --preview-window='border-left' \
 )"
 
 [ ! -z "$results" ] || exit 0

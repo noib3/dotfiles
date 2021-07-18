@@ -30,6 +30,9 @@ The repository is structured as follows:
   }
   ```
 
+  * `/configs`: this is the heart of this repository as it is where the base
+  configurations for all the programs I'm using live;
+
   * `/machines`: every subfolder inside it represents a different machine
   (some using NixOS, others macOS) and it usually contains:
 
@@ -38,10 +41,8 @@ The repository is structured as follows:
     * a `fonts` directory containing font size configurations for various
     fonts and programs;
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; along with other miscellaneous files related to that machine;
-
-  * `/programs`: this is the heart of this repository as it is where the base
-  configurations for all the programs I'm using live.
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; along with other miscellaneous files
+  related to that machine.
 
 ## Gallery
 

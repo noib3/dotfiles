@@ -1,5 +1,11 @@
-{ pkgs, colors }:
+{ pkgs, lib, colors }:
 
+let
+  cols = with lib;
+    attrsets.mapAttrs
+      (name: value: strings.removePrefix "#" value)
+      colors;
+in
 {
   shellAliases = {
     cat = "bat";
@@ -34,12 +40,12 @@
     set fish_color_valid_path --underline
     set fish_color_redirection white
 
-    set fish_color_param ${colors.param}
-    set fish_color_operator ${colors.operator}
-    set fish_color_autosuggestion ${colors.autosuggestion} --italics
-    set fish_color_comment ${colors.comment} --italics
-    set fish_color_end ${colors.end}
-    set fish_color_selection --background=${colors.selection_bg}
+    set fish_color_param ${cols.param}
+    set fish_color_operator ${cols.operator}
+    set fish_color_autosuggestion ${cols.autosuggestion} --italics
+    set fish_color_comment ${cols.comment} --italics
+    set fish_color_end ${cols.end}
+    set fish_color_selection --background=${cols.selection-bg}
 
     fish_vi_key_bindings
 
@@ -73,7 +79,7 @@
   '';
 
   promptInit = ''
-    any-nix-shell fish --info-right | source
+    ${pkgs.any-nix-shell}/bin/any-nix-shell fish --info-right | source
   '';
 
   plugins = [
@@ -103,9 +109,7 @@
 
     fuzzy_edit.body = ''
       set -l filenames (
-        fzf --multi --prompt='Edit> ' \
-          --preview='previewer ~/{}' \
-          --preview-window=border-left \
+        fzf --multi --prompt='Edit> ' --preview='previewer ~/{}' \
           | sed 's/\ /\\\ /g;s!^!~/!' \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//' \
@@ -151,9 +155,7 @@
 
     fuzzy_search.body = ''
       set -l filenames (
-        fzf --multi --prompt='Paste> ' \
-          --preview='previewer ~/{}' \
-          --preview-window=border-left \
+        fzf --multi --prompt='Paste> ' --preview='previewer ~/{}' \
           | sed 's/\ /\\\ /g;s!^!~/!' \
           | tr '\n' ' ' \
           | sed 's/[[:space:]]*$//' \

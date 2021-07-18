@@ -15,7 +15,6 @@ if [ -n "$DISPLAY" ]; then
 
   fzf \
     --preview 'previewer ~/{}' \
-    --preview-window border-left \
     --bind "change:execute-silent(cleaner)" \
     --bind "ctrl-k:execute-silent(cleaner)+up" \
     --bind "ctrl-p:execute-silent(cleaner)+up" \

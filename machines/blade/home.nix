@@ -6,10 +6,11 @@ let
   font = "fira-code";
 
   dirs = {
-    programs = ../../programs;
     colorscheme = ../../colorschemes + "/${colorscheme}";
+    configs = ../../configs;
     font = ./fonts + "/${font}";
     screenshots = config.home.homeDirectory + "/sync/screenshots";
+    sync = config.home.homeDirectory + "/sync";
   };
 
   desktop-items = with pkgs; {
@@ -29,30 +30,25 @@ let
       };
   };
 
-  # scripts.bspwm = with pkgs; {
-  #   mpv-focus-prev = writeShellScriptBin "mpv-focus-prev"
-  #     (builtins.readFile (dirs.programs + /bspwm/scripts/mpv-focus-prev.sh));
-  # };
-
   scripts.dmenu = with pkgs; {
     open = writeShellScriptBin "dmenu-open"
-      (builtins.readFile (dirs.programs + /dmenu/scripts/dmenu-open.sh));
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-open.sh));
 
     run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
 
     wifi = writers.writePython3Bin "dmenu-wifi"
       { libraries = [ python38Packages.pygobject3 ]; }
-      (builtins.readFile (dirs.programs + /dmenu/scripts/dmenu-wifi.py));
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-wifi.py));
 
     bluetooth = writers.writePython3Bin "dmenu-bluetooth" { }
-      (builtins.readFile (dirs.programs + /dmenu/scripts/dmenu-bluetooth.py));
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-bluetooth.py));
 
     powermenu = writers.writePython3Bin "dmenu-powermenu" { }
-      (builtins.readFile (dirs.programs + /dmenu/scripts/dmenu-powermenu.py));
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-powermenu.py));
 
     xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
       (
-        import (dirs.programs + /dmenu/scripts/dmenu-xembed.sh.nix) {
+        import (dirs.configs + /dmenu/scripts/dmenu-xembed.sh.nix) {
           font = (import (dirs.font + /qutebrowser.nix)).dmenu;
           colors = (import (dirs.colorscheme + /qutebrowser.nix)).dmenu;
         }
@@ -61,36 +57,36 @@ let
 
   scripts.lf = with pkgs; {
     cleaner = writeShellScriptBin "cleaner"
-      (builtins.readFile (dirs.programs + /lf/cleaner.sh));
+      (builtins.readFile (dirs.configs + /lf/cleaner.sh));
 
     previewer = writeShellScriptBin "previewer"
-      (builtins.readFile (dirs.programs + /lf/previewer.sh));
+      (builtins.readFile (dirs.configs + /lf/previewer.sh));
   };
 
   scripts.fzf = with pkgs; {
     fuzzy-ripgrep = writeShellScriptBin "fuzzy-ripgrep"
-      (builtins.readFile (dirs.programs + /fzf/scripts/fuzzy-ripgrep.sh));
+      (builtins.readFile (dirs.configs + /fzf/scripts/fuzzy-ripgrep.sh));
 
     rg-previewer = writeShellScriptBin "rg-previewer"
-      (builtins.readFile (dirs.programs + /fzf/scripts/rg-previewer.sh));
+      (builtins.readFile (dirs.configs + /fzf/scripts/rg-previewer.sh));
 
     ueberzug-previews = writeShellScriptBin "fzf-ueberzug-previews"
-      (builtins.readFile (dirs.programs + /fzf/scripts/ueberzug-previews.sh));
+      (builtins.readFile (dirs.configs + /fzf/scripts/ueberzug-previews.sh));
   };
 
   scripts.qutebrowser = with pkgs; {
     add-torrent = writeShellScriptBin "add-torrent"
-      (builtins.readFile (dirs.programs + /qutebrowser/scripts/add-torrent.sh));
+      (builtins.readFile (dirs.configs + /qutebrowser/scripts/add-torrent.sh));
 
     fill-bitwarden = writers.writePython3Bin "fill-bitwarden"
       { libraries = [ python38Packages.tldextract ]; }
-      (builtins.readFile (dirs.programs + /qutebrowser/scripts/fill-bitwarden.py));
+      (builtins.readFile (dirs.configs + /qutebrowser/scripts/fill-bitwarden.py));
   };
 
   scripts.transmission = with pkgs; {
     notify-done = writeShellScriptBin "transmission-notify-done"
       (
-        import (dirs.programs + /transmission/scripts/notify-done-linux.sh.nix) {
+        import (dirs.configs + /transmission/scripts/notify-done-linux.sh.nix) {
           inherit pkgs;
         }
       );
@@ -114,7 +110,7 @@ let
     scripts.transmission.notify-done
 
     (hiPrio (writeShellScriptBin "lf" (
-      import (dirs.programs + /lf/launcher.sh.nix) { inherit pkgs; }
+      import (dirs.configs + /lf/launcher.sh.nix) { inherit pkgs; }
     )))
 
     (writeScriptBin "take-screenshot" (
@@ -129,7 +125,7 @@ let
   configs.alacritty =
     let
       default = (
-        import (dirs.programs + /alacritty) {
+        import (dirs.configs + /alacritty) {
           pkgs = unstable;
           font = import (dirs.font + /alacritty.nix);
           colors = import (dirs.colorscheme + /alacritty.nix);
@@ -140,19 +136,19 @@ let
       default
       (import ./overrides/alacritty.nix { default = default; });
 
-  configs.bat = import (dirs.programs + /bat);
+  configs.bat = import (dirs.configs + /bat);
 
   configs.bspwm = (
-    import (dirs.programs + /bspwm) {
+    import (dirs.configs + /bspwm) {
       inherit pkgs;
       colors = import (dirs.colorscheme + /bspwm.nix);
     }
   );
 
-  configs.direnv = import (dirs.programs + /direnv);
+  configs.direnv = import (dirs.configs + /direnv);
 
   configs.dunst = (
-    import (dirs.programs + /dunst) {
+    import (dirs.configs + /dunst) {
       inherit pkgs;
       font = import (dirs.font + /dunst.nix);
       colors = import (dirs.colorscheme + /dunst.nix);
@@ -161,12 +157,12 @@ let
 
   configs.fd =
     let
-      default = import (dirs.programs + /fd);
+      default = import (dirs.configs + /fd);
     in
     import ./overrides/fd.nix { default = default; };
 
   configs.firefox = (
-    import (dirs.programs + /firefox) {
+    import (dirs.configs + /firefox) {
       font = import (dirs.font + /firefox.nix);
       colors = import (dirs.colorscheme + /firefox.nix);
     }
@@ -174,40 +170,41 @@ let
 
   configs.fish = lib.attrsets.recursiveUpdate
     (
-      import (dirs.programs + /fish) {
-        inherit pkgs;
+      import (dirs.configs + /fish) {
+        inherit pkgs lib;
         colors = import (dirs.colorscheme + /fish.nix);
       }
     )
     (import ./overrides/fish.nix);
 
   configs.fzf = (
-    import (dirs.programs + /fzf) {
+    import (dirs.configs + /fzf) {
+      inherit lib;
       colors = import (dirs.colorscheme + /fzf.nix);
     }
   );
 
-  configs.fusuma = import (dirs.programs + /fusuma);
+  configs.fusuma = import (dirs.configs + /fusuma);
 
-  configs.git = import (dirs.programs + /git);
+  configs.git = import (dirs.configs + /git);
 
-  configs.gpgAgent = import (dirs.programs + /gpg/gpg-agent.nix);
+  configs.gpgAgent = import (dirs.configs + /gpg/gpg-agent.nix);
 
-  configs.lazygit = import (dirs.programs + /lazygit);
+  configs.lazygit = import (dirs.configs + /lazygit);
 
   configs.lf = lib.attrsets.recursiveUpdate
-    (import (dirs.programs + /lf) {
+    (import (dirs.configs + /lf) {
       previewer = scripts.lf.previewer;
       cleaner = scripts.lf.cleaner;
     })
     (import ./overrides/lf.nix);
 
-  configs.mpv = import (dirs.programs + /mpv);
+  configs.mpv = import (dirs.configs + /mpv);
 
-  configs.picom = import (dirs.programs + /picom);
+  configs.picom = import (dirs.configs + /picom);
 
   configs.polybar = (
-    import (dirs.programs + /polybar) {
+    import (dirs.configs + /polybar) {
       inherit lib;
       fonts = import (dirs.font + /polybar.nix);
       colors = import (dirs.colorscheme + /polybar.nix);
@@ -215,49 +212,49 @@ let
   );
 
   configs.qutebrowser = (
-    import (dirs.programs + /qutebrowser) {
+    import (dirs.configs + /qutebrowser) {
       font = import (dirs.font + /qutebrowser.nix);
       colors = import (dirs.colorscheme + /qutebrowser.nix);
       scripts = scripts.qutebrowser;
     }
   );
 
-  configs.redshift = import (dirs.programs + /redshift);
+  configs.redshift = import (dirs.configs + /redshift);
 
   configs.starship = (
-    import (dirs.programs + /starship) {
+    import (dirs.configs + /starship) {
       inherit lib;
     }
   );
 
-  configs.sxhkd = import (dirs.programs + /sxhkd);
+  configs.sxhkd = import (dirs.configs + /sxhkd);
 
-  configs.ssh = import (dirs.programs + /ssh);
+  configs.ssh = import (dirs.configs + /ssh);
 
   configs.tridactyl = (
-    import (dirs.programs + /tridactyl) {
+    import (dirs.configs + /tridactyl) {
       font = import (dirs.font + /tridactyl.nix);
       colors = import (dirs.colorscheme + /tridactyl.nix);
     }
   );
 
-  configs.udiskie = import (dirs.programs + /udiskie);
+  configs.udiskie = import (dirs.configs + /udiskie);
 
   configs.vivid = (
-    import (dirs.programs + /vivid) {
+    import (dirs.configs + /vivid) {
       colors = import (dirs.colorscheme + /vivid.nix);
     }
   );
 
   configs.zathura = (
-    import (dirs.programs + /zathura) {
+    import (dirs.configs + /zathura) {
       font = import (dirs.font + /zathura.nix);
       colors = import (dirs.colorscheme + /zathura.nix);
     }
   );
 
   dmenu = (
-    import (dirs.programs + /dmenu) {
+    import (dirs.configs + /dmenu) {
       inherit pkgs;
       font = import (dirs.font + /dmenu.nix);
       colors = import (dirs.colorscheme + /dmenu.nix);
@@ -290,7 +287,6 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      any-nix-shell
       atool
       bitwarden
       bitwarden-cli
@@ -376,13 +372,15 @@ in
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
       LS_COLORS = "$(vivid generate current)";
-      LF_ICONS = (builtins.readFile (dirs.programs + /lf/LF_ICONS));
+      LF_ICONS = (builtins.readFile (dirs.configs + /lf/LF_ICONS));
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
-      RIPGREP_CONFIG_PATH = dirs.programs + /ripgrep/ripgreprc;
+      RIPGREP_CONFIG_PATH = dirs.configs + /ripgrep/ripgreprc;
       SYNCDIR =
-        if lib.pathExists ../../.. then (builtins.toString ../../..)
-        else "";
+        if lib.pathExists dirs.sync then
+          (builtins.toString dirs.sync)
+        else
+          "";
     };
   };
 
@@ -398,17 +396,17 @@ in
 
   xdg.configFile = {
     # "fusuma/config.yml" = {
-    #   source = (dirs.programs + /fusuma/config.yml);
+    #   source = (dirs.configs + /fusuma/config.yml);
     # };
 
     "nvim" = {
-      source = (dirs.programs + /neovim);
+      source = (dirs.configs + /neovim);
       recursive = true;
     };
 
     "nvim/lua/colorscheme/init.lua" = {
       text = (
-        import (dirs.programs + /neovim/lua/colorscheme/init.lua.nix) {
+        import (dirs.configs + /neovim/lua/colorscheme/init.lua.nix) {
           inherit lib;
           colors = import (dirs.colorscheme + /neovim.nix);
         }
@@ -417,7 +415,7 @@ in
 
     "nvim/lua/plugins/config/lsp/sumneko_paths.lua" = {
       text = (
-        import (dirs.programs + /neovim/lua/plugins/config/lsp/sumneko_paths.lua.nix) {
+        import (dirs.configs + /neovim/lua/plugins/config/lsp/sumneko_paths.lua.nix) {
           inherit pkgs;
         }
       );
@@ -425,7 +423,7 @@ in
 
     "redshift/hooks/notify-change" = {
       text = (
-        import (dirs.programs + /redshift/scripts/notify-change-linux.sh.nix) {
+        import (dirs.configs + /redshift/scripts/notify-change-linux.sh.nix) {
           inherit pkgs;
         }
       );

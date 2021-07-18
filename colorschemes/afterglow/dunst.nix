@@ -1,4 +1,6 @@
 {
+  border = "#797979";
+
   urgency-low = {
     bg = "#393939";
     fg = "#d6d6d6";

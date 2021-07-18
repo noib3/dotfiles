@@ -1,6 +1,9 @@
+let
+  colors = import ./palette.nix;
+in
 {
-  bgplus = "#32363e";
-  border = "#4b5263";
-  dir = "1;38;2;97;175;239";
-  fgod = "1;38;2;92;96;115";
+  current-line.bg = colors.bright.black;
+  border = colors.bright.black;
+  directories = colors.normal.blue;
+  grayed-out-directories = colors.bright.white;
 }

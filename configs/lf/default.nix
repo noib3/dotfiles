@@ -56,7 +56,6 @@
         readarray -t filenames < <(\
           fzf --multi --prompt='Edit> ' \
             --preview 'previewer ~/{}' \
-            --preview-window border-left \
             | sed -r "s!^!$HOME/!" \
         )
         [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"

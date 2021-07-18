@@ -1,38 +1,23 @@
+let
+  colors = import ./palette.nix;
+in
 {
   primary = {
-    foreground = "#abb2bf";
-    background = "#282c34";
+    foreground = colors.normal.white;
+    background = colors.normal.black;
   };
 
   cursor = {
-    text = "#5c6370";
-    cursor = "#abb2bf";
+    text = colors.bright.black;
+    cursor = colors.normal.white;
   };
 
   selection = {
-    text = "#abb2bf";
-    background = "#4b5263";
+    text = colors.normal.white;
+    background = colors.bright.black;
   };
 
-  normal = {
-    black = "#5c6370";
-    red = "#e06c75";
-    green = "#98c379";
-    yellow = "#e5c07b";
-    blue = "#61afef";
-    magenta = "#c678dd";
-    cyan = "#56b6c2";
-    white = "#abb2bf";
-  };
+  normal = colors.normal;
 
-  bright = {
-    black = "#4b5263";
-    red = "#be5046";
-    green = "#98c379";
-    yellow = "#d19a66";
-    blue = "#61afef";
-    magenta = "#c678dd";
-    cyan = "#56b6c2";
-    white = "#3e4452";
-  };
+  bright = colors.bright;
 }
