@@ -1,8 +1,11 @@
+let
+  colors = import ./palette.nix;
+in
 {
-  autosuggestion = "#5c6073";
-  comment = "#5c6073";
-  param = "#56b6c2";
-  operator = "#56b6c2";
-  end = "#56b6c2";
-  selection-bg = "#5a647e";
+  autosuggestion = colors.bright.white;
+  comment = colors.bright.white;
+  param = colors.normal.cyan;
+  operator = colors.normal.cyan;
+  end = colors.normal.cyan;
+  selection-bg = colors.bright.black;
 }

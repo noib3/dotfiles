@@ -1,12 +1,20 @@
+let
+  colors = import ./palette.nix;
+  half-black = "#0d0d0d";
+  ninety-percent-blue = "#618aa8";
+in
 rec {
   normal = {
-    fg = "#d6d6d6";
-    bg = "#0d0d0d";
+    fg = colors.normal.white;
+    bg = half-black;
   };
+
   prompt = normal;
+
   selected = {
-    fg = "#d6d6d6";
-    bg = "#1a1a1a";
+    fg = colors.normal.white;
+    bg = colors.normal.black;
   };
-  highlight.fg = "#618aa8";
+
+  highlight.fg = ninety-percent-blue;
 }

@@ -1,4 +1,4 @@
-{ lib }:
+{ lib ? import <nixpkgs/lib> }:
 
 {
   settings = {

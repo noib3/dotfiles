@@ -1,59 +1,65 @@
+let
+  colors = import ./palette.nix;
+  onehundredtwenty-percent-bright-black = "#4b5263";
+  onehundredtwentyfive-percent-black = "#32363e";
+  firefox-private-urlbar = "#25003e";
+in
 {
   tabs = {
     unfocused = {
-      bg = "#282c34";
-      fg = "#abb2bf";
+      bg = colors.normal.black;
+      fg = colors.normal.white;
     };
     focused = {
-      bg = "#abb2bf";
-      fg = "#282c34";
+      bg = colors.normal.white;
+      fg = colors.normal.black;
     };
-    indicator.error = "#be5046";
-    indicator.start = "#61afef";
-    indicator.stop = "#98c379";
+    indicator.error = colors.bright.red;
+    indicator.start = colors.normal.blue;
+    indicator.stop = colors.normal.green;
   };
 
   hints = {
-    bg = "#3e4452";
-    fg = "#abb2bf";
-    match.fg = "#e5c07b";
+    bg = colors.bright.black;
+    fg = colors.normal.white;
+    match.fg = colors.normal.yellow;
   };
 
   completion = {
-    fg = "#abb2bf";
-    odd.bg = "#4b5263";
-    even.bg = "#3e4452";
-    header.bg = "#282c34";
-    urls.fg = "#61afef";
-    match.fg = "#be5046";
+    fg = colors.normal.white;
+    odd.bg = onehundredtwenty-percent-bright-black;
+    even.bg = colors.bright.black;
+    header.bg = colors.normal.black;
+    urls.fg = colors.normal.blue;
+    match.fg = colors.bright.red;
     selected = {
-      fg = "#282c34";
-      bg = "#61afef";
-      match.fg = "#be5046";
+      fg = colors.normal.black;
+      bg = colors.normal.blue;
+      match.fg = colors.bright.red;
     };
   };
 
   statusbar = {
-    bg = "#3e4452";
-    fg = "#abb2bf";
-    private.bg = "#25003e";
-    private.fg = "#abb2bf";
+    bg = colors.bright.black;
+    fg = colors.normal.white;
+    private.bg = firefox-private-urlbar;
+    private.fg = colors.normal.white;
   };
 
   messages = {
     error = {
-      bg = "#be5046";
-      fg = "#abb2bf";
+      bg = colors.bright.black;
+      fg = colors.normal.white;
     };
   };
 
   dmenu = {
-    normal.fg = "#abb2bf";
-    normal.bg = "#282c34";
-    prompt.fg = "#61afef";
-    prompt.bg = "#282c34";
-    selected.fg = "#abb2bf";
-    selected.bg = "#32363e";
-    highlight.fg = "#e5c07b";
+    normal.fg = colors.normal.white;
+    normal.bg = colors.normal.black;
+    prompt.fg = colors.normal.blue;
+    prompt.bg = colors.normal.black;
+    selected.fg = colors.normal.white;
+    selected.bg = onehundredtwentyfive-percent-black;
+    highlight.fg = colors.normal.yellow;
   };
 }

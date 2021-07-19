@@ -1,4 +1,4 @@
-{ lib, fonts, colors }:
+{ lib ? import <nixpkgs/lib>, fonts, colors }:
 
 let
   T1 = fonts.text;

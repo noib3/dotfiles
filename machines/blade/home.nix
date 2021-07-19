@@ -2,7 +2,7 @@
 let
   unstable = import <nixos-unstable> { };
 
-  colorscheme = "onedark";
+  colorscheme = "afterglow";
   font = "fira-code";
 
   dirs = {
@@ -179,7 +179,6 @@ let
 
   configs.fzf = (
     import (dirs.configs + /fzf) {
-      inherit lib;
       colors = import (dirs.colorscheme + /fzf.nix);
     }
   );
@@ -205,7 +204,6 @@ let
 
   configs.polybar = (
     import (dirs.configs + /polybar) {
-      inherit lib;
       fonts = import (dirs.font + /polybar.nix);
       colors = import (dirs.colorscheme + /polybar.nix);
     }
@@ -221,11 +219,7 @@ let
 
   configs.redshift = import (dirs.configs + /redshift);
 
-  configs.starship = (
-    import (dirs.configs + /starship) {
-      inherit lib;
-    }
-  );
+  configs.starship = (import (dirs.configs + /starship) { });
 
   configs.sxhkd = import (dirs.configs + /sxhkd);
 
@@ -407,7 +401,6 @@ in
     "nvim/lua/colorscheme/init.lua" = {
       text = (
         import (dirs.configs + /neovim/lua/colorscheme/init.lua.nix) {
-          inherit lib;
           colors = import (dirs.colorscheme + /neovim.nix);
         }
       );

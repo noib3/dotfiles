@@ -1,4 +1,4 @@
-rec {
+{
   normal = {
     black = "#282c34";
     red = "#e06c75";
@@ -19,10 +19,5 @@ rec {
     magenta = "#c678dd";
     cyan = "#56b6c2";
     white = "#5c6370";
-  };
-
-  misc = {
-    half-background = "#14161a";
-    ninety-percent-blue = "#579dd7";
   };
 }

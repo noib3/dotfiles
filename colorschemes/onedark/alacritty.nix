@@ -18,6 +18,5 @@ in
   };
 
   normal = colors.normal;
-
   bright = colors.bright;
 }

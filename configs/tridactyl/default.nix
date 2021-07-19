@@ -71,23 +71,23 @@
     current = ''
       :root {
         --tridactyl-hintspan-font-family: "${font.family}";
-        --tridactyl-hintspan-font-size: ${font.hintspan_size};
-        --tridactyl-hintspan-bg: ${colors.hintspan_bg};
-        --tridactyl-hintspan-fg: ${colors.hintspan_fg};
+        --tridactyl-hintspan-font-size: ${font.hints.size};
+        --tridactyl-hintspan-bg: ${colors.hints.bg};
+        --tridactyl-hintspan-fg: ${colors.hints.fg};
         --tridactyl-hint-bg: none;
         --tridactyl-hint-outline: none;
         --tridactyl-hint-active-bg: none;
         --tridactyl-hint-active-outline: none;
 
         --tridactyl-cmdl-font-family: "${font.family}";
-        --tridactyl-cmdl-font-size: ${font.cmdl_size};
-        --tridactyl-cmdl-bg: ${colors.cmdl_bg};
-        --tridactyl-cmdl-fg: ${colors.cmdl_fg};
+        --tridactyl-cmdl-font-size: ${font.commandline.size};
+        --tridactyl-cmdl-bg: ${colors.commandline.bg};
+        --tridactyl-cmdl-fg: ${colors.commandline.fg};
       }
 
       #command-line-holder,
       #tridactyl-input {
-        font-size: ${font.cmdl_size};
+        font-size: ${font.commandline.size};
         height: 1.3em;
         margin-top: -1px;
         margin-bottom: 2px;

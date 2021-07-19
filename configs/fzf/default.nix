@@ -1,4 +1,4 @@
-{ lib, colors }:
+{ lib ? import <nixpkgs/lib>, colors }:
 
 with lib; let
   # Returns the list obtained by splitting the input string every two

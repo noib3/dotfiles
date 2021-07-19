@@ -10,8 +10,8 @@ in
     "top_padding" = 20;
     "border_width" = 2;
     "focus_follows_pointer" = true;
-    "normal_border_color" = colors.border.normal;
-    "active_border_color" = colors.border.active;
+    "normal_border_color" = colors.border.unfocused;
+    "active_border_color" = colors.border.unfocused;
     "focused_border_color" = colors.border.focused;
   };
 

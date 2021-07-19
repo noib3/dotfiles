@@ -1,6 +1,10 @@
+let
+  colors = import ./palette.nix;
+  onehundredtwenty-percent-bright-black = "#242424";
+in
 {
-  bgplus = "#242424";
-  border = "#b05279";
-  dir = "1;38;2;108;153;187";
-  fgod = "1;38;2;121;121;121";
+  current-line.bg = onehundredtwenty-percent-bright-black;
+  border = colors.bright.black;
+  directories = colors.normal.blue;
+  grayed-out-directories = colors.bright.white;
 }

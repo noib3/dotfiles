@@ -1,59 +1,53 @@
+let
+  colors = import ./palette.nix;
+in
 {
   colorscheme = "onedark";
 
-  terminal = {
-    color0 = "#282c34";
-    color1 = "#e06c75";
-    color2 = "#98c379";
-    color3 = "#e5c07b";
-    color4 = "#61afef";
-    color5 = "#c678dd";
-    color6 = "#56b6c2";
-    color7 = "#abb2bf";
-  };
+  terminal = colors.normal;
 
   highlights = {
     "SpellBad" = {
-      guifg = "#e06c75";
+      guifg = colors.normal.red;
       gui = "undercurl";
     };
 
     "SpellCap" = {
-      guifg = "#d19a66";
+      guifg = colors.bright.yellow;
       gui = "NONE";
     };
 
     "Statusline" = {
-      guibg = "#282c34";
+      guibg = colors.normal.black;
     };
 
     "StatuslineNC" = {
-      guibg = "#282c34";
+      guibg = colors.normal.black;
     };
 
     "VertSplit" = {
-      guifg = "#5c6073";
+      guifg = colors.bright.white;
       guibg = "NONE";
     };
 
     "LspReferenceRead" = {
-      guibg = "#3e4452";
+      guibg = colors.bright.black;
     };
 
     "LspReferenceText" = {
-      guibg = "#3e4452";
+      guibg = colors.bright.black;
     };
 
     "LspReferenceWrite" = {
-      guibg = "#3e4452";
+      guibg = colors.bright.black;
     };
 
     "Whitespace" = {
-      guifg = "#5c6370";
+      guifg = colors.bright.white;
     };
 
     "FzfBorder" = {
-      guifg = "#5c6073";
+      guifg = colors.bright.white;
     };
   };
 }

@@ -1,7 +1,9 @@
+let
+  colors = import ./palette.nix;
+in
 {
   border = {
-    normal = "#393939";
-    active = "#393939";
-    focused = "#797979";
+    unfocused = colors.bright.black;
+    focused = colors.normal.white;
   };
 }

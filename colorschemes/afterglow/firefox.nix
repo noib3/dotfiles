@@ -1,32 +1,35 @@
+let
+  colors = import ./palette.nix;
+in
 {
   tabs = {
     unfocused = {
-      bg = "#1a1a1a";
-      fg = "#797979";
+      bg = colors.normal.black;
+      fg = colors.normal.white;
     };
 
     focused = {
-      bg = "#797979";
-      fg = "#d6d6d6";
+      bg = colors.normal.white;
+      fg = colors.normal.black;
     };
   };
 
   urlbar = {
-    bg = "#5a647e";
-    fg = "#d6d6d6";
-    url.fg = "#6c99bb";
-    separator = "#797979";
+    bg = colors.bright.black;
+    fg = colors.normal.white;
+    url.fg = colors.normal.blue;
+    separator = colors.bright.white;
 
     selected = {
-      bg = "#d6d6d6";
-      fg = "#5a647e";
+      bg = colors.normal.blue;
+      fg = colors.normal.black;
     };
   };
 
   sidebar = {
-    bg = "#4d5057";
-    fg = "#d6d6d6";
+    bg = colors.normal.white;
+    fg = colors.bright.black;
   };
 
-  about-blank.bg = "#1a1a1a";
+  about-blank.bg = colors.normal.black;
 }

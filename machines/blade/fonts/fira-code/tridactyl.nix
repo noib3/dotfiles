@@ -1,5 +1,5 @@
 {
   family = "FiraCode Nerd Font";
-  hintspan_size = "12px";
-  cmdl_size = "14px";
+  hints.size = "12px";
+  commandline.size = "14px";
 }
