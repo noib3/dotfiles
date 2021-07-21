@@ -4,7 +4,7 @@ in
 {
   boot-entry.fg = colors.normal.white;
   boot-entry.selected.fg = colors.normal.black;
-  boot-entry.selected.bg = colors.normal.blue;
-  countdown-message.fg = colors.normal.blue;
+  boot-entry.selected.bg = colors.normal.magenta;
+  countdown-message.fg = colors.normal.magenta;
   navigation-keys-message.fg = colors.bright.white;
 }

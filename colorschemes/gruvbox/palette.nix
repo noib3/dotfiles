@@ -11,13 +11,13 @@
   };
 
   bright = {
-    black = "#928374";
+    black = "#3c3836";
     red = "#fb4934";
     green = "#b8bb26";
     yellow = "#fabd2f";
     blue = "#83a598";
     magenta = "#d3869b";
     cyan = "#8ec07c";
-    white = "#ebdbb2";
+    white = "#a89984";
   };
 }

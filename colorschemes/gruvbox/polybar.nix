@@ -1,15 +1,39 @@
-{
-  bar.bg = "#282828";
-  bar.fg = "#a89984";
-  module.bg = "#3c3836";
+let
+  colors = import ./palette.nix;
+  ninety-percent-white = "#d4c5a0";
+in
+rec {
+  bar.fg = ninety-percent-white;
+  bar.bg = "#00000000";
 
-  bspwm.focused.bg = "#3c3836";
-  bspwm.occupied.fg = "#a89984";
-  bspwm.empty.fg = "#928374";
+  power.icon = bar.fg;
 
-  icons.bluetooth.on.fg = "#458588";
-  icons.bluetooth.off.fg = "#928374";
-  icons.ethernet.fg = "#d79921";
-  icons.wifi.on.fg = "#98971a";
-  icons.wifi.off.fg = "#928374";
+  workspaces = {
+    focused.bg = colors.normal.black;
+    occupied.fg = bar.fg;
+    empty.fg = colors.bright.white;
+  };
+
+  bluetooth = {
+    icon.on = bar.fg;
+    icon.off = colors.bright.white;
+    icon.connected = colors.normal.blue;
+  };
+
+  wifi = {
+    icon.on = colors.normal.green;
+    icon.off = colors.bright.white;
+  };
+
+  ethernet.icon = colors.bright.yellow;
+
+  battery = {
+    icon.charging = colors.normal.cyan;
+    icon.dying = colors.normal.red;
+    icon.low = colors.normal.yellow;
+    icon.ok = colors.normal.green;
+  };
+
+  datetime.icon = colors.normal.yellow;
+  notification-center.icon = bar.fg;
 }

@@ -40,7 +40,7 @@ in
 
       completion = {
         category.bg = colors.completion.header.bg;
-        category.fg = colors.completion.urls.fg;
+        category.fg = colors.completion.header.fg;
         category.border.top = colors.completion.header.bg;
         category.border.bottom = colors.completion.header.bg;
 

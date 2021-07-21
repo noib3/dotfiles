@@ -1,5 +1,8 @@
+let
+  colors = import ./palette.nix;
+in
 {
-  background = "0xff3c3836";
-  foreground = "0xffa89984";
-  space_icon = "0xfffabd2f";
+  fg = colors.bright.white;
+  bg = colors.bright.black;
+  focused-workspace.fg = colors.bright.yellow;
 }

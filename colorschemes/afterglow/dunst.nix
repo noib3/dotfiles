@@ -1,8 +1,9 @@
 let
   colors = import ./palette.nix;
+  ninetysix-percent-white = "#b9b9b9";
 in
 rec {
-  border = colors.normal.white;
+  border = ninetysix-percent-white;
 
   urgency-normal = {
     bg = colors.normal.black;

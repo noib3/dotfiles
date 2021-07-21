@@ -1,15 +1,16 @@
 let
   colors = import ./palette.nix;
-  ninety-percent-white = "#c1c1c1";
+  ninetyseven-percent-white = "#bababa";
+  onehundredtwenty-percent-black = "#282828";
 in
 rec {
-  bar.fg = ninety-percent-white;
+  bar.fg = ninetyseven-percent-white;
   bar.bg = "#00000000";
 
   power.icon = bar.fg;
 
   workspaces = {
-    focused.bg = colors.normal.black;
+    focused.bg = onehundredtwenty-percent-black;
     occupied.fg = bar.fg;
     empty.fg = colors.bright.white;
   };
@@ -28,12 +29,12 @@ rec {
   ethernet.icon = colors.bright.yellow;
 
   battery = {
-    icon.charging = colors.normal.cyan;
+    icon.charging = colors.normal.magenta;
     icon.dying = colors.normal.red;
     icon.low = colors.normal.yellow;
     icon.ok = colors.normal.green;
   };
 
-  datetime.icon = colors.normal.yellow;
+  datetime.icon = colors.bright.yellow;
   notification-center.icon = bar.fg;
 }

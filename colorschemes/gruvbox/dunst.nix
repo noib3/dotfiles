@@ -1,18 +1,14 @@
-{
-  border = "#a89984";
-
-  urgency-low = {
-    bg = "#3c3836";
-    fg = "#a89984";
-  };
+let
+  colors = import ./palette.nix;
+in
+rec {
+  border = colors.bright.white;
 
   urgency-normal = {
-    bg = "#3c3836";
-    fg = "#a89984";
+    bg = colors.bright.black;
+    fg = colors.bright.white;
   };
 
-  urgency-critical = {
-    bg = "#3c3836";
-    fg = "#a89984";
-  };
+  urgency-low = urgency-normal;
+  urgency-critical = urgency-normal;
 }

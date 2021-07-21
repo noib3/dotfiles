@@ -1,9 +1,12 @@
+let
+  colors = import ./palette.nix;
+in
 {
-  default.bg = "#282828";
-  default.fg = "#ebdbb2";
+  default.bg = colors.normal.black;
+  default.fg = colors.normal.white;
 
-  inputbar.bg = "#3c3836";
-  inputbar.fg = "#ebdbb2";
+  inputbar.bg = colors.bright.black;
+  inputbar.fg = colors.normal.white;
 
-  highlight.bg = "#458588";
+  highlight.bg = colors.normal.blue;
 }

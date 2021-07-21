@@ -1,13 +1,13 @@
 let
   colors = import ./palette.nix;
-  onehundredtwenty-percent-bright-black = "#6c7897";
   onehundredtwentyfive-percent-black = "#212121";
-  firefox-private-urlbar = "#25003e";
+  ciao = "#282828";
+  ninetysix-percent-white = "#b9b9b9";
 in
 {
   tabs = {
     unfocused = {
-      bg = colors.normal.black;
+      bg = ciao;
       fg = colors.normal.white;
     };
     focused = {
@@ -25,41 +25,42 @@ in
     match.fg = colors.normal.yellow;
   };
 
-  completion = {
-    fg = colors.normal.white;
-    odd.bg = onehundredtwenty-percent-bright-black;
-    even.bg = colors.bright.black;
+  completion = rec {
+    fg = ninetysix-percent-white;
+    odd.bg = ciao;
+    even.bg = colors.normal.black;
     header.bg = colors.normal.black;
+    header.fg = colors.normal.magenta;
     urls.fg = colors.normal.blue;
-    match.fg = colors.normal.red;
+    match.fg = colors.normal.magenta;
     selected = {
-      fg = colors.normal.black;
-      bg = colors.normal.blue;
-      match.fg = colors.normal.red;
+      fg = colors.normal.white;
+      bg = colors.bright.black;
+      match.fg = match.fg;
     };
   };
 
   statusbar = {
-    bg = colors.bright.black;
-    fg = colors.normal.white;
-    private.bg = firefox-private-urlbar;
+    bg = colors.normal.black;
+    fg = ninetysix-percent-white;
+    private.bg = colors.normal.magenta;
     private.fg = colors.normal.white;
   };
 
   messages = {
     error = {
-      bg = colors.bright.black;
+      bg = colors.normal.red;
       fg = colors.normal.white;
     };
   };
 
-  dmenu = {
+  dmenu = rec {
     normal.fg = colors.normal.white;
-    normal.bg = colors.normal.black;
-    prompt.fg = colors.normal.blue;
-    prompt.bg = colors.normal.black;
+    normal.bg = ciao;
+    prompt.fg = colors.normal.magenta;
+    prompt.bg = normal.bg;
     selected.fg = colors.normal.white;
     selected.bg = onehundredtwentyfive-percent-black;
-    highlight.fg = colors.normal.yellow;
+    highlight.fg = colors.normal.magenta;
   };
 }

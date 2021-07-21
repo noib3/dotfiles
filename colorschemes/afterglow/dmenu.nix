@@ -2,6 +2,7 @@ let
   colors = import ./palette.nix;
   half-black = "#0d0d0d";
   ninety-percent-blue = "#618aa8";
+  onehundredtwenty-percent-black = "#282828";
 in
 rec {
   normal = {
@@ -13,8 +14,8 @@ rec {
 
   selected = {
     fg = colors.normal.white;
-    bg = colors.normal.black;
+    bg = onehundredtwenty-percent-black;
   };
 
-  highlight.fg = ninety-percent-blue;
+  highlight.fg = colors.normal.magenta;
 }

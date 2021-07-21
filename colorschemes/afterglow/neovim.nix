@@ -38,7 +38,11 @@ in
     };
 
     "FzfBorder" = {
-      guifg = colors.bright.white;
+      guifg = "#393939";
+    };
+
+    "FloatermBorder" = {
+      guibg = "#393939";
     };
   };
 }

@@ -1,50 +1,44 @@
+let
+  colors = import ./palette.nix;
+in
 {
   colorscheme = "gruvbox";
 
-  terminal = {
-    color0 = "#282828";
-    color1 = "#cc241d";
-    color2 = "#98971a";
-    color3 = "#d79921";
-    color4 = "#458588";
-    color5 = "#b16286";
-    color6 = "#689d6a";
-    color7 = "#ebdbb2";
-  };
+  terminal = colors.normal;
 
   highlights = {
     "SpellBad" = {
-      guifg = "#cc241d";
+      guifg = colors.normal.red;
       gui = "undercurl";
     };
 
     "SpellCap" = {
-      guifg = "#fe8019";
+      guifg = colors.normal.yellow;
       gui = "NONE";
     };
 
     "VertSplit" = {
-      guifg = "#a89984";
+      guifg = colors.bright.white;
       guibg = "NONE";
     };
 
     "StatusLine" = {
       guifg = "NONE";
-      guibg = "#83a598";
+      guibg = colors.bright.blue;
     };
 
     "htmlItalic" = {
-      guifg = "#b16286";
+      guifg = colors.normal.magenta;
       gui = "italic";
     };
 
     "htmlBold" = {
-      guifg = "#fe8019";
+      guifg = colors.normal.yellow;
       gui = "bold";
     };
 
     "FzfBorder" = {
-      guifg = "#a89984";
+      guifg = colors.bright.white;
     };
   };
 }

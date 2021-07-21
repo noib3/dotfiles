@@ -25,17 +25,18 @@ in
     match.fg = colors.normal.yellow;
   };
 
-  completion = {
+  completion = rec {
     fg = colors.normal.white;
     odd.bg = onehundredtwenty-percent-bright-black;
     even.bg = colors.bright.black;
     header.bg = colors.normal.black;
+    header.fg = colors.normal.blue;
     urls.fg = colors.normal.blue;
     match.fg = colors.bright.red;
     selected = {
       fg = colors.normal.black;
       bg = colors.normal.blue;
-      match.fg = colors.bright.red;
+      match.fg = match.fg;
     };
   };
 
@@ -48,16 +49,16 @@ in
 
   messages = {
     error = {
-      bg = colors.bright.black;
+      bg = colors.bright.red;
       fg = colors.normal.white;
     };
   };
 
-  dmenu = {
+  dmenu = rec {
     normal.fg = colors.normal.white;
     normal.bg = colors.normal.black;
     prompt.fg = colors.normal.blue;
-    prompt.bg = colors.normal.black;
+    prompt.bg = normal.bg;
     selected.fg = colors.normal.white;
     selected.bg = onehundredtwentyfive-percent-black;
     highlight.fg = colors.normal.yellow;

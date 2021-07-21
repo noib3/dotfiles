@@ -1,6 +1,10 @@
+let
+  colors = import ./palette.nix;
+  hints = "#b57614";
+in
 {
-  hintspan_bg = "#b57614";
-  hintspan_fg = "#eddbb2";
-  cmdl_bg = "#282828";
-  cmdl_fg = "#ebdbb2";
+  hints.fg = colors.normal.white;
+  hints.bg = hints;
+  commandline.fg = colors.normal.white;
+  commandline.bg = colors.normal.black;
 }
