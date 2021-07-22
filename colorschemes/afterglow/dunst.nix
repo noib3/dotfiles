@@ -1,9 +1,9 @@
 let
   colors = import ./palette.nix;
-  ninetysix-percent-white = "#b9b9b9";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 rec {
-  border = ninetysix-percent-white;
+  border = hexlib.scale 95 colors.normal.white;
 
   urgency-normal = {
     bg = colors.normal.black;

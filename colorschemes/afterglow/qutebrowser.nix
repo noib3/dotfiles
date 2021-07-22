@@ -1,13 +1,11 @@
 let
   colors = import ./palette.nix;
-  onehundredtwentyfive-percent-black = "#212121";
-  ciao = "#282828";
-  ninetysix-percent-white = "#b9b9b9";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
   tabs = {
     unfocused = {
-      bg = ciao;
+      bg = hexlib.scale 150 colors.normal.black;
       fg = colors.normal.white;
     };
     focused = {
@@ -26,25 +24,25 @@ in
   };
 
   completion = rec {
-    fg = ninetysix-percent-white;
-    odd.bg = ciao;
+    fg = hexlib.scale 95 colors.normal.white;
+    odd.bg = hexlib.scale 150 colors.normal.black;
     even.bg = colors.normal.black;
     header.bg = colors.normal.black;
     header.fg = colors.normal.magenta;
     urls.fg = colors.normal.blue;
     match.fg = colors.normal.magenta;
     selected = {
-      fg = colors.normal.white;
       bg = colors.bright.black;
+      fg = colors.normal.white;
       match.fg = match.fg;
     };
   };
 
-  statusbar = {
+  statusbar = rec {
     bg = colors.normal.black;
-    fg = ninetysix-percent-white;
+    fg = hexlib.scale 95 colors.normal.white;
     private.bg = colors.normal.magenta;
-    private.fg = colors.normal.white;
+    private.fg = fg;
   };
 
   messages = {
@@ -56,11 +54,11 @@ in
 
   dmenu = rec {
     normal.fg = colors.normal.white;
-    normal.bg = ciao;
+    normal.bg = hexlib.scale 150 colors.normal.black;
     prompt.fg = colors.normal.magenta;
     prompt.bg = normal.bg;
     selected.fg = colors.normal.white;
-    selected.bg = onehundredtwentyfive-percent-black;
+    selected.bg = hexlib.scale 125 colors.normal.black;
     highlight.fg = colors.normal.magenta;
   };
 }

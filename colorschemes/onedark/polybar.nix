@@ -1,9 +1,9 @@
 let
   colors = import ./palette.nix;
-  ninety-percent-white = "#9aa0ac";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 rec {
-  bar.fg = ninety-percent-white;
+  bar.fg = hexlib.scale 90 colors.normal.white;
   bar.bg = "#00000000";
 
   power.icon = bar.fg;

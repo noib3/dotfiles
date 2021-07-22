@@ -1,9 +1,9 @@
 let
   colors = import ./palette.nix;
-  onehundredtwenty-percent-bright-black = "#4b5263";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
-  current-line.bg = onehundredtwenty-percent-bright-black;
+  current-line.bg = hexlib.scale 80 colors.bright.black;
   border = colors.bright.black;
   directories = colors.normal.blue;
   grayed-out-directories = colors.bright.white;

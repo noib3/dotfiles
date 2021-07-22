@@ -1,16 +1,15 @@
 let
   colors = import ./palette.nix;
-  ninetyseven-percent-white = "#bababa";
-  onehundredtwenty-percent-black = "#282828";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 rec {
-  bar.fg = ninetyseven-percent-white;
+  bar.fg = hexlib.scale 95 colors.normal.white;
   bar.bg = "#00000000";
 
   power.icon = bar.fg;
 
   workspaces = {
-    focused.bg = onehundredtwenty-percent-black;
+    focused.bg = hexlib.scale 120 colors.normal.black;
     occupied.fg = bar.fg;
     empty.fg = colors.bright.white;
   };

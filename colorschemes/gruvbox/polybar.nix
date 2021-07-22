@@ -1,9 +1,9 @@
 let
   colors = import ./palette.nix;
-  ninety-percent-white = "#d4c5a0";
+  hexlib = import ../hexlib.nix { };
 in
 rec {
-  bar.fg = ninety-percent-white;
+  bar.fg = hexlib.scale 90 colors.normal.white;
   bar.bg = "#00000000";
 
   power.icon = bar.fg;
@@ -11,7 +11,7 @@ rec {
   workspaces = {
     focused.bg = colors.normal.black;
     occupied.fg = bar.fg;
-    empty.fg = colors.bright.white;
+    empty.fg = hexlib.scale 70 colors.bright.white;
   };
 
   bluetooth = {

@@ -1,11 +1,11 @@
 let
   colors = import ./palette.nix;
-  half-black = "#141414";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 rec {
   normal = {
     fg = colors.normal.white;
-    bg = half-black;
+    bg = hexlib.scale 50 colors.normal.black;
   };
 
   prompt = normal;

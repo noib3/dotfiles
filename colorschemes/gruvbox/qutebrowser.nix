@@ -1,8 +1,6 @@
 let
   colors = import ./palette.nix;
-  hints = "#b57614";
-  onehundredtwenty-percent-bright-black = "#484341";
-  onehundredtwentyfive-percent-black = "#323232";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
   tabs = {
@@ -11,7 +9,7 @@ in
       fg = colors.bright.white;
     };
     focused = {
-      bg = colors.bright.white;
+      bg = hexlib.scale 130 colors.bright.white;
       fg = colors.normal.black;
     };
     indicator.error = colors.normal.red;
@@ -21,30 +19,30 @@ in
 
   hints = {
     bg = colors.bright.black;
-    fg = colors.normal.white;
-    match.fg = hints;
+    fg = hexlib.scale 130 colors.bright.white;
+    match.fg = colors.normal.magenta;
   };
 
   completion = rec {
     fg = colors.normal.white;
-    odd.bg = onehundredtwenty-percent-bright-black;
+    odd.bg = hexlib.scale 120 colors.bright.black;
     even.bg = colors.bright.black;
     header.bg = colors.normal.black;
     header.fg = colors.normal.blue;
     urls.fg = colors.normal.blue;
     match.fg = colors.bright.red;
     selected = {
-      fg = colors.normal.black;
       bg = colors.normal.blue;
+      fg = colors.normal.black;
       match.fg = match.fg;
     };
   };
 
-  statusbar = {
+  statusbar = rec{
     bg = colors.bright.black;
-    fg = colors.normal.white;
+    fg = hexlib.scale 130 colors.bright.white;
     private.bg = colors.normal.magenta;
-    private.fg = colors.normal.white;
+    private.fg = fg;
   };
 
   messages = {
@@ -60,7 +58,7 @@ in
     prompt.fg = colors.normal.blue;
     prompt.bg = normal.bg;
     selected.fg = colors.normal.white;
-    selected.bg = onehundredtwentyfive-percent-black;
+    selected.bg = hexlib.scale 125 colors.normal.black;
     highlight.fg = colors.normal.yellow;
   };
 }

@@ -17,9 +17,8 @@ in
   urlbar = {
     bg = colors.bright.black;
     fg = colors.normal.white;
-    url.fg = colors.normal.blue;
+    urls.fg = colors.normal.blue;
     separator = colors.bright.white;
-
     selected = {
       bg = colors.normal.blue;
       fg = colors.normal.black;

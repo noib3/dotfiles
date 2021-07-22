@@ -1,10 +1,10 @@
 let
   colors = import ./palette.nix;
-  hints = "#b57614";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
-  hints.fg = colors.normal.white;
-  hints.bg = hints;
+  hints.bg = colors.bright.black;
+  hints.fg = hexlib.scale 130 colors.bright.white;
+  commandline.bg = colors.bright.black;
   commandline.fg = colors.normal.white;
-  commandline.bg = colors.normal.black;
 }

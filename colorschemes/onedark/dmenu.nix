@@ -1,12 +1,11 @@
 let
   colors = import ./palette.nix;
-  half-black = "#14161a";
-  ninety-percent-blue = "#579dd7";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 rec {
   normal = {
     fg = colors.normal.white;
-    bg = half-black;
+    bg = hexlib.scale 50 colors.normal.black;
   };
 
   prompt = normal;
@@ -16,5 +15,5 @@ rec {
     bg = colors.normal.black;
   };
 
-  highlight.fg = ninety-percent-blue;
+  highlight.fg = hexlib.scale 90 colors.normal.blue;
 }

@@ -15,7 +15,7 @@ let
 
       --color-urlbar-bg: ${colors.urlbar.bg};
       --color-urlbar-fg: ${colors.urlbar.fg};
-      --color-urlbar-popup-url: ${colors.urlbar.url.fg};
+      --color-urlbar-popup-url: ${colors.urlbar.urls.fg};
       --color-urlbar-separator: ${colors.urlbar.separator};
 
       --color-urlbar-selected-bg: ${colors.urlbar.selected.bg};

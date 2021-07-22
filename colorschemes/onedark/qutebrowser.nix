@@ -1,8 +1,6 @@
 let
   colors = import ./palette.nix;
-  onehundredtwenty-percent-bright-black = "#4b5263";
-  onehundredtwentyfive-percent-black = "#32363e";
-  firefox-private-urlbar = "#25003e";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
   tabs = {
@@ -27,24 +25,24 @@ in
 
   completion = rec {
     fg = colors.normal.white;
-    odd.bg = onehundredtwenty-percent-bright-black;
+    odd.bg = hexlib.scale 120 colors.bright.black;
     even.bg = colors.bright.black;
     header.bg = colors.normal.black;
     header.fg = colors.normal.blue;
     urls.fg = colors.normal.blue;
     match.fg = colors.bright.red;
     selected = {
-      fg = colors.normal.black;
       bg = colors.normal.blue;
+      fg = colors.normal.black;
       match.fg = match.fg;
     };
   };
 
-  statusbar = {
+  statusbar = rec {
     bg = colors.bright.black;
     fg = colors.normal.white;
-    private.bg = firefox-private-urlbar;
-    private.fg = colors.normal.white;
+    private.bg = hexlib.scale 40 colors.normal.magenta;
+    private.fg = fg;
   };
 
   messages = {
@@ -60,7 +58,7 @@ in
     prompt.fg = colors.normal.blue;
     prompt.bg = normal.bg;
     selected.fg = colors.normal.white;
-    selected.bg = onehundredtwentyfive-percent-black;
+    selected.bg = hexlib.scale 125 colors.normal.black;
     highlight.fg = colors.normal.yellow;
   };
 }

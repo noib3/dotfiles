@@ -1,10 +1,11 @@
 let
   colors = import ./palette.nix;
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
   tabs = {
     unfocused = {
-      bg = colors.normal.black;
+      bg = hexlib.scale 150 colors.normal.black;
       fg = colors.normal.white;
     };
 
@@ -16,13 +17,12 @@ in
 
   urlbar = {
     bg = colors.bright.black;
-    fg = colors.normal.white;
-    url.fg = colors.normal.blue;
+    fg = hexlib.scale 95 colors.normal.white;
+    urls.fg = colors.normal.blue;
     separator = colors.bright.white;
-
     selected = {
-      bg = colors.normal.blue;
-      fg = colors.normal.black;
+      bg = colors.bright.black;
+      fg = colors.normal.white;
     };
   };
 

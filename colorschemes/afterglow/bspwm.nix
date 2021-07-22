@@ -1,10 +1,10 @@
 let
   colors = import ./palette.nix;
-  ninetysix-percent-white = "#b9b9b9";
+  hexlib = import ../../colorschemes/hexlib.nix { };
 in
 {
   border = {
-    unfocused = "#393939";
-    focused = ninetysix-percent-white;
+    unfocused = hexlib.scale 220 colors.normal.black;
+    focused = hexlib.scale 95 colors.normal.white;
   };
 }

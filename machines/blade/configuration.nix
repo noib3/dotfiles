@@ -2,7 +2,7 @@
 let
   unstable = import <nixos-unstable> { };
 
-  colorscheme = "gruvbox";
+  colorscheme = "onedark";
 
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
