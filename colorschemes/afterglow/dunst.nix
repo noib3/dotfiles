@@ -1,6 +1,6 @@
 let
   colors = import ./palette.nix;
-  hexlib = import ../../colorschemes/hexlib.nix { };
+  hexlib = import ../../colorschemes/hexlib.nix;
 in
 rec {
   border = hexlib.scale 95 colors.normal.white;

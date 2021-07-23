@@ -1,5 +1,5 @@
-{ config }:
+{ homedir }:
 
 {
-  homedir = "${config.xdg.dataHome}/gnupg";
+  inherit homedir;
 }

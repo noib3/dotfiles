@@ -1,6 +1,6 @@
 let
   colors = import ./palette.nix;
-  hexlib = import ../hexlib.nix { };
+  hexlib = import ../hexlib.nix;
 in
 rec {
   bar = {

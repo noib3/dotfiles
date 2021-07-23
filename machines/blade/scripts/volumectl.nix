@@ -2,8 +2,6 @@ let
   pulseaudio-sink = "bluez_sink.5C_44_3E_31_27_86.a2dp_sink";
 in
 ''
-  #!/usr/bin/env bash
-
   case "$1" in
     lower)
       pactl set-sink-volume ${pulseaudio-sink} -5%

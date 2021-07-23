@@ -1,6 +1,6 @@
 let
   colors = import ./palette.nix;
-  hexlib = import ../../colorschemes/hexlib.nix { };
+  hexlib = import ../../colorschemes/hexlib.nix;
 in
 {
   current-line.bg = hexlib.scale 150 colors.normal.black;

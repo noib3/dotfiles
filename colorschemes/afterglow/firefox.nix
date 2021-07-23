@@ -1,6 +1,6 @@
 let
   colors = import ./palette.nix;
-  hexlib = import ../../colorschemes/hexlib.nix { };
+  hexlib = import ../../colorschemes/hexlib.nix;
 in
 {
   tabs = {

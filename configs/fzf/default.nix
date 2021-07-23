@@ -2,7 +2,7 @@
 
 let
   lib = import <nixpkgs/lib>;
-  hexlib = import ../../colorschemes/hexlib.nix { };
+  hexlib = import ../../colorschemes/hexlib.nix;
 
   # Converts a color from hexadecimal to the format used in ANSI escape
   # sequences.

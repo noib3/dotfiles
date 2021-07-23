@@ -86,11 +86,17 @@ let
       }
     )))
 
+    (writeShellScriptBin "previewer" (
+      builtins.readFile (dirs.configs + /lf/previewer.sh)
+    ))
+
     (writeShellScriptBin "take-screenshot" (
       builtins.readFile ./scripts/take-screenshot.sh
     ))
 
-    (writeScriptBin "volumectl" (import ./scripts/volumectl.nix))
+    (writeShellScriptBin "volumectl" (
+      import ./scripts/volumectl.nix
+    ))
   ];
 
   configs.alacritty = import (dirs.configs + /alacritty) {
@@ -137,7 +143,7 @@ let
   configs.git = import (dirs.configs + /git);
 
   configs.gpg = import (dirs.configs + /gpg/gpg.nix) {
-    inherit config;
+    homedir = (dirs.sync + "/wip/secrets/gnupg");
   };
 
   configs.gpg-agent = import (dirs.configs + /gpg/gpg-agent.nix);
@@ -313,10 +319,6 @@ in
   };
 
   nixpkgs.overlays = [
-    (self: super: {
-      lf = unstable.lf;
-    })
-
     (import (builtins.fetchTarball {
       url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
     }))
