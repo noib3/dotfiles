@@ -1,4 +1,4 @@
-local sumneko_paths = require('plugins/config/lsp/sumneko_paths')
+local sumneko_paths = require('plugins/config/lsp/sumneko-paths')
 local lspconfig = require('lspconfig')
 
 local on_attach = function(client, bufnr)

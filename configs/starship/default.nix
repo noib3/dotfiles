@@ -1,5 +1,6 @@
-{ lib ? import <nixpkgs/lib> }:
-
+let
+  lib = import <nixpkgs/lib>;
+in
 {
   settings = {
     format = lib.concatStrings [

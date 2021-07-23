@@ -1,6 +1,8 @@
-{ pkgs ? import <nixpkgs> { }, colors, background-image }:
+{ colors, background-image }:
 
 let
+  pkgs = import <nixpkgs> { };
+
   theme-file = pkgs.writeTextFile {
     name = "theme.txt";
     text = import ./theme.txt.nix {

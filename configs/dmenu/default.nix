@@ -1,5 +1,8 @@
-{ pkgs, font, colors }:
+{ font, colors }:
+
 let
+  pkgs = import <nixpkgs> { };
+
   patches = {
     caseinsensitive = ./patches/dmenu-caseinsensitive-20200523-db6093f.diff;
     colorprompt = ./patches/dmenu-colorprompt.diff;
@@ -12,10 +15,7 @@ let
     preselect = ./patches/dmenu-preselect-20200513-db6093f.diff;
     tsv = ./patches/dmenu-tsv-20201101-1a13d04.diff;
     fontcolors = pkgs.writeText "dmenu-fontcolors.diff"
-      (import ./patches/dmenu-fontcolors.diff.nix {
-        inherit font;
-        inherit colors;
-      });
+      (import ./patches/dmenu-fontcolors.diff.nix { inherit font colors; });
   };
 in
 pkgs.dmenu.override ({

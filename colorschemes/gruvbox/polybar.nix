@@ -3,8 +3,10 @@ let
   hexlib = import ../hexlib.nix { };
 in
 rec {
-  bar.fg = hexlib.scale 90 colors.normal.white;
-  bar.bg = "#00000000";
+  bar = {
+    fg = hexlib.scale 90 colors.normal.white;
+    bg = "#00000000";
+  };
 
   power.icon = bar.fg;
 

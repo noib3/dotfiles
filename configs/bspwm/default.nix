@@ -1,8 +1,10 @@
-{ pkgs, colors }:
+{ colors }:
 
 let
+  pkgs = import <nixpkgs> { };
+
   mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
-    (builtins.readFile (./scripts/mpv-focus-prev.sh));
+    (builtins.readFile ./scripts/mpv-focus-prev.sh);
 in
 {
   settings = {

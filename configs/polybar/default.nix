@@ -1,6 +1,8 @@
-{ lib ? import <nixpkgs/lib>, fonts, colors }:
+{ fonts, colors }:
 
 let
+  lib = import <nixpkgs/lib>;
+
   T1 = fonts.text;
   T2 = fonts.icons.default;
   T3 = fonts.icons.videos;

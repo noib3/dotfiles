@@ -1,5 +1,9 @@
+{ machine }:
+
 {
   ignored = [
+    "/*"
+    "!/sync"
     "**/.direnv"
     "**/.git"
     "**/.stfolder"
@@ -14,5 +18,17 @@
     "*.synctex(busy)"
     "*.synctex.gz"
     "*.toc"
-  ];
+  ] ++ (
+    if (machine == "blade" || machine == "mbair") then
+      [
+        "!/Downloads"
+      ]
+    else if machine == "archiv3" then
+      [
+        "!/dotfiles"
+        "/dotfiles/machines/*"
+        "!/dotfiles/machines/archiv3"
+      ]
+    else [ ]
+  );
 }

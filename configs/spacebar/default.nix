@@ -1,6 +1,7 @@
-{ lib, font, colors }:
+{ font, colors }:
 
 let
+  lib = import <nixpkgs/lib>;
   # Converts a color from hexadecimal to the format required by Spacebar.
   #
   # Example:
@@ -8,12 +9,12 @@ let
   toSpacebarFormat = color: "0xff" + lib.strings.removePrefix "#" color;
 in
 {
-  config = {
+  config = rec {
     height = 20;
     spacing_left = 30;
     spacing_right = 40;
-    text_font = ''"${font.text}"'';
-    icon_font = ''"${font.icons}"'';
+    text_font = ''"${font.family}:${font.style}:${font.size}"'';
+    icon_font = text_font;
     background_color = toSpacebarFormat colors.bg;
     foreground_color = toSpacebarFormat colors.fg;
     space_icon_color = toSpacebarFormat colors.focused-workspace-fg;

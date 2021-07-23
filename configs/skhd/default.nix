@@ -1,15 +1,13 @@
-{ secrets-dir }:
-
 {
   config = ''
     cmd - return : alacritty
     alt - return : alacritty --title "floating"
-    cmd - f : alacritty --command fish -c "lf $HOME/Downloads"
-    cmd - p : alacritty --command fish -c "ipython --no-confirm-exit"
-    cmd - a : alacritty --command calcurse \
-                -C ~/.config/calcurse \
-                -D ${secrets-dir}/calcurse
-    cmd - g : alacritty --command gotop
+    cmd - f : alacritty -e fish -c "lf $HOME/Downloads"
+    cmd - p : alacritty -e fish -c "ipython --no-confirm-exit"
+    cmd - a : alacritty -e calcurse \
+                -C ${builtins.toString ../calcurse} \
+                -D $SYNCDIR/calcurse
+    cmd - g : alacritty -e gotop
     cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
     ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app
 

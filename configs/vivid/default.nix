@@ -1,11 +1,12 @@
-{ lib ? import <nixpkgs/lib>, colors }:
+{ colors }:
 
 let
-  # Converts a color from hexadecimal to the format required by Vivid.
-  #
-  # Example:
-  #   toVividFormat "#abb2bf" => "abb2bf"
-  toVividFormat = color: lib.strings.removePrefix "#" color;
+  lib = import <nixpkgs/lib>;
+
+  colorz = with lib;
+    attrsets.mapAttrs
+      (name: hex: strings.removePrefix "#" hex)
+      colors;
 in
 {
   filetypes = {
@@ -166,17 +167,7 @@ in
 
   themes = {
     current = {
-      colors = {
-        black = toVividFormat colors.black;
-        red = toVividFormat colors.red;
-        green = toVividFormat colors.green;
-        yellow = toVividFormat colors.yellow;
-        blue = toVividFormat colors.blue;
-        magenta = toVividFormat colors.magenta;
-        cyan = toVividFormat colors.cyan;
-        orange = toVividFormat colors.orange;
-        gray = toVividFormat colors.gray;
-      };
+      colors = colorz;
 
       core = {
         regular_file = { };

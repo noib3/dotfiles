@@ -1,5 +1,10 @@
 { font, colors }:
+
 let
+  lib = import <nixpkgs/lib>;
+
+  extensions = import ./extensions.nix;
+
   userChrome = ''
     * {
       font-family: "${font.family}";
@@ -56,10 +61,9 @@ let
   '';
 in
 {
-  extensions = with (import ./extensions.nix); [
+  extensions = with extensions; [
     bitwarden
     downloads-sidebar
-    # hide-scrollbars
     tridactyl-no-new-tab
   ];
 
@@ -79,14 +83,16 @@ in
         "browser.urlbar.shortcuts.tabs" = false;
         "browser.urlbar.shortcuts.history" = false;
         "browser.search.hiddenOneOffs" =
-          "Google"
-          + ",Amazon.com"
-          + ",Amazon.co.uk"
-          + ",Bing"
-          + ",Chambers (UK)"
-          + ",DuckDuckGo"
-          + ",eBay"
-          + ",Wikipedia (en)";
+          lib.concatStringsSep "," [
+            "Google"
+            "Amazon.com"
+            "Amazon.co.uk"
+            "Bing"
+            "Chambers (UK)"
+            "DuckDuckGo"
+            "eBay"
+            "Wikipedia (en)"
+          ];
         "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false;
         "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
       };

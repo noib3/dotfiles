@@ -53,20 +53,6 @@ in
     };
   };
 
-  hide-scrollbars = buildFirefoxXpiAddon {
-    pname = "hide-scrollbars";
-    version = "3.0.0";
-    addonId = "{a250ed19-05b9-4486-b2c3-535044766b8c}";
-    url = "https://addons.mozilla.org/firefox/downloads/file/3038005/hide_scrollbars-3.0.0-fx.xpi";
-    sha256 = "1nxjlcnh4sx9whdv30999yi8angyi1j034h3ahiigrz7k71sg8ar";
-    meta = with pkgs.lib; {
-      homepage = "https://github.com/quinton-ashley/firefox-hide-scrollbars";
-      description = "Hide scrollbars in Firefox while still being able to scroll!";
-      license = licenses.mit;
-      platforms = platforms.all;
-    };
-  };
-
   tridactyl-no-new-tab = buildFirefoxXpiAddon {
     pname = "tridactyl";
     version = "1.21.0";

@@ -1,4 +1,5 @@
 { config, lib, pkgs, ... }:
+
 let
   unstable = import <nixos-unstable> { };
 
@@ -34,8 +35,6 @@ let
       (import ./overrides/alacritty.nix { default = default; });
 
   batConfig = import ../../defaults/bat;
-
-  direnvConfig = import ../../defaults/direnv;
 
   fdConfig =
     let
@@ -197,7 +196,6 @@ in
 
   nixpkgs.overlays = [
     (self: super: {
-      direnv = unstable.direnv;
       firefox = super.callPackage ./overlays/firefox.nix { };
       fzf = unstable.fzf;
       lf = unstable.lf;
@@ -236,10 +234,6 @@ in
   programs.bat = {
     enable = true;
   } // batConfig;
-
-  programs.direnv = {
-    enable = true;
-  } // direnvConfig;
 
   programs.fd = {
     enable = true;

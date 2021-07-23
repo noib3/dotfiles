@@ -1,4 +1,5 @@
 { config, lib, pkgs, ... }:
+
 let
   unstable = import <nixos-unstable> { };
 
@@ -7,8 +8,6 @@ let
 
   configs = {
     bat = import ../../defaults/bat;
-
-    direnv = import ../../defaults/direnv;
 
     fd =
       let

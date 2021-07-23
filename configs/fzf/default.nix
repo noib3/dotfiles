@@ -1,6 +1,7 @@
-{ lib ? import <nixpkgs/lib>, colors }:
+{ colors }:
 
-with lib; let
+let
+  lib = import <nixpkgs/lib>;
   hexlib = import ../../colorschemes/hexlib.nix { };
 
   # Converts a color from hexadecimal to the format used in ANSI escape
@@ -8,7 +9,7 @@ with lib; let
   #
   # Example:
   #   toANSIFormat "#61afef" => "1;38;2;97;175;239"
-  toANSIFormat = color:
+  toANSIFormat = with lib; color:
     "1;38;2;" + (
       concatStringsSep ";" (
         builtins.map (x: builtins.toString (hexlib.toDec x)) (

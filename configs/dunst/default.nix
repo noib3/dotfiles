@@ -1,5 +1,8 @@
-{ pkgs, font, colors }:
+{ font, colors }:
 
+let
+  pkgs = import <nixpkgs> { };
+in
 {
   iconTheme = {
     package = pkgs.hicolor-icon-theme;

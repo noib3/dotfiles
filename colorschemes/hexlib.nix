@@ -101,10 +101,10 @@ with lib; rec {
   # Scales a color given in hex format by the given percentage.
   #
   # Example:
-  #   scale 121 "#3e4452" => "#4b5263"
+  #   scale 120 "#3e4452" => "#4a5162"
   scale = scalar: color:
     "#" + (
-      concatStringsSep "" (
+      concatStrings (
         builtins.map (x: toHex (((toDec x) * scalar) / 100)) (
           splitEveryTwo (strings.removePrefix "#" color)
         )

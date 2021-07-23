@@ -1,7 +1,20 @@
-{ font, colors, scripts }:
+{ font, colors }:
+
 let
+  pkgs = import <nixpkgs> { };
+
+  add-torrent = pkgs.writeShellScriptBin "add-torrent"
+    (builtins.readFile ./scripts/add-torrent.sh);
+
+  fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden"
+    {
+      libraries = [
+        pkgs.python38Packages.tldextract
+      ];
+    }
+    (builtins.readFile ./scripts/fill-bitwarden.py);
+
   home-page = "https://google.com";
-  archiv3-ipv4-address = "139.59.165.52";
 in
 {
   searchEngines = {
@@ -192,8 +205,8 @@ in
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
 
-      ",f" = "spawn --userscript ${scripts.fill-bitwarden}/bin/fill-bitwarden";
-      ",t" = "hint links userscript ${scripts.add-torrent}/bin/add-torrent";
+      ",f" = "spawn --userscript ${fill-bitwarden}/bin/fill-bitwarden";
+      ",t" = "hint links userscript ${add-torrent}/bin/add-torrent";
 
       "gh" = "open ${home-page}";
       "th" = "open -t ${home-page}";
@@ -251,12 +264,6 @@ in
 
       "gcdb" = "open http://localhost:5984/_utils/#";
       "tcdb" = "open -t http://localhost:5984/_utils/#";
-
-      "grsy" = "open https://${archiv3-ipv4-address}:8384/";
-      "trsy" = "open -t https://${archiv3-ipv4-address}:8384/";
-
-      "grcdb" = "open http://${archiv3-ipv4-address}:5984/_utils/#";
-      "trcdb" = "open -t http://${archiv3-ipv4-address}:5984/_utils/#";
     };
 
     command = {

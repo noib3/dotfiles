@@ -1,6 +1,8 @@
-{ lib, colors }:
+{ colors }:
 
 let
+  lib = import <nixpkgs/lib>;
+
   # Converts a color from hexadecimal to the format required by Yabai.
   #
   # Example:

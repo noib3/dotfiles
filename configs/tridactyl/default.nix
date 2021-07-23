@@ -1,5 +1,8 @@
 { font, colors }:
 
+let
+  home-page = "https://google.com";
+in
 {
   config = ''
     set modeindicator false
@@ -16,8 +19,8 @@
     unbind --mode=normal gr
     unbind --mode=normal gt
 
-    bind gh open https://google.com
-    bind th tabopen https://google.com
+    bind gh open ${home-page}
+    bind th tabopen ${home-page}
 
     bind gma open https://mail.protonmail.com/inbox
     bind tma tabopen https://mail.protonmail.com/inbox
