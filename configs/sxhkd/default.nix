@@ -1,3 +1,9 @@
+let
+  pkgs = import <nixpkgs> { };
+
+  take-screenshot = pkgs.writeShellScriptBin "take-screenshot"
+    (builtins.readFile ./take-screenshot.sh);
+in
 {
   keybindings = {
     # Reload sxhkd
@@ -21,9 +27,10 @@
     "super + space" = "dmenu-open";
 
     # Open wifi, bluetooth and shutdown menus
-    "alt + shift + w" = "dmenu-wifi";
     "alt + shift + b" = "dmenu-bluetooth";
+    "alt + shift + w" = "dmenu-wifi";
     "alt + shift + p" = "dmenu-powermenu";
+    "alt + shift + a" = "dmenu-pulseaudio";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
@@ -47,10 +54,12 @@
     "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
     # Make windows larger
-    "alt + {h,j,k,l}" = "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
+    "alt + {h,j,k,l}" =
+      "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
 
     # Make windows smaller
-    "ctrl + {h,j,k,l}" = "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
+    "ctrl + {h,j,k,l}" =
+      "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
 
     # Balance and mirror desktops
     "alt + {b,y,x}" = "bspc node @/ {-B,-F vertical,-F horizontal}";
@@ -62,10 +71,12 @@
     "alt + {_,super + }{1-6}" = "bspc {desktop -f,node -d} '^{1-6}'";
 
     # Control audio volume
-    "XF86Audio{LowerVolume,RaiseVolume,Mute}" = "volumectl {lower,raise,mute}";
+    "XF86Audio{LowerVolume,RaiseVolume,Mute}" =
+      "dmenu-pulseaudio --volume {lower,raise,toggle}";
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
-    "super + shift + {3,4}" = "take-screenshot {whole, portion}";
+    "super + shift + {3,4}" =
+      "${take-screenshot}/bin/take-screenshot {whole, portion}";
   };
 }

@@ -1,23 +1,26 @@
 { machine }:
 
-{
+let
+  family = "FiraCode Nerd Font";
+in
+rec {
   normal = {
-    family = "FiraCode Nerd Font";
+    inherit family;
     style = "Regular";
   };
 
   bold = {
-    family = "FiraCode Nerd Font";
+    inherit family;
     style = "Bold";
   };
 
   italic = {
-    family = "FiraCode Nerd Font";
+    inherit family;
     style = "Italic";
   };
 
   bold_italic = {
-    family = "FiraCode Nerd Font";
+    inherit family;
     style = "Bold";
   };
 } // (

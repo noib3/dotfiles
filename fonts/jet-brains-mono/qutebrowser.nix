@@ -1,9 +1,9 @@
-{
+rec {
   family = "JetBrainsMono Nerd Font";
   size = "16pt";
 
   dmenu = {
-    family = "JetBrainsMono Nerd Font";
+    inherit family;
     size = "21pt";
   };
 }

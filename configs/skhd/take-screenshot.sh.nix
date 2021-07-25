@@ -1,9 +1,5 @@
-{ screenshots-dir }:
-
 ''
-  #!/usr/bin/env bash
-
-  filename="${screenshots-dir}/$(date +%F@%T).png"
+  filename="$SYNCDIR/screenshots/$(date +%F@%T).png"
 
   case "$1" in
     whole)
@@ -25,7 +21,7 @@
     terminal-notifier \
       -title "New screenshot" \
       -subtitle "$(basename "$filename")" \
-      -message "Saved in $(echo '${screenshots-dir}' | sed "s/.*$(whoami)/~/")" \
+      -message "Saved in $(echo "$SYNCDIR/screenshots" | sed "s/.*$(whoami)/~/")" \
       -appIcon "${builtins.toString ./picture-icon.png}" \
       -contentImage "$filename" \
       -execute "open \"$filename\""

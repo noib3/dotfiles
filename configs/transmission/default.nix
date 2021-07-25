@@ -2,7 +2,7 @@ let
   pkgs = import <nixpkgs> { };
 
   notify-done = pkgs.writeShellScriptBin "notify-done"
-    (import (./scripts/notify-done-linux.sh.nix) { inherit pkgs; });
+    (import ./notify-done.sh.nix);
 in
 {
   user = "noib3";

@@ -1,9 +1,9 @@
-{
+rec {
   family = "FiraCode Nerd Font";
   size = "14pt";
 
   dmenu = {
-    family = "FiraCode Nerd Font";
+    inherit family;
     size = "12";
     lineheight = "24";
   };

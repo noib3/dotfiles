@@ -101,7 +101,7 @@ in
       ''${{
         clear
         readarray -t filenames < <(\
-          fzf --multi --prompt='Edit> ' --preview 'previewer ~/{}' \
+          fzf --multi --prompt='Edit> ' --preview='previewer ~/{}' \
             | sed -r "s!^!$HOME/!" \
         )
         [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"
@@ -142,7 +142,7 @@ in
   } // (
     if pkgs.stdenv.isLinux then
       {
-        drag-and-drop = "%dragon -a -x $fx";
+        drag-and-drop = "%${pkgs.dragon-drop}/bin/dragon -a -x $fx";
       }
     else if pkgs.stdenv.isDarwin then
       {

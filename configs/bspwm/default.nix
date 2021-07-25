@@ -34,10 +34,10 @@ in
   };
 
   startupPrograms = [
-    # "fusuma"
-    "unclutter -idle 10"
-    "xbanish"
-    "${mpv-focus-prev}/bin/mpv-focus-prev"
+    "${pkgs.fusuma}/bin/fusuma"
+    "${pkgs.unclutter-xfixes}/bin/unclutter -idle 10"
+    "${pkgs.xbanish}/bin/xbanish"
+    "PATH=$PATH:${pkgs.xdo}/bin:${pkgs.bspwm}/bin ${mpv-focus-prev}/bin/mpv-focus-prev"
   ];
 
   extraConfig = ''

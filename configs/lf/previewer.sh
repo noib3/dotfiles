@@ -29,7 +29,7 @@ function hash() {
 }
 
 function draw() {
-  if [ -n "$UEBERZUG_FIFO" ]; then
+  if [ -n "$UEBERZUG_FIFO" ] && ! [ -n "$FZF_PREVIEW_COLUMNS" ]; then
     path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
     declare -A -p cmd=(\
       [action]=add \

@@ -1,23 +1,26 @@
 { machine }:
 
-{
+let
+  family = "RobotoMono Nerd Font";
+in
+rec {
   normal = {
-    family = "RobotoMono Nerd Font";
+    inherit family;
     style = "Regular";
   };
 
   bold = {
-    family = "RobotoMono Nerd Font";
+    inherit family;
     style = "Bold";
   };
 
   italic = {
-    family = "RobotoMono Nerd Font";
+    inherit family;
     style = "Italic";
   };
 
   bold_italic = {
-    family = "RobotoMono Nerd Font";
+    inherit family;
     style = "Bold Italic";
   };
 } // (

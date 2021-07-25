@@ -11,13 +11,13 @@ let
   };
 
   configs = {
-    couchdb = import (dirs.configs + /couchdb);
     grub = (
       import (dirs.configs + /grub) {
         colors = import (dirs.colorscheme + /grub.nix);
         background-image = dirs.colorscheme + /background.png;
       }
     );
+
     transmission = import (dirs.configs + /transmission);
   };
 
@@ -135,7 +135,11 @@ in
   services.couchdb = {
     enable = true;
     package = unstable.couchdb3;
-  } // configs.couchdb;
+    user = "couchdb";
+    group = "couchdb";
+    databaseDir = "/home/couchdb/couchdb";
+    bindAddress = "0.0.0.0";
+  };
 
   services.geoclue2 = {
     enable = true;

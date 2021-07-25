@@ -33,12 +33,13 @@ function! s:fuzzy_edit()
 endfunction
 
 function! s:fuzzy_ripgrep()
-  let s:initial_query = "rg --column --color=always -v '^[[:space:]]*$'"
   " Piping ripgrep's output into sed to filter empty lines
-  let s:reload_query =
-    \ 'rg --column --color=always -- {q}'
+  let s:query_format =
+    \ 'rg --column --color=always -- %s'
     \ . " | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d'"
     \ . " || true"
+  let s:initial_query = printf(s:query_format, shellescape(''))
+  let s:reload_query = printf(s:query_format, '{q}')
   let s:dir =
     \ system('git status') =~ '^fatal'
     \ ? expand('%:p:h')
@@ -50,7 +51,7 @@ function! s:fuzzy_ripgrep()
     \   '--prompt=Rg> ',
     \   '--disabled',
     \   '--delimiter=:',
-    \   '--with-nth=1,2,4',
+    \   '--with-nth=1,2,4..',
     \   '--bind=change:reload:' . s:reload_query,
     \   '--preview=rg-previewer {}',
     \   '--preview-window=+{2}-/2',

@@ -1,23 +1,26 @@
 { machine }:
 
-{
+let
+  family = "JetBrainsMono Nerd Font";
+in
+rec {
   normal = {
-    family = "JetBrainsMono Nerd Font";
+    inherit family;
     style = "Regular";
   };
 
   bold = {
-    family = "JetBrainsMono Nerd Font";
+    inherit family;
     style = "Extra Bold";
   };
 
   italic = {
-    family = "JetBrainsMono Nerd Font";
+    inherit family;
     style = "Italic";
   };
 
   bold_italic = {
-    family = "JetBrainsMono Nerd Font";
+    inherit family;
     style = "Extra Bold";
   };
 } // (

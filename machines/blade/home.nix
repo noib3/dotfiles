@@ -11,93 +11,8 @@ let
     colorscheme = ../../colorschemes + "/${colorscheme}";
     configs = ../../configs;
     font = ../../fonts + "/${font}";
-    scripts = ../../scripts;
     sync = config.home.homeDirectory + "/sync";
   };
-
-  desktop-items = with pkgs; {
-    qutebrowser = makeDesktopItem
-      {
-        name = "qutebrowser";
-        desktopName = "qutebrowser";
-        exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-        mimeType = lib.concatStringsSep ";" [
-          "text/html"
-          "x-scheme-handler/about"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/unknown"
-        ];
-        icon = "qutebrowser";
-      };
-  };
-
-  scripts.dmenu = with pkgs; {
-    open = writeShellScriptBin "dmenu-open"
-      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-open.sh));
-
-    run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
-
-    wifi = writers.writePython3Bin "dmenu-wifi"
-      { libraries = [ python38Packages.pygobject3 ]; }
-      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-wifi.py));
-
-    bluetooth = writers.writePython3Bin "dmenu-bluetooth" { }
-      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-bluetooth.py));
-
-    powermenu = writers.writePython3Bin "dmenu-powermenu" { }
-      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-powermenu.py));
-
-    xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute"
-      (
-        import (dirs.configs + /dmenu/scripts/dmenu-xembed.sh.nix) {
-          font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-          colors = (import (dirs.colorscheme + /qutebrowser.nix)).dmenu;
-        }
-      );
-  };
-
-  scripts.fzf = with pkgs; {
-    fuzzy-ripgrep = writeShellScriptBin "fuzzy_ripgrep"
-      (builtins.readFile (dirs.configs + /fzf/scripts/fuzzy-ripgrep.sh));
-
-    rg-previewer = writeShellScriptBin "rg-previewer"
-      (builtins.readFile (dirs.configs + /fzf/scripts/rg-previewer.sh));
-
-    ueberzug-previews = writeShellScriptBin "fzf-ueberzug-previews"
-      (builtins.readFile (dirs.configs + /fzf/scripts/ueberzug-previews.sh));
-  };
-
-  userScripts = with pkgs; [
-    scripts.dmenu.open
-    scripts.dmenu.run
-    scripts.dmenu.wifi
-    scripts.dmenu.bluetooth
-    scripts.dmenu.powermenu
-    scripts.dmenu.xembed-qutebrowser
-
-    scripts.fzf.fuzzy-ripgrep
-    scripts.fzf.rg-previewer
-    scripts.fzf.ueberzug-previews
-
-    (hiPrio (writeShellScriptBin "lf" (
-      import (dirs.configs + /lf/launcher.sh.nix) {
-        lf = unstable.lf;
-      }
-    )))
-
-    (writeShellScriptBin "previewer" (
-      builtins.readFile (dirs.configs + /lf/previewer.sh)
-    ))
-
-    (writeShellScriptBin "take-screenshot" (
-      builtins.readFile ./scripts/take-screenshot.sh
-    ))
-
-    (writeShellScriptBin "volumectl" (
-      import ./scripts/volumectl.nix
-    ))
-  ];
 
   configs.alacritty = import (dirs.configs + /alacritty) {
     shell = {
@@ -114,6 +29,11 @@ let
 
   configs.bspwm = import (dirs.configs + /bspwm) {
     colors = import (dirs.colorscheme + /bspwm.nix);
+  };
+
+  dmenu = import (dirs.configs + /dmenu) {
+    font = import (dirs.font + /dmenu.nix);
+    colors = import (dirs.colorscheme + /dmenu.nix);
   };
 
   configs.dunst = import (dirs.configs + /dunst) {
@@ -168,11 +88,11 @@ let
 
   configs.redshift = import (dirs.configs + /redshift);
 
+  configs.ssh = import (dirs.configs + /ssh);
+
   configs.starship = import (dirs.configs + /starship);
 
   configs.sxhkd = import (dirs.configs + /sxhkd);
-
-  configs.ssh = import (dirs.configs + /ssh);
 
   configs.tridactyl = import (dirs.configs + /tridactyl) {
     font = import (dirs.font + /tridactyl.nix);
@@ -190,22 +110,68 @@ let
     colors = import (dirs.colorscheme + /zathura.nix);
   };
 
-  dmenu = import (dirs.configs + /dmenu) {
-    font = import (dirs.font + /dmenu.nix);
-    colors = import (dirs.colorscheme + /dmenu.nix);
+  desktop-items = with pkgs; {
+    qutebrowser = makeDesktopItem
+      {
+        name = "qutebrowser";
+        desktopName = "qutebrowser";
+        exec = "${pkgs.qutebrowser}/bin/qutebrowser";
+        mimeType = lib.concatStringsSep ";" [
+          "text/html"
+          "x-scheme-handler/about"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+          "x-scheme-handler/unknown"
+        ];
+        icon = "qutebrowser";
+      };
   };
 
-  devTools = with pkgs; [
-    gcc
-    gnumake
-  ];
+  language-servers = with pkgs; {
+    lua = sumneko-lua-language-server;
+    bash = nodePackages.bash-language-server;
+    python = nodePackages.pyright;
+    vimscript = nodePackages.vim-language-server;
+  };
 
-  language-servers = with pkgs; [
-    sumneko-lua-language-server
-    nodePackages.bash-language-server
-    nodePackages.pyright
-    nodePackages.vim-language-server
-  ];
+  userscripts = with pkgs; {
+    lf = hiPrio (writeShellScriptBin "lf"
+      (import (dirs.configs + /lf/launcher.sh.nix)));
+
+    previewer = writeShellScriptBin "previewer"
+      (builtins.readFile (dirs.configs + /lf/previewer.sh));
+
+    rg-previewer = writeShellScriptBin "rg-previewer"
+      (builtins.readFile (dirs.configs + /fzf/scripts/rg-previewer.sh));
+
+    fuzzy-ripgrep = writeShellScriptBin "fuzzy_ripgrep"
+      (builtins.readFile (dirs.configs + /fzf/scripts/fuzzy-ripgrep.sh));
+
+    dmenu-open = writeShellScriptBin "dmenu-open"
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-open.sh));
+
+    dmenu-run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
+
+    dmenu-wifi = writers.writePython3Bin "dmenu-wifi"
+      { libraries = [ python38Packages.pygobject3 ]; }
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-wifi.py));
+
+    dmenu-bluetooth = writers.writePython3Bin "dmenu-bluetooth" { }
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-bluetooth.py));
+
+    dmenu-powermenu = writers.writePython3Bin "dmenu-powermenu" { }
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-powermenu.py));
+
+    dmenu-pulseaudio = writers.writePython3Bin "dmenu-pulseaudio" { }
+      (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-pulseaudio.py));
+
+    dmenu-xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute" (
+      import (dirs.configs + /dmenu/scripts/dmenu-xembed.sh.nix) {
+        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
+        colors = (import (dirs.colorscheme + /qutebrowser.nix)).dmenu;
+      }
+    );
+  };
 in
 {
   imports = [
@@ -229,25 +195,23 @@ in
       chafa
       delta
       dmenu
-      dragon-drop
       evemu
       evtest
       feh
       ffmpegthumbnailer
       file
-      # fusuma
+      gcc
+      gnumake
       glxinfo
       gotop
       graphicsmagick-imagemagick-compat
       inkscape
       libnotify
-      lua5_4
       jmtpfs
       keyutils
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
-      networkmanager_dmenu
       (nerdfonts.override {
         fonts = [
           "FiraCode"
@@ -258,10 +222,12 @@ in
       nixpkgs-fmt
       nodejs
       pandoc
+      pciutils # for lspci
       pfetch
       pick-colour-picker
-      pinentry_qt5 # GnuPG's cli interface to passphrase input
+      pinentry_qt5
       poppler_utils
+      proselint # used by ALE for TeX and Markdown formatting
       (python39.withPackages (
         ps: with ps; [
           autopep8
@@ -278,31 +244,23 @@ in
       transmission-remote-gtk
       tree
       ueberzug
-      unclutter-xfixes
       unzip
       vimv
       wmctrl
-      xbanish
       xclip
       xdotool
       xorg.xev
       xorg.xwininfo
       yarn
-
-      xdo # used by scripts.bspwm.mpv-focus-prev
-      pciutils # for lspci
-      desktop-items.qutebrowser
-
-      proselint
     ]
-    ++ devTools
-    ++ language-servers
-    ++ userScripts;
+    ++ (builtins.attrValues desktop-items)
+    ++ (builtins.attrValues language-servers)
+    ++ (builtins.attrValues userscripts);
 
     sessionVariables = {
       EDITOR = "nvim";
       MANPAGER = "nvim -c 'set ft=man' -";
-      LANG = "en_US.UTF-8";
+      LANG = " en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
       LS_COLORS = "$(vivid generate current)";
@@ -325,9 +283,9 @@ in
   ];
 
   xdg.configFile = {
-    # "fusuma/config.yml" = {
-    #   source = (dirs.configs + /fusuma/config.yml);
-    # };
+    "fusuma/config.yml" = {
+      source = (dirs.configs + /fusuma/config.yml);
+    };
 
     "nvim" = {
       source = (dirs.configs + /neovim);
@@ -442,9 +400,9 @@ in
     enable = true;
   } // configs.dunst;
 
-  services.fusuma = {
-    enable = true;
-  } // configs.fusuma;
+  # services.fusuma = {
+  #   enable = true;
+  # } // configs.fusuma;
 
   services.gpg-agent = {
     enable = true;

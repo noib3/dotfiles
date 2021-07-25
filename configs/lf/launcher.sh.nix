@@ -1,5 +1,6 @@
-{ lf }:
-
+let
+  unstable = import <nixos-unstable> { };
+in
 ''
   set -e
 
@@ -16,8 +17,8 @@
     exec 3>"$UEBERZUG_FIFO"
     trap cleanup EXIT
 
-    ${lf}/bin/lf "$@" 3>&-
+    ${unstable.lf}/bin/lf "$@" 3>&-
   else
-    exec ${lf}/bin/lf "$@"
+    exec ${unstable.lf}/bin/lf "$@"
   fi
 ''

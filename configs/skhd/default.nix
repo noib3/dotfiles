@@ -1,3 +1,9 @@
+let
+  pkgs = import <nixpkgs> { };
+
+  take-screenshot = pkgs.writeShellScriptBin "take-screenshot"
+    (import ./take-screenshot.sh.nix);
+in
 {
   config = ''
     cmd - return : alacritty
@@ -121,7 +127,7 @@
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
-    shift + cmd - 3 : take-screenshot whole
-    shift + cmd - 4 : take-screenshot portion
+    shift + cmd - 3 : ${take-screenshot}/bin/take-screenshot whole
+    shift + cmd - 4 : ${take-screenshot}/bin/take-screenshot portion
   '';
 }

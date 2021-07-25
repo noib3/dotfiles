@@ -1,9 +1,3 @@
-"""dmenu-bluetooth
-
-Usage:
-    dmenu-bluetooth [--status]
-"""
-
 import argparse
 import os
 import subprocess

@@ -23,11 +23,11 @@
       [
         "!/Downloads"
       ]
-    else if machine == "archiv3" then
+    else if machine == "archive" then
       [
         "!/dotfiles"
         "/dotfiles/machines/*"
-        "!/dotfiles/machines/archiv3"
+        "!/dotfiles/machines/archive"
       ]
     else [ ]
   );

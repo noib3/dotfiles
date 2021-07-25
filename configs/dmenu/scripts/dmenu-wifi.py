@@ -10,10 +10,9 @@ __email__ = 'riccardo.mazzarini@pm.me'
 # 2. give feedback if password is not correct (stay in a while loop?)
 # 3. remove as much overhead as possible
 # 4. refactor
-# 5. sort networks by active connections, known connections, rest
-# 6. send notifications
-# 7. use emojis for password protected, active connection, maybe even wifi?
-# 8. use gi instead of nmcli via subprocess.run
+# 5. send notifications
+# 6. use emojis for password protected, active connection, maybe even wifi?
+# 7. use gi instead of nmcli via subprocess.run
 
 
 class Network:
@@ -261,7 +260,7 @@ class Wifi:
             ).stdout.rstrip()
 
             if not selection:
-                sys.exit()
+                break
 
             elif selection == list_networks:
                 preselect_index = 0

@@ -1,5 +1,8 @@
 { font, colors }:
 
+let
+  xdotool = "${(import <nixpkgs> { }).xdotool}/bin/xdotool";
+in
 ''
   dmenu \
     -fn '${font.family}:size=${font.size}' \
@@ -14,6 +17,6 @@
     -nhf '${colors.highlight.fg}' \
     -shb '${colors.selected.bg}' \
     -shf '${colors.highlight.fg}' \
-    -w "$(xdotool getactivewindow)" \
+    -w "$(${xdotool} getactivewindow)" \
     "$@"
 ''

@@ -1,5 +1,4 @@
 import subprocess
-import sys
 
 POWER_ICON = ' '
 FORMAT_MENU = """\
@@ -41,17 +40,18 @@ def show_menu():
         input=options,
     ).stdout.rstrip()
 
-    if not selection:
-        sys.exit()
+    while True:
+        if not selection:
+            break
 
-    elif selection == shutdown:
-        __shutdown()
+        elif selection == shutdown:
+            __shutdown()
 
-    elif selection == reboot:
-        __reboot()
+        elif selection == reboot:
+            __reboot()
 
-    elif selection == suspend:
-        __suspend()
+        elif selection == suspend:
+            __suspend()
 
 
 if __name__ == '__main__':
