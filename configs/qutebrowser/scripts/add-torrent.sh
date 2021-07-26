@@ -2,7 +2,7 @@ QUTE_INVALID_LINK_MSG="Invalid magnet link"
 
 function notify_add() {
   notify-send \
-    --expire-time=5000 \
+    --expire-time=4000 \
     --app-name="qutebrowser" \
     --icon="qutebrowser" \
     "Added new torrent" \

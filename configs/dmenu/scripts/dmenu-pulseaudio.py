@@ -1,4 +1,5 @@
 import argparse
+import re
 import subprocess
 from typing import List, Optional
 
@@ -15,13 +16,16 @@ parser.add_argument(
 
 class Sink:
 
-    def __init__(self, index: str, description: str, volume: int,
-                 is_default: bool, is_muted: bool):
-        self.index = index
-        self.description = description
-        self.volume = volume
-        self.is_default = is_default
-        self.is_muted = is_muted
+    def __init__(self, lines: List[str]):
+        self.index = lines[0].split()[-1]
+        self.is_default = 'yes' in lines[0]
+        for line in lines:
+            if 'device.description' in line:
+                self.description = line.split('= ')[1][1:-1]
+            elif 'volume: front-left' in line:
+                self.volume = int(line.split(' / ')[1].strip('%'))
+            elif 'muted' in line:
+                self.is_muted = 'yes' in line
 
     def set_as_default(self):
         proc = subprocess.run(['pactl', 'set-default-sink', self.index])
@@ -110,30 +114,27 @@ class Input:
 
 
 def get_sinks() -> List[Sink]:
-    sink_dump = subprocess.run(
+    sinks_dump = subprocess.run(
         ['pacmd', 'list-sinks'],
         capture_output=True,
         text=True,
     ).stdout.rstrip().split('\n')
 
-    index_lines = [ln for ln in sink_dump if 'index' in ln]
-    description_lines = [ln for ln in sink_dump if 'device.description' in ln]
-    volume_lines = [ln for ln in sink_dump if 'volume: front-left:' in ln]
-    muted_lines = [ln for ln in sink_dump if 'muted' in ln]
+    i = -1
+    raw_sink_lines = []
+    for line in sinks_dump[1:]:
+        # Match lines of the form
+        #   '    index: 0'
+        # or
+        #   '  * index: 3'
+        if re.match(r'^  ( |\*) index: [0-9]*$', line):
+            raw_sink_lines.append([])
+            i += 1
+        raw_sink_lines[i].append(line)
 
     sinks = []
-    for index_line, volume_line, description_line, muted_line in zip(
-            index_lines,
-            volume_lines,
-            description_lines,
-            muted_lines):
-        sinks.append(Sink(
-            index=index_line.split()[-1],
-            description=description_line.split('= ')[1][1:-1],
-            volume=int(volume_line.split(' / ')[1].strip('%')),
-            is_default='*' in index_line,
-            is_muted='yes' in muted_line,
-        ))
+    for lines in raw_sink_lines:
+        sinks.append(Sink(lines=lines))
 
     return sinks
 

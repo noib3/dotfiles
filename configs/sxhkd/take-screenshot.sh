@@ -18,7 +18,7 @@ esac
 
 function notify_screenshot() {
   notify-send \
-    --expire-time=5000 \
+    --expire-time=4000 \
     --app-name="New screenshot" \
     --icon="$filename" \
     "$(basename "$filename")" \

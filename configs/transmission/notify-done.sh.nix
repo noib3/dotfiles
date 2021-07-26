@@ -5,7 +5,7 @@ let
     if pkgs.stdenv.isLinux then
       ''
         ${pkgs.libnotify}/bin/notify-send \
-          --expire-time=5000 \
+          --expire-time=4000 \
           --app-name="transmission-remote" \
           --icon="${builtins.toString ./transmission-logo.png}" \
           "Torrent complete" \

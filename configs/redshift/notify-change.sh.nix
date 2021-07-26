@@ -5,7 +5,7 @@ let
     if pkgs.stdenv.isLinux then
       ''
         ${pkgs.libnotify}/bin/notify-send \
-          --expire-time=5000 \
+          --expire-time=4000 \
           --app-name="Redshift" \
           --icon="${builtins.toString ./redshift-logo.png}" \
           "Switching temps..." \
