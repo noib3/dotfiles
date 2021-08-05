@@ -1,15 +1,11 @@
 function open {
-  text_files=()
-  image_files=()
-
   while read file; do
     case $(file -b --mime-type "$HOME/$file") in
       text/*|application/json|inode/x-empty)
-        text_files+=($(echo "$HOME/$file" | sed "s/\ /\\\ /g"))
+        setsid -f alacritty -e sh -c "sleep 0.2 && $EDITOR '$file'"
         ;;
       image/*)
-        setsid -f sxiv "$HOME/$file"
-        # image_files+=("$f")
+        setsid -f feh "$HOME/$file"
         ;;
       video/*)
         setsid -f mpv --no-terminal "$HOME/$file"
@@ -19,14 +15,6 @@ function open {
         ;;
     esac
   done
-
-  # (( ${#image_files[@]} )) && open "${image_files[@]}"
-  if (( ${#text_files[@]} )); then
-    filenames="$(echo ${text_files[@]})"
-    alacritty \
-      --class 'fuzzy-opened' \
-      -e sh -c "sleep 0.2 && $EDITOR $filenames"
-  fi
 }
 
 fd --base-directory=$HOME --hidden --type=f | dmenu -p 'Open>' | open

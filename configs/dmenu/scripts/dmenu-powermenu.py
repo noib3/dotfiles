@@ -1,11 +1,6 @@
 import subprocess
 
 POWER_ICON = ' '
-FORMAT_MENU = """\
-{shutdown}
-{reboot}
-{suspend}
-"""
 
 
 def __shutdown():
@@ -27,17 +22,13 @@ def show_menu():
     reboot = 'Reboot'
     suspend = 'Suspend'
 
-    options = FORMAT_MENU.format(
-        shutdown=shutdown,
-        reboot=reboot,
-        suspend=suspend,
-    )
+    entries = '\n'.join([shutdown, reboot, suspend])
 
     selection = subprocess.run(
         ['dmenu', '-p', POWER_ICON],
         capture_output=True,
         text=True,
-        input=options,
+        input=entries,
     ).stdout.rstrip()
 
     while True:

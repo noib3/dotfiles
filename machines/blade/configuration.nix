@@ -145,11 +145,6 @@ in
     enable = true;
   };
 
-  services.syncthing = {
-    enable = true;
-    package = unstable.syncthing;
-  };
-
   services.tlp = {
     enable = true;
   };

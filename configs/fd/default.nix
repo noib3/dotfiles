@@ -3,10 +3,13 @@
 {
   ignored = [
     "/*"
-    "!/sync"
+    "!/Dropbox"
+    "!/Downloads"
     "**/.direnv"
+    "**/.dropbox.cache"
     "**/.git"
     "**/.stfolder"
+    "*.dropbox"
     "*.aux"
     "*.bbl"
     "*.bcf"
@@ -18,17 +21,5 @@
     "*.synctex(busy)"
     "*.synctex.gz"
     "*.toc"
-  ] ++ (
-    if (machine == "blade" || machine == "mbair") then
-      [
-        "!/Downloads"
-      ]
-    else if machine == "archive" then
-      [
-        "!/dotfiles"
-        "/dotfiles/machines/*"
-        "!/dotfiles/machines/archive"
-      ]
-    else [ ]
-  );
+  ];
 }

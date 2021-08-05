@@ -7,20 +7,12 @@ __email__ = 'riccardo.mazzarini@pm.me'
 
 # TODO
 # 1. networks list is empty after disconnecting network
-# 2. give feedback if password is not correct (stay in a while loop?)
-# 3. remove as much overhead as possible
-# 4. refactor
-# 5. send notifications
-# 6. use emojis for password protected, active connection, maybe even wifi?
-# 7. use gi instead of nmcli via subprocess.run
+# 2. remove as much overhead as possible
+# 3. send notifications
+# 4. use gi instead of nmcli via subprocess.run
 
 
 class Network:
-    FORMAT_MENU = """\
-{connected}
-{forget}
-{autoconnect}
-"""
 
     def __init__(self, line: str):
         fields = line.split(':')
@@ -84,17 +76,27 @@ class Network:
                 proc = subprocess.run(['nmcli', 'connection', 'up', self.ssid])
             else:
                 if self.is_password_protected:
-                    password = subprocess.run(
-                        ['dmenu', '-p', 'Password>', '-P'],
-                        capture_output=True,
-                        text=True,
-                    ).stdout.rstrip()
-                    # NOTE: this sets a new connection's name equal to the
-                    # corresponding network's SSID.
-                    proc = subprocess.run(
-                        ['sudo', 'nmcli', 'device', 'wifi', 'connect',
-                            self.ssid, 'password', password, 'name', self.ssid]
-                    )
+                    while True:
+                        password = subprocess.run(
+                            ['dmenu', '-p', 'Password>', '-P'],
+                            capture_output=True,
+                            text=True,
+                        ).stdout.rstrip()
+                        # NOTE: this sets a new connection's name equal to the
+                        # corresponding network's SSID.
+                        proc = subprocess.run(
+                            ['sudo', 'nmcli', 'device', 'wifi', 'connect',
+                                self.ssid, 'password', password, 'name',
+                                self.ssid]
+                        )
+                        if proc.returncode == 0:
+                            break
+                        else:
+                            subprocess.run(
+                                ['dunstify', 'Incorrect password',
+                                 '--appname', self.ssid, '--replace', '1',
+                                 '--timeout', '2000']
+                            )
                 else:
                     # NOTE: this sets a new connection's name equal to the
                     # corresponding network's SSID.
@@ -135,11 +137,7 @@ class Network:
                 forget = ''
                 autoconnect = ''
 
-            options = '\n'.join([line for line in self.FORMAT_MENU.format(
-                connected=connected,
-                forget=forget,
-                autoconnect=autoconnect,
-            ).split('\n') if line])
+            entries = '\n'.join([connected, forget, autoconnect])
 
             selection = subprocess.run(
                 ['dmenu', '-p',
@@ -147,7 +145,7 @@ class Network:
                  '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
-                input=options,
+                input=entries,
             ).stdout.rstrip()
 
             if not selection:
@@ -169,12 +167,6 @@ class Network:
 
 
 class Wifi:
-    ICON_PROTECTED_NETWORK = ''
-
-    FORMAT_MENU = """\
-{list_networks}
-{power}
-"""
 
     def __get_status(self) -> str:
         return subprocess.run(
@@ -210,8 +202,7 @@ class Wifi:
                 '{}{}{} {}'.format(
                     n.ssid,
                     n.is_connected() and ' (c)' or '',
-                    n.is_password_protected and ' [{}]'.format(
-                        self.ICON_PROTECTED_NETWORK) or '',
+                    n.is_password_protected and ' []' or '',
                     n.bars
                 ) for n in networks
             ]
@@ -247,16 +238,13 @@ class Wifi:
                 list_networks = ''
                 power = 'Turn on'
 
-            options = '\n'.join([line for line in self.FORMAT_MENU.format(
-                power=power,
-                list_networks=list_networks,
-            ).split('\n') if line])
+            entries = '\n'.join([list_networks, power])
 
             selection = subprocess.run(
                 ['dmenu', '-p', 'Wifi>', '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
-                input=options,
+                input=entries,
             ).stdout.rstrip()
 
             if not selection:

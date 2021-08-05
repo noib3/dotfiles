@@ -57,8 +57,6 @@ let
 
   configs.skhd = import (dirs.configs + /skhd);
 
-  configs.ssh = import (dirs.configs + /ssh);
-
   configs.starship = import (dirs.configs + /starship);
 
   configs.tridactyl = import (dirs.configs + /tridactyl) {
@@ -246,10 +244,6 @@ in
   programs.spacebar = {
     enable = true;
   } // configs.spacebar;
-
-  programs.ssh = {
-    enable = true;
-  } // configs.ssh;
 
   programs.starship = {
     enable = true;

@@ -16,7 +16,7 @@ in
     "super + a" = ''
       nvidia-offload alacritty -e calcurse \
         -C ${builtins.toString ../calcurse} \
-        -D $SYNCDIR/calcurse
+        -D $SYNCDIR/share/calcurse
     '';
 
     # Open the web browser 

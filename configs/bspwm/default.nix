@@ -1,7 +1,7 @@
 { colors }:
 
 let
-  pkgs = import <nixpkgs> { };
+  pkgs = import <nixpkgs> { config = { allowUnfree = true; }; };
 
   mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
     (builtins.readFile ./scripts/mpv-focus-prev.sh);
@@ -41,8 +41,12 @@ in
   ];
 
   extraConfig = ''
+    ${pkgs.dropbox-cli}/bin/dropbox start
+
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
+
+    keyctl link @u @s
 
     systemctl --user start pulseaudio.service
     systemctl --user restart polybar.service

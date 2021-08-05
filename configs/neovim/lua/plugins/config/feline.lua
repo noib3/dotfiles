@@ -40,13 +40,12 @@ local file_icon = {
     }
   end,
   left_sep = ' ',
-  right_sep = ' ',
 }
 
 local file_name = {
-  provider = function()
-    return fn.expand('%:t')
-  end,
+  provider = 'file_info',
+  type = 'unique',
+  icon = '',
   enabled = buffer_not_empty,
   hl = {
     fg = colors.fg,

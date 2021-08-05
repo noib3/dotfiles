@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '-v',
     '--volume',
-    help='Lower, raise or mute the volume of the default sink by 5%'
+    help='Lower, raise or mute the volume of the default sink'
 )
 
 
@@ -18,7 +18,7 @@ class Sink:
 
     def __init__(self, lines: List[str]):
         self.index = lines[0].split()[-1]
-        self.is_default = 'yes' in lines[0]
+        self.is_default = '*' in lines[0]
         for line in lines:
             if 'device.description' in line:
                 self.description = line.split('= ')[1][1:-1]
@@ -121,22 +121,18 @@ def get_sinks() -> List[Sink]:
     ).stdout.rstrip().split('\n')
 
     i = -1
-    raw_sink_lines = []
+    sinks = []
     for line in sinks_dump[1:]:
         # Match lines of the form
         #   '    index: 0'
         # or
         #   '  * index: 3'
         if re.match(r'^  ( |\*) index: [0-9]*$', line):
-            raw_sink_lines.append([])
+            sinks.append([])
             i += 1
-        raw_sink_lines[i].append(line)
+        sinks[i].append(line)
 
-    sinks = []
-    for lines in raw_sink_lines:
-        sinks.append(Sink(lines=lines))
-
-    return sinks
+    return [Sink(lines=lines) for lines in sinks]
 
 
 def get_default_sink() -> Optional[Sink]:

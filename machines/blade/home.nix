@@ -11,7 +11,7 @@ let
     colorscheme = ../../colorschemes + "/${colorscheme}";
     configs = ../../configs;
     font = ../../fonts + "/${font}";
-    sync = config.home.homeDirectory + "/sync";
+    sync = config.home.homeDirectory + "/Dropbox";
   };
 
   configs.alacritty = import (dirs.configs + /alacritty) {
@@ -63,7 +63,7 @@ let
   configs.git = import (dirs.configs + /git);
 
   configs.gpg = import (dirs.configs + /gpg/gpg.nix) {
-    homedir = (dirs.sync + "/wip/secrets/gnupg");
+    homedir = (dirs.sync + "/share/gnupg");
   };
 
   configs.gpg-agent = import (dirs.configs + /gpg/gpg-agent.nix);
@@ -87,8 +87,6 @@ let
   };
 
   configs.redshift = import (dirs.configs + /redshift);
-
-  configs.ssh = import (dirs.configs + /ssh);
 
   configs.starship = import (dirs.configs + /starship);
 
@@ -194,6 +192,7 @@ in
       calibre
       chafa
       delta
+      dropbox-cli
       dmenu
       evemu
       evtest
@@ -275,6 +274,8 @@ in
           "";
     };
   };
+
+  nixpkgs.config.allowUnfree = true; # for Dropbox
 
   nixpkgs.overlays = [
     (import (builtins.fetchTarball {
@@ -374,10 +375,6 @@ in
     enable = true;
     package = unstable.qutebrowser;
   } // configs.qutebrowser;
-
-  programs.ssh = {
-    enable = true;
-  } // configs.ssh;
 
   programs.starship = {
     enable = true;

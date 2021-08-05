@@ -3,7 +3,7 @@ vim.cmd('packadd packer.nvim')
 local packer = require('packer')
 local configs = {
   ale = function() require('plugins/config/ale') end,
-  cokeline = function() require('plugins/config/cokeline') end,
+  -- cokeline = function() require('plugins/config/cokeline') end,
   colorizer = function() require('plugins/config/colorizer') end,
   completions = function() require('plugins/config/completions') end,
   delimitmate = function() require('plugins/config/delimitmate') end,
@@ -33,11 +33,11 @@ return packer.startup(function()
   --   requires = {'kyazdani42/nvim-web-devicons'},
   --   config = configs.bufferline,
   -- }
-  use {
-    '~/sync/projects/cokeline.nvim',
-    requires = {'kyazdani42/nvim-web-devicons'},
-    config = configs.cokeline,
-  }
+  -- use {
+  --   '~/Dropbox/projects/cokeline.nvim',
+  --   requires = {'kyazdani42/nvim-web-devicons'},
+  --   config = configs.cokeline,
+  -- }
   use {'norcalli/nvim-colorizer.lua', config = configs.colorizer}
   use {'nvim-lua/completion-nvim', config = configs.completions}
   use {'Raimondi/delimitMate', config = configs.delimitmate}
