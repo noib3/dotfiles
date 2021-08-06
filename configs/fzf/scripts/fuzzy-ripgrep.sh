@@ -19,7 +19,7 @@ results="$(\
         --delimiter=':' \
         --with-nth='1,2,4..' \
         --bind="change:reload:$reload_query" \
-        --preview='rg-previewer {}' \
+        --preview='rg-previewer {1,2}' \
         --preview-window='+{2}-/2' \
 )"
 
