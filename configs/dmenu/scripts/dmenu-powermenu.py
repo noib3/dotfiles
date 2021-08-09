@@ -24,14 +24,14 @@ def show_menu():
 
     entries = '\n'.join([shutdown, reboot, suspend])
 
-    selection = subprocess.run(
-        ['dmenu', '-p', POWER_ICON],
-        capture_output=True,
-        text=True,
-        input=entries,
-    ).stdout.rstrip()
-
     while True:
+        selection = subprocess.run(
+            ['dmenu', '-p', POWER_ICON],
+            capture_output=True,
+            text=True,
+            input=entries,
+        ).stdout.rstrip()
+
         if not selection:
             break
 

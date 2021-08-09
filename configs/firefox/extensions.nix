@@ -55,10 +55,10 @@ in
 
   tridactyl-no-new-tab = buildFirefoxXpiAddon {
     pname = "tridactyl";
-    version = "1.21.0";
+    version = "1.21.1";
     addonId = "tridactyl.vim.betas.nonewtab@cmcaine.co.uk";
     url = "https://tridactyl.cmcaine.co.uk/betas/nonewtab/tridactyl_no_new_tab_beta-latest.xpi";
-    sha256 = "02c6al4fkgq5jhw9rg4n3k1gni2kl86cx4dpllwsz42pkc84zwp0";
+    sha256 = "0fsxjyv2d1j0gwvqqqh5l4zv9jcy1vqkkhxfsx08zd475sczmm0z";
     meta = with pkgs.lib; {
       homepage = "https://github.com/cmcaine/tridactyl";
       description = ''

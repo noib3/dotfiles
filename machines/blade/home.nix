@@ -136,6 +136,10 @@ let
     lf = hiPrio (writeShellScriptBin "lf"
       (import (dirs.configs + /lf/launcher.sh.nix)));
 
+    weather = writers.writePython3Bin "weather"
+      { libraries = [ python38Packages.requests ]; }
+      (builtins.readFile (dirs.configs + /eww/weather/weather.py));
+
     previewer = writeShellScriptBin "previewer"
       (builtins.readFile (dirs.configs + /lf/previewer.sh));
 
@@ -284,6 +288,11 @@ in
   ];
 
   xdg.configFile = {
+    "eww" = {
+      source = (dirs.configs + /eww);
+      recursive = true;
+    };
+
     "fusuma/config.yml" = {
       source = (dirs.configs + /fusuma/config.yml);
     };

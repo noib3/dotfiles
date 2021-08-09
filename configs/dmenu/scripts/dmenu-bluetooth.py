@@ -50,15 +50,15 @@ class Device:
         proc = subprocess.run(['bluetoothctl', toggle, self.address])
         if proc.returncode == 0:
             subprocess.run(
-                ['dunstify', '{} has been {}ed'.format(self.name, toggle),
+                ['dunstify', f'{self.name} has been {toggle}ed',
                  '--appname', 'dmenu-bluetooth', '--replace', '1', '--timeout',
-                 '2000']
+                 '4000']
             )
         else:
             subprocess.run(
-                ['dunstify', "Couldn't {} {}".format(toggle, self.name),
+                ['dunstify', f"Couldn't {toggle} {self.name}",
                  '--appname', 'dmenu-bluetooth', '--replace', '1', '--timeout',
-                 '2000']
+                 '4000']
             )
         return toggle, proc.returncode
 
@@ -89,7 +89,7 @@ class Device:
             ])
 
             selection = subprocess.run(
-                ['dmenu', '-p', '{}>'.format(self.name),
+                ['dmenu', '-p', f'{self.name}>',
                  '-n', str(preselect_index)],
                 capture_output=True,
                 text=True,
