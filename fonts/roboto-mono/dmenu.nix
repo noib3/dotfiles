@@ -1,4 +1,5 @@
 {
   family = "RobotoMono Nerd Font";
-  pixelsize = "17";
+  size = "12";
+  lineheight = "25";
 }

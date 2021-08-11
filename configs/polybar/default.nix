@@ -234,7 +234,7 @@ in
         padding = 1;
         foreground = colors.notification-center.icon;
       };
-      click.left = "true";
+      click.left = "/home/noib3/eww/target/release/eww open sidebar";
     };
   };
 

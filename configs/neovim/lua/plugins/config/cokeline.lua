@@ -3,6 +3,7 @@ local keymap = vim.api.nvim_set_keymap
 
 require('cokeline').setup({
   hide_when_one_buffer = true,
+  line_format =  ' {devicon}{index}: {filename}{flags} '
 })
 
 keymap('n', '<Leader>p', '<Plug>(cokeline-switch-prev)', {silent = true})

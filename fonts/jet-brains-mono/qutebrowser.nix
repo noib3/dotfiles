@@ -1,9 +1,10 @@
 rec {
   family = "JetBrainsMono Nerd Font";
-  size = "16pt";
+  size = "14pt";
 
   dmenu = {
     inherit family;
-    size = "21pt";
+    size = "12";
+    lineheight = "24";
   };
 }

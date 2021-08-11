@@ -26,7 +26,7 @@ rec {
 } // (
   if machine == "blade" then
     {
-      size = 12;
+      size = 9;
     }
   else if machine == "mbair" then
     {

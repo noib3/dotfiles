@@ -42,6 +42,7 @@ in
 
   extraConfig = ''
     ${pkgs.dropbox-cli}/bin/dropbox start
+    /home/noib3/eww/target/release/eww daemon
 
     # Turn off the screen saver (`man xset` for more infos).
     xset s off

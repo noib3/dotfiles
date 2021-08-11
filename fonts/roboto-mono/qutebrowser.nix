@@ -4,6 +4,7 @@ rec {
 
   dmenu = {
     inherit family;
-    pixelsize = "17pt";
+    size = "12";
+    lineheight = "24";
   };
 }

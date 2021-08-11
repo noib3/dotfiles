@@ -1,6 +1,5 @@
 vim.cmd('packadd packer.nvim')
 
-local packer = require('packer')
 local configs = {
   ale = function() require('plugins/config/ale') end,
   cokeline = function() require('plugins/config/cokeline') end,
@@ -25,7 +24,7 @@ local configs = {
   which_key = function() require('plugins/config/which-key') end,
 }
 
-return packer.startup(function()
+return require('packer').startup(function(use)
   use {'wbthomason/packer.nvim', opt = true}
   use {'dense-analysis/ale', config = configs.ale}
   -- use {

@@ -41,6 +41,8 @@ let
     colors = import (dirs.colorscheme + /dunst.nix);
   };
 
+  eww = import (dirs.configs/eww);
+
   configs.fd = import (dirs.configs + /fd) { inherit machine; };
 
   configs.firefox = import (dirs.configs + /firefox) {
@@ -200,6 +202,7 @@ in
       dmenu
       evemu
       evtest
+      # eww
       feh
       ffmpegthumbnailer
       file
