@@ -30,7 +30,7 @@ g.completion_enable_auto_paren = 1
 g.completion_enable_snippet = 'UltiSnips'
 
 keymap(
-  'i', '<Tab>', [[pumvisible() ? '<C-n>' : '<Tab>']],
+  'i', '<Tab>', [[pumvisible() ? '<C-n>' : '<C-R>=UltiSnips#ExpandSnippetOrJump<CR>']],
   {expr = true, noremap = true, silent = true}
 )
 

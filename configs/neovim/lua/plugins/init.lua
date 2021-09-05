@@ -2,6 +2,7 @@ vim.cmd('packadd packer.nvim')
 
 local configs = {
   ale = function() require('plugins/config/ale') end,
+  bufferline = function() require('plugins/config/bufferline') end,
   cokeline = function() require('plugins/config/cokeline') end,
   colorizer = function() require('plugins/config/colorizer') end,
   completions = function() require('plugins/config/completions') end,
@@ -17,6 +18,7 @@ local configs = {
   markdown_preview = function() require('plugins/config/markdown-preview') end,
   rust = function() require('plugins/config/rust') end,
   shade = function() require('plugins/config/shade') end,
+  -- snippets = function() require('plugins/config/snippets') end,
   treesitter = function() require('plugins/config/treesitter') end,
   truezen = function() require('plugins/config/truezen') end,
   ultisnips = function() require('plugins/config/ultisnips') end,
@@ -63,9 +65,10 @@ return require('packer').startup(function(use)
   }
   use {'rust-lang/rust.vim', config = configs.rust, ft = 'rust'}
   use {'sunjon/Shade.nvim', config = configs.shade}
+  -- use {'norcalli/snippets.nvim', config = configs.snippets}
   use {'nvim-treesitter/nvim-treesitter', config = configs.treesitter}
   use {'Pocco81/TrueZen.nvim', config = configs.truezen}
-  -- use {'SirVer/ultisnips', config = configs.ultisnips}
+  use {'SirVer/ultisnips', config = configs.ultisnips}
   use {'lervag/vimtex', config = configs.vimtex, ft = 'tex'}
   use {'liuchengxu/vim-which-key', config = configs.which_key}
   use {'qpkorr/vim-bufkill'}
@@ -82,5 +85,6 @@ return require('packer').startup(function(use)
   use {'LnL7/vim-nix'}
   use {'danilo-augusto/vim-afterglow'}
   use {'morhetz/gruvbox'}
+  use {'arcticicestudio/nord-vim'}
   use {'joshdick/onedark.vim'}
 end)

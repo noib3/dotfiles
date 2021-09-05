@@ -4,11 +4,6 @@
   fade = true;
   fadeDelta = 3;
 
-  shadow = true;
-  shadowExclude = [
-    "class_g = 'dmenu'"
-  ];
-
   extraOptions = ''
     blur:
     {

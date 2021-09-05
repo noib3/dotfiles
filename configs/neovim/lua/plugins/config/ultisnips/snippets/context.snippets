@@ -1,0 +1,37 @@
+snippet md "Make dollar" iA
+$$1$$0
+endsnippet
+
+snippet mc "Make curly" iA
+{$1}$0
+endsnippet
+
+snippet ^^ "superscript" iA
+^{$1}$0
+endsnippet
+
+snippet __ "subscript" iA
+_{$1}$0
+endsnippet
+
+snippet sds "Start discussion" bA
+\startdiscussion [title={$1}]
+	$2
+\stopdiscussion
+$0
+endsnippet
+
+snippet mue "Make unnumbered equation" bA
+\startformula
+	$1
+\stopformula
+$0
+endsnippet
+
+snippet mne "Make numbered equation" bA
+\placeformula [eq:$1]
+\startformula
+	$2
+\stopformula
+$0
+endsnippet

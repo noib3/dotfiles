@@ -31,9 +31,13 @@ in
     "alt + shift + w" = "dmenu-wifi";
     "alt + shift + p" = "dmenu-powermenu";
     "alt + shift + a" = "dmenu-pulseaudio";
+    "alt + c" = "$SYNCDIR/bocconi/.scripts/dmenu-notes-manager.py";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
+
+    # Toggle window gaps, borders and paddings
+    "alt + s" = "toggle-gaps-borders";
 
     # Toggle float
     "alt + shift + f" = "bspc node -t ~floating";

@@ -25,7 +25,7 @@ local get_devicon = function()
   local extension = fn.expand('%:e')
   local icon, iconhl = get_icon(filename, extension, {default = true})
   return {
-    icon = icon,
+    icon = icon .. ' ',
     fg = fn.synIDattr(fn.hlID(iconhl), 'fg'),
   }
 end

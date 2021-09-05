@@ -12,7 +12,6 @@ in
 {
   config = {
     window_placement = "second_child";
-    window_shadow = "on";
     window_border = "on";
     window_border_width = 4;
     normal_window_border_color = toYabaiFormat colors.border.unfocused;

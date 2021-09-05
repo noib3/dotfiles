@@ -1,6 +1,6 @@
 import subprocess
 
-POWER_ICON = ' '
+import dmenu
 
 
 def __shutdown():
@@ -18,19 +18,17 @@ def __suspend():
 def show_menu():
     """Launches dmenu with the options to shutdown, reboot or suspend the
     machine."""
-    shutdown = 'Shutdown'
-    reboot = 'Reboot'
-    suspend = 'Suspend'
 
-    entries = '\n'.join([shutdown, reboot, suspend])
+    TUX_ICON = ' '
+
+    options = [
+        shutdown := 'Shutdown',
+        reboot := 'Reboot',
+        suspend := 'Suspend',
+    ]
 
     while True:
-        selection = subprocess.run(
-            ['dmenu', '-p', POWER_ICON],
-            capture_output=True,
-            text=True,
-            input=entries,
-        ).stdout.rstrip()
+        selection = dmenu.show(prompt=TUX_ICON, items=options)
 
         if not selection:
             break

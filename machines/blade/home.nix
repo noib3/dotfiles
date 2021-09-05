@@ -4,8 +4,8 @@ let
   unstable = import <nixos-unstable> { };
   machine = "blade";
 
-  colorscheme = "onedark";
-  font = "fira-code";
+  colorscheme = "nord";
+  font = "iosevka";
 
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
@@ -41,8 +41,6 @@ let
     colors = import (dirs.colorscheme + /dunst.nix);
   };
 
-  eww = import (dirs.configs/eww);
-
   configs.fd = import (dirs.configs + /fd) { inherit machine; };
 
   configs.firefox = import (dirs.configs + /firefox) {
@@ -62,7 +60,9 @@ let
 
   configs.fusuma = import (dirs.configs + /fusuma);
 
-  configs.git = import (dirs.configs + /git);
+  configs.git = import (dirs.configs + /git) {
+    inherit colorscheme;
+  };
 
   configs.gpg = import (dirs.configs + /gpg/gpg.nix) {
     homedir = (dirs.sync + "/share/gnupg");
@@ -138,6 +138,9 @@ let
     lf = hiPrio (writeShellScriptBin "lf"
       (import (dirs.configs + /lf/launcher.sh.nix)));
 
+    toggle-gaps-borders = writeShellScriptBin "toggle-gaps-borders"
+      (builtins.readFile (dirs.configs + /bspwm/scripts/toggle-gaps-borders.sh));
+
     weather = writers.writePython3Bin "weather"
       { libraries = [ python38Packages.requests ]; }
       (builtins.readFile (dirs.configs + /eww/weather/weather.py));
@@ -163,7 +166,8 @@ let
     dmenu-bluetooth = writers.writePython3Bin "dmenu-bluetooth" { }
       (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-bluetooth.py));
 
-    dmenu-powermenu = writers.writePython3Bin "dmenu-powermenu" { }
+    dmenu-powermenu = writers.writePython3Bin "dmenu-powermenu"
+      { libraries = [ ]; }
       (builtins.readFile (dirs.configs + /dmenu/scripts/dmenu-powermenu.py));
 
     dmenu-pulseaudio = writers.writePython3Bin "dmenu-pulseaudio" { }
@@ -202,7 +206,6 @@ in
       dmenu
       evemu
       evtest
-      # eww
       feh
       ffmpegthumbnailer
       file
@@ -221,6 +224,7 @@ in
       (nerdfonts.override {
         fonts = [
           "FiraCode"
+          "Iosevka"
           "JetBrainsMono"
           "RobotoMono"
         ];
@@ -236,10 +240,11 @@ in
       proselint # used by ALE for TeX and Markdown formatting
       (python39.withPackages (
         ps: with ps; [
-          autopep8
           ipython
           isort
           pynvim
+          dmenu-python
+          yapf
         ]
       ))
       ripgrep
@@ -249,6 +254,7 @@ in
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
       tree
+      tree-sitter
       ueberzug
       unzip
       vimv

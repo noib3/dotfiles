@@ -214,7 +214,7 @@ in
 
     "module/datetime" = {
       type = "internal/date";
-      time = "%a %B %d, %R";
+      time = "%a, %B %d, %R";
       interval = 5;
       label = {
         text = "%time%";
@@ -234,7 +234,7 @@ in
         padding = 1;
         foreground = colors.notification-center.icon;
       };
-      click.left = "/home/noib3/eww/target/release/eww open sidebar";
+      click.left = "/home/noib3/eww/target/release/eww open --toggle sidebar";
     };
   };
 

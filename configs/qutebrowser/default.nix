@@ -130,6 +130,8 @@ in
       handler = "external";
       multiple_files.command = [
         "alacritty"
+        "--embed"
+        "$(xdotool getactivewindow)"
         "-e"
         "lf"
         "-selection-path"
@@ -137,6 +139,8 @@ in
       ];
       single_file.command = [
         "alacritty"
+        "--embed"
+        "$(xdotool getactivewindow)"
         "-e"
         "lf"
         "-selection-path"
