@@ -4,8 +4,8 @@ let
   unstable = import <nixos-unstable> { };
   machine = "blade";
 
-  colorscheme = "nord";
-  font = "iosevka";
+  colorscheme = "gruvbox";
+  font = "fira-code";
 
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
@@ -138,12 +138,8 @@ let
     lf = hiPrio (writeShellScriptBin "lf"
       (import (dirs.configs + /lf/launcher.sh.nix)));
 
-    toggle-gaps-borders = writeShellScriptBin "toggle-gaps-borders"
-      (builtins.readFile (dirs.configs + /bspwm/scripts/toggle-gaps-borders.sh));
-
-    weather = writers.writePython3Bin "weather"
-      { libraries = [ python38Packages.requests ]; }
-      (builtins.readFile (dirs.configs + /eww/weather/weather.py));
+    toggle-gaps = writeShellScriptBin "toggle-gaps"
+      (builtins.readFile (dirs.configs + /bspwm/scripts/toggle-gaps.sh));
 
     previewer = writeShellScriptBin "previewer"
       (builtins.readFile (dirs.configs + /lf/previewer.sh));
@@ -195,6 +191,7 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
+      asciinema
       atool
       bitwarden
       bitwarden-cli
@@ -209,6 +206,7 @@ in
       feh
       ffmpegthumbnailer
       file
+      flameshot
       gcc
       gnumake
       glxinfo
@@ -226,6 +224,7 @@ in
           "FiraCode"
           "Iosevka"
           "JetBrainsMono"
+          "Mononoki"
           "RobotoMono"
         ];
       })
@@ -249,7 +248,16 @@ in
       ))
       ripgrep
       rustup
+      (rWrapper.override {
+        packages = with rPackages; [
+          bookdown
+          rmarkdown
+          knitr
+          servr
+        ];
+      })
       scrot
+      simplescreenrecorder
       speedtest-cli
       unstable.texlive.combined.scheme-full
       transmission-remote-gtk
@@ -297,11 +305,6 @@ in
   ];
 
   xdg.configFile = {
-    "eww" = {
-      source = (dirs.configs + /eww);
-      recursive = true;
-    };
-
     "fusuma/config.yml" = {
       source = (dirs.configs + /fusuma/config.yml);
     };

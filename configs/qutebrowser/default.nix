@@ -245,6 +245,12 @@ in
       "gyab" = "open https://youatb.unibocconi.it/";
       "tyab" = "open -t https://youatb.unibocconi.it/";
 
+      "gbb" = "open https://blackboard.unibocconi.it/ultra/course";
+      "tbb" = "open -t https://blackboard.unibocconi.it/ultra/course";
+
+      "gal" = "open https://app-public.unibocconi.it/PresencesPubl/RegistroPresenze";
+      "tal" = "open -t https://app-public.unibocconi.it/PresencesPubl/RegistroPresenze";
+
       "g12ft" = "open https://12ft.io/";
       "t12ft" = "open -t https://12ft.io/";
 

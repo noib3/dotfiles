@@ -4,5 +4,6 @@ set -l filenames (
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'
 )
+
 test -z "$filenames" || commandline --insert "$filenames"
 commandline -f repaint

@@ -37,7 +37,7 @@ in
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
 
     # Toggle window gaps, borders and paddings
-    "alt + s" = "toggle-gaps-borders";
+    "alt + s" = "toggle-gaps";
 
     # Toggle float
     "alt + shift + f" = "bspc node -t ~floating";
@@ -80,7 +80,7 @@ in
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
-    "super + shift + {3,4}" =
-      "${take-screenshot}/bin/take-screenshot {whole, portion}";
+    "super + shift + {3,4}" = "flameshot {full, gui} -p ~/Dropbox/screenshots";
+    # "${take-screenshot}/bin/take-screenshot {whole, portion}";
   };
 }

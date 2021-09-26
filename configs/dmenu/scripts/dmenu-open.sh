@@ -17,4 +17,7 @@ function open {
   done
 }
 
-fd --base-directory=$HOME --hidden --type=f | dmenu -p 'Open>' | open
+fd --base-directory=$HOME --hidden --type=f \
+  | sort -r \
+  | dmenu -p 'Open>' \
+  | open

@@ -4,14 +4,15 @@ let
 in
 rec {
   bar = {
-    fg = hexlib.scale 90 colors.normal.white;
+    fg = colors.bright.white;
     bg = "#00000000";
   };
 
   power.icon = bar.fg;
 
-  workspaces = {
+  workspaces = rec {
     focused.bg = colors.normal.black;
+    focused.fg = occupied.fg;
     occupied.fg = bar.fg;
     empty.fg = hexlib.scale 70 colors.bright.white;
   };

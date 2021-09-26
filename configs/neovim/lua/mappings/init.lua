@@ -1,7 +1,9 @@
+local g = vim.g
+local cmd = vim.cmd
 local keymap = vim.api.nvim_set_keymap
 
-vim.g.mapleader = ','
-vim.g.maplocalleader = ','
+g.mapleader = ','
+g.maplocalleader = ','
 
 -- Save the file
 keymap('n', '<C-s>', '<Cmd>w<CR>', {silent = true})
@@ -61,3 +63,8 @@ keymap('c', '<C-a>', '<C-b>', {})
 
 -- Substitute globally
 keymap('n', 'ss', ':%s//g<Left><Left>', {})
+
+-- Insert accented characters and words
+cmd('iabbr ee è')
+cmd('iabbr EE È')
+cmd('iabbr perche perché')

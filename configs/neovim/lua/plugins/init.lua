@@ -16,9 +16,9 @@ local configs = {
   lsp = function() require('plugins/config/lsp') end,
   lspkind = function() require('plugins/config/lspkind') end,
   markdown_preview = function() require('plugins/config/markdown-preview') end,
+  pandoc = function() require('plugins/config/pandoc') end,
   rust = function() require('plugins/config/rust') end,
   shade = function() require('plugins/config/shade') end,
-  -- snippets = function() require('plugins/config/snippets') end,
   treesitter = function() require('plugins/config/treesitter') end,
   truezen = function() require('plugins/config/truezen') end,
   ultisnips = function() require('plugins/config/ultisnips') end,
@@ -35,7 +35,7 @@ return require('packer').startup(function(use)
   --   config = configs.bufferline,
   -- }
   use {
-    '~/Dropbox/projects/cokeline.nvim',
+    'noib3/cokeline.nvim',
     requires = {'kyazdani42/nvim-web-devicons'},
     config = configs.cokeline,
   }
@@ -65,17 +65,25 @@ return require('packer').startup(function(use)
   }
   use {'rust-lang/rust.vim', config = configs.rust, ft = 'rust'}
   use {'sunjon/Shade.nvim', config = configs.shade}
-  -- use {'norcalli/snippets.nvim', config = configs.snippets}
   use {'nvim-treesitter/nvim-treesitter', config = configs.treesitter}
   use {'Pocco81/TrueZen.nvim', config = configs.truezen}
   use {'SirVer/ultisnips', config = configs.ultisnips}
-  use {'lervag/vimtex', config = configs.vimtex, ft = 'tex'}
+  use {
+    'vim-pandoc/vim-rmarkdown',
+    requires = {
+      'vim-pandoc/vim-pandoc',
+      'vim-pandoc/vim-pandoc-syntax',
+    },
+    config = configs.pandoc,
+  }
+  use {'lervag/vimtex', config = configs.vimtex}
   use {'liuchengxu/vim-which-key', config = configs.which_key}
   use {'qpkorr/vim-bufkill'}
   use {'tpope/vim-commentary'}
   use {'tpope/vim-eunuch'}
   use {'tpope/vim-fugitive'}
   use {'farmergreg/vim-lastplace'}
+  use {'mzlogin/vim-markdown-toc'}
   use {'tpope/vim-repeat'}
   use {'timakro/vim-searchant'}
   use {'mhinz/vim-startify'}
@@ -84,6 +92,7 @@ return require('packer').startup(function(use)
   use {'tweekmonster/startuptime.vim', cmd = 'StartupTime'}
   use {'LnL7/vim-nix'}
   use {'danilo-augusto/vim-afterglow'}
+  use {'gkapfham/vim-vitamin-onec'}
   use {'morhetz/gruvbox'}
   use {'arcticicestudio/nord-vim'}
   use {'joshdick/onedark.vim'}

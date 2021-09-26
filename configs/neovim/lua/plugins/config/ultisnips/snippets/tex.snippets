@@ -32,6 +32,7 @@ snippet mue "Make unnumbered equation" bA
 \[
 	$1
 \]
+$0
 endsnippet
 
 snippet item "Itemize" b
@@ -97,12 +98,12 @@ endsnippet
 # Math
 
 context "math()"
-snippet ^^ "superscript" ieA
+snippet uu "superscript" ieA
 ^{$1}
 endsnippet
 
 context "math()"
-snippet __ "subscript" ieA
+snippet dd "subscript" ieA
 _{$1}
 endsnippet
 
@@ -114,6 +115,11 @@ endsnippet
 context "math()"
 snippet oo "infty" ieA
 \infty
+endsnippet
+
+context "math()"
+snippet hat "hat" ieA
+\hat{$1}$0
 endsnippet
 
 context "math()"

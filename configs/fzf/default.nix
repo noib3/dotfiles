@@ -24,6 +24,7 @@ in
 {
   defaultCommand = ''
     fd --base-directory=$HOME --hidden --type=f --color=always \
+      | sort -r \
       | sed 's/\x1b\[${dirs}m/\x1b\[${gods}m/g'
   '';
 

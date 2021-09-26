@@ -76,7 +76,7 @@ in
       label.focused = {
         text = "%icon%";
         padding = 1;
-        foreground = colors.workspaces.occupied.fg;
+        foreground = colors.workspaces.focused.fg;
         background = colors.workspaces.focused.bg;
       };
       label.occupied = {
@@ -234,7 +234,7 @@ in
         padding = 1;
         foreground = colors.notification-center.icon;
       };
-      click.left = "/home/noib3/eww/target/release/eww open --toggle sidebar";
+      click.left = "true";
     };
   };
 

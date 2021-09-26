@@ -11,10 +11,10 @@ let b:delimitMate_quotes = '$'
 let b:surround_{char2nr('e')} = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 let b:surround_{char2nr('c')} = "\\\1command: \1{\r}"
 
-let g:LaTeXFolds_use_vimtex_section_numbers = 1
+let g:LaTeXFolds_use_vimtex_section_numbers = 0
 
 if expand('%:e') ==# 'tex'
-  nmap <buffer> <silent> <C-t> <Cmd>make! <Bar> silent cc<CR>
+  nmap <buffer> <silent> <C-t> <Cmd>make!<Bar>silent cc<CR>
   nmap <buffer> <silent> <LocalLeader><LocalLeader> <Plug>(vimtex-toc-open)
 endif
 

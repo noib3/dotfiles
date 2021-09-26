@@ -2,7 +2,6 @@ local get_icon = require('nvim-web-devicons').get_icon
 
 local fn = vim.fn
 local g = vim.g
-local b = vim.b
 
 local colors = {
   bg = fn.synIDattr(fn.hlID('ColorColumn'), 'bg'),
@@ -126,44 +125,33 @@ local space = {
   },
 }
 
-local components = {
-  left = {
-    active = {
-      file_icon,
-      file_name,
-      file_encoding,
-    },
-    inactive = {
-      file_icon,
-      file_name,
-      file_encoding,
-    },
+local active = {
+  -- left section
+  {
+    file_icon,
+    file_name,
+    file_encoding,
   },
-
-  mid = {
-    active = {},
-    inactive = {},
-  },
-
-  right = {
-    active = {
-      git_branch,
-      git_diff_added,
-      git_diff_changed,
-      git_diff_removed,
-      space,
-    },
-    inactive = {
-      git_branch,
-      git_diff_added,
-      git_diff_changed,
-      git_diff_removed,
-      space,
-    },
+  -- mid section
+  {},
+  -- right section
+  {
+    git_branch,
+    git_diff_added,
+    git_diff_changed,
+    git_diff_removed,
+    space,
   },
 }
 
-local properties = {
+require('feline').setup({
+  components = {
+    active = active,
+    inactive = active,
+  },
+  colors = {
+    bg = colors.bg,
+  },
   force_inactive = {
     filetypes = {
       'NvimTree',
@@ -176,10 +164,4 @@ local properties = {
     buftypes = {'terminal'},
     bufnames = {},
   }
-}
-
-require('feline').setup({
-  default_bg = colors.bg,
-  components = components,
-  properties = properties,
 })

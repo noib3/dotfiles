@@ -1,4 +1,5 @@
 set -l pgrep_prefix "pgrep -a -u "(whoami)
+
 set -l pids (
   eval "$pgrep_prefix" | sed 's/\(^[0-9]*\)/\x1b\[0;31m\1\x1b\[0m/' \
     | fzf \
@@ -8,5 +9,6 @@ set -l pids (
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'
 )
+
 test -z "$pids" || kill "$pids"
 commandline -f repaint

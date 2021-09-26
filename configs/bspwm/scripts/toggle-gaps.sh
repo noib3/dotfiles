@@ -1,21 +1,18 @@
-if [ -n "$1" ]; then
-  toggle="$1"
-else
-  [ $(bspc config -d focused window_gap) -eq 0 ] \
-    && toggle=on \
-    || toggle=off
-fi
-
-case "$toggle" in
-  on)
+case $(bspc config -d focused top_padding) in
+  -20)
     window_gap=$(bspc config window_gap)
     border_width=$(bspc config border_width)
     top_padding=0
     ;;
-  off)
+  0)
     window_gap=0
     border_width=0
     top_padding=5
+    ;;
+  5)
+    window_gap=0
+    border_width=0
+    top_padding=-20
     ;;
   *)
     exit 1

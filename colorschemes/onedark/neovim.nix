@@ -6,7 +6,7 @@ in
 
   terminal = colors.normal;
 
-  highlights = {
+  highlights = rec {
     "SpellBad" = {
       guifg = colors.normal.red;
       gui = "undercurl";
@@ -29,6 +29,20 @@ in
       guifg = colors.bright.white;
       guibg = "NONE";
     };
+
+    "htmlItalic" = {
+      guifg = colors.normal.magenta;
+      gui = "italic";
+    };
+
+    "htmlBold" = {
+      guifg = colors.normal.yellow;
+      gui = "bold";
+    };
+
+    "pandocEmphasis" = htmlItalic;
+
+    "pandocStrong" = htmlBold;
 
     "LspReferenceRead" = {
       guibg = colors.bright.black;

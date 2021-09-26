@@ -10,8 +10,9 @@ rec {
 
   power.icon = bar.fg;
 
-  workspaces = {
+  workspaces = rec {
     focused.bg = hexlib.scale 120 colors.normal.black;
+    focused.fg = occupied.fg;
     occupied.fg = bar.fg;
     empty.fg = colors.bright.white;
   };

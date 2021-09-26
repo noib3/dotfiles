@@ -1,4 +1,4 @@
-local get_hex = require('cokeline/hlgroups').get_hex
+local get_hex = require('cokeline/utils').get_hex
 
 local format = string.format
 local keymap = vim.api.nvim_set_keymap
@@ -7,6 +7,8 @@ local nmaps = function(lhs, rhs)
   keymap('n', lhs, rhs, {silent = true})
 end
 
+nmaps('<S-Tab>', '<Plug>(cokeline-focus-prev)')
+nmaps('<Tab>', '<Plug>(cokeline-focus-next)')
 nmaps('<Leader>p', '<Plug>(cokeline-switch-prev)')
 nmaps('<Leader>n', '<Plug>(cokeline-switch-next)')
 
@@ -27,9 +29,9 @@ local saved_indicator = {
 }
 
 local devicon = {
-  text = function(buffer) return buffer.devicon .. ' ' end,
+  text = function(buffer) return buffer.devicon.icon .. ' ' end,
   hl = {
-    fg = function(buffer) return buffer.devicon_color end,
+    fg = function(buffer) return buffer.devicon.color end,
   },
 }
 
@@ -84,10 +86,16 @@ local space = {
 require('cokeline').setup({
   hide_when_one_buffer = true,
 
-  focused_fg = get_hex('Normal', 'fg'),
-  focused_bg = 'NONE',
-  unfocused_fg = get_hex('Comment', 'fg'),
-  unfocused_bg = 'NONE',
+  default_hl = {
+    focused = {
+      fg = get_hex('Normal', 'fg'),
+      bg = get_hex('ColorColumn', 'bg'),
+    },
+    unfocused = {
+      fg = get_hex('Comment', 'fg'),
+      bg = get_hex('ColorColumn', 'bg'),
+    },
+  },
 
   components = {
     saved_indicator,
@@ -98,7 +106,8 @@ require('cokeline').setup({
     -- modified_indicator,
     -- comma,
     -- readonly_indicator,
-    close_button,
+    -- close_button,
+    -- commah,
     space,
   }
 })

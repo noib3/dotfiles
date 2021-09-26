@@ -6,7 +6,7 @@ in
 
   terminal = colors.normal;
 
-  highlights = {
+  highlights = rec {
     "SpellBad" = {
       guifg = colors.normal.red;
       gui = "undercurl";
@@ -36,6 +36,10 @@ in
       guifg = colors.bright.yellow;
       gui = "bold";
     };
+
+    "pandocEmphasis" = htmlItalic;
+
+    "pandocStrong" = htmlBold;
 
     "FzfBorder" = {
       guifg = "#393939";

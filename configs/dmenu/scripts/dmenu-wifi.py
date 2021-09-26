@@ -13,7 +13,6 @@ __email__ = 'riccardo.mazzarini@pm.me'
 
 
 class Network:
-
     def __init__(self, line: str):
         fields = line.split(':')
         self.ssid = fields[0]
@@ -23,8 +22,10 @@ class Network:
 
     def __is_connected(self) -> bool:
         active_connections_names = subprocess.run(
-            ['nmcli', '--color', 'no', '--terse', '--fields', 'NAME',
-                'connection', 'show', '--active'],
+            [
+                'nmcli', '--color', 'no', '--terse', '--fields', 'NAME',
+                'connection', 'show', '--active'
+            ],
             capture_output=True,
             text=True,
         ).stdout.rstrip()
@@ -35,8 +36,10 @@ class Network:
 
     def __is_known(self) -> bool:
         known_connections_names = subprocess.run(
-            ['nmcli', '--color', 'no', '--terse', '--fields', 'NAME',
-                'connection', 'show'],
+            [
+                'nmcli', '--color', 'no', '--terse', '--fields', 'NAME',
+                'connection', 'show'
+            ],
             capture_output=True,
             text=True,
         ).stdout.rstrip()
@@ -48,8 +51,10 @@ class Network:
     def __is_autoconnected(self) -> bool:
         autoconnected = False
         known_connections = subprocess.run(
-            ['nmcli', '--color', 'no', '--terse',
-                '--fields', 'NAME,AUTOCONNECT', 'connection', 'show'],
+            [
+                'nmcli', '--color', 'no', '--terse', '--fields',
+                'NAME,AUTOCONNECT', 'connection', 'show'
+            ],
             capture_output=True,
             text=True,
         ).stdout.rstrip()
@@ -82,28 +87,29 @@ class Network:
                             capture_output=True,
                             text=True,
                         ).stdout.rstrip()
+                        if not password:
+                            sys.exit()
                         # NOTE: this sets a new connection's name equal to the
                         # corresponding network's SSID.
-                        proc = subprocess.run(
-                            ['sudo', 'nmcli', 'device', 'wifi', 'connect',
-                                self.ssid, 'password', password, 'name',
-                                self.ssid]
-                        )
+                        proc = subprocess.run([
+                            'sudo', 'nmcli', 'device', 'wifi', 'connect',
+                            self.ssid, 'password', password, 'name', self.ssid
+                        ])
                         if proc.returncode == 0:
                             break
                         else:
-                            subprocess.run(
-                                ['dunstify', 'Incorrect password',
-                                 '--appname', self.ssid, '--replace', '1',
-                                 '--timeout', '2000']
-                            )
+                            subprocess.run([
+                                'dunstify', 'Incorrect password', '--appname',
+                                self.ssid, '--replace', '1', '--timeout',
+                                '2000'
+                            ])
                 else:
                     # NOTE: this sets a new connection's name equal to the
                     # corresponding network's SSID.
-                    proc = subprocess.run(
-                        ['sudo', 'nmcli', 'device', 'wifi', 'connect',
-                            self.ssid, 'name', self.ssid]
-                    )
+                    proc = subprocess.run([
+                        'sudo', 'nmcli', 'device', 'wifi', 'connect',
+                        self.ssid, 'name', self.ssid
+                    ])
         return toggle, proc.returncode
 
     def __forget(self):
@@ -116,9 +122,10 @@ class Network:
         toggle = self.__is_autoconnected() and 'no' or 'yes'
         # NOTE: this assumes a connection's name is equal to the corresponding
         # network's SSID.
-        subprocess.run(
-            ['sudo', 'nmcli', 'connection', 'modify', 'id', self.ssid,
-                'connection.autoconnect', toggle])
+        subprocess.run([
+            'sudo', 'nmcli', 'connection', 'modify', 'id', self.ssid,
+            'connection.autoconnect', toggle
+        ])
 
     def is_connected(self) -> bool:
         return self.__is_connected()
@@ -131,8 +138,7 @@ class Network:
             if self.__is_known():
                 forget = 'Forget'
                 autoconnect = '{} autoconnect'.format(
-                    self.__is_autoconnected() and 'Disable' or 'Enable'
-                )
+                    self.__is_autoconnected() and 'Disable' or 'Enable')
             else:
                 forget = ''
                 autoconnect = ''
@@ -140,9 +146,11 @@ class Network:
             entries = '\n'.join([connected, forget, autoconnect])
 
             selection = subprocess.run(
-                ['dmenu', '-p',
-                 '{} {} ({}%)>'.format(self.bars, self.ssid, self.signal),
-                 '-n', str(preselect_index)],
+                [
+                    'dmenu', '-p', '{} {} ({}%)>'.format(
+                        self.bars, self.ssid, self.signal), '-n',
+                    str(preselect_index)
+                ],
                 capture_output=True,
                 text=True,
                 input=entries,
@@ -167,7 +175,6 @@ class Network:
 
 
 class Wifi:
-
     def __get_status(self) -> str:
         return subprocess.run(
             ['nmcli', '--color', 'no', 'radio', 'wifi'],
@@ -177,9 +184,11 @@ class Wifi:
 
     def __get_networks(self, rescan: bool) -> List[Network]:
         networks = subprocess.run(
-            ['nmcli', '--color', 'no', '--terse', '--fields',
+            [
+                'nmcli', '--color', 'no', '--terse', '--fields',
                 'SSID,BARS,SIGNAL,SECURITY', 'device', 'wifi', 'list',
-                '--rescan', rescan and 'yes' or 'no'],
+                '--rescan', rescan and 'yes' or 'no'
+            ],
             capture_output=True,
             text=True,
         ).stdout.rstrip()
@@ -199,16 +208,15 @@ class Wifi:
         while True:
             networks = self.__get_networks(rescan)
             network_infos = [
-                '{}{}{} {}'.format(
-                    n.ssid,
-                    n.is_connected() and ' (c)' or '',
-                    n.is_password_protected and ' []' or '',
-                    n.bars
-                ) for n in networks
+                '{}{}{} {}'.format(n.ssid,
+                                   n.is_connected() and ' (c)' or '',
+                                   n.is_password_protected and ' []' or '',
+                                   n.bars) for n in networks
             ]
 
             selection = subprocess.run(
-                ['dmenu', '-p', 'Networks>', '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Networks>', '-n',
+                 str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input='\n'.join(network_infos),
@@ -241,7 +249,8 @@ class Wifi:
             entries = '\n'.join([list_networks, power])
 
             selection = subprocess.run(
-                ['dmenu', '-p', 'Wifi>', '-n', str(preselect_index)],
+                ['dmenu', '-p', 'Wifi>', '-n',
+                 str(preselect_index)],
                 capture_output=True,
                 text=True,
                 input=entries,

@@ -8,8 +8,8 @@
     blur:
     {
       method = "gaussian";
-      size = 20;
-      deviation = 10.0;
+      size = 15;
+      deviation = 5.0;
     };
   '';
 }
