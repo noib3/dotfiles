@@ -3,7 +3,7 @@ local fn = vim.fn
 
 g.vimtex_compiler_enabled = 0
 g.vimtex_format_enabled = 1
-g.vimtex_syntax_conceal_default = 0
+g.vimtex_syntax_conceal_disable = 1
 g.vimtex_toc_show_preamble = 0
 
 g.vimtex_toc_config = {

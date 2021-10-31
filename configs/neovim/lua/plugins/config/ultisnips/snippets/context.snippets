@@ -35,3 +35,7 @@ snippet mne "Make numbered equation" bA
 \stopformula
 $0
 endsnippet
+
+snippet "([^\\a-zA-Z])fr" "frac" irA
+`!p snip.rv=match.group(1)`\\frac{$1}{$2}
+endsnippet

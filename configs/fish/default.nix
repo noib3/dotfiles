@@ -33,6 +33,7 @@ in
   shellAbbrs = {
     hmn = "home-manager news";
     hms = "home-manager switch";
+    dvl = "nix develop -c $SHELL";
     ipy = "ipython";
     lg = "lazygit";
   } // (

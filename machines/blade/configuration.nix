@@ -34,6 +34,14 @@ in
     /etc/nixos/hardware-configuration.nix
   ];
 
+  # Enable flakes
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+
   console.keyMap = "us";
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "Europe/Rome";
@@ -46,6 +54,7 @@ in
       extraGroups = [
         "wheel"
         "input"
+        "networkmanager"
         "plugdev"
       ];
     };
@@ -129,6 +138,10 @@ in
   };
 
   programs.fish = {
+    enable = true;
+  };
+
+  programs.nm-applet = {
     enable = true;
   };
 

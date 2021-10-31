@@ -22,8 +22,8 @@ local saved_indicator = {
     fg = function(buffer)
       return
         buffer.is_modified
-        and vim.g.terminal_color_3
-         or vim.g.terminal_color_2
+        and vim.g.terminal_color_3 -- yellow
+         or vim.g.terminal_color_2 -- green
     end
   },
 }
@@ -37,6 +37,14 @@ local devicon = {
 
 local index = {
   text = function(buffer) return buffer.index .. ': ' end,
+  hl = {
+    fg = function(buffer)
+      return
+        buffer.lsp.errors ~= 0
+        and vim.g.terminal_color_1
+         or nil
+    end,
+  },
 }
 
 local unique_prefix = {
@@ -48,35 +56,32 @@ local unique_prefix = {
 }
 
 local filename = {
-  text = function(buffer) return buffer.filename .. ' ' end,
+  text = function(buffer) return buffer.filename end,
   hl = {
-    style = function(buffer) return buffer.is_focused and 'bold' or nil end,
+    fg = function(buffer)
+      if buffer.lsp.errors ~= 0 then
+        return vim.g.terminal_color_1
+      end
+      if buffer.lsp.warnings ~= 0 then
+        return vim.g.terminal_color_3
+      end
+      return nil
+    end,
+    style = function(buffer)
+      local style
+      if buffer.is_focused then
+        style = 'bold'
+      end
+      if buffer.lsp.errors ~= 0 then
+        if style then
+          style = style .. ',underline'
+        else
+          style = 'underline'
+        end
+      end
+      return style
+    end,
   }
-}
-
-local modified_indicator = {
-  text = function(buffer) return buffer.is_modified and '● ' or '' end,
-  hl = {
-    fg = vim.g.terminal_color_2,
-  }
-}
-
-local comma = {
-  text = function(buffer)
-    return (buffer.is_modified and buffer.is_readonly) and ', ' or ''
-  end,
-}
-
-local readonly_indicator = {
-  text = function(buffer) return buffer.is_readonly and ' ' or '' end,
-  hl = {
-    fg = vim.g.terminal_color_1,
-  },
-}
-
-local close_button = {
-  text = '',
-  delete_buffer_on_left_click = true,
 }
 
 local space = {
@@ -85,6 +90,17 @@ local space = {
 
 require('cokeline').setup({
   hide_when_one_buffer = true,
+
+  rendering = {
+    min_line_width = 0,
+    max_line_width = 25,
+  },
+
+  buffers = {
+    filter = function(buffer)
+      return buffer.type ~= 'terminal'
+    end,
+  },
 
   default_hl = {
     focused = {
@@ -103,11 +119,6 @@ require('cokeline').setup({
     index,
     unique_prefix,
     filename,
-    -- modified_indicator,
-    -- comma,
-    -- readonly_indicator,
-    -- close_button,
-    -- commah,
     space,
-  }
+  },
 })

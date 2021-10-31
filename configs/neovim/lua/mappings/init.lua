@@ -40,6 +40,10 @@ keymap('n',  '<C-e>', 'g$', {})
 keymap('v',  '<C-e>', 'g$', {})
 keymap('i', '<C-e>', '<C-o>g$', {})
 
+-- Move the screen up or down without moving the cursor
+keymap('n', 'J', '1<C-d>', {noremap = true})
+keymap('n', 'K', '1<C-u>', {noremap = true})
+
 -- Toggle folds
 keymap('n', '<Space>', 'za', {})
 

@@ -131,6 +131,7 @@ let
     lua = sumneko-lua-language-server;
     bash = nodePackages.bash-language-server;
     python = nodePackages.pyright;
+    rust = unstable.rust-analyzer;
     vimscript = nodePackages.vim-language-server;
   };
 
@@ -219,6 +220,7 @@ in
       mediainfo
       mkvtoolnix-cli
       neovim-nightly
+      networkmanager
       (nerdfonts.override {
         fonts = [
           "FiraCode"
@@ -288,6 +290,9 @@ in
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
       RIPGREP_CONFIG_PATH = dirs.configs + /ripgrep/ripgreprc;
+      OSFONTDIR =
+        config.home.homeDirectory
+        + "/.nix-profile/share/fonts/truetype/NerdFonts";
       SYNCDIR =
         if lib.pathExists dirs.sync then
           builtins.toString dirs.sync

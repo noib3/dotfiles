@@ -185,6 +185,9 @@ in
 
   keyBindings = {
     normal = {
+      ",p" = "tab-move -";
+      ",n" = "tab-move +";
+
       "<Super-r>" = "config-source";
 
       "<Super-c>" = "fake-key <Ctrl-c>";

@@ -2,7 +2,6 @@ vim.cmd('packadd packer.nvim')
 
 local configs = {
   ale = function() require('plugins/config/ale') end,
-  bufferline = function() require('plugins/config/bufferline') end,
   cokeline = function() require('plugins/config/cokeline') end,
   colorizer = function() require('plugins/config/colorizer') end,
   completions = function() require('plugins/config/completions') end,
@@ -32,10 +31,10 @@ return require('packer').startup(function(use)
   -- use {
   --   'akinsho/nvim-bufferline.lua',
   --   requires = {'kyazdani42/nvim-web-devicons'},
-  --   config = configs.bufferline,
   -- }
   use {
-    'noib3/cokeline.nvim',
+    -- 'noib3/cokeline.nvim',
+    '~/Dropbox/projects/cokeline.nvim',
     requires = {'kyazdani42/nvim-web-devicons'},
     config = configs.cokeline,
   }

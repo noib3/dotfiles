@@ -70,6 +70,7 @@ in
         ocaml = [ ".ml" ];
         nix = [ ".nix" ];
         python = [ ".py" ];
+        kotlin = [ ".kt" ];
         r = [ ".r" ];
         rust = [ ".rs" ];
         shell = [
@@ -147,6 +148,7 @@ in
     unimportant = {
       editor = [ ".lvimrc" ];
       dropbox = [ ".dropbox" ];
+      lock = [ ".lock" ];
       build_artifacts = {
         latex = [
           ".aux"
@@ -237,6 +239,7 @@ in
       programming = {
         source = {
           foreground = "magenta";
+          kotlin = "orange";
           latex = {
             foreground = "magenta";
             special = {

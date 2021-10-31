@@ -1,5 +1,5 @@
-setlocal spell
 setlocal spelllang=en_us,it
+setlocal formatoptions-=ro
 
 nmap <buffer> <silent> <C-t> <Cmd>!context --purge ./%<CR>
 " nmap <buffer> <silent> <C-t> <Cmd>ConTeXt<CR>

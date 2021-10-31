@@ -55,7 +55,6 @@ in
       "$crystal"
       "$lua"
       "$custom"
-      "$cmd_duration"
       "$line_break"
       "$jobs"
       "$battery"
@@ -63,6 +62,10 @@ in
       "$shell"
       "$character"
       "$status"
+    ];
+
+    right_format = lib.concatStrings [
+      "$cmd_duration"
     ];
 
     character = {

@@ -5,5 +5,6 @@
       colorArg = "always";
       pager = "delta --paging=never";
     };
+    gui.showCommandLog = false;
   };
 }
