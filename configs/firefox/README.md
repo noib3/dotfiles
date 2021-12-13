@@ -3,19 +3,19 @@
 Hi, this is my qutebrowser-inspired firefox setup. Here's a quick showdown of
 its features:
 
-| ![ddg-homepage](./screenshots/48o8mgrvihy51.png) |
+| ![ddg-homepage](/.github/images/firefox/48o8mgrvihy51.png) |
 |:--:|
 | *DuckDuckGo homepage. The tab bar is hidden when only one tab is present* |
-| ![navbar](./screenshots/1ohzbrrvihy51.png) |
+| ![navbar](/.github/images/firefox/1ohzbrrvihy51.png) |
 | *Navbar with custom theme* |
-| ![tabs](./screenshots/t0iethsvihy51.png) |
+| ![tabs](/.github/images/firefox/t0iethsvihy51.png) |
 | *When multiple tabs are present they all take up the same amount of space and each of them is numbered* |
-| ![tabbar-hidden](./screenshots/q5iao8tvihy51.png) |
+| ![tabbar-hidden](/.github/images/firefox/q5iao8tvihy51.png) |
 | *The tab bar is hidden when the navbar is focused* |
-| ![urls](./screenshots/0199t0svihy51.png) |
-| ![bookmarks](./screenshots/fwf2b0tvihy51.png) |
+| ![urls](/.github/images/firefox/0199t0svihy51.png) |
+| ![bookmarks](/.github/images/firefox/fwf2b0tvihy51.png) |
 | *Bookmarks are kept in the sidebar...* |
-| ![bitwarden](./screenshots/a0aqbxsvihy51.png) |
+| ![bitwarden](/.github/images/firefox/a0aqbxsvihy51.png) |
 | *...and so is Bitwarden, my password manager* |
 
 # Additional settings

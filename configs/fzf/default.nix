@@ -18,14 +18,14 @@ let
       )
     );
 
-  dirs = toANSIFormat colors.directories;
-  gods = toANSIFormat colors.grayed-out-directories;
+  col-dirs = toANSIFormat colors.directories;
+  col-grayed-out-dirs = toANSIFormat colors.grayed-out-directories;
 in
 {
   defaultCommand = ''
     fd --base-directory=$HOME --hidden --type=f --color=always \
       | sort -r \
-      | sed 's/\x1b\[${dirs}m/\x1b\[${gods}m/g'
+      | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g'
   '';
 
   defaultOptions = [
@@ -48,8 +48,8 @@ in
 
   changeDirWidgetCommand = ''
     fd --base-directory=$HOME --hidden --type=d --color=always \
-      | sed 's/\x1b\[${dirs}m/\x1b\[${gods}m/g' \
-      | sed 's/\(.*\)\x1b\[${gods}m/\1\x1b\[${dirs}m/'
+      | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g' \
+      | sed 's/\(.*\)\x1b\[${col-grayed-out-dirs}m/\1\x1b\[${col-dirs}m/'
   '';
 
   changeDirWidgetOptions = [

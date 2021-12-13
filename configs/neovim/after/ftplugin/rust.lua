@@ -1,9 +1,12 @@
-local fn = vim.fn
-local cmd = vim.cmd
-local bufmap = vim.api.nvim_buf_set_keymap
+vim.opt_local.textwidth = 79
 
-if not fn.exists('current_compiler') then
-  cmd('compiler cargo')
+if not vim.fn.exists('current_compiler') then
+  vim.cmd('compiler cargo')
 end
 
-bufmap(0, 'n', '<C-t>', '<Cmd>make!<Bar>silent cc<CR>', {silent = true})
+_G.localmap({
+  modes = 'n',
+  lhs = '<C-t>',
+  rhs = '<Cmd>make!<Bar>silent cc<CR>',
+  opts = { silent = true },
+})

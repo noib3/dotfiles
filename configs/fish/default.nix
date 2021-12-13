@@ -84,12 +84,12 @@ in
     bind -M insert \cE end-of-line
     bind -M insert \e\x7F backward-kill-word
     bind -M insert \cW exit
-    bind -M insert \cG clear-no-scrollback
+    bind -M insert \cG 'clear; commandline -f repaint'
     bind -M insert \cX\cD fuzzy-cd
     bind -M insert \cX\cE fuzzy-edit
     bind -M insert \cX\cF fuzzy-history
     bind -M insert \cX\cG fuzzy-kill
-    bind -M insert \cX\cR fuzzy-ripgrep
+    bind -M insert \cX\cR 'fuzzy_ripgrep; commandline -f repaint'
     bind -M insert \cS fuzzy-search
 
     # For some reason the pisces plugin needs to be sourced manually to become
@@ -137,13 +137,10 @@ in
   );
 
   functions = {
-    clear-no-scrollback = builtins.readFile
-      ./functions/clear-no-scollback.fish;
     fuzzy-cd = builtins.readFile ./functions/fuzzy-cd.fish;
     fuzzy-edit = builtins.readFile ./functions/fuzzy-edit.fish;
     fuzzy-history = builtins.readFile ./functions/fuzzy-history.fish;
     fuzzy-kill = builtins.readFile ./functions/fuzzy-kill.fish;
-    fuzzy-ripgrep = builtins.readFile ./functions/fuzzy-ripgrep.fish;
     fuzzy-search = builtins.readFile ./functions/fuzzy-search.fish;
   };
 }

@@ -117,8 +117,9 @@ in
     };
 
     content = {
-      javascript.can_access_clipboard = true;
       autoplay = false;
+      javascript.can_access_clipboard = true;
+      pdfjs = true;
     };
 
     downloads = {

@@ -37,7 +37,7 @@ in
       background = colors.bar.bg;
 
       modules.left = lib.concatStringsSep " " [
-        "power"
+        # "power"
         "workspaces"
         "window"
       ];
@@ -49,7 +49,7 @@ in
         # "volume"
         "battery"
         "datetime"
-        "notification-center"
+        # "notification-center"
       ];
     };
 

@@ -90,24 +90,24 @@ Nerd Font.
 
 | *Clean* |
 | :--: |
-| ![clean](./machines/blade/screenshots/clean.png) |
+| ![clean](.github/images/blade/clean.png) |
 
 | *System infos* |
 | :--: |
-| ![sysinfos](./machines/blade/screenshots/sysinfos.png) |
+| ![sysinfos](.github/images/blade/sysinfos.png) |
 
 | *Notifications* |
 | :--: |
-| ![notifications](./machines/blade/screenshots/notifications.png) |
+| ![notifications](.github/images/blade/notifications.png) |
 
 | *qutebrowser* |
 | :--: |
-| ![qutebrowser](./machines/blade/screenshots/qutebrowser.png) |
+| ![qutebrowser](.github/images/blade/qutebrowser.png) |
 
 | *Editing this README inside neovim with markdown previews* |
 | :--: |
-| ![qutebrowser](./machines/blade/screenshots/markdown-preview.png) |
+| ![qutebrowser](.github/images/blade/markdown-preview.png) |
 
 | *Fzf inside neovim with ueberzug image previews* |
 | :--: |
-| ![qutebrowser](./machines/blade/screenshots/neovim-fzf-image-previews.png) |
+| ![qutebrowser](.github/images/blade/neovim-fzf-image-previews.png) |

@@ -22,8 +22,8 @@
       padding-top = "3";
     };
     wifi = default // {
-      size = "28";
-      padding-top = "6";
+      size = "24";
+      padding-top = "4";
     };
     battery = default // {
       size = "14";

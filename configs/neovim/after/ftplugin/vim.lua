@@ -1,9 +1,6 @@
-local b = vim.b
-local opt = vim.opt_local
+local vim_localopt = vim.opt_local
 
-opt.foldtext = 'folds#marker_folds_extract_title()'
-opt.formatoptions:remove({'r', 'o'})
-opt.iskeyword:remove({'#'})
-opt.matchpairs:append({'<:>'})
-
-b['surround_{char2nr("z")}'] = [[" \1Title: \1 {{{\n\r\n" }}}]]
+vim_localopt.foldtext = 'folds#marker_folds_extract_title()'
+vim_localopt.formatoptions:remove({'r', 'o'})
+vim_localopt.iskeyword:remove({'#'})
+vim_localopt.matchpairs:append({'<:>'})

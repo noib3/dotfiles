@@ -69,9 +69,9 @@ in
     ];
 
     character = {
-      success_symbol = "[>](bold cyan)";
+      success_symbol = "[|>](bold cyan)";
       error_symbol = "[✖](bold red)";
-      vicmd_symbol = "[>](bold cyan)";
+      vicmd_symbol = "[|>](bold cyan)";
     };
 
     directory = {

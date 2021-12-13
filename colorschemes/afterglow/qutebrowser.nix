@@ -53,12 +53,18 @@ in
   };
 
   dmenu = rec {
-    normal.fg = colors.normal.white;
-    normal.bg = hexlib.scale 150 colors.normal.black;
-    prompt.fg = colors.normal.magenta;
-    prompt.bg = normal.bg;
-    selected.fg = colors.normal.white;
-    selected.bg = hexlib.scale 125 colors.normal.black;
+    normal = {
+      fg = colors.normal.white;
+      bg = hexlib.scale 150 colors.normal.black;
+    };
+    prompt = {
+      fg = colors.normal.magenta;
+      bg = normal.bg;
+    };
+    selected = {
+      fg = colors.normal.white;
+      bg = hexlib.scale 125 colors.normal.black;
+    };
     highlight.fg = colors.normal.magenta;
   };
 }

@@ -5,7 +5,7 @@ sectioning structure, i.e. their division into `\chapters{..}`,
 
 The end result looks something like this:
 
-![tex-code-folding](./screenshots/2021-04-11@17:37:07.png)
+![tex-code-folding](/.github/images/neovim/2021-04-11@17:37:07.png)
 
 The main features are:
 

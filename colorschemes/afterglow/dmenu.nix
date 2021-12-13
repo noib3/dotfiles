@@ -8,11 +8,14 @@ rec {
     bg = hexlib.scale 50 colors.normal.black;
   };
 
-  prompt = normal;
+  prompt = {
+    fg = colors.normal.magenta;
+    bg = normal.bg;
+  };
 
   selected = {
     fg = colors.normal.white;
-    bg = hexlib.scale 150 colors.normal.black;
+    bg = hexlib.scale 125 colors.normal.black;
   };
 
   highlight.fg = hexlib.scale 90 colors.normal.blue;

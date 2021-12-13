@@ -26,16 +26,16 @@ documenting:
 
   You be the judge:
 
-| ![fuzzy_edit](./screenshots/2021-04-12@19:30:02.png) |
+| ![fuzzy_edit](/.github/images/fzf/2021-04-12@19:30:02.png) |
 |:--:|
-| ![fuzzy_edit](./screenshots/2021-04-12@19:06:44.png) |
+| ![fuzzy_edit](/.github/images/fzf/2021-04-12@19:06:44.png) |
 | *All the directory names are grayed out, making the file names stand out a lot more* |
 
 * the same sort of trick can be used to color the directories given to the
   `FZF_ALT_C_COMMAND` used to quickly `cd` around your `$HOME`. Comparing the
   raw vs filtered outputs, this time we get:
 
-| ![fuzzy_cd](./screenshots/2021-04-12@19:30:15.png) |
+| ![fuzzy_cd](/.github/images/fzf/2021-04-12@19:30:15.png) |
 |:--:|
-| ![fuzzy_cd](./screenshots/2021-04-12@19:07:06.png) |
+| ![fuzzy_cd](/.github/images/fzf/2021-04-12@19:07:06.png) |
 | *Same logic as above, except now the color of the last directory in every path is left unchanged* |

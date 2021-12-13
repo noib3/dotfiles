@@ -1,7 +1,13 @@
 { colorscheme }:
 
-# TODO: change delta syntax-theme according to the colorscheme
-
+let
+  delta-syntax-theme = (
+    if colorscheme == "gruvbox" then "gruvbox-dark"
+    else if colorscheme == "nord" then "Nord"
+    else if colorscheme == "onedark" then "TwoDark"
+    else "TwoDark"
+  );
+in
 {
   userName = "noib3";
   userEmail = "riccardo.mazzarini@pm.me";
@@ -33,8 +39,7 @@
 
     delta = {
       features = "line-numbers decorations";
-      # syntax-theme = "TwoDark";
-      syntax-theme = "Nord";
+      syntax-theme = delta-syntax-theme;
       decorations = {
         file-style = "omit";
         commit-decoration-style = "bold yellow box ul";

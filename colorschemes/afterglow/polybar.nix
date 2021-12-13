@@ -11,7 +11,7 @@ rec {
   power.icon = bar.fg;
 
   workspaces = rec {
-    focused.bg = hexlib.scale 120 colors.normal.black;
+    focused.bg = colors.normal.black;
     focused.fg = occupied.fg;
     occupied.fg = bar.fg;
     empty.fg = colors.bright.white;
@@ -31,12 +31,12 @@ rec {
   ethernet.icon = colors.bright.yellow;
 
   battery = {
-    icon.charging = colors.normal.magenta;
+    icon.charging = colors.normal.cyan;
     icon.dying = colors.normal.red;
     icon.low = colors.normal.yellow;
     icon.ok = colors.normal.green;
   };
 
-  datetime.icon = colors.bright.yellow;
+  datetime.icon = colors.normal.yellow;
   notification-center.icon = bar.fg;
 }

@@ -1,15 +1,16 @@
 { colors }:
 
 let
-  pkgs = import <nixpkgs> { config = { allowUnfree = true; }; };
+  pkgs = import <nixpkgs> { config.allowUnfree = true; };
 
   mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
     (builtins.readFile ./scripts/mpv-focus-prev.sh);
 in
 {
   settings = {
-    "window_gap" = 25;
-    "top_padding" = 20;
+    "window_gap" = 28;
+    # "top_padding" = 15;
+    # "top_padding" = 20;
     "border_width" = 2;
     "focus_follows_pointer" = true;
     "normal_border_color" = colors.border.unfocused;
@@ -35,7 +36,7 @@ in
 
   startupPrograms = [
     "${pkgs.fusuma}/bin/fusuma"
-    "${pkgs.unclutter-xfixes}/bin/unclutter -idle 10"
+    "${pkgs.unclutter-xfixes}/bin/unclutter -idle 5"
     "${pkgs.xbanish}/bin/xbanish"
     "PATH=$PATH:${pkgs.xdo}/bin:${pkgs.bspwm}/bin ${mpv-focus-prev}/bin/mpv-focus-prev"
   ];
@@ -49,6 +50,6 @@ in
     keyctl link @u @s
 
     systemctl --user start pulseaudio.service
-    systemctl --user restart polybar.service
+    # systemctl --user restart polybar.service
   '';
 }

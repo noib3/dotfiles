@@ -7,12 +7,11 @@ with lib; rec {
   #
   # Example:
   #   splitEveryTwo "61afef" => [ "61" "af" "ef" ]
-  splitEveryTwo = string:
-    lists.flatten (
-      builtins.filter builtins.isList (
-        builtins.split "(.{2})" string
-      )
-    );
+  splitEveryTwo = string: lists.flatten (
+    builtins.filter builtins.isList (
+      builtins.split "(.{2})" string
+    )
+  );
 
   # Returns <base> ** <exponent>.
   # Taken from https://gist.github.com/corpix/f761c82c9d6fdbc1b3846b37e1020e11
@@ -96,8 +95,13 @@ with lib; rec {
           )
         else
           a;
+
+      append_zero_if_needed = str:
+        if (builtins.stringLength str) == 1 then "0" + str else str;
     in
-    toHex' dec "";
+    append_zero_if_needed (toHex' dec "");
+
+  max = x: y: if x < y then y else x;
 
   # Scales a color given in hex format by the given percentage.
   #
@@ -106,7 +110,7 @@ with lib; rec {
   scale = scalar: color:
     "#" + (
       concatStrings (
-        builtins.map (x: toHex (((toDec x) * scalar) / 100)) (
+        builtins.map (x: toHex (max (((toDec x) * scalar) / 100) 255)) (
           splitEveryTwo (strings.removePrefix "#" color)
         )
       )

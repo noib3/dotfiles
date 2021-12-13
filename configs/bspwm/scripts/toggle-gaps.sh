@@ -1,5 +1,7 @@
+bspwm_top_padding=15
+
 case $(bspc config -d focused top_padding) in
-  -20)
+  -"$bspwm_top_padding")
     window_gap=$(bspc config window_gap)
     border_width=$(bspc config border_width)
     top_padding=0
@@ -7,12 +9,14 @@ case $(bspc config -d focused top_padding) in
   0)
     window_gap=0
     border_width=0
-    top_padding=5
+    top_padding=10
+    # top_padding=5
     ;;
-  5)
+  10)
+  # 5)
     window_gap=0
     border_width=0
-    top_padding=-20
+    top_padding=-"$bspwm_top_padding"
     ;;
   *)
     exit 1

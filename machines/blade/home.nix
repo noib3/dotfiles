@@ -4,8 +4,9 @@ let
   unstable = import <nixos-unstable> { };
   machine = "blade";
 
-  colorscheme = "gruvbox";
-  font = "fira-code";
+  colorscheme = "tokyonight";
+  font = "inconsolata";
+  background = "monochromatic.png";
 
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
@@ -13,6 +14,8 @@ let
     font = ../../fonts + "/${font}";
     sync = config.home.homeDirectory + "/Dropbox";
   };
+
+  background-image = (dirs.colorscheme + "/backgrounds/${background}");
 
   configs.alacritty = import (dirs.configs + /alacritty) {
     shell = {
@@ -130,7 +133,8 @@ let
   language-servers = with pkgs; {
     lua = sumneko-lua-language-server;
     bash = nodePackages.bash-language-server;
-    python = nodePackages.pyright;
+    haskell = unstable.haskell-language-server;
+    python = unstable.python39Packages.jedi-language-server;
     rust = unstable.rust-analyzer;
     vimscript = nodePackages.vim-language-server;
   };
@@ -192,12 +196,15 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      asciinema
-      atool
+      google-chrome
+
+      # android-studio
+      # asciinema
+      # atool
       bitwarden
       bitwarden-cli
       calcurse
-      calibre
+      # calibre
       chafa
       delta
       dropbox-cli
@@ -205,7 +212,7 @@ in
       evemu
       evtest
       feh
-      ffmpegthumbnailer
+      # ffmpegthumbnailer
       file
       flameshot
       gcc
@@ -215,6 +222,8 @@ in
       graphicsmagick-imagemagick-compat
       inkscape
       libnotify
+      lua5_4
+      jq
       jmtpfs
       keyutils
       mediainfo
@@ -224,6 +233,8 @@ in
       (nerdfonts.override {
         fonts = [
           "FiraCode"
+          # "IBMPlexMono"
+          "Inconsolata"
           "Iosevka"
           "JetBrainsMono"
           "Mononoki"
@@ -250,18 +261,20 @@ in
       ))
       ripgrep
       rustup
-      (rWrapper.override {
-        packages = with rPackages; [
-          bookdown
-          rmarkdown
-          knitr
-          servr
-        ];
-      })
+      # (rWrapper.override {
+      #   packages = with rPackages; [
+      #     bookdown
+      #     rmarkdown
+      #     knitr
+      #     servr
+      #   ];
+      # })
       scrot
-      simplescreenrecorder
+      # simplescreenrecorder
       speedtest-cli
+      # teams
       unstable.texlive.combined.scheme-full
+      tokei
       transmission-remote-gtk
       tree
       tree-sitter
@@ -274,6 +287,7 @@ in
       xorg.xev
       xorg.xwininfo
       yarn
+      zoom-us
     ]
     ++ (builtins.attrValues desktop-items)
     ++ (builtins.attrValues language-servers)
@@ -319,14 +333,15 @@ in
       recursive = true;
     };
 
-    "nvim/lua/colorscheme/init.lua" = {
-      text = import (dirs.configs + /neovim/lua/colorscheme/init.lua.nix) {
-        colors = import (dirs.colorscheme + /neovim.nix);
+    "nvim/lua/colorscheme.lua" = {
+      text = import (dirs.configs + /neovim/lua/colorscheme.lua.nix) {
+        inherit colorscheme;
+        palette = import (dirs.colorscheme + /palette.nix);
       };
     };
 
-    "nvim/lua/plugins/config/lsp/sumneko-paths.lua" = {
-      text = import (dirs.configs + /neovim/lua/plugins/config/lsp/sumneko-paths.lua.nix);
+    "nvim/lua/plug-config/lsp-sumneko-paths.lua" = {
+      text = import (dirs.configs + /neovim/lua/plug-config/lsp-sumneko-paths.lua.nix);
     };
 
     "redshift/hooks/notify-change" = {
@@ -440,12 +455,12 @@ in
     package = unstable.picom;
   } // configs.picom;
 
-  services.polybar = {
-    enable = true;
-    package = pkgs.polybar.override {
-      pulseSupport = true;
-    };
-  } // configs.polybar;
+  # services.polybar = {
+  #   enable = true;
+  #   package = pkgs.polybar.override {
+  #     pulseSupport = true;
+  #   };
+  # } // configs.polybar;
 
   services.redshift = {
     enable = true;
@@ -475,7 +490,7 @@ in
 
     profileExtra = ''
       ${pkgs.feh}/bin/feh --bg-fill --no-fehbg \
-      ${builtins.toString (dirs.colorscheme + /background.png)}
+        ${builtins.toString background-image}
     '';
   };
 }

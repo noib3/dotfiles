@@ -1,8 +1,5 @@
 let
   pkgs = import <nixpkgs> { };
-
-  take-screenshot = pkgs.writeShellScriptBin "take-screenshot"
-    (builtins.readFile ./take-screenshot.sh);
 in
 {
   keybindings = {
@@ -81,6 +78,5 @@ in
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
     "super + shift + {3,4}" = "flameshot {full, gui} -p ~/Dropbox/screenshots";
-    # "${take-screenshot}/bin/take-screenshot {whole, portion}";
   };
 }

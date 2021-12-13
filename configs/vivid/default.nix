@@ -71,6 +71,7 @@ in
         nix = [ ".nix" ];
         python = [ ".py" ];
         kotlin = [ ".kt" ];
+        dart = [ ".dart" ];
         r = [ ".r" ];
         rust = [ ".rs" ];
         shell = [
@@ -239,7 +240,12 @@ in
       programming = {
         source = {
           foreground = "magenta";
-          kotlin = "orange";
+          dart = {
+            foreground = "blue";
+          };
+          kotlin = {
+            foreground = "orange";
+          };
           latex = {
             foreground = "magenta";
             special = {

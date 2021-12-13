@@ -1,7 +1,7 @@
 { machine }:
 
 let
-  family = "Mononoki Nerd Font";
+  family = "Iosevka Nerd Font";
 in
 rec {
   normal = {
@@ -23,14 +23,12 @@ rec {
     inherit family;
     style = "Bold";
   };
-} // (
-  if machine == "blade" then
-    {
-      size = 10;
-    }
-  else if machine == "mbair" then
-    {
-      size = 19;
-    }
-  else { }
-)
+
+  size =
+    if machine == "blade" then
+      10
+    else if machine == "mbair" then
+      19
+    else
+      10;
+}

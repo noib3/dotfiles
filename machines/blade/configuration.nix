@@ -3,18 +3,21 @@
 let
   unstable = import <nixos-unstable> { };
 
-  colorscheme = "gruvbox";
+  colorscheme = "tokyonight";
+  background = "monochromatic.png";
 
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
     configs = ../../configs;
   };
 
+  background-image = (dirs.colorscheme + "/backgrounds/${background}");
+
   configs = {
     grub = (
       import (dirs.configs + /grub) {
         colors = import (dirs.colorscheme + /grub.nix);
-        background-image = dirs.colorscheme + /background.png;
+        background-image = background-image;
       }
     );
 
@@ -56,6 +59,7 @@ in
         "input"
         "networkmanager"
         "plugdev"
+        "adbusers"
       ];
     };
 
@@ -93,7 +97,7 @@ in
       useOSProber = true;
       gfxmodeEfi = "1920x1080";
       gfxmodeBios = "1920x1080";
-      splashImage = dirs.colorscheme + /background.png;
+      splashImage = background-image;
       theme = configs.grub;
     };
 
@@ -134,6 +138,10 @@ in
   };
 
   sound = {
+    enable = true;
+  };
+
+  programs.adb = {
     enable = true;
   };
 
@@ -214,6 +222,8 @@ in
     '';
   };
 
+  system.autoUpgrade.enable = true;
+  system.autoUpgrade.allowReboot = true;
   system.stateVersion = "20.09";
 }
 

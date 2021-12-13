@@ -1,6 +1,5 @@
 local b = vim.b
 local opt = vim.opt_local
-local bufmap = vim.api.nvim_buf_set_keymap
 
 opt.commentstring = '<!-- %s -->'
 opt.foldcolumn = '0'
@@ -11,5 +10,16 @@ opt.textwidth = 79
 
 b.delimitMate_quotes = "\" ' ` *"
 
-bufmap(0, 'n', '<LocalLeader>p', '<Cmd>MarkdownPreview<CR>', {silent = true})
-bufmap(0, 'n', '<LocalLeader>k', '<Cmd>MarkdownPreviewStop<CR>', {silent = true})
+_G.localmap({
+  modes = 'n',
+  lhs = '<LocalLeader>p',
+  rhs = '<Cmd>MarkdownPreview<CR>',
+  opts = { silent = true },
+})
+
+_G.localmap({
+  modes = 'n',
+  lhs = '<LocalLeader>k',
+  rhs = '<Cmd>MarkdownPreviewStop<CR>',
+  opts = { silent = true },
+})

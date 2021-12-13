@@ -5,12 +5,6 @@ from typing import List
 __author__ = 'Riccardo Mazzarini (noib3)'
 __email__ = 'riccardo.mazzarini@pm.me'
 
-# TODO
-# 1. networks list is empty after disconnecting network
-# 2. remove as much overhead as possible
-# 3. send notifications
-# 4. use gi instead of nmcli via subprocess.run
-
 
 class Network:
     def __init__(self, line: str):
