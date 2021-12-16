@@ -47,26 +47,20 @@ tbl_insert(sumneko_rtp, 'lua/?/init.lua')
 local lsps = {
   {
     name = 'bashls',
-    settings = {
-      on_attach = on_attach,
-    }
+    settings = { on_attach = on_attach }
   },
   {
     name = 'jedi_language_server',
-    settings = {
-      on_attach = on_attach,
-    }
+    settings = { on_attach = on_attach }
   },
   {
     name = 'rust_analyzer',
-    settings = {
-      on_attach = on_attach,
-    }
+    settings = { on_attach = on_attach }
   },
   {
     name = 'sumneko_lua',
     settings = {
-      cmd = {rq_sumneko_paths.bin, '-E', rq_sumneko_paths.main},
+      cmd = { rq_sumneko_paths.bin, '-E', rq_sumneko_paths.main },
       on_attach = on_attach,
       settings = {
         Lua = {
@@ -74,24 +68,16 @@ local lsps = {
             version = 'LuaJIT',
             path = sumneko_rtp,
           },
-          diagnostics = {
-            globals = {'vim'},
-          },
-          workspace = {
-            library = vim.api.nvim_get_runtime_file('', true),
-          },
-          telemetry = {
-            enable = false,
-          },
+          diagnostics = { globals = { 'vim' } },
+          workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+          telemetry = { enable = false },
         },
       },
     }
   },
   {
     name = 'vimls',
-    settings = {
-      on_attach = on_attach,
-    },
+    settings = { on_attach = on_attach }
   },
 }
 

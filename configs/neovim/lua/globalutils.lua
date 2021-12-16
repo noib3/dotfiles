@@ -7,8 +7,9 @@ local vim_cmd = vim.cmd
 local vim_map = vim.tbl_map
 
 _G.OS =
-  (vim_fn.has('win32') ~= 0 and 'Windows')
-  or vim_fn.system('uname'):gsub('[\r\n]', '')
+  vim_fn.has('win32') == 0
+  and vim_fn.system('uname'):gsub('[\r\n]', '')
+   or 'Windows'
 
 ---Returns the color set by the current colorscheme for the `attr` attribute of
 ---the `hlgroup_name` highlight group in hexadecimal format.

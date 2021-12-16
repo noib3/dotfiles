@@ -73,7 +73,7 @@ case "$FILE" in
 esac
 
 case "$(file -Lb --mime-type -- "$FILE")" in
-  text/*|application/json)
+  text/*|application/json|application/csv)
     bat "$FILE"
     ;;
   */pdf)

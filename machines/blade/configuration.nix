@@ -75,6 +75,16 @@ in
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    (pkgs.buildFHSUserEnv {
+      name = "cppfhs";
+      runScript = "bash";
+      targetPkgs = pkgs: with pkgs; [
+        clang_8
+        gdb
+        llvm_8
+        valgrind
+      ];
+    })
     nvidia-offload
     vim
   ];

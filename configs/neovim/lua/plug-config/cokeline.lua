@@ -1,14 +1,20 @@
--- local rq_sliders = require('cokeline/sliders')
 local rq_get_hex = require('cokeline/utils').get_hex
+local rq_palette = require('colorscheme').palette
+-- local rq_sliders = require('cokeline/sliders')
 
-local vim_fn = vim.fn
+local comments_fg = rq_get_hex('Comment', 'fg')
+local errors_fg = rq_get_hex('DiagnosticError', 'fg')
+local warnings_fg = rq_get_hex('DiagnosticWarn', 'fg')
 
 local components = {
   space = {
     text = ' ',
-    truncation = {
-      priority = 1,
-    }
+    truncation = { priority = 1 }
+  },
+
+  two_spaces = {
+    text = '  ',
+    truncation = { priority = 1 },
   },
 
   separator = {
@@ -35,19 +41,19 @@ local components = {
     hl = {
       fg = function(buffer)
         return
-          buffer.diagnostics.errors ~= 0
-          and rq_get_hex('DiagnosticError', 'fg')
-           or nil
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+          or nil
       end,
     },
   },
 
   unique_prefix = {
     text = function(buffer)
-      return vim_fn.pathshorten(buffer.unique_prefix)
+      return buffer.unique_prefix
     end,
     hl = {
-      fg = rq_get_hex('Comment', 'fg'),
+      fg = comments_fg,
       style = 'italic',
     },
     truncation = {
@@ -63,8 +69,8 @@ local components = {
     hl = {
       fg = function(buffer)
         return
-          (buffer.diagnostics.errors ~= 0 and rq_get_hex('DiagnosticError', 'fg'))
-          or (buffer.diagnostics.warnings ~= 0 and rq_get_hex('DiagnosticWarn', 'fg'))
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
           or nil
       end,
       style = function(buffer)
@@ -76,17 +82,38 @@ local components = {
           or nil
       end
     },
-    truncation = {
-      direction = 'left',
-    },
+    truncation = { direction = 'left' },
   },
 
-  close_button = {
-    text = '',
-    delete_buffer_on_left_click = true,
-    truncation = {
-      priority = 5,
+  diagnostics = {
+    text = function(buffer)
+      return
+        (buffer.diagnostics.errors ~= 0 and '  ' .. buffer.diagnostics.errors)
+        or (buffer.diagnostics.warnings ~= 0 and '  ' .. buffer.diagnostics.warnings)
+        or ''
+    end,
+    hl = {
+      fg = function(buffer)
+        return
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+          or nil
+      end,
     },
+    truncation = { priority = 2 },
+  },
+
+  close_or_unsaved = {
+    text = function(buffer)
+      return buffer.is_modified and '●' or ''
+    end,
+    hl = {
+      fg = function(buffer)
+        return buffer.is_modified and rq_palette.normal.green or nil
+      end
+    },
+    delete_buffer_on_left_click = true,
+    truncation = { priority = 5 },
   },
 }
 
@@ -117,13 +144,15 @@ require('cokeline').setup({
   components = {
     components.space,
     components.separator,
+    components.space,
     components.devicon,
     components.space,
     components.index,
     components.unique_prefix,
     components.filename,
-    components.space,
-    components.close_button,
+    components.diagnostics,
+    components.two_spaces,
+    components.close_or_unsaved,
     components.space,
   },
 })

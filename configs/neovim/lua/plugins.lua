@@ -249,21 +249,6 @@ local spec = function()
   -- Companion for `tpope/vim-surround`, extends `.` repeat to plugin mappings.
   use({'tpope/vim-repeat'})
 
-  -- Will get rid of this soon.
-  use({
-    'vim-pandoc/vim-rmarkdown',
-    requires = {
-      'vim-pandoc/vim-pandoc',
-      'vim-pandoc/vim-pandoc-syntax',
-    },
-    config = function()
-      local vim_g = vim.g
-      vim_g['pandoc#filetypes#handled'] = {'pandoc', 'markdown'}
-      vim_g['pandoc#filetypes#pandoc_markdown'] = 0
-      vim_g['pandoc#syntax#conceal#use'] = 0
-    end,
-  })
-
   -- Highlight the current search result in a different color.
   use({'qxxxb/vim-searchhi'})
 

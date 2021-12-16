@@ -1,14 +1,11 @@
-local b = vim.b
-local opt = vim.opt_local
+local vim_localopt = vim.opt_local
 
-opt.commentstring = '<!-- %s -->'
-opt.foldcolumn = '0'
-opt.foldenable = false
-opt.spell = false
-opt.spelllang = 'en_us,it'
-opt.textwidth = 79
-
-b.delimitMate_quotes = "\" ' ` *"
+vim_localopt.commentstring = '<!-- %s -->'
+vim_localopt.foldcolumn = '0'
+vim_localopt.foldenable = false
+vim_localopt.spell = false
+vim_localopt.spelllang = 'en_us,it'
+vim_localopt.textwidth = 79
 
 _G.localmap({
   modes = 'n',

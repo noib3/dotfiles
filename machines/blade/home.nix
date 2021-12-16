@@ -233,7 +233,6 @@ in
       (nerdfonts.override {
         fonts = [
           "FiraCode"
-          # "IBMPlexMono"
           "Inconsolata"
           "Iosevka"
           "JetBrainsMono"
@@ -254,23 +253,13 @@ in
         ps: with ps; [
           ipython
           isort
-          pynvim
-          dmenu-python
           yapf
         ]
       ))
       ripgrep
       rustup
-      # (rWrapper.override {
-      #   packages = with rPackages; [
-      #     bookdown
-      #     rmarkdown
-      #     knitr
-      #     servr
-      #   ];
-      # })
       scrot
-      # simplescreenrecorder
+      simplescreenrecorder
       speedtest-cli
       # teams
       unstable.texlive.combined.scheme-full
