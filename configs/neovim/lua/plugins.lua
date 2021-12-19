@@ -118,12 +118,14 @@ local spec = function()
 
   -- Autopairs quotes, parenthesis, etc. Not that good. I'll make my own when I
   -- have time.
-  use({
-    'windwp/nvim-autopairs',
-    config = function()
-      require('nvim-autopairs').setup()
-    end,
-  })
+  -- use({
+  --   'windwp/nvim-autopairs',
+  --   config = function()
+  --     require('nvim-autopairs').setup()
+  --   end,
+  -- })
+
+  use({'Raimondi/delimitMate'})
 
   -- Holy fuck every single completion framework is absolute garbage.
   -- Why does it flicker when I select a completion? Why doesn't `pumvisible`
@@ -169,6 +171,15 @@ local spec = function()
     'neovim/nvim-lspconfig',
     config = function()
       require('plug-config/lsp').setup()
+    end,
+  })
+
+  -- File tree.
+  use({
+    'https://github.com/kyazdani42/nvim-tree.lua',
+    requires = { 'kyazdani42/nvim-web-devicons' },
+    config = function()
+      require('nvim-tree').setup()
     end,
   })
 

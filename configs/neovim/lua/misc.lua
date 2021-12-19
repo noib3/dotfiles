@@ -11,14 +11,20 @@ local setup = function()
     }
   })
 
-  -- Disable line numbers in terminal buffers.
   _G.augroup({
     name = 'termopen',
     autocmds = {
+      -- Disable line numbers.
       {
         event = 'TermOpen',
         pattern = '*',
         cmd = 'setlocal nonumber norelativenumber',
+      },
+      -- Enter insert mode.
+      {
+        event = 'TermOpen',
+        pattern = '*',
+        cmd = 'startinsert',
       },
     }
   })

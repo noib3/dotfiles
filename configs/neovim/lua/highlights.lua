@@ -69,6 +69,7 @@ local highlights = {
     -- Column separating vertically split windows.
     {
       name = 'VertSplit',
+      clear = true,
       gui = 'NONE',
       guifg = { 'ColorColumn', 'bg' },
       guibg = 'NONE',
@@ -149,15 +150,37 @@ local highlights = {
       guibg = 'NONE',
     },
 
+    -- Even though this exact highlight is already defined in the `*` part I
+    -- still have to add it here because `ColorScheme *` seems to trigger
+    -- *before* `ColorScheme tokyonight`, so the `ColorColumn`'s background
+    -- value is not the same. There should be a way to link the individual
+    -- attributes of highlight groups (e.g. VertSplit fg linked to ColorColumn
+    -- bg).
+    {
+      name = 'VertSplit',
+      clear = true,
+      gui = 'NONE',
+      guifg = { 'ColorColumn', 'bg' },
+      guibg = 'NONE',
+    },
+
+    -- Non current windows.
     {
       name = 'NormalNC',
       guibg = 'NONE',
     },
 
-    -- Completion menu.
+    -- Floating windows.
+    {
+      name = 'NormalFloat',
+      guibg = '#2c3046',
+    },
+
+    -- Popup menu.
     {
       name = 'Pmenu',
-      guibg = rq_palette.bright.black,
+      clear = true,
+      link = 'NormalFloat',
     },
 
     -- Status line for current and non current windows.

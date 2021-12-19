@@ -101,7 +101,7 @@ with lib; rec {
     in
     append_zero_if_needed (toHex' dec "");
 
-  max = x: y: if x < y then y else x;
+  min = x: y: if x < y then x else y;
 
   # Scales a color given in hex format by the given percentage.
   #
@@ -110,7 +110,7 @@ with lib; rec {
   scale = scalar: color:
     "#" + (
       concatStrings (
-        builtins.map (x: toHex (max (((toDec x) * scalar) / 100) 255)) (
+        builtins.map (x: toHex (min (((toDec x) * scalar) / 100) 255)) (
           splitEveryTwo (strings.removePrefix "#" color)
         )
       )

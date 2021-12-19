@@ -1,7 +1,6 @@
 setlocal errorformat=%f:%l:\ %m
 setlocal iskeyword-=:
 setlocal makeprg=pdflatex\ -halt-on-error\ -file-line-error\ %
-setlocal spell
 setlocal spelllang=en_us,it
 
 let b:delimitMate_matchpairs = "(:),[:],{:},`:'"

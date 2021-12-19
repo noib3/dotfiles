@@ -288,6 +288,18 @@ if has_cokeline then
       rhs = '<Plug>(cokeline-switch-next)',
       opts = { silent = true },
     },
+    {
+      modes = 'n',
+      lhs = '<Leader>a',
+      rhs = '<Plug>(cokeline-pick-focus)',
+      opts = { silent = true },
+    },
+    {
+      modes = 'n',
+      lhs = '<Leader>b',
+      rhs = '<Plug>(cokeline-pick-close)',
+      opts = { silent = true },
+    },
   })
 
   for i = 1,9 do
@@ -305,6 +317,7 @@ local close = function()
   local filetype, buftype = vim.bo.filetype, vim.bo.buftype
   vim_cmd(
     (filetype == 'startify' and 'bd')
+    or (filetype == 'help' and 'q')
     or (buftype == 'terminal' and ('%s!'):format(bdelete))
     or (#vim_fn.getbufinfo({buflisted = 1}) == 1 and 'q')
     or bdelete

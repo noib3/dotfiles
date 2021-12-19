@@ -1,6 +1,6 @@
 local rq_get_hex = require('cokeline/utils').get_hex
 local rq_palette = require('colorscheme').palette
--- local rq_sliders = require('cokeline/sliders')
+local rq_mappings = require('cokeline/mappings')
 
 local comments_fg = rq_get_hex('Comment', 'fg')
 local errors_fg = rq_get_hex('DiagnosticError', 'fg')
@@ -25,11 +25,23 @@ local components = {
 
   devicon = {
     text = function(buffer)
-      return buffer.devicon.icon
+      return
+        (rq_mappings.is_picking_focus() or rq_mappings.is_picking_close())
+          and buffer.pick_letter .. ' '
+           or buffer.devicon.icon
     end,
     hl = {
       fg = function(buffer)
-        return buffer.devicon.color
+        return
+          (rq_mappings.is_picking_focus() and rq_palette.normal.yellow)
+            or (rq_mappings.is_picking_close() and rq_palette.normal.red)
+            or buffer.devicon.color
+      end,
+      style = function(_)
+        return
+        (rq_mappings.is_picking_focus() or rq_mappings.is_picking_close())
+          and 'italic,bold'
+           or nil
       end,
     },
   },
@@ -82,7 +94,10 @@ local components = {
           or nil
       end
     },
-    truncation = { direction = 'left' },
+    truncation = {
+      priority = 6,
+      direction = 'left',
+    },
   },
 
   diagnostics = {
@@ -127,7 +142,21 @@ require('cokeline').setup({
 
   rendering = {
     max_buffer_width = 30,
-    -- slider = rq_sliders.slide_if_needed,
+    -- offsets = {
+    --   {
+    --     filetype = 'NvimTree',
+    --     components = {
+    --       {
+    --         text = '           NvimTree',
+    --         hl = {
+    --           fg = rq_palette.normal.yellow,
+    --           bg = rq_get_hex('NvimTreeNormal', 'bg'),
+    --           style = 'bold'
+    --         }
+    --       },
+    --     }
+    --   },
+    -- },
   },
 
   default_hl = {
