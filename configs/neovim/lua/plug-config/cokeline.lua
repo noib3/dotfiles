@@ -34,12 +34,12 @@ local components = {
       fg = function(buffer)
         return
           (rq_mappings.is_picking_focus() and rq_palette.normal.yellow)
-            or (rq_mappings.is_picking_close() and rq_palette.normal.red)
-            or buffer.devicon.color
+          or (rq_mappings.is_picking_close() and rq_palette.normal.red)
+          or buffer.devicon.color
       end,
       style = function(_)
         return
-        (rq_mappings.is_picking_focus() or rq_mappings.is_picking_close())
+          (rq_mappings.is_picking_focus() or rq_mappings.is_picking_close())
           and 'italic,bold'
            or nil
       end,

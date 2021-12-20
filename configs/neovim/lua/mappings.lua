@@ -1,10 +1,8 @@
-local has_autopairs, autopairs = pcall(require, 'nvim-autopairs')
-local has_bufdelete, _ = pcall(require, 'nvim-autopairs')
+local has_bufdelete, _ = pcall(require, 'bufdelete')
 local has_cokeline, _ = pcall(require, 'cokeline')
 
 local tbl_insert = table.insert
 
-local vim_api = vim.api
 local vim_cmd = vim.cmd
 local vim_fn = vim.fn
 local vim_g = vim.g
@@ -19,26 +17,37 @@ local mappings = {
     opts = { silent = true },
   },
 
-  -- Open a new terminal buffer in a horizontal or vertical split.
-  {
-    modes = 'n',
-    lhs = '<Leader>spt',
-    rhs = '<Cmd>sp<Bar>term<CR>',
-    opts = { silent = true },
-  },
-  {
-    modes = 'n',
-    lhs = '<Leader>vspt',
-    rhs = '<Cmd>vsp<Bar>term<CR>',
-    opts = { silent = true },
-  },
-
   -- Either closes the window or deletes the current buffer.
   {
     modes = 'n',
     lhs = '<C-w>',
     rhs = '<Cmd>lua require("mappings").close()<CR>',
     opts = { silent = true },
+  },
+
+  -- Jump to the first non-whitespace character in the displayed line.
+  {
+    modes = {'n', 'v'},
+    lhs = '<C-a>',
+    rhs = 'g^',
+  },
+  {
+    modes = 'i',
+    lhs = '<C-a>',
+    rhs = '<C-o>g^',
+  },
+
+  -- Jump to the end of the displayed line.
+  {
+    modes = {'n', 'v'},
+    lhs = '<C-e>',
+    rhs = 'g$',
+  },
+  {
+    modes = 'i',
+    lhs = '<C-e>',
+    rhs = 'pumvisible() ? "\\<C-e>" : "\\<C-o>g$"',
+    opts = { expr = true, noremap = true },
   },
 
   -- Move between displayed lines instead of physical ones.
@@ -68,7 +77,7 @@ local mappings = {
   },
 
   -- Make `<Tab>`, `<S-Tab>`, `<CR>` and `<Esc>` work nicely with the popup
-  -- menu.
+  -- menu and delimitMate.
   {
     modes = 'i',
     lhs = '<Tab>',
@@ -78,50 +87,29 @@ local mappings = {
       .. ' : "\\<Tab>"',
     opts = { expr = true, noremap = true, silent = true },
   },
-  -- {
-  --   modes = 'i',
-  --   lhs = '<S-Tab>',
-  --   rhs = 'pumvisible() ? "<C-p>" : "<BS>"',
-  --   opts = { expr = true, noremap = true, silent = true },
-  -- },
+  {
+    modes = 'i',
+    lhs = '<S-Tab>',
+    rhs =
+      'pumvisible()'
+      .. ' ? "<C-p>"'
+      .. ' : (delimitMate#ShouldJump() ? "<Plug>delimitMateS-Tab" : "<BS>")',
+    opts = { expr = true, silent = true },
+  },
   {
     modes = 'i',
     lhs = '<CR>',
     rhs =
       'pumvisible()'
-      .. ' ? (complete_info().selected == -1 ? "\\<C-e><CR>" : "\\<C-y>")'
-      .. ' : "\\<CR>"',
-    opts = { expr = true, noremap = true, silent = true },
-  },
-  -- {
-  --   modes = 'i',
-  --   lhs = '<Esc>',
-  --   rhs = 'pumvisible() ? "<C-e><Esc>" : "<Esc>"',
-  --   opts = { expr = true, noremap = true, silent = true },
-  -- },
-
-  -- Jump to the first non-whitespace character in the displayed line.
-  {
-    modes = {'n', 'v'},
-    lhs = '<C-a>',
-    rhs = 'g^',
+      .. ' ? (complete_info().selected == -1 ? "\\<C-e><Plug>delimitMateCR" : "\\<C-y>")'
+      .. ' : "<Plug>delimitMateCR"',
+    opts = { expr = true, silent = true },
   },
   {
     modes = 'i',
-    lhs = '<C-a>',
-    rhs = '<C-o>g^',
-  },
-
-  -- Jump to the end of the displayed line.
-  {
-    modes = {'n', 'v'},
-    lhs = '<C-e>',
-    rhs = 'g$',
-  },
-  {
-    modes = 'i',
-    lhs = '<C-e>',
-    rhs = '<C-o>g$',
+    lhs = '<Esc>',
+    rhs = 'pumvisible() ? "\\<C-e>" : "\\<Esc>"',
+    opts = { expr = true, noremap = true },
   },
 
   -- Move the screen up or down without moving the cursor.
@@ -136,6 +124,20 @@ local mappings = {
     lhs = 'K',
     rhs = '1<C-u>',
     opts = { noremap = true },
+  },
+
+  -- Open a new terminal buffer in a horizontal or vertical split.
+  {
+    modes = 'n',
+    lhs = '<Leader>spt',
+    rhs = '<Cmd>sp<Bar>term<CR>',
+    opts = { silent = true },
+  },
+  {
+    modes = 'n',
+    lhs = '<Leader>vspt',
+    rhs = '<Cmd>vsp<Bar>term<CR>',
+    opts = { silent = true },
   },
 
   -- Toggle code folds.
@@ -223,44 +225,6 @@ local mappings = {
     opts = { silent = true },
   },
 }
-
--- if not has_autopairs then
---   local vim_fn = vim.fn
-
---   _G.MUtils = {}
-
---   MUtils.CR = function()
---     return vim_fn.feedkeys("\\<C-y>")
---     -- return
---     --   vim_fn.pumvisible() ~= 0
---     --   and (vim_fn.complete_info().selected == -1
---     --         and autopairs.esc('<C-e>') .. autopairs.autopairs_cr()
---     --          or autopairs.esc('<C-y>'))
---     --    or autopairs.autopairs_cr()
---   end
-
---   MUtils.BS = function()
---     return
---       vim_fn.pumvisible() ~= 0 and vim_fn.complete_info({'mode'}).mode == 'eval'
---       and autopairs.esc('<C-e>') .. autopairs.autopairs_bs()
---        or autopairs.autopairs_bs()
---   end
-
---   vim_list_extend(mappings, {
---     {
---       modes = 'i',
---       lhs = '<CR>',
---       rhs = 'v:lua.MUtils.CR()',
---       opts = { expr = true, noremap = true, silent = true },
---     },
---     {
---       modes = 'i',
---       lhs = '<BS>',
---       rhs = 'v:lua.MUtils.BS()',
---       opts = { expr = true, noremap = true, silent = true },
---     },
---   })
--- end
 
 if has_cokeline then
   vim_list_extend(mappings, {
