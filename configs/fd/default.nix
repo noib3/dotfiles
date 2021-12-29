@@ -24,5 +24,8 @@
     "*.synctex(busy)"
     "*.synctex.gz"
     "*.toc"
+
+    "**/flutter"
+    "**/android-sdk"
   ];
 }

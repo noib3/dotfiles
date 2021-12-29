@@ -28,6 +28,18 @@ local setup = function()
       },
     }
   })
+
+  -- Enable bash syntax for direnv's files.
+  _G.augroup({
+    name = 'direnv_bash',
+    autocmds = {
+      {
+        event = 'BufRead,BufNewFile',
+        pattern = '.envrc,.direnvrc,direnvrc',
+        cmd = 'setfiletype=bash',
+      },
+    }
+  })
 end
 
 return {

@@ -92,7 +92,7 @@ local mappings = {
     lhs = '<S-Tab>',
     rhs =
       'pumvisible()'
-      .. ' ? "<C-p>"'
+      .. ' ? (complete_info().selected == -1 ? "\\<C-e><Plug>delimitMateS-Tab" : "\\<C-p>")'
       .. ' : (delimitMate#ShouldJump() ? "<Plug>delimitMateS-Tab" : "<BS>")',
     opts = { expr = true, silent = true },
   },
@@ -108,8 +108,16 @@ local mappings = {
   {
     modes = 'i',
     lhs = '<Esc>',
-    rhs = 'pumvisible() ? "\\<C-e>" : "\\<Esc>"',
+    rhs = 'pumvisible() ? "\\<C-e>\\<Esc>" : "\\<Esc>"',
     opts = { expr = true, noremap = true },
+  },
+
+  -- Display diagnostics in a floating window.
+  {
+    modes = 'n',
+    lhs = '?',
+    rhs = '<Cmd>lua vim.diagnostic.open_float()<CR>',
+    opts = { silent = true },
   },
 
   -- Move the screen up or down without moving the cursor.
@@ -282,6 +290,7 @@ local close = function()
   vim_cmd(
     (filetype == 'startify' and 'bd')
     or (filetype == 'help' and 'q')
+    or (buftype == 'nofile' and 'q')
     or (buftype == 'terminal' and ('%s!'):format(bdelete))
     or (#vim_fn.getbufinfo({buflisted = 1}) == 1 and 'q')
     or bdelete

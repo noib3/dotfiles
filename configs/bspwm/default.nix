@@ -9,8 +9,7 @@ in
 {
   settings = {
     "window_gap" = 28;
-    # "top_padding" = 15;
-    # "top_padding" = 20;
+    "top_padding" = 15;
     "border_width" = 2;
     "focus_follows_pointer" = true;
     "normal_border_color" = colors.border.unfocused;
@@ -50,6 +49,6 @@ in
     keyctl link @u @s
 
     systemctl --user start pulseaudio.service
-    # systemctl --user restart polybar.service
+    systemctl --user restart polybar.service
   '';
 }

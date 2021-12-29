@@ -59,7 +59,6 @@ in
         "input"
         "networkmanager"
         "plugdev"
-        "adbusers"
       ];
     };
 
@@ -148,10 +147,6 @@ in
   };
 
   sound = {
-    enable = true;
-  };
-
-  programs.adb = {
     enable = true;
   };
 

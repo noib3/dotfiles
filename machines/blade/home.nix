@@ -133,7 +133,6 @@ let
   language-servers = with pkgs; {
     lua = sumneko-lua-language-server;
     bash = nodePackages.bash-language-server;
-    haskell = unstable.haskell-language-server;
     python = unstable.python39Packages.jedi-language-server;
     rust = unstable.rust-analyzer;
     vimscript = nodePackages.vim-language-server;
@@ -196,23 +195,21 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      google-chrome
+      # google-chrome
 
-      # android-studio
       # asciinema
-      # atool
       bitwarden
       bitwarden-cli
       calcurse
-      # calibre
       chafa
       delta
+      direnv
       dropbox-cli
       dmenu
       evemu
       evtest
       feh
-      # ffmpegthumbnailer
+      ffmpegthumbnailer
       file
       flameshot
       gcc
@@ -220,7 +217,6 @@ in
       glxinfo
       gotop
       graphicsmagick-imagemagick-compat
-      inkscape
       libnotify
       lua5_4
       jq
@@ -261,7 +257,6 @@ in
       scrot
       simplescreenrecorder
       speedtest-cli
-      # teams
       unstable.texlive.combined.scheme-full
       tokei
       transmission-remote-gtk
@@ -276,7 +271,7 @@ in
       xorg.xev
       xorg.xwininfo
       yarn
-      zoom-us
+      zip
     ]
     ++ (builtins.attrValues desktop-items)
     ++ (builtins.attrValues language-servers)
@@ -285,7 +280,7 @@ in
     sessionVariables = {
       EDITOR = "nvim";
       MANPAGER = "nvim -c 'set ft=man' -";
-      LANG = " en_US.UTF-8";
+      LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
       LS_COLORS = "$(vivid generate current)";
@@ -301,6 +296,7 @@ in
           builtins.toString dirs.sync
         else
           "";
+      TDTD_DATA_DIR = "${dirs.sync}/tdtd";
     };
   };
 
@@ -444,12 +440,12 @@ in
     package = unstable.picom;
   } // configs.picom;
 
-  # services.polybar = {
-  #   enable = true;
-  #   package = pkgs.polybar.override {
-  #     pulseSupport = true;
-  #   };
-  # } // configs.polybar;
+  services.polybar = {
+    enable = true;
+    package = pkgs.polybar.override {
+      pulseSupport = true;
+    };
+  } // configs.polybar;
 
   services.redshift = {
     enable = true;

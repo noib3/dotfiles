@@ -61,11 +61,11 @@ let
   '';
 in
 {
-  # extensions = with extensions; [
-  #   bitwarden
-  #   downloads-sidebar
-  #   tridactyl-no-new-tab
-  # ];
+  extensions = with extensions; [
+    bitwarden
+    # downloads-sidebar
+    # tridactyl-no-new-tab
+  ];
 
   profiles = {
     home = {

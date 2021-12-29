@@ -50,6 +50,10 @@ local lsps = {
     settings = { on_attach = on_attach }
   },
   {
+    name = 'dartls',
+    settings = { on_attach = on_attach }
+  },
+  {
     name = 'jedi_language_server',
     settings = { on_attach = on_attach }
   },
