@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> { };
+  unstable = import <nixos-unstable> { config.allowUnfree = true; };
   machine = "blade";
 
-  colorscheme = "tokyonight";
   font = "inconsolata";
+  colorscheme = "tokyonight";
   background = "monochromatic.png";
 
   dirs = {
@@ -17,48 +17,41 @@ let
 
   background-image = (dirs.colorscheme + "/backgrounds/${background}");
 
+  font-family = "FiraCode Nerd Font";
+  palette = import ../../colorschemes/vscode.nix;
+
   configs.alacritty = import (dirs.configs + /alacritty) {
+    inherit font-family machine palette;
     shell = {
       program = "${unstable.fish}/bin/fish";
       args = [ "--interactive" ];
     };
-    font = import (dirs.font + /alacritty.nix) {
-      inherit machine;
-    };
-    colors = import (dirs.colorscheme + /alacritty.nix);
   };
 
   configs.bat = import (dirs.configs + /bat);
 
   configs.bspwm = import (dirs.configs + /bspwm) {
-    colors = import (dirs.colorscheme + /bspwm.nix);
+    inherit colorscheme palette;
   };
 
   dmenu = import (dirs.configs + /dmenu) {
-    font = import (dirs.font + /dmenu.nix);
-    colors = import (dirs.colorscheme + /dmenu.nix);
+    inherit colorscheme font-family palette;
   };
 
   configs.dunst = import (dirs.configs + /dunst) {
-    font = import (dirs.font + /dunst.nix);
-    colors = import (dirs.colorscheme + /dunst.nix);
+    inherit colorscheme font-family palette;
   };
 
-  configs.fd = import (dirs.configs + /fd) { inherit machine; };
-
-  configs.firefox = import (dirs.configs + /firefox) {
-    font = import (dirs.font + /firefox.nix) {
-      inherit machine;
-    };
-    colors = import (dirs.colorscheme + /firefox.nix);
+  configs.fd = import (dirs.configs + /fd) {
+    inherit machine;
   };
 
   configs.fish = import (dirs.configs + /fish) {
-    colors = import (dirs.colorscheme + /fish.nix);
+    inherit colorscheme palette;
   };
 
   configs.fzf = import (dirs.configs + /fzf) {
-    colors = import (dirs.colorscheme + /fzf.nix);
+    inherit colorscheme palette;
   };
 
   configs.fusuma = import (dirs.configs + /fusuma);
@@ -81,14 +74,12 @@ let
 
   configs.picom = import (dirs.configs + /picom);
 
-  configs.polybar = import (dirs.configs + /polybar) {
-    fonts = import (dirs.font + /polybar.nix);
-    colors = import (dirs.colorscheme + /polybar.nix);
-  };
+  # configs.polybar = import (dirs.configs + /polybar) {
+  #   inherit colorscheme font-family palette;
+  # };
 
   configs.qutebrowser = import (dirs.configs + /qutebrowser) {
-    font = import (dirs.font + /qutebrowser.nix);
-    colors = import (dirs.colorscheme + /qutebrowser.nix);
+    inherit colorscheme font-family palette;
   };
 
   configs.redshift = import (dirs.configs + /redshift);
@@ -97,20 +88,14 @@ let
 
   configs.sxhkd = import (dirs.configs + /sxhkd);
 
-  configs.tridactyl = import (dirs.configs + /tridactyl) {
-    font = import (dirs.font + /tridactyl.nix);
-    colors = import (dirs.colorscheme + /tridactyl.nix);
-  };
-
   configs.udiskie = import (dirs.configs + /udiskie);
 
   configs.vivid = import (dirs.configs + /vivid) {
-    colors = import (dirs.colorscheme + /vivid.nix);
+    inherit palette;
   };
 
   configs.zathura = import (dirs.configs + /zathura) {
-    font = import (dirs.font + /zathura.nix);
-    colors = import (dirs.colorscheme + /zathura.nix);
+    inherit colorscheme font-family palette;
   };
 
   desktop-items = with pkgs; {
@@ -133,6 +118,7 @@ let
   language-servers = with pkgs; {
     lua = sumneko-lua-language-server;
     bash = nodePackages.bash-language-server;
+    kotlin = unstable.kotlin-language-server;
     python = unstable.python39Packages.jedi-language-server;
     rust = unstable.rust-analyzer;
     vimscript = nodePackages.vim-language-server;
@@ -175,16 +161,16 @@ let
 
     dmenu-xembed-qutebrowser = writeShellScriptBin "dmenu-xembed-qute" (
       import (dirs.configs + /dmenu/scripts/dmenu-xembed.sh.nix) {
-        font = (import (dirs.font + /qutebrowser.nix)).dmenu;
-        colors = (import (dirs.colorscheme + /qutebrowser.nix)).dmenu;
+        inherit colorscheme font-family palette;
       }
     );
   };
+
+  peek = import (dirs.sync + "/projects/peek");
 in
 {
   imports = [
     ../../modules/programs/fd.nix
-    ../../modules/programs/tridactyl.nix
     ../../modules/programs/vivid.nix
     ../../modules/services/fusuma.nix
   ];
@@ -195,7 +181,20 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      # google-chrome
+      unstable.ktlint # Kotlin linter/formatter by Pinterest
+
+      peek
+
+      xtitle
+      brave
+
+      unstable.nodejs
+      unstable.nodePackages.npm
+
+      calibre # used to get epub image previews inside lf w/ `ebook-meta`
+
+      # nodePackages.node2nix
+      # node-packages."@aws-amplify/cli"
 
       # asciinema
       bitwarden
@@ -203,7 +202,6 @@ in
       calcurse
       chafa
       delta
-      direnv
       dropbox-cli
       dmenu
       evemu
@@ -237,7 +235,7 @@ in
         ];
       })
       nixpkgs-fmt
-      nodejs
+      # nodejs
       pandoc
       pciutils # for lspci
       pfetch
@@ -297,6 +295,8 @@ in
         else
           "";
       TDTD_DATA_DIR = "${dirs.sync}/tdtd";
+      NPM_CONFIG_PREFIX =
+        config.home.homeDirectory + "/node_modules";
     };
   };
 
@@ -359,13 +359,13 @@ in
     enable = true;
   } // configs.bat;
 
+  programs.direnv = {
+    enable = true;
+  };
+
   programs.fd = {
     enable = true;
   } // configs.fd;
-
-  programs.firefox = {
-    enable = true;
-  } // configs.firefox;
 
   programs.fish = {
     enable = true;
@@ -407,13 +407,13 @@ in
     package = unstable.starship;
   } // configs.starship;
 
-  programs.tridactyl = {
-    enable = true;
-  } // configs.tridactyl;
-
   programs.vivid = {
     enable = true;
   } // configs.vivid;
+
+  programs.vscode = {
+    enable = true;
+  };
 
   programs.zathura = {
     enable = true;
@@ -440,12 +440,12 @@ in
     package = unstable.picom;
   } // configs.picom;
 
-  services.polybar = {
-    enable = true;
-    package = pkgs.polybar.override {
-      pulseSupport = true;
-    };
-  } // configs.polybar;
+  # services.polybar = {
+  #   enable = true;
+  #   package = pkgs.polybar.override {
+  #     pulseSupport = true;
+  #   };
+  # } // configs.polybar;
 
   services.redshift = {
     enable = true;

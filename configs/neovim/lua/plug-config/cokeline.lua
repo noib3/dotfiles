@@ -142,21 +142,19 @@ require('cokeline').setup({
 
   rendering = {
     max_buffer_width = 30,
-    -- offsets = {
-    --   {
-    --     filetype = 'NvimTree',
-    --     components = {
-    --       {
-    --         text = '           NvimTree',
-    --         hl = {
-    --           fg = rq_palette.normal.yellow,
-    --           bg = rq_get_hex('NvimTreeNormal', 'bg'),
-    --           style = 'bold'
-    --         }
-    --       },
-    --     }
-    --   },
-    -- },
+    left_sidebar = {
+      filetype = 'NvimTree',
+      components = {
+        {
+          text = '  NvimTree',
+          hl = {
+            fg = rq_palette.normal.yellow,
+            bg = rq_get_hex('NvimTreeNormal', 'bg'),
+            style = 'bold'
+          }
+        },
+      }
+    },
   },
 
   default_hl = {

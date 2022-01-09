@@ -1,12 +1,10 @@
-{ colors }:
+{ colorscheme, palette, pkgs ? import <nixpkgs> { } }:
 
 let
-  pkgs = import <nixpkgs> { };
-
-  colorz = with pkgs.lib;
-    attrsets.mapAttrs
-      (name: hex: strings.removePrefix "#" hex)
-      colors;
+  colors =
+    builtins.mapAttrs
+      (name: hex: pkgs.lib.strings.removePrefix "#" hex)
+      (import ./colors.nix { inherit colorscheme palette; });
 in
 {
   shellAliases = {
@@ -33,7 +31,6 @@ in
   shellAbbrs = {
     hmn = "home-manager news";
     hms = "home-manager switch";
-    dvl = "nix develop -c $SHELL";
     ipy = "ipython";
     lg = "lazygit";
   } // (
@@ -62,12 +59,12 @@ in
     set fish_color_valid_path --underline
     set fish_color_redirection white
 
-    set fish_color_param ${colorz.param}
-    set fish_color_operator ${colorz.operator}
-    set fish_color_autosuggestion ${colorz.autosuggestion} --italics
-    set fish_color_comment ${colorz.comment} --italics
-    set fish_color_end ${colorz.end}
-    set fish_color_selection --background=${colorz.selection-bg}
+    set fish_color_param ${colors.param}
+    set fish_color_operator ${colors.operator}
+    set fish_color_autosuggestion ${colors.autosuggestion} --italics
+    set fish_color_comment ${colors.comment} --italics
+    set fish_color_end ${colors.end}
+    set fish_color_selection --background=${colors.selection_bg}
 
     fish_vi_key_bindings
 
@@ -108,10 +105,6 @@ in
     else ""
   );
 
-  promptInit = ''
-    ${pkgs.any-nix-shell}/bin/any-nix-shell fish --info-right | source
-  '';
-
   plugins = [
     {
       name = "pisces";
@@ -146,4 +139,3 @@ in
     fuzzy-search = builtins.readFile ./functions/fuzzy-search.fish;
   };
 }
-

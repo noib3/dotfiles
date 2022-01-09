@@ -1,7 +1,7 @@
-{ colors }:
+{ colorscheme, lib ? import <nixpkgs/lib>, palette }:
 
 let
-  lib = import <nixpkgs/lib>;
+  colors = import ./colors.nix { inherit colorscheme palette; };
   hexlib = import ../../colorschemes/hexlib.nix;
 
   # Converts a color from hexadecimal to the format used in ANSI escape

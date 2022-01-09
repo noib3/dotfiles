@@ -1,10 +1,13 @@
-{ colors }:
+{ colorscheme, palette, pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
 
 let
-  pkgs = import <nixpkgs> { config.allowUnfree = true; };
+  colors = import ./colors.nix { inherit colorscheme palette; };
 
   mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
     (builtins.readFile ./scripts/mpv-focus-prev.sh);
+
+  bspwm-external-rules = pkgs.writeShellScriptBin "bspwm-external-rules"
+    (builtins.readFile ./scripts/bspwm-external-rules.sh);
 in
 {
   settings = {
@@ -15,6 +18,8 @@ in
     "normal_border_color" = colors.border.unfocused;
     "active_border_color" = colors.border.unfocused;
     "focused_border_color" = colors.border.focused;
+    "external_rules_command" =
+      "${bspwm-external-rules}/bin/bspwm-external-rules";
   };
 
   monitors = {

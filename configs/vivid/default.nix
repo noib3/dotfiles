@@ -1,12 +1,10 @@
-{ colors }:
+{ lib ? import <nixpkgs/lib>, palette }:
 
 let
-  lib = import <nixpkgs/lib>;
-
-  colorz = with lib;
-    attrsets.mapAttrs
-      (name: hex: strings.removePrefix "#" hex)
-      colors;
+  colors = with lib;
+    builtins.mapAttrs
+      (name: hex: lib.strings.removePrefix "#" hex)
+      (import ./colors.nix { inherit palette; });
 in
 {
   filetypes = {
@@ -170,7 +168,7 @@ in
 
   themes = {
     current = {
-      colors = colorz;
+      inherit colors;
 
       core = {
         regular_file = { };

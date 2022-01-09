@@ -1,8 +1,12 @@
-{ font, colors }:
+{ colorscheme, font-family, palette }:
 
+let
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
+in
 {
   options = {
-    font = "${font.family} ${font.style} ${font.size}";
+    font = "${font-family} Regular ${toString font.size}";
 
     default-bg = colors.default.bg;
     default-fg = colors.default.fg;

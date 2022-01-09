@@ -28,3 +28,7 @@ rq_plugins.setup()
 -- loaded.
 rq_colorscheme.setup()
 rq_mappings.setup()
+
+-- Use filetype.lua instead of filetype.vim
+-- vim.g.do_filetype_lua = 1
+-- vim.g.did_load_filetypes = 0

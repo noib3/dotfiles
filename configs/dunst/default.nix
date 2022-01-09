@@ -1,7 +1,8 @@
-{ font, colors }:
+{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
 
 let
-  pkgs = import <nixpkgs> { };
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
 in
 {
   iconTheme = {
@@ -12,7 +13,7 @@ in
 
   settings = {
     global = {
-      font = "${font.family} ${font.size}";
+      font = "${font-family} ${toString font.size}";
       geometry = "375x0-45+40";
       frame_width = "2";
       frame_color = "${colors.border}";

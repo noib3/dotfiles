@@ -12,10 +12,14 @@ local spec = function()
       vim_g.ale_fix_on_save = 1
       vim_g.ale_linters_explicit = 1
       vim_g.ale_fixers = {
+        kotlin = {'ktlint'},
         nix = {'nixpkgs-fmt'},
         python = {'isort', 'yapf'},
         ['*'] = {'remove_trailing_lines', 'trim_whitespace'},
       }
+      -- vim_g.ale_linters = {
+      --   kotlin = {'ktlint'},
+      -- }
     end
   })
 
@@ -23,6 +27,7 @@ local spec = function()
   use({'famiu/bufdelete.nvim'})
 
   -- Best autocompletion framework I could find, and it's far from perfect.
+  -- Sometimes it needs to be started manually w/ `COQnow`.
   use({
     'ms-jpq/coq_nvim',
     config = function()
@@ -76,8 +81,11 @@ local spec = function()
   })
 
   use({
-    'nvim-telescope/telescope.nvim',
-    requires = 'nvim-lua/plenary.nvim',
+    'Raimondi/delimitMate',
+    config = function()
+      vim.g.delimitMate_expand_cr = 1
+      vim.g.delimitMate_expand_space = 1
+    end,
   })
 
   -- One of the best general purpose cli tools ever made.
@@ -103,6 +111,10 @@ local spec = function()
   -- Colorscheme.
   use({'morhetz/gruvbox'})
 
+  -- Syntax plugin for Kotlin (can be removed once the Kotlin treesitter parser
+  -- doesn't suck anymore).
+  use({'udalov/kotlin-vim'})
+
   -- Preview rendered markdown files in the browser.
   use({
     'iamcco/markdown-preview.nvim',
@@ -115,45 +127,6 @@ local spec = function()
     end,
     run = 'cd app && yarn install',
   })
-
-  -- Autopairs quotes, parenthesis, etc. Not that good. I'll make my own when I
-  -- have time.
-  -- use({
-  --   'windwp/nvim-autopairs',
-  --   config = function()
-  --     require('nvim-autopairs').setup()
-  --   end,
-  -- })
-
-  use({
-    'Raimondi/delimitMate',
-    config = function()
-      vim.g.delimitMate_expand_cr = 1
-      vim.g.delimitMate_expand_space = 1
-    end,
-  })
-
-  -- Holy fuck every single completion framework is absolute garbage.
-  -- Why does it flicker when I select a completion? Why doesn't `pumvisible`
-  -- work? Why the fuck does it force me to have a snippet engine?? Why does it
-  -- insist on setting the mappings for me instead of simply providing a public
-  -- API like `<Plug>` that I can configure how I want???
-  -- AAAARGHH... I'll have to make my own framework when I have time.
-  -- use({
-  --   'hrsh7th/nvim-cmp',
-  --   requires = {
-  --     'hrsh7th/cmp-cmdline',
-  --     'hrsh7th/cmp-nvim-lsp',
-  --     'hrsh7th/cmp-nvim-lua',
-  --     'hrsh7th/cmp-path',
-  --     'onsails/lspkind-nvim',
-  --     'L3MON4D3/LuaSnip',
-  --     'saadparwaiz1/cmp_luasnip',
-  --   },
-  --   config = function ()
-  --     require('plug-config/cmp')
-  --   end
-  -- })
 
   -- Obviously the best bufferline plugin around ;)
   use({
@@ -169,6 +142,21 @@ local spec = function()
     'norcalli/nvim-colorizer.lua',
     config = function()
       require('colorizer').setup({'*'}, {names = false})
+    end,
+  })
+
+  -- Use external linters w/ the built-in `vim.diagnostic` module
+  use({
+    'mfussenegger/nvim-lint',
+    config = function()
+      require('lint').linters.ktlint = require('plug-config/linters/ktlint')
+      require('lint').linters_by_ft = {
+        kotlin = {'ktlint'},
+      }
+      -- This isn't the best user experience. Idk what's the best combination
+      -- of autocmds to be added. ALE doesn't require worrying about this,
+      -- neither should this plugin.
+      vim.cmd([[au BufWritePost *.kt lua require('lint').try_lint()]])
     end,
   })
 
@@ -197,6 +185,7 @@ local spec = function()
         ensure_installed = 'maintained',
         highlight = {
           enable = true,
+          disable = { 'kotlin' },
         },
       })
     end
@@ -298,12 +287,12 @@ local spec = function()
   })
 
   -- Displays a popup menu with possible endings for half-typed keymaps.
-  use({
-    'folke/which-key.nvim',
-    config = function()
-      require('which-key').setup()
-    end
-  })
+  -- use({
+  --   'folke/which-key.nvim',
+  --   config = function()
+  --     require('which-key').setup()
+  --   end
+  -- })
 
   -- Write prose without any visual distractions.
   use({

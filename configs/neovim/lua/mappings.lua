@@ -7,6 +7,24 @@ local vim_cmd = vim.cmd
 local vim_fn = vim.fn
 local vim_g = vim.g
 local vim_list_extend = vim.list_extend
+local vim_map = vim.keymap.set
+
+-- Either closes the window or deletes the current buffer.
+local close = function()
+  local bdelete = has_bufdelete and 'Bdelete' or 'bdelete'
+  local filetype, buftype = vim.bo.filetype, vim.bo.buftype
+  vim_cmd(
+    (filetype == 'startify' and 'bd')
+    or (filetype == 'help' and 'q')
+    or (buftype == 'nofile' and 'q')
+    or (buftype == 'terminal' and ('%s!'):format(bdelete))
+    or (#vim_fn.getbufinfo({buflisted = 1}) == 1 and 'q')
+    or bdelete
+  )
+end
+
+-- https://github.com/neovim/neovim/pull/16591/files
+vim_map('n', '<C-w>', close, {silent=true})
 
 local mappings = {
   -- Save the file.
@@ -14,14 +32,6 @@ local mappings = {
     modes = 'n',
     lhs = '<C-s>',
     rhs = '<Cmd>w<CR>',
-    opts = { silent = true },
-  },
-
-  -- Either closes the window or deletes the current buffer.
-  {
-    modes = 'n',
-    lhs = '<C-w>',
-    rhs = '<Cmd>lua require("mappings").close()<CR>',
     opts = { silent = true },
   },
 
@@ -282,19 +292,6 @@ if has_cokeline then
       opts = { silent = true },
     })
   end
-end
-
-local close = function()
-  local bdelete = has_bufdelete and 'Bdelete' or 'bdelete'
-  local filetype, buftype = vim.bo.filetype, vim.bo.buftype
-  vim_cmd(
-    (filetype == 'startify' and 'bd')
-    or (filetype == 'help' and 'q')
-    or (buftype == 'nofile' and 'q')
-    or (buftype == 'terminal' and ('%s!'):format(bdelete))
-    or (#vim_fn.getbufinfo({buflisted = 1}) == 1 and 'q')
-    or bdelete
-  )
 end
 
 local setup = function()

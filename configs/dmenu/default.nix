@@ -1,7 +1,8 @@
-{ font, colors }:
+{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
 
 let
-  pkgs = import <nixpkgs> { };
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
 
   patches = {
     caseinsensitive = ./patches/dmenu-caseinsensitive-20200523-db6093f.diff;

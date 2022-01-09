@@ -1,8 +1,6 @@
-{ fonts, colors }:
+{ colorscheme, font-family, lib ? import <nixpkgs/lib>, palette }:
 
 let
-  lib = import <nixpkgs/lib>;
-
   T1 = fonts.text;
   T2 = fonts.icons.default;
   T3 = fonts.icons.videos;

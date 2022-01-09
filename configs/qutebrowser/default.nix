@@ -1,7 +1,8 @@
-{ font, colors }:
+{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
 
 let
-  pkgs = import <nixpkgs> { };
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
 
   add-torrent = pkgs.writeShellScriptBin "add-torrent"
     (builtins.readFile ./scripts/add-torrent.sh);
@@ -26,8 +27,8 @@ in
 
   settings = {
     fonts = {
-      default_family = font.family;
-      default_size = font.size;
+      default_family = font-family;
+      default_size = (toString font.size) + "pt";
     };
 
     colors = {

@@ -45,7 +45,6 @@ in
       "$vlang"
       "$vagrant"
       "$zig"
-      "$nix_shell"
       "$conda"
       "$memory_usage"
       "$aws"
@@ -55,6 +54,7 @@ in
       "$crystal"
       "$lua"
       "$custom"
+      "$cmd_duration"
       "$line_break"
       "$jobs"
       "$battery"
@@ -64,14 +64,10 @@ in
       "$status"
     ];
 
-    right_format = lib.concatStrings [
-      "$cmd_duration"
-    ];
-
     character = {
       success_symbol = "[|>](bold cyan)";
       error_symbol = "[✖](bold red)";
-      vicmd_symbol = "[|>](bold cyan)";
+      vicmd_symbol = "[<|](bold cyan)";
     };
 
     directory = {

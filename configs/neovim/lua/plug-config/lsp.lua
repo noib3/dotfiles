@@ -45,49 +45,32 @@ tbl_insert(sumneko_rtp, 'lua/?.lua')
 tbl_insert(sumneko_rtp, 'lua/?/init.lua')
 
 local lsps = {
-  {
-    name = 'bashls',
-    settings = { on_attach = on_attach }
-  },
-  {
-    name = 'dartls',
-    settings = { on_attach = on_attach }
-  },
-  {
-    name = 'jedi_language_server',
-    settings = { on_attach = on_attach }
-  },
-  {
-    name = 'rust_analyzer',
-    settings = { on_attach = on_attach }
-  },
-  {
-    name = 'sumneko_lua',
+  -- name = settings,
+  bashls = { on_attach = on_attach },
+  jedi_language_server = { on_attach = on_attach },
+  kotlin_language_server = { on_attach = on_attach },
+  rust_analyzer = { on_attach = on_attach },
+  sumneko_lua = {
+    cmd = { rq_sumneko_paths.bin, '-E', rq_sumneko_paths.main },
+    on_attach = on_attach,
     settings = {
-      cmd = { rq_sumneko_paths.bin, '-E', rq_sumneko_paths.main },
-      on_attach = on_attach,
-      settings = {
-        Lua = {
-          runtime = {
-            version = 'LuaJIT',
-            path = sumneko_rtp,
-          },
-          diagnostics = { globals = { 'vim' } },
-          workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-          telemetry = { enable = false },
+      Lua = {
+        runtime = {
+          version = 'LuaJIT',
+          path = sumneko_rtp,
         },
+        diagnostics = { globals = { 'vim' } },
+        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+        telemetry = { enable = false },
       },
-    }
+    },
   },
-  {
-    name = 'vimls',
-    settings = { on_attach = on_attach }
-  },
+  vimls = { on_attach = on_attach },
 }
 
 local setup = function ()
-  for _, lsp in pairs(lsps) do
-    rq_lspconfig[lsp.name].setup(rq_coq.lsp_ensure_capabilities(lsp.settings))
+  for lsp, settings in pairs(lsps) do
+    rq_lspconfig[lsp].setup(rq_coq.lsp_ensure_capabilities(settings))
   end
 end
 

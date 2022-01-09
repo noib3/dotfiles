@@ -1,7 +1,8 @@
-{ shell, font, colors }:
+{ font-family, machine, palette, pkgs ? import <nixpkgs> { }, shell }:
 
 let
-  pkgs = import <nixpkgs> { };
+  font = import ./font.nix { family = font-family; inherit machine; };
+  colors = import ./colors.nix { inherit palette; };
 in
 {
   settings = {
