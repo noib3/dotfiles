@@ -50,14 +50,6 @@ local components = {
     text = function(buffer)
       return buffer.index .. ': '
     end,
-    hl = {
-      fg = function(buffer)
-        return
-          (buffer.diagnostics.errors ~= 0 and errors_fg)
-          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
-          or nil
-      end,
-    },
   },
 
   unique_prefix = {
@@ -79,12 +71,6 @@ local components = {
       return buffer.filename
     end,
     hl = {
-      fg = function(buffer)
-        return
-          (buffer.diagnostics.errors ~= 0 and errors_fg)
-          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
-          or nil
-      end,
       style = function(buffer)
         return
           ((buffer.is_focused and buffer.diagnostics.errors ~= 0)
@@ -136,6 +122,7 @@ require('cokeline').setup({
   show_if_buffers_are_at_least = 2,
 
   buffers = {
+    -- filter_valid = function(buffer) return buffer.type ~= 'terminal' end,
     -- filter_visible = function(buffer) return buffer.type ~= 'terminal' end,
     new_buffers_position = 'next',
   },

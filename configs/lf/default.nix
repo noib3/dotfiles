@@ -16,6 +16,7 @@ in
     ifs = "\\n";
     info = "size";
     period = 1;
+    promptfmt = ''\033[33;1m%u\033[0m on \033[32;1m%h\033[0m in \033[36;1m%d\033[0m\033[1m%f\033[0m'';
     ratios = "1:2:2";
     shell = "bash";
     timefmt = "January 02, 2006 at 15:04:05";

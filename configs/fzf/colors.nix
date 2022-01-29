@@ -1,7 +1,8 @@
 { colorscheme, palette }:
 
 let
-  hexlib = import ../../colorschemes/hexlib.nix;
+  hexlib = import ../../palettes/hexlib.nix;
+
   c = {
     "afterglow" = {
       current-line.bg = hexlib.scale 1.5 palette.normal.black;
@@ -19,6 +20,10 @@ let
     "tokyonight" = {
       current-line.bg = hexlib.scale 0.75 palette.bright.black;
       grayed-out-directories = "#565f89";
+    };
+    "vscode" = {
+      current-line.bg = hexlib.scale 0.7 palette.bright.black;
+      grayed-out-directories = palette.bright.black;
     };
   };
 in

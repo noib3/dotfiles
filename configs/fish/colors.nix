@@ -1,7 +1,7 @@
 { colorscheme, palette }:
 
 let
-  hexlib = import ../../colorschemes/hexlib.nix;
+  hexlib = import ../../palettes/hexlib.nix;
   c = {
     "nord" = {
       autosuggestion = hexlib.scale 0.5 palette.normal.white;

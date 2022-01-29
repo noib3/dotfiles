@@ -5,24 +5,20 @@ let
 
   colorscheme = "tokyonight";
   background = "monochromatic.png";
+  palette = import ../../palettes/${colorscheme}.nix;
 
   dirs = {
-    colorscheme = ../../colorschemes + "/${colorscheme}";
+    colorscheme = ../../palettes + "/${colorscheme}";
     configs = ../../configs;
   };
 
   background-image = (dirs.colorscheme + "/backgrounds/${background}");
 
-  configs = {
-    grub = (
-      import (dirs.configs + /grub) {
-        colors = import (dirs.colorscheme + /grub.nix);
-        background-image = background-image;
-      }
-    );
-
-    transmission = import (dirs.configs + /transmission);
+  configs.grub = import (dirs.configs + /grub) {
+    inherit colorscheme palette background-image;
   };
+
+  configs.transmission = import (dirs.configs + /transmission);
 
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1

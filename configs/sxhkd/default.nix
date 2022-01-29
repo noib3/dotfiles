@@ -28,7 +28,6 @@ in
     "alt + shift + w" = "dmenu-wifi";
     "alt + shift + p" = "dmenu-powermenu";
     "alt + shift + a" = "dmenu-pulseaudio";
-    "alt + c" = "$SYNCDIR/bocconi/.scripts/dmenu-notes-manager.py";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";

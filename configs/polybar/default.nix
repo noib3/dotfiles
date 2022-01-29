@@ -1,14 +1,17 @@
-{ colorscheme, font-family, lib ? import <nixpkgs/lib>, palette }:
+{ colorscheme, font-family, palette, lib ? import <nixpkgs/lib> }:
 
 let
-  T1 = fonts.text;
-  T2 = fonts.icons.default;
-  T3 = fonts.icons.videos;
-  T4 = fonts.icons.bluetooth;
-  T5 = fonts.icons.wifi;
-  T6 = fonts.icons.battery;
-  T7 = fonts.icons.calendar;
-  T8 = fonts.icons.menu;
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
+
+  T1 = font.text;
+  T2 = font.icons.default;
+  T3 = font.icons.videos;
+  T4 = font.icons.bluetooth;
+  T5 = font.icons.wifi;
+  T6 = font.icons.battery;
+  T7 = font.icons.calendar;
+  T8 = font.icons.menu;
 in
 {
   settings = {
@@ -18,24 +21,23 @@ in
       cursor-click = "pointer";
       override-redirect = true;
 
-      # Make Polybar go under other windows when going fullscreen
+      # Let Polybar be displayed under fullscreen windows
       wm-restack = "bspwm";
 
       font = [
-        "${T1.family}:style=${T1.style}:size=${T1.size};${T1.padding-top}"
-        "${T2.family}:style=${T2.style}:size=${T2.size};${T2.padding-top}"
-        "${T3.family}:style=${T3.style}:size=${T3.size};${T3.padding-top}"
-        "${T4.family}:style=${T4.style}:size=${T4.size};${T4.padding-top}"
-        "${T5.family}:style=${T5.style}:size=${T5.size};${T5.padding-top}"
-        "${T6.family}:style=${T6.style}:size=${T6.size};${T6.padding-top}"
-        "${T7.family}:style=${T7.style}:size=${T7.size};${T7.padding-top}"
-        "${T8.family}:style=${T8.style}:size=${T8.size};${T8.padding-top}"
+        "${T1.family}:style=${T1.style}:size=${builtins.toString T1.size};${builtins.toString T1.padding-top}"
+        "${T2.family}:style=${T2.style}:size=${builtins.toString T2.size};${builtins.toString T2.padding-top}"
+        "${T3.family}:style=${T3.style}:size=${builtins.toString T3.size};${builtins.toString T3.padding-top}"
+        "${T4.family}:style=${T4.style}:size=${builtins.toString T4.size};${builtins.toString T4.padding-top}"
+        "${T5.family}:style=${T5.style}:size=${builtins.toString T5.size};${builtins.toString T5.padding-top}"
+        "${T6.family}:style=${T6.style}:size=${builtins.toString T6.size};${builtins.toString T6.padding-top}"
+        "${T7.family}:style=${T7.style}:size=${builtins.toString T7.size};${builtins.toString T7.padding-top}"
+        "${T8.family}:style=${T8.style}:size=${builtins.toString T8.size};${builtins.toString T8.padding-top}"
       ];
       foreground = colors.bar.fg;
       background = colors.bar.bg;
 
       modules.left = lib.concatStringsSep " " [
-        # "power"
         "workspaces"
         "window"
       ];
@@ -44,10 +46,8 @@ in
         "bluetooth"
         "wifi"
         "ethernet"
-        # "volume"
         "battery"
         "datetime"
-        # "notification-center"
       ];
     };
 

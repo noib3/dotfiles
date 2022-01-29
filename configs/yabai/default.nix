@@ -1,7 +1,7 @@
-{ colors }:
+{ colorscheme, palette, lib ? import <nixpkgs/lib> }:
 
 let
-  lib = import <nixpkgs/lib>;
+  colors = import ./colors.nix { inherit colorscheme palette; };
 
   # Converts a color from hexadecimal to the format required by Yabai.
   #

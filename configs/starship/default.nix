@@ -47,7 +47,6 @@ in
       "$zig"
       "$conda"
       "$memory_usage"
-      "$aws"
       "$gcloud"
       "$openstack"
       "$env_var"
@@ -88,7 +87,12 @@ in
 
     hostname = {
       format = " on [$hostname]($style)";
+      style = "bold green";
       ssh_only = false;
+    };
+
+    nodejs = {
+      detect_folders = [ ];
     };
 
     python = {

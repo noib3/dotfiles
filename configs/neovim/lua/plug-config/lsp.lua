@@ -45,11 +45,7 @@ tbl_insert(sumneko_rtp, 'lua/?.lua')
 tbl_insert(sumneko_rtp, 'lua/?/init.lua')
 
 local lsps = {
-  -- name = settings,
-  bashls = { on_attach = on_attach },
-  jedi_language_server = { on_attach = on_attach },
-  kotlin_language_server = { on_attach = on_attach },
-  rust_analyzer = { on_attach = on_attach },
+  -- Lua
   sumneko_lua = {
     cmd = { rq_sumneko_paths.bin, '-E', rq_sumneko_paths.main },
     on_attach = on_attach,
@@ -65,7 +61,16 @@ local lsps = {
       },
     },
   },
-  vimls = { on_attach = on_attach },
+  -- Kotlin
+  -- kotlin_language_server = { on_attach = on_attach },
+  -- Python
+  jedi_language_server = { on_attach = on_attach },
+  -- Rust
+  rust_analyzer = { on_attach = on_attach },
+  -- Swift
+  sourcekit = { on_attach = on_attach },
+  -- Typescript
+  tsserver = { on_attach = on_attach },
 }
 
 local setup = function ()

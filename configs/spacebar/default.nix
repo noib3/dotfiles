@@ -1,7 +1,9 @@
-{ font, colors }:
+{ colorscheme, font-family, palette, lib ? import <nixpkgs/lib> }:
 
 let
-  lib = import <nixpkgs/lib>;
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
+
   # Converts a color from hexadecimal to the format required by Spacebar.
   #
   # Example:

@@ -162,7 +162,7 @@ local mappings = {
   {
     modes = 'n',
     lhs = '<Space>',
-    rhs = 'za',
+    rhs = '<Cmd>silent! execute "normal! za"<CR>',
   },
 
   -- Disable the `s` mapping in normal and visual mode.

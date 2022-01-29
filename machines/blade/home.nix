@@ -4,21 +4,16 @@ let
   unstable = import <nixos-unstable> { config.allowUnfree = true; };
   machine = "blade";
 
-  font = "inconsolata";
-  colorscheme = "tokyonight";
-  background = "monochromatic.png";
+  colorscheme = "vscode";
+  font-family = "FiraCode Nerd Font";
+  palette = import ../../palettes/${colorscheme}.nix;
+
+  hexlib = import ../../palettes/hexlib.nix;
 
   dirs = {
-    colorscheme = ../../colorschemes + "/${colorscheme}";
     configs = ../../configs;
-    font = ../../fonts + "/${font}";
     sync = config.home.homeDirectory + "/Dropbox";
   };
-
-  background-image = (dirs.colorscheme + "/backgrounds/${background}");
-
-  font-family = "FiraCode Nerd Font";
-  palette = import ../../colorschemes/vscode.nix;
 
   configs.alacritty = import (dirs.configs + /alacritty) {
     inherit font-family machine palette;
@@ -74,9 +69,9 @@ let
 
   configs.picom = import (dirs.configs + /picom);
 
-  # configs.polybar = import (dirs.configs + /polybar) {
-  #   inherit colorscheme font-family palette;
-  # };
+  configs.polybar = import (dirs.configs + /polybar) {
+    inherit colorscheme font-family palette;
+  };
 
   configs.qutebrowser = import (dirs.configs + /qutebrowser) {
     inherit colorscheme font-family palette;
@@ -116,12 +111,12 @@ let
   };
 
   language-servers = with pkgs; {
-    lua = sumneko-lua-language-server;
-    bash = nodePackages.bash-language-server;
+    lua = unstable.sumneko-lua-language-server;
     kotlin = unstable.kotlin-language-server;
     python = unstable.python39Packages.jedi-language-server;
     rust = unstable.rust-analyzer;
-    vimscript = nodePackages.vim-language-server;
+    swift = unstable.swift; # sourcekit-lsp is included in swift 
+    typescript = unstable.nodePackages.typescript-language-server;
   };
 
   userscripts = with pkgs; {
@@ -135,7 +130,7 @@ let
       (builtins.readFile (dirs.configs + /lf/previewer.sh));
 
     rg-previewer = writeShellScriptBin "rg-previewer"
-      (builtins.readFile (dirs.configs + /fzf/scripts/rg-previewer.sh));
+      (builtins.readFile (dirs.configs + /ripgrep/rg-previewer.sh));
 
     fuzzy-ripgrep = writeShellScriptBin "fuzzy_ripgrep"
       (builtins.readFile (dirs.configs + /fzf/scripts/fuzzy-ripgrep.sh));
@@ -181,10 +176,17 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      unstable.ktlint # Kotlin linter/formatter by Pinterest
+      unstable.androidStudioPackages.canary
+
+      unstable.scrcpy
 
       peek
 
+      lsof
+
+      unstable.crate2nix
+      unstable.ktlint # Kotlin linter/formatter by Pinterest
+      unstable.nodePackages.typescript # Used by typescript-language-server
       xtitle
       brave
 
@@ -242,14 +244,16 @@ in
       pick-colour-picker
       pinentry_qt5
       poppler_utils
+      unstable.nodePackages.prettier
       proselint # used by ALE for TeX and Markdown formatting
-      (python39.withPackages (
-        ps: with ps; [
-          ipython
-          isort
-          yapf
-        ]
-      ))
+      python39Packages.ipython
+      # (python39.withPackages (
+      #   ps: with ps; [
+      #     ipython
+      #     isort
+      #     yapf
+      #   ]
+      # ))
       ripgrep
       rustup
       scrot
@@ -277,7 +281,7 @@ in
 
     sessionVariables = {
       EDITOR = "nvim";
-      MANPAGER = "nvim -c 'set ft=man' -";
+      MANPAGER = "nvim +Man! -";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
@@ -320,8 +324,7 @@ in
 
     "nvim/lua/colorscheme.lua" = {
       text = import (dirs.configs + /neovim/lua/colorscheme.lua.nix) {
-        inherit colorscheme;
-        palette = import (dirs.colorscheme + /palette.nix);
+        inherit colorscheme palette;
       };
     };
 
@@ -440,12 +443,12 @@ in
     package = unstable.picom;
   } // configs.picom;
 
-  # services.polybar = {
-  #   enable = true;
-  #   package = pkgs.polybar.override {
-  #     pulseSupport = true;
-  #   };
-  # } // configs.polybar;
+  services.polybar = {
+    enable = true;
+    package = pkgs.polybar.override {
+      pulseSupport = true;
+    };
+  } // configs.polybar;
 
   services.redshift = {
     enable = true;
@@ -474,8 +477,8 @@ in
     };
 
     profileExtra = ''
-      ${pkgs.feh}/bin/feh --bg-fill --no-fehbg \
-        ${builtins.toString background-image}
+      ${pkgs.hsetroot}/bin/hsetroot \
+        -solid "${hexlib.scale 0.75 palette.primary.background}"
     '';
   };
 }

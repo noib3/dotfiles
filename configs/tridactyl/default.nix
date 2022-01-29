@@ -1,6 +1,9 @@
-{ font, colors }:
+{ colorscheme, font-family, palette }:
 
 let
+  colors = import ./colors.nix { inherit colorscheme palette; };
+  font = import ./font.nix { family = font-family; };
+
   home-page = "https://google.com";
 in
 {
@@ -74,7 +77,7 @@ in
     current = ''
       :root {
         --tridactyl-hintspan-font-family: "${font.family}";
-        --tridactyl-hintspan-font-size: ${font.hints.size};
+        --tridactyl-hintspan-font-size: ${builtins.toString font.hints.size}px;
         --tridactyl-hintspan-bg: ${colors.hints.bg};
         --tridactyl-hintspan-fg: ${colors.hints.fg};
         --tridactyl-hint-bg: none;
@@ -83,7 +86,7 @@ in
         --tridactyl-hint-active-outline: none;
 
         --tridactyl-cmdl-font-family: "${font.family}";
-        --tridactyl-cmdl-font-size: ${font.commandline.size};
+        --tridactyl-cmdl-font-size: ${builtins.toString font.commandline.size}px;
         --tridactyl-cmdl-bg: ${colors.commandline.bg};
         --tridactyl-cmdl-fg: ${colors.commandline.fg};
       }

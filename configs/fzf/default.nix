@@ -2,7 +2,7 @@
 
 let
   colors = import ./colors.nix { inherit colorscheme palette; };
-  hexlib = import ../../colorschemes/hexlib.nix;
+  hexlib = import ../../palettes/hexlib.nix;
 
   # Converts a color from hexadecimal to the format used in ANSI escape
   # sequences.

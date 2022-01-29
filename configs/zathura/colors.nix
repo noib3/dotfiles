@@ -1,7 +1,8 @@
 { colorscheme, palette }:
 
 let
-  hexlib = import ../../colorschemes/hexlib.nix;
+  hexlib = import ../../palettes/hexlib.nix;
+
   c = {
     "afterglow" = {
       inputbar.fg = palette.normal.white;

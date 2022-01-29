@@ -7,6 +7,10 @@ let
   colorscheme = "onedark";
   font = "roboto-mono";
 
+  colorscheme = "tokyonight";
+  font-family = "FiraCode Nerd Font";
+  palette = import ../../palettes/${colorscheme}.nix;
+
   dirs = {
     colorscheme = ../../colorschemes + "/${colorscheme}";
     configs = ../../configs;
@@ -51,8 +55,7 @@ let
   configs.mpv = import (dirs.configs + /mpv);
 
   configs.spacebar = import (dirs.configs + /spacebar) {
-    font = import (dirs.font + /spacebar.nix);
-    colors = import (dirs.colorscheme + /spacebar.nix);
+    inherit colorscheme font-family palette;
   };
 
   configs.skhd = import (dirs.configs + /skhd);

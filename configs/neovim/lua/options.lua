@@ -22,6 +22,15 @@ local options = {
   -- Fill `foldtext` with spaces.
   fillchars = 'fold: ',
 
+  -- Open files will all fold levels opened.
+  foldlevelstart = 99,
+
+  -- Enable tree-sitter based folding
+  foldmethod = 'expr',
+  foldexpr = 'nvim_treesitter#foldexpr()',
+
+  foldtext = 'g:FoldText()',
+
   -- Enable marking some characters with particular glyphs.
   list = true,
 
@@ -89,6 +98,32 @@ local options = {
   -- Wait this many milliseconds before triggering the `CursorHold` event.
   updatetime = 1000,
 }
+
+vim.cmd([[
+  function! g:FoldText()
+    " return 'ciaone'
+    let l:title = getline(v:foldstart)
+    let l:column = 78
+    let l:nlines = v:foldend - v:foldstart + 1
+    let l:format = '%s %s %s lines'
+
+    " Calculate how many filler characters should be displayed
+    let l:fill_num =
+      \ l:column + 1 - strchars(printf(l:format, l:title, '', l:nlines))
+
+    " If the fold title is too long cut it short and add three dots at the end
+    " of it.
+    if fill_num < 0
+      let l:title =
+        \ substitute(
+        \   l:title, '\(.*\)\(.\{' . (-l:fill_num + 2) . '\}\)', '\1...', ''
+        \ )
+    endif
+
+    return
+      \ printf(l:format, l:title, repeat('·', l:fill_num), l:nlines)
+  endfunction
+]])
 
 local setup = function()
   -- Consider underscores as `word` delimiters.

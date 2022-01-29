@@ -1,4 +1,16 @@
 local setup = function()
+  -- Reset the cursor on exit
+  _G.augroup({
+    name = 'reset_cursor',
+    autocmds = {
+      {
+        event = 'VimLeave,VimSuspend',
+        pattern = '*',
+        cmd = 'set guicursor=a:ver25',
+      },
+    }
+  })
+
   -- Rebalance splits automatically after a terminal resize.
   _G.augroup({
     name = 'vim_resized',

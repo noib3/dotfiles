@@ -1,11 +1,43 @@
 local rq_palette = require('colorscheme').palette
 
+---@param hex1  string
+---@param hex2  string
+---@param a  number
+local mix = function(hex1, hex2, a)
+  local to_rgb = function(hex)
+    local hexfmt = '[%a|%d][%a|%d]'
+    for r, g, b in hex:gmatch(('#(%s)(%s)(%s)'):format(hexfmt, hexfmt, hexfmt)) do
+      return {
+        r = tonumber(r, 16),
+        g = tonumber(g, 16),
+        b = tonumber(b, 16),
+      }
+    end
+  end
+
+  local lerp = function(x, y)
+    return a * x + (1 - a) * y
+  end
+
+  local rgb1 = to_rgb(hex1)
+  local rgb2 = to_rgb(hex2)
+
+  return ('#%x%x%x'):format(
+    lerp(rgb1.r, rgb2.r),
+    lerp(rgb1.b, rgb2.b),
+    lerp(rgb1.g, rgb2.g)
+  )
+end
+
 local highlights = {
   -- Basic highlight groups that I want to be set for every colorscheme.
   ['*'] = {
     { name = 'Normal', guibg = 'NONE' },
     { name = 'Comment', gui = 'italic' },
     { name = 'texComment', link = 'Comment' },
+
+    -- Text displayed on a closed fold.
+    { name = 'Folded', gui = 'italic', },
 
     -- Part of the tabline not filled by cokeline.
     {
@@ -40,24 +72,33 @@ local highlights = {
 
     -- Diagnostic errors, warnings, infos and hints reported by LSPs and other
     -- sources.
-    -- {
-    --   name = 'DiagnosticError',
-    --   gui = 'bold',
-    --   guifg = rq_palette.normal.red,
-    -- },
-    -- {
-    --   name = 'DiagnosticWarn',
-    --   gui = 'bold',
-    --   guifg = rq_palette.normal.yellow,
-    -- },
-    -- {
-    --   name = 'DiagnosticInfo',
-    --   guifg = rq_palette.normal.white,
-    -- },
-    -- {
-    --   name = 'DiagnosticHint',
-    --   link = 'DiagnosticInfo',
-    -- },
+    {
+      name = 'DiagnosticError',
+      guifg = rq_palette.normal.red,
+      guibg = mix(
+        rq_palette.normal.red,
+        rq_palette.primary.background,
+        0.125
+      ),
+    },
+    {
+      name = 'DiagnosticWarn',
+      guifg = rq_palette.normal.yellow,
+      guibg = mix(
+        rq_palette.normal.yellow,
+        rq_palette.primary.background,
+        0.125
+      ),
+    },
+    {
+      name = 'DiagnosticInfo',
+      guifg = rq_palette.normal.blue,
+    },
+    {
+      name = 'DiagnosticHint',
+      link = 'DiagnosticInfo',
+      clear = true,
+    },
 
     -- Words not recognized by the spellchecker.
     {
@@ -195,6 +236,13 @@ local highlights = {
       gui = 'NONE',
       guifg = { 'Comment', 'fg' },
       guibg = { 'ColorColumn', 'bg' },
+    },
+  },
+
+  vscode = {
+    {
+      name = 'Comment',
+      guifg = '#5a5a5a',
     },
   },
 }

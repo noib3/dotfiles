@@ -1,7 +1,7 @@
 local vim_localopt = vim.opt_local
 
-vim_localopt.spelllang = { 'en_us', 'it' }
 vim_localopt.formatoptions:remove({'r', 'o'})
+vim_localopt.spelllang = { 'en_us', 'it' }
 
 _G.localmap({
   modes = 'n',
@@ -12,7 +12,7 @@ _G.localmap({
 
 _G.localmap({
   modes = 'n',
-  lhs = '<LocalLeader>lv',
+  lhs = '<Leader>lv',
   rhs = '<Cmd>silent call v:lua.open_tex_pdf()<CR>',
   opts = { silent = true },
 })

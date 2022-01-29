@@ -226,15 +226,6 @@ in
       "gkp" = "open https://keep.google.com";
       "tkp" = "open -t https://keep.google.com";
 
-      "gyt" = "open https://youtube.com";
-      "tyt" = "open -t https://youtube.com";
-
-      "gre" = "open https://reddit.com";
-      "tre" = "open -t https://reddit.com";
-
-      "gtb" = "open https://github.com/noib3";
-      "ttb" = "open -t https://github.com/noib3";
-
       "grhm" = "open https://github.com/nix-community/home-manager/find/master";
       "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";
 
@@ -244,41 +235,11 @@ in
       "glg" = "open https://libgen.li";
       "tlg" = "open -t https://libgen.li";
 
-      "gfp" = "open https://www.myfitnesspal.com/food/diary";
-      "tfp" = "open -t https://www.myfitnesspal.com/food/diary";
-
-      "gyab" = "open https://youatb.unibocconi.it/";
-      "tyab" = "open -t https://youatb.unibocconi.it/";
-
-      "gbb" = "open https://blackboard.unibocconi.it/ultra/course";
-      "tbb" = "open -t https://blackboard.unibocconi.it/ultra/course";
-
-      "gal" = "open https://app-public.unibocconi.it/PresencesPubl/RegistroPresenze";
-      "tal" = "open -t https://app-public.unibocconi.it/PresencesPubl/RegistroPresenze";
-
       "g12ft" = "open https://12ft.io/";
       "t12ft" = "open -t https://12ft.io/";
 
-      "gn26" = "open https://app.n26.com/account";
-      "tn26" = "open -t https://app.n26.com/account";
-
-      "gwi" = "open https://wise.com/user/account/";
-      "twi" = "open -t https://wise.com/user/account/";
-
-      "gt0" = "open https://www.tradezero.co/account/";
-      "tt0" = "open -t https://www.tradezero.co/account/";
-
-      "gtw" = "open https://manage.tastyworks.com/index.html";
-      "ttw" = "open -t https://manage.tastyworks.com/index.html";
-
       "gtra" = "open http://localhost:9091/transmission/web/";
       "ttra" = "open -t http://localhost:9091/transmission/web/";
-
-      "gsy" = "open http://localhost:8384/";
-      "tsy" = "open -t http://localhost:8384/";
-
-      "gcdb" = "open http://localhost:5984/_utils/#";
-      "tcdb" = "open -t http://localhost:5984/_utils/#";
     };
 
     command = {

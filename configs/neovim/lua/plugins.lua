@@ -12,9 +12,13 @@ local spec = function()
       vim_g.ale_fix_on_save = 1
       vim_g.ale_linters_explicit = 1
       vim_g.ale_fixers = {
+        javascript = {'prettier'},
+        kt = {'ktlint'},
         kotlin = {'ktlint'},
         nix = {'nixpkgs-fmt'},
         python = {'isort', 'yapf'},
+        typescript = {'prettier'},
+        typescriptreact = {'prettier'},
         ['*'] = {'remove_trailing_lines', 'trim_whitespace'},
       }
       -- vim_g.ale_linters = {
@@ -94,8 +98,7 @@ local spec = function()
     config = function()
       -- I can't port that `fzf.vim` to Lua because the value of `sinklist`
       -- needs to be a vimscript `funcref`. Setting `sinklist = '`
-      local vim_g = vim.g
-      vim_g.fzf_layout = {
+      vim.g.fzf_layout = {
         window = {
           width = 1,
           height = 9,
@@ -111,19 +114,11 @@ local spec = function()
   -- Colorscheme.
   use({'morhetz/gruvbox'})
 
-  -- Syntax plugin for Kotlin (can be removed once the Kotlin treesitter parser
-  -- doesn't suck anymore).
-  use({'udalov/kotlin-vim'})
-
   -- Preview rendered markdown files in the browser.
   use({
     'iamcco/markdown-preview.nvim',
     config = function()
-      local vim_g = vim.g
-      vim_g.mkdp_browser = 'qutebrowser'
-      vim_g.mkdp_browserfunc = 'html#open'
-      vim_g.mkdp_filetypes = {'markdown'}
-      vim_g.mkdp_page_title = '${name}'
+      require('plug-config/markdown_preview')
     end,
     run = 'cd app && yarn install',
   })
@@ -149,7 +144,6 @@ local spec = function()
   use({
     'mfussenegger/nvim-lint',
     config = function()
-      require('lint').linters.ktlint = require('plug-config/linters/ktlint')
       require('lint').linters_by_ft = {
         kotlin = {'ktlint'},
       }
@@ -185,11 +179,17 @@ local spec = function()
         ensure_installed = 'maintained',
         highlight = {
           enable = true,
-          disable = { 'kotlin' },
+          disable = { 'markdown' },
+        },
+        context_commentstring = {
+          enable = true,
         },
       })
     end
   })
+
+  -- Set the `commentstring` option based on the current cursor location.
+  use({'JoosepAlviste/nvim-ts-context-commentstring'})
 
   -- Colorscheme.
   use({'joshdick/onedark.vim'})
@@ -286,6 +286,15 @@ local spec = function()
     ft = 'tex',
   })
 
+  -- Vscode inspired colorscheme
+  use({
+    'Mofiqul/vscode.nvim',
+    config = function()
+      vim.g.vscode_style = 'dark'
+      vim.g.vscode_italic_comments = 1
+    end
+  })
+
   -- Displays a popup menu with possible endings for half-typed keymaps.
   -- use({
   --   'folke/which-key.nvim',
@@ -313,10 +322,6 @@ local spec = function()
   })
 end
 
-local setup = function()
-  rq_packer.startup(spec)
-end
-
 return {
-  setup = setup,
+  setup = function() rq_packer.startup(spec) end,
 }

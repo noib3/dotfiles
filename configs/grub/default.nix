@@ -1,7 +1,7 @@
-{ colors, background-image }:
+{ colorscheme, palette, background-image, pkgs ? import <nixpkgs> { } }:
 
 let
-  pkgs = import <nixpkgs> { };
+  colors = import ./colors.nix { inherit colorscheme palette; };
 
   theme-file = pkgs.writeTextFile {
     name = "theme.txt";

@@ -1,6 +1,6 @@
 { colorscheme, palette }:
 let
-  hexlib = import ../../colorschemes/hexlib.nix;
+  hexlib = import ../../palettes/hexlib.nix;
 
   c = {
     "afterglow".border = hexlib.scale 0.95 palette.normal.white;
