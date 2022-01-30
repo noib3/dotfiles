@@ -2,20 +2,20 @@
 
 {
   primary = {
-    foreground = palette.normal.white;
-    background = palette.normal.black;
-  };
-
-  cursor = {
-    text = palette.bright.black;
-    cursor = palette.normal.white;
-  };
-
-  selection = {
-    text = palette.normal.white;
-    background = palette.bright.black;
+    foreground = palette.primary.foreground or palette.normal.white;
+    background = palette.primary.background or palette.normal.black;
   };
 
   normal = palette.normal;
   bright = palette.bright;
+
+  cursor = {
+    text = palette.cursor.text or palette.bright.black;
+    cursor = palette.cursor.cursor or palette.normal.white;
+  };
+
+  selection = {
+    text = palette.selection.text or palette.normal.white;
+    background = palette.selection.background or palette.bright.black;
+  };
 }

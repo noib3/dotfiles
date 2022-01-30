@@ -1,5 +1,5 @@
 let
-  unstable = import <nixos-unstable> { };
+  pkgs = import <nixos> { };
 in
 ''
   set -e
@@ -17,8 +17,8 @@ in
     exec 3>"$UEBERZUG_FIFO"
     trap cleanup EXIT
 
-    ${unstable.lf}/bin/lf "$@" 3>&-
+    ${pkgs.lf}/bin/lf "$@" 3>&-
   else
-    exec ${unstable.lf}/bin/lf "$@"
+    exec ${pkgs.lf}/bin/lf "$@"
   fi
 ''

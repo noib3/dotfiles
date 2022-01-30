@@ -2,33 +2,50 @@ local rq_get_hex = require('cokeline/utils').get_hex
 local rq_palette = require('colorscheme').palette
 local rq_mappings = require('cokeline/mappings')
 
+local str_rep = string.rep
+
 local comments_fg = rq_get_hex('Comment', 'fg')
 local errors_fg = rq_get_hex('DiagnosticError', 'fg')
 local warnings_fg = rq_get_hex('DiagnosticWarn', 'fg')
 
-local components = {
-  space = {
-    text = ' ',
-    truncation = { priority = 1 }
-  },
+local min_buffer_width = 23
 
-  two_spaces = {
-    text = '  ',
+local components = {
+  separator = {
+    text = ' ',
+    hl = { bg = rq_get_hex('Normal', 'bg') },
     truncation = { priority = 1 },
   },
 
-  separator = {
-    text = function(buffer)
-      return buffer.index ~= 1 and '▏' or ''
-    end,
+  space = {
+    text = ' ',
+    truncation = { priority = 1 },
   },
 
-  devicon = {
+  left_half_circle = {
+    text = '',
+    hl = {
+      fg = rq_get_hex('ColorColumn', 'bg'),
+      bg = rq_get_hex('Normal', 'bg'),
+    },
+    truncation = { priority = 1 },
+  },
+
+  right_half_circle = {
+    text = '',
+    hl = {
+      fg = rq_get_hex('ColorColumn', 'bg'),
+      bg = rq_get_hex('Normal', 'bg'),
+    },
+    truncation = { priority = 1 },
+  },
+
+  devicon_or_pick_letter = {
     text = function(buffer)
       return
         (rq_mappings.is_picking_focus() or rq_mappings.is_picking_close())
-          and buffer.pick_letter .. ' '
-           or buffer.devicon.icon
+        and buffer.pick_letter .. ' '
+         or buffer.devicon.icon
     end,
     hl = {
       fg = function(buffer)
@@ -44,12 +61,22 @@ local components = {
            or nil
       end,
     },
+    truncation = { priority = 1 },
   },
 
   index = {
     text = function(buffer)
       return buffer.index .. ': '
     end,
+    hl = {
+      fg = function(buffer)
+        return
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+          or nil
+      end,
+    },
+    truncation = { priority = 1 },
   },
 
   unique_prefix = {
@@ -61,7 +88,7 @@ local components = {
       style = 'italic',
     },
     truncation = {
-      priority = 7,
+      priority = 3,
       direction = 'left',
     },
   },
@@ -71,6 +98,12 @@ local components = {
       return buffer.filename
     end,
     hl = {
+      fg = function(buffer)
+        return
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+          or nil
+      end,
       style = function(buffer)
         return
           ((buffer.is_focused and buffer.diagnostics.errors ~= 0)
@@ -81,7 +114,7 @@ local components = {
       end
     },
     truncation = {
-      priority = 6,
+      priority = 2,
       direction = 'left',
     },
   },
@@ -101,7 +134,7 @@ local components = {
           or nil
       end,
     },
-    truncation = { priority = 2 },
+    truncation = { priority = 1 },
   },
 
   close_or_unsaved = {
@@ -114,8 +147,33 @@ local components = {
       end
     },
     delete_buffer_on_left_click = true,
-    truncation = { priority = 5 },
+    truncation = { priority = 1 },
   },
+}
+
+local get_remaining_space = function(buffer)
+  local used_space = 0
+  for _, component in pairs(components) do
+    used_space = used_space + vim.fn.strwidth(
+      (type(component.text) == 'string' and component.text)
+      or (type(component.text) == 'function' and component.text(buffer))
+    )
+  end
+  return math.max(0, min_buffer_width - used_space)
+end
+
+local left_padding = {
+  text = function(buffer)
+    local remaining_space = get_remaining_space(buffer)
+    return str_rep(' ', remaining_space / 2 + remaining_space % 2)
+  end,
+}
+
+local right_padding = {
+  text = function(buffer)
+    local remaining_space = get_remaining_space(buffer)
+    return str_rep(' ', remaining_space / 2)
+  end,
 }
 
 require('cokeline').setup({
@@ -124,11 +182,12 @@ require('cokeline').setup({
   buffers = {
     -- filter_valid = function(buffer) return buffer.type ~= 'terminal' end,
     -- filter_visible = function(buffer) return buffer.type ~= 'terminal' end,
+    focus_on_delete = 'next',
     new_buffers_position = 'next',
   },
 
   rendering = {
-    max_buffer_width = 30,
+    max_buffer_width = 23,
     left_sidebar = {
       filetype = 'NvimTree',
       components = {
@@ -156,17 +215,17 @@ require('cokeline').setup({
   },
 
   components = {
-    components.space,
     components.separator,
-    components.space,
-    components.devicon,
-    components.space,
+    components.left_half_circle,
+    left_padding,
+    components.devicon_or_pick_letter,
     components.index,
     components.unique_prefix,
     components.filename,
-    components.diagnostics,
-    components.two_spaces,
-    components.close_or_unsaved,
+    -- components.diagnostics,
     components.space,
+    right_padding,
+    components.close_or_unsaved,
+    components.right_half_circle,
   },
 })

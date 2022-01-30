@@ -1,8 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> { };
-
   colorscheme = "tokyonight";
   background = "monochromatic.png";
   palette = import ../../palettes/${colorscheme}.nix;
@@ -12,7 +10,7 @@ let
     configs = ../../configs;
   };
 
-  background-image = (dirs.colorscheme + "/backgrounds/${background}");
+  background-image = ../../.github/images/blade/markdown-preview.png;
 
   configs.grub = import (dirs.configs + /grub) {
     inherit colorscheme palette background-image;
@@ -156,7 +154,7 @@ in
 
   services.couchdb = {
     enable = true;
-    package = unstable.couchdb3;
+    package = pkgs.couchdb3;
     user = "couchdb";
     group = "couchdb";
     databaseDir = "/home/couchdb/couchdb";

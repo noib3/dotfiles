@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> { };
   machine = "mbair";
 
   colorscheme = "onedark";
@@ -20,7 +19,7 @@ let
 
   configs.alacritty = import (dirs.configs + /alacritty) {
     shell = {
-      program = "${unstable.fish}/bin/fish";
+      program = "${pkgs.fish}/bin/fish";
       args = [ "--interactive" ];
     };
     font = import (dirs.font + /alacritty.nix) {
@@ -140,7 +139,7 @@ in
       # tastyworks
       # tccutil
       terminal-notifier
-      unstable.texlive.combined.scheme-full
+      texlive.combined.scheme-full
       transmission-remote-cli
       vimv
       wget
@@ -220,12 +219,10 @@ in
 
   programs.fish = {
     enable = true;
-    package = unstable.fish;
   } // configs.fish;
 
   programs.fzf = {
     enable = true;
-    package = unstable.fzf;
   } // configs.fzf;
 
   programs.git = {

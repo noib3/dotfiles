@@ -1,11 +1,11 @@
 {
   primary = {
-    background = "#24283b";
+    background = "#1a1b26";
     foreground = "#c0caf5";
   };
 
   normal = {
-    black = "#1d202f";
+    black = "#15161e";
     red = "#f7768e";
     green = "#9ece6a";
     yellow = "#e0af68";

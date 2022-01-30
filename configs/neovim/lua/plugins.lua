@@ -30,6 +30,13 @@ local spec = function()
   -- Delete a buffer without closing its window.
   use({'famiu/bufdelete.nvim'})
 
+  -- use({
+  --   'akinsho/bufferline.nvim',
+  --   config = function()
+  --     require('bufferline').setup({ })
+  --   end
+  -- })
+
   -- Best autocompletion framework I could find, and it's far from perfect.
   -- Sometimes it needs to be started manually w/ `COQnow`.
   use({
@@ -113,6 +120,9 @@ local spec = function()
 
   -- Colorscheme.
   use({'morhetz/gruvbox'})
+
+  -- Colorscheme
+  use({'rebelot/kanagawa.nvim'})
 
   -- Preview rendered markdown files in the browser.
   use({

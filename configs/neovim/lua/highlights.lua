@@ -43,7 +43,7 @@ local highlights = {
     {
       name = 'TabLineFill',
       clear = true,
-      link = 'ColorColumn',
+      guibg = 'NONE',
     },
 
     -- Variable references reported by the LSP.
@@ -243,6 +243,24 @@ local highlights = {
     {
       name = 'Comment',
       guifg = '#5a5a5a',
+    },
+    {
+      name = 'ColorColumn',
+      guibg = '#252526',
+    },
+
+    -- Status line for current and non current windows.
+    {
+      name = 'StatusLine',
+      gui = 'NONE',
+      guifg = { 'Normal', 'fg' },
+      guibg = { 'ColorColumn', 'bg' },
+    },
+    {
+      name = 'StatusLineNC',
+      gui = 'NONE',
+      guifg = { 'Comment', 'fg' },
+      guibg = { 'ColorColumn', 'bg' },
     },
   },
 }

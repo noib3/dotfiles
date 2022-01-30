@@ -1,11 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> { config.allowUnfree = true; };
   machine = "blade";
 
-  colorscheme = "vscode";
-  font-family = "FiraCode Nerd Font";
+  colorscheme = "tokyonight";
+  font-family = "Iosevka Nerd Font";
   palette = import ../../palettes/${colorscheme}.nix;
 
   hexlib = import ../../palettes/hexlib.nix;
@@ -18,7 +17,7 @@ let
   configs.alacritty = import (dirs.configs + /alacritty) {
     inherit font-family machine palette;
     shell = {
-      program = "${unstable.fish}/bin/fish";
+      program = "${pkgs.fish}/bin/fish";
       args = [ "--interactive" ];
     };
   };
@@ -111,12 +110,12 @@ let
   };
 
   language-servers = with pkgs; {
-    lua = unstable.sumneko-lua-language-server;
-    kotlin = unstable.kotlin-language-server;
-    python = unstable.python39Packages.jedi-language-server;
-    rust = unstable.rust-analyzer;
-    swift = unstable.swift; # sourcekit-lsp is included in swift 
-    typescript = unstable.nodePackages.typescript-language-server;
+    lua = sumneko-lua-language-server;
+    # kotlin = kotlin-language-server;
+    python = python39Packages.jedi-language-server;
+    rust = rust-analyzer;
+    swift = swift; # sourcekit-lsp is included in swift 
+    typescript = nodePackages.typescript-language-server;
   };
 
   userscripts = with pkgs; {
@@ -176,22 +175,22 @@ in
     stateVersion = "21.03";
 
     packages = with pkgs; [
-      unstable.androidStudioPackages.canary
+      androidStudioPackages.canary
 
-      unstable.scrcpy
+      scrcpy
 
       peek
 
       lsof
 
-      unstable.crate2nix
-      unstable.ktlint # Kotlin linter/formatter by Pinterest
-      unstable.nodePackages.typescript # Used by typescript-language-server
+      crate2nix
+      ktlint # Kotlin linter/formatter by Pinterest
+      nodePackages.typescript # Used by typescript-language-server
       xtitle
       brave
 
-      unstable.nodejs
-      unstable.nodePackages.npm
+      nodejs
+      nodePackages.npm
 
       calibre # used to get epub image previews inside lf w/ `ebook-meta`
 
@@ -244,7 +243,7 @@ in
       pick-colour-picker
       pinentry_qt5
       poppler_utils
-      unstable.nodePackages.prettier
+      nodePackages.prettier
       proselint # used by ALE for TeX and Markdown formatting
       python39Packages.ipython
       # (python39.withPackages (
@@ -259,7 +258,7 @@ in
       scrot
       simplescreenrecorder
       speedtest-cli
-      unstable.texlive.combined.scheme-full
+      texlive.combined.scheme-full
       tokei
       transmission-remote-gtk
       tree
@@ -372,12 +371,11 @@ in
 
   programs.fish = {
     enable = true;
-    package = unstable.fish;
   } // configs.fish;
 
   programs.fzf = {
     enable = true;
-    package = unstable.fzf;
+    package = pkgs.fzf;
   } // configs.fzf;
 
   programs.git = {
@@ -402,12 +400,10 @@ in
 
   programs.qutebrowser = {
     enable = true;
-    package = unstable.qutebrowser;
   } // configs.qutebrowser;
 
   programs.starship = {
     enable = true;
-    package = unstable.starship;
   } // configs.starship;
 
   programs.vivid = {
@@ -440,7 +436,6 @@ in
 
   services.picom = {
     enable = true;
-    package = unstable.picom;
   } // configs.picom;
 
   services.polybar = {
