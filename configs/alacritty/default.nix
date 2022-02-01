@@ -1,22 +1,29 @@
-{ font-family, machine, palette, pkgs ? import <nixpkgs> { }, shell }:
+{ font-family
+, machine
+, palette
+, shell
+, optionals
+, isDarwin
+, isLinux
+}:
 
 let
-  font = import ./font.nix { family = font-family; inherit machine; };
   colors = import ./colors.nix { inherit palette; };
+  font = import ./font.nix { family = font-family; inherit machine; };
 in
 {
   settings = {
     inherit shell font colors;
 
     window = (
-      if pkgs.stdenv.isLinux then
+      if machine == "blade" then
         {
           padding = {
             x = 3;
             y = 0;
           };
         }
-      else if pkgs.stdenv.isDarwin then
+      else if machine == "mbair" then
         {
           decorations = "buttonless";
           padding = {
@@ -145,66 +152,58 @@ in
         mods = "Super";
         chars = "\\x1b\\x5b\\x32\\x30\\x7e"; # F9
       }
-    ] ++ (
-      if pkgs.stdenv.isLinux then
-        [
-          {
-            key = "C";
-            mods = "Super";
-            action = "Copy";
-          }
-          {
-            key = "V";
-            mods = "Super";
-            action = "Paste";
-          }
-
-        ]
-      else if pkgs.stdenv.isDarwin then
-        [
-          {
-            key = "LBracket";
-            mods = "Alt|Shift";
-            chars = "\\x7B"; # {
-          }
-          {
-            key = "RBracket";
-            mods = "Alt|Shift";
-            chars = "\\x7D"; # }
-          }
-          {
-            key = "LBracket";
-            mods = "Alt";
-            chars = "\\x5B"; # [
-          }
-          {
-            key = "RBracket";
-            mods = "Alt";
-            chars = "\\x5D"; # ]
-          }
-          {
-            key = 23;
-            mods = "Alt";
-            chars = "\\x7E"; # ~
-          }
-          {
-            key = 41;
-            mods = "Alt";
-            chars = "\\x40"; # @
-          }
-          {
-            key = 39;
-            mods = "Alt";
-            chars = "\\x23"; # #
-          }
-          {
-            key = 10;
-            mods = "Alt";
-            chars = "\\x60"; # `
-          }
-        ]
-      else
-        [ ]
-    );
+    ] ++ optionals isLinux [
+      {
+        key = "C";
+        mods = "Super";
+        action = "Copy";
+      }
+      {
+        key = "V";
+        mods = "Super";
+        action = "Paste";
+      }
+    ] ++ optionals (machine == "mbair") [
+      {
+        key = "LBracket";
+        mods = "Alt|Shift";
+        chars = "\\x7B"; # {
+      }
+      {
+        key = "RBracket";
+        mods = "Alt|Shift";
+        chars = "\\x7D"; # }
+      }
+      {
+        key = "LBracket";
+        mods = "Alt";
+        chars = "\\x5B"; # [
+      }
+      {
+        key = "RBracket";
+        mods = "Alt";
+        chars = "\\x5D"; # ]
+      }
+      {
+        key = 23;
+        mods = "Alt";
+        chars = "\\x7E"; # ~
+      }
+      {
+        key = 41;
+        mods = "Alt";
+        chars = "\\x40"; # @
+      }
+      {
+        key = 39;
+        mods = "Alt";
+        chars = "\\x23"; # #
+      }
+      {
+        key = 10;
+        mods = "Alt";
+        chars = "\\x60"; # `
+      }
+    ];
   };
 }

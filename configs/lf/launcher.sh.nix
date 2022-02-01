@@ -1,6 +1,5 @@
-let
-  pkgs = import <nixos> { };
-in
+{ lf }:
+
 ''
   set -e
 
@@ -17,8 +16,8 @@ in
     exec 3>"$UEBERZUG_FIFO"
     trap cleanup EXIT
 
-    ${pkgs.lf}/bin/lf "$@" 3>&-
+    ${lf}/bin/lf "$@" 3>&-
   else
-    exec ${pkgs.lf}/bin/lf "$@"
+    exec ${lf}/bin/lf "$@"
   fi
 ''

@@ -154,31 +154,6 @@ local highlights = {
     },
   },
 
-  -- Highlight groups specific to the `onedark` colorscheme.
-  onedark = {
-    {
-      name = 'SpellCap',
-      gui = 'NONE',
-      guifg = rq_palette.bright.yellow,
-    },
-    {
-      name = 'LspReferenceRead',
-      guibg = rq_palette.bright.black,
-    },
-    {
-      name = 'LspReferenceText',
-      guibg = rq_palette.bright.black,
-    },
-    {
-      name = 'LspReferenceWrite',
-      guibg = rq_palette.bright.black,
-    },
-    {
-      name = 'FzfBorder',
-      guifg = rq_palette.bright.white,
-    },
-  },
-
   -- Highlight groups specific to the `tokyonight` colorscheme.
   tokyonight = {
     {

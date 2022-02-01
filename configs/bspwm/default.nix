@@ -1,7 +1,7 @@
-{ colorscheme, palette, pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
+{ pkgs, colorscheme, palette, hexlib }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
 
   mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
     (builtins.readFile ./scripts/mpv-focus-prev.sh);

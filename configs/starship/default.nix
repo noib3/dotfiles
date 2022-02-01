@@ -1,9 +1,8 @@
-let
-  lib = import <nixpkgs/lib>;
-in
+{ concatStrings }:
+
 {
   settings = {
-    format = lib.concatStrings [
+    format = concatStrings [
       "$username"
       "$hostname"
       "$shlvl"

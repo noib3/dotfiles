@@ -3,8 +3,6 @@
 let
   delta-syntax-theme = (
     if colorscheme == "gruvbox" then "gruvbox-dark"
-    else if colorscheme == "nord" then "Nord"
-    else if colorscheme == "onedark" then "TwoDark"
     else "TwoDark"
   );
 in

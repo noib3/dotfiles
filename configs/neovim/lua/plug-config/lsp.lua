@@ -1,4 +1,4 @@
-local rq_coq = require('coq')
+local coq = require('coq')
 local rq_lspconfig = require('lspconfig')
 local rq_sumneko_paths = require('plug-config/lsp-sumneko-paths')
 
@@ -21,22 +21,11 @@ local on_attach = function(client, bufnr)
     opts = { noremap = true, silent = true },
   })
 
+  vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
+
   if client.resolved_capabilities.document_highlight then
-    _G.augroup({
-      name = 'lsp_highlight_references',
-      autocmds = {
-        {
-          event = 'CursorHold',
-          pattern = '<buffer>',
-          cmd = 'lua vim.lsp.buf.document_highlight()',
-        },
-        {
-          event = 'CursorMoved',
-          pattern = '<buffer>',
-          cmd = 'lua vim.lsp.buf.clear_references()',
-        },
-      }
-    })
+    vim.cmd([[autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()]])
+    vim.cmd([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
   end
 end
 
@@ -61,21 +50,23 @@ local lsps = {
       },
     },
   },
+
   -- Kotlin
-  -- kotlin_language_server = { on_attach = on_attach },
+  kotlin_language_server = { on_attach = on_attach },
+
+  -- Nix
+  rnix = { on_attach = on_attach },
+
   -- Python
   jedi_language_server = { on_attach = on_attach },
+
   -- Rust
   rust_analyzer = { on_attach = on_attach },
-  -- Swift
-  sourcekit = { on_attach = on_attach },
-  -- Typescript
-  tsserver = { on_attach = on_attach },
 }
 
 local setup = function ()
   for lsp, settings in pairs(lsps) do
-    rq_lspconfig[lsp].setup(rq_coq.lsp_ensure_capabilities(settings))
+    rq_lspconfig[lsp].setup(coq.lsp_ensure_capabilities(settings))
   end
 end
 

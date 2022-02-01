@@ -4,8 +4,8 @@ let
   f = {
     "Inconsolata Nerd Font".size = 16;
     "Iosevka Nerd Font" = {
-      size = 15;
-      dmenu.size = 13;
+      size = 16;
+      dmenu.size = 14;
     };
     "Mononoki Nerd Font" = {
       size = 15;

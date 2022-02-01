@@ -1,5 +1,23 @@
+{ configDir, cloudDir, writeShellScriptBin, writePython3Bin }:
+
 let
-  pkgs = import <nixpkgs> { };
+  toggle-gaps = writeShellScriptBin "toggle-gaps"
+    (builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh");
+
+  dmenu-bluetooth = writePython3Bin "dmenu-bluetooth" { }
+    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-bluetooth.py");
+
+  dmenu-open = writeShellScriptBin "dmenu-open"
+    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-open.sh");
+
+  dmenu-pulseaudio = writePython3Bin "dmenu-pulseaudio" { }
+    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-pulseaudio.py");
+
+  dmenu-run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
+
+  dmenu-wifi = writePython3Bin "dmenu-wifi" { }
+    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-wifi.py");
+
 in
 {
   keybindings = {
@@ -13,27 +31,26 @@ in
     "super + a" = ''
       nvidia-offload alacritty -e calcurse \
         -C ${builtins.toString ../calcurse} \
-        -D $SYNCDIR/share/calcurse
+        -D ${cloudDir}/share/calcurse
     '';
 
     # Open the web browser 
     "alt + w" = "nvidia-offload qutebrowser";
 
     # Launch the program runner and the file opener
-    "super + o" = "dmenu-run";
-    "super + space" = "dmenu-open";
+    "super + o" = "${dmenu-run}/bin/dmenu-run";
+    "super + space" = "${dmenu-open}/bin/dmenu-open";
 
     # Open wifi, bluetooth and shutdown menus
-    "alt + shift + b" = "dmenu-bluetooth";
-    "alt + shift + w" = "dmenu-wifi";
-    "alt + shift + p" = "dmenu-powermenu";
-    "alt + shift + a" = "dmenu-pulseaudio";
+    "alt + shift + b" = "${dmenu-bluetooth}/bin/dmenu-bluetooth";
+    "alt + shift + w" = "${dmenu-wifi}/bin/dmenu-wifi";
+    "alt + shift + a" = "${dmenu-pulseaudio}/bin/dmenu-pulseaudio";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
 
     # Toggle window gaps, borders and paddings
-    "alt + s" = "toggle-gaps";
+    "alt + s" = "${toggle-gaps}/bin/toggle-gaps";
 
     # Toggle float
     "alt + shift + f" = "bspc node -t ~floating";
@@ -72,10 +89,11 @@ in
 
     # Control audio volume
     "XF86Audio{LowerVolume,RaiseVolume,Mute}" =
-      "dmenu-pulseaudio --volume {lower,raise,toggle}";
+      "${dmenu-pulseaudio}/bin/dmenu-pulseaudio --volume {lower,raise,toggle}";
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
-    "super + shift + {3,4}" = "flameshot {full, gui} -p ~/Dropbox/screenshots";
+    "super + shift + {3,4}" =
+      "flameshot {full, gui} -p ${cloudDir}/screenshots";
   };
 }

@@ -89,7 +89,7 @@ local components = {
     },
     truncation = {
       priority = 3,
-      direction = 'left',
+      direction = 'right',
     },
   },
 
@@ -119,23 +119,23 @@ local components = {
     },
   },
 
-  diagnostics = {
-    text = function(buffer)
-      return
-        (buffer.diagnostics.errors ~= 0 and '  ' .. buffer.diagnostics.errors)
-        or (buffer.diagnostics.warnings ~= 0 and '  ' .. buffer.diagnostics.warnings)
-        or ''
-    end,
-    hl = {
-      fg = function(buffer)
-        return
-          (buffer.diagnostics.errors ~= 0 and errors_fg)
-          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
-          or nil
-      end,
-    },
-    truncation = { priority = 1 },
-  },
+  -- diagnostics = {
+  --   text = function(buffer)
+  --     return
+  --       (buffer.diagnostics.errors ~= 0 and '  ' .. buffer.diagnostics.errors)
+  --       or (buffer.diagnostics.warnings ~= 0 and '  ' .. buffer.diagnostics.warnings)
+  --       or ''
+  --   end,
+  --   hl = {
+  --     fg = function(buffer)
+  --       return
+  --         (buffer.diagnostics.errors ~= 0 and errors_fg)
+  --         or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+  --         or nil
+  --     end,
+  --   },
+  --   truncation = { priority = 1 },
+  -- },
 
   close_or_unsaved = {
     text = function(buffer)
@@ -177,7 +177,7 @@ local right_padding = {
 }
 
 require('cokeline').setup({
-  show_if_buffers_are_at_least = 2,
+  -- show_if_buffers_are_at_least = 2,
 
   buffers = {
     -- filter_valid = function(buffer) return buffer.type ~= 'terminal' end,

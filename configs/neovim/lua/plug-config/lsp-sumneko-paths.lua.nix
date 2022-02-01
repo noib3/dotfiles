@@ -1,9 +1,8 @@
-let
-  pkgs = import <nixpkgs> { };
-in
+{ sumneko-lua-language-server }:
+
 ''
   return {
-    bin = '${pkgs.sumneko-lua-language-server}/bin/lua-language-server',
-    main = '${pkgs.sumneko-lua-language-server}/extras/main.lua',
+    bin = '${sumneko-lua-language-server}/bin/lua-language-server',
+    main = '${sumneko-lua-language-server}/extras/main.lua',
   }
 ''

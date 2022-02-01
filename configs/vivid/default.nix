@@ -1,9 +1,9 @@
-{ lib ? import <nixpkgs/lib>, palette }:
+{ palette, removePrefix }:
 
 let
-  colors = with lib;
+  colors = 
     builtins.mapAttrs
-      (name: hex: lib.strings.removePrefix "#" hex)
+      (name: hex: removePrefix "#" hex)
       (import ./colors.nix { inherit palette; });
 in
 {

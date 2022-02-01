@@ -1,8 +1,6 @@
-{ colorscheme, palette }:
+{ hexlib, colorscheme, palette }:
 
 let
-  hexlib = import ../../palettes/hexlib.nix;
-
   c = {
     "afterglow" = {
       current-line.bg = hexlib.scale 1.5 palette.normal.black;
@@ -12,11 +10,6 @@ let
       current-line.bg = hexlib.scale 0.9 palette.bright.black;
       grayed-out-directories = hexlib.scale 1.3 palette.bright.black;
     };
-    "nord" = {
-      current-line.bg = hexlib.scale 0.9 palette.bright.black;
-      grayed-out-directories = hexlib.scale 1.3 palette.bright.black;
-    };
-    "onedark".current-line.bg = hexlib.scale 0.8 palette.bright.black;
     "tokyonight" = {
       current-line.bg = hexlib.scale 0.75 palette.bright.black;
       grayed-out-directories = "#565f89";

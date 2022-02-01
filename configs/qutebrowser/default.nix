@@ -1,7 +1,7 @@
-{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
+{ pkgs, colorscheme, font-family, palette, hexlib }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
   font = import ./font.nix { family = font-family; };
 
   add-torrent = pkgs.writeShellScriptBin "add-torrent"
@@ -15,7 +15,7 @@ let
     }
     (builtins.readFile ./scripts/fill-bitwarden.py);
 
-  home-page = "https://google.com";
+  homePage = "https://google.com";
 in
 {
   searchEngines = {
@@ -173,8 +173,8 @@ in
     };
 
     url = {
-      default_page = home-page;
-      start_pages = [ home-page ];
+      default_page = homePage;
+      start_pages = [ homePage ];
     };
 
     zoom.default = "130%";
@@ -217,8 +217,8 @@ in
       ",f" = "spawn --userscript ${fill-bitwarden}/bin/fill-bitwarden";
       ",t" = "hint links userscript ${add-torrent}/bin/add-torrent";
 
-      "gh" = "open ${home-page}";
-      "th" = "open -t ${home-page}";
+      "gh" = "open ${homePage}";
+      "th" = "open -t ${homePage}";
 
       "gma" = "open https://mail.protonmail.com/inbox";
       "tma" = "open -t https://mail.protonmail.com/inbox";

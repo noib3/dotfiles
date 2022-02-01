@@ -201,9 +201,6 @@ local spec = function()
   -- Set the `commentstring` option based on the current cursor location.
   use({'JoosepAlviste/nvim-ts-context-commentstring'})
 
-  -- Colorscheme.
-  use({'joshdick/onedark.vim'})
-
   -- Plugin manager.
   use({
     'wbthomason/packer.nvim',

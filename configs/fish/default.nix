@@ -1,9 +1,9 @@
-{ colorscheme, palette, pkgs ? import <nixpkgs> { } }:
+{ pkgs, colorscheme, palette, cloudDir, removePrefix }:
 
 let
   colors =
     builtins.mapAttrs
-      (name: hex: pkgs.lib.strings.removePrefix "#" hex)
+      (name: hex: removePrefix "#" hex)
       (import ./colors.nix { inherit colorscheme palette; });
 in
 {
@@ -12,35 +12,25 @@ in
     grep = "rg";
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
-    wget = "wget --hsts-file=~/.cache/wget/wget-hsts";
-  } // (
-    if pkgs.stdenv.isLinux then
-      {
-        reboot = "sudo shutdown -r now";
-        shutdown = "sudo shutdown now";
-        xclip = "xclip -selection c";
-      }
-    else if pkgs.stdenv.isDarwin then
-      {
-        reboot = ''osascript -e "tell app \"System Events\" to restart"'';
-        shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
-      }
-    else { }
-  );
+    wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
+  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+    reboot = ''osascript -e "tell app \"System Events\" to restart"'';
+    shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
+  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+    reboot = "sudo shutdown -r now";
+    shutdown = "sudo shutdown now";
+    xclip = "xclip -selection c";
+  };
 
   shellAbbrs = {
     hmn = "home-manager news";
-    hms = "home-manager switch";
+    hms = "home-manager switch --flake ${cloudDir}/dotfiles";
     ipy = "ipython";
     lg = "lazygit";
     t = "tdtd";
-  } // (
-    if pkgs.stdenv.isLinux then
-      {
-        nrs = "sudo nixos-rebuild switch";
-      }
-    else { }
-  );
+  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+    nrs = "sudo nixos-rebuild switch --flake ${cloudDir}/dotfiles";
+  };
 
   interactiveShellInit = ''
     set fish_greeting ""
@@ -97,14 +87,10 @@ in
     direnv hook fish | source
 
     ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
-  '' + (
-    if pkgs.stdenv.isDarwin then
-      ''
-        bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
-          || true
-      ''
-    else ""
-  );
+  '' + pkgs.lib.strings.optionalString pkgs.stdenv.isDarwin ''
+    bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
+      || true
+  '';
 
   plugins = [
     {
@@ -116,21 +102,17 @@ in
         sha256 = "073wb83qcn0hfkywjcly64k6pf0d7z5nxxwls5sa80jdwchvd2rs";
       };
     }
-  ] ++ (
-    if pkgs.stdenv.isDarwin then
-      [
-        {
-          name = "bass";
-          src = pkgs.fetchFromGitHub {
-            owner = "edc";
-            repo = "bass";
-            rev = "2fd3d2157d5271ca3575b13daec975ca4c10577a";
-            sha256 = "0mb01y1d0g8ilsr5m8a71j6xmqlyhf8w4xjf00wkk8k41cz3ypky";
-          };
-        }
-      ]
-    else [ ]
-  );
+  ] ++ pkgs.lib.lists.optionals pkgs.stdenv.isDarwin [
+    {
+      name = "bass";
+      src = pkgs.fetchFromGitHub {
+        owner = "edc";
+        repo = "bass";
+        rev = "2fd3d2157d5271ca3575b13daec975ca4c10577a";
+        sha256 = "0mb01y1d0g8ilsr5m8a71j6xmqlyhf8w4xjf00wkk8k41cz3ypky";
+      };
+    }
+  ];
 
   functions = {
     fuzzy-cd = builtins.readFile ./functions/fuzzy-cd.fish;

@@ -14,7 +14,7 @@ let
     };
 
     "Iosevka Nerd Font" = {
-      "blade".size = 10;
+      "blade".size = 11;
       "mbair".size = 19;
     };
 

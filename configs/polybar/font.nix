@@ -66,7 +66,7 @@ in
       padding-top = f.${family}.icons.default.padding-top or 4;
     };
     videos = default // {
-      size = f.${family}.icons.videos.padding-top or 18;
+      size = f.${family}.icons.videos.size or 18;
       padding-top =
         f.${family}.icons.videos.padding-top
           or default.padding-top;

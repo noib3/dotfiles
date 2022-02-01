@@ -1,23 +1,15 @@
+{ username
+, homeDirectory
+, machine
+, colorscheme
+, palette
+, configDir
+, hexlib
+}:
+
 { config, lib, pkgs, ... }:
 
 let
-  colorscheme = "tokyonight";
-  background = "monochromatic.png";
-  palette = import ../../palettes/${colorscheme}.nix;
-
-  dirs = {
-    colorscheme = ../../palettes + "/${colorscheme}";
-    configs = ../../configs;
-  };
-
-  background-image = ../../.github/images/blade/markdown-preview.png;
-
-  configs.grub = import (dirs.configs + /grub) {
-    inherit colorscheme palette background-image;
-  };
-
-  configs.transmission = import (dirs.configs + /transmission);
-
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1
     export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
@@ -39,13 +31,15 @@ in
     '';
   };
 
+  nixpkgs.config.allowUnfree = true;
+
   console.keyMap = "us";
   i18n.defaultLocale = "en_US.UTF-8";
   time.timeZone = "Europe/Rome";
 
   users = {
-    users."noib3" = {
-      home = "/home/noib3";
+    users."${username}" = {
+      home = homeDirectory;
       shell = pkgs.fish;
       isNormalUser = true;
       extraGroups = [
@@ -65,19 +59,7 @@ in
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
-    (pkgs.buildFHSUserEnv {
-      name = "cppfhs";
-      runScript = "bash";
-      targetPkgs = pkgs: with pkgs; [
-        clang_8
-        gdb
-        llvm_8
-        valgrind
-      ];
-    })
     nvidia-offload
     vim
   ];
@@ -100,18 +82,17 @@ in
       useOSProber = true;
       gfxmodeEfi = "1920x1080";
       gfxmodeBios = "1920x1080";
-      splashImage = background-image;
-      theme = configs.grub;
+      # TODO: create derivation for the background image and pass it to theme
+      # splashImage = background-image;
+      theme = import "${configDir}/grub" {
+        inherit pkgs colorscheme palette hexlib;
+      };
     };
 
     loader.efi.canTouchEfiVariables = true;
   };
 
   hardware.bluetooth = {
-    enable = true;
-  };
-
-  hardware.openrazer = {
     enable = true;
   };
 
@@ -171,7 +152,7 @@ in
 
   services.transmission = {
     enable = true;
-  } // configs.transmission;
+  } // (import "${configDir}/transmission");
 
   services.udisks2 = {
     enable = true;
@@ -204,7 +185,7 @@ in
     displayManager = {
       autoLogin = {
         enable = true;
-        user = "noib3";
+        user = username;
       };
     };
 

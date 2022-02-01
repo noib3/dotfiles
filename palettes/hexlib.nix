@@ -1,6 +1,5 @@
-let
-  lib = import <nixpkgs/lib>;
-in
+{ lib }:
+
 with lib; rec {
   # Returns the list obtained by splitting the input string every two
   # characters.

@@ -1,7 +1,7 @@
-{ colorscheme, palette, background-image, pkgs ? import <nixpkgs> { } }:
+{ pkgs, colorscheme, palette, hexlib }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
 
   theme-file = pkgs.writeTextFile {
     name = "theme.txt";
@@ -16,12 +16,18 @@ pkgs.stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out
     cp ${theme-file} $out/theme.txt
-    cp ${background-image} $out/background.png
     cp -r ${./icons} $out/icons
     cp ${./fixedsys-regular-32.pf2} $out/fixedsys-regular-32.pf2
+
+    ${pkgs.graphicsmagick-imagemagick-compat}/bin/convert \
+      -size 1920x1080 \
+      xc:${colors.bg} \
+      PNG32:$out/background.png
+
     ${pkgs.graphicsmagick-imagemagick-compat}/bin/convert \
       -size 1x1 \
       xc:${colors.boot-entry.selected.bg} \
       PNG32:$out/selected-entry-bg-c.png
   '';
+  # cp ${background-image} $out/background.png
 }

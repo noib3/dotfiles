@@ -1,19 +1,24 @@
-{ colorscheme, lib ? import <nixpkgs/lib>, palette }:
+{
+  colorscheme,
+  palette,
+  hexlib,
+  concatStringsSep,
+  removePrefix,
+}:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
-  hexlib = import ../../palettes/hexlib.nix;
+  colors = import ./colors.nix { inherit hexlib colorscheme palette; };
 
   # Converts a color from hexadecimal to the format used in ANSI escape
   # sequences.
   #
   # Example:
   #   toANSIFormat "#61afef" => "1;38;2;97;175;239"
-  toANSIFormat = with lib; color:
+  toANSIFormat = color:
     "1;38;2;" + (
       concatStringsSep ";" (
         builtins.map (x: builtins.toString (hexlib.toDec x)) (
-          hexlib.splitEveryTwo (strings.removePrefix "#" color)
+          hexlib.splitEveryTwo (removePrefix "#" color)
         )
       )
     );
@@ -23,7 +28,7 @@ let
 in
 {
   defaultCommand = ''
-    fd --base-directory=$HOME --hidden --type=f --color=always \
+    fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=f --color=always \
       | sort -r \
       | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g'
   '';
@@ -47,7 +52,7 @@ in
   ];
 
   changeDirWidgetCommand = ''
-    fd --base-directory=$HOME --hidden --type=d --color=always \
+    fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=d --color=always \
       | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g' \
       | sed 's/\(.*\)\x1b\[${col-grayed-out-dirs}m/\1\x1b\[${col-dirs}m/'
   '';

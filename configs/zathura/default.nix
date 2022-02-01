@@ -1,7 +1,7 @@
-{ colorscheme, font-family, palette }:
+{ colorscheme, font-family, palette, hexlib }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
   font = import ./font.nix { family = font-family; };
 in
 {

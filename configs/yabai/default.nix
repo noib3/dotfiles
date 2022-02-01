@@ -1,13 +1,13 @@
-{ colorscheme, palette, lib ? import <nixpkgs/lib> }:
+{ colorscheme, palette, hexlib, removePrefix }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
 
   # Converts a color from hexadecimal to the format required by Yabai.
   #
   # Example:
   #   toYabaiFormat "#abb2bf" => "0xffabb2bf"
-  toYabaiFormat = color: "0xff" + lib.strings.removePrefix "#" color;
+  toYabaiFormat = color: "0xff" + removePrefix "#" color;
 in
 {
   config = {

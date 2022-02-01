@@ -1,4 +1,4 @@
-{ colorscheme, palette }:
+{ colorscheme, palette, hexlib }:
 
 let
   c = {
@@ -8,6 +8,7 @@ let
   };
 in
 rec {
+  bg = hexlib.scale 0.75 palette.primary.background;
   boot-entry = {
     fg = palette.normal.white;
     selected.bg =

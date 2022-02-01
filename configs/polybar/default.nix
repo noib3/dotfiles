@@ -1,7 +1,7 @@
-{ colorscheme, font-family, palette, lib ? import <nixpkgs/lib> }:
+{ colorscheme, font-family, palette, hexlib, concatStringsSep }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
   font = import ./font.nix { family = font-family; };
 
   T1 = font.text;
@@ -37,13 +37,13 @@ in
       foreground = colors.bar.fg;
       background = colors.bar.bg;
 
-      modules.left = lib.concatStringsSep " " [
+      modules.left = concatStringsSep " " [
         "workspaces"
         "window"
       ];
 
-      modules.right = lib.concatStringsSep " " [
-        "bluetooth"
+      modules.right = concatStringsSep " " [
+        # "bluetooth"
         "wifi"
         "ethernet"
         "battery"

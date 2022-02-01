@@ -1,8 +1,6 @@
-{ colorscheme, palette }:
+{ colorscheme, palette, hexlib }:
 
 let
-  hexlib = import ../../palettes/hexlib.nix;
-
   c = {
     "afterglow" = {
       tabs = {
@@ -37,16 +35,6 @@ let
         focused.bg = hexlib.scale 1.3 palette.bright.white;
       };
       statusbar.fg = hexlib.scale 1.3 palette.bright.white;
-    };
-    "nord" = {
-      statusbar.private.bg = hexlib.scale 0.65 palette.normal.magenta;
-    };
-    "onedark" = {
-      tabs.indicator.error = palette.bright.red;
-      hints.fg = palette.normal.white;
-      hints.match.fg = palette.normal.yellow;
-      statusbar.private.bg = hexlib.scale 0.4 palette.normal.magenta;
-      messages.error.bg = palette.bright.red;
     };
     "tokyonight" = {
       tabs.unfocused.fg = palette.bright.white;

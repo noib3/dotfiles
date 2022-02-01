@@ -1,4 +1,4 @@
-{ colorscheme, font-family, palette, lib ? import <nixpkgs/lib> }:
+{ colorscheme, font-family, palette, removePrefix }:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette; };
@@ -8,7 +8,7 @@ let
   #
   # Example:
   #   toSpacebarFormat "#abb2bf" => "0xffabb2bf"
-  toSpacebarFormat = color: "0xff" + lib.strings.removePrefix "#" color;
+  toSpacebarFormat = color: "0xff" + (removePrefix "#" color);
 in
 {
   config = rec {

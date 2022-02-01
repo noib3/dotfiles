@@ -1,12 +1,12 @@
-{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
+{ colorscheme, font-family, palette, hexlib, hicolor-icon-theme }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
   font = import ./font.nix { family = font-family; };
 in
 {
   iconTheme = {
-    package = pkgs.hicolor-icon-theme;
+    package = hicolor-icon-theme;
     name = "hicolor";
     size = "scalable";
   };

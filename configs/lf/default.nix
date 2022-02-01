@@ -1,6 +1,6 @@
-let
-  pkgs = import <nixpkgs> { };
+{ pkgs }:
 
+let
   cleaner = pkgs.writeShellScriptBin "cleaner"
     (builtins.readFile ./cleaner.sh);
 

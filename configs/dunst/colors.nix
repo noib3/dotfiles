@@ -1,7 +1,5 @@
-{ colorscheme, palette }:
+{ colorscheme, palette, hexlib }:
 let
-  hexlib = import ../../palettes/hexlib.nix;
-
   c = {
     "afterglow".border = hexlib.scale 0.95 palette.normal.white;
     "gruvbox" = {

@@ -7,6 +7,7 @@ __email__ = 'riccardo.mazzarini@pm.me'
 
 
 class Network:
+
     def __init__(self, line: str):
         fields = line.split(':')
         self.ssid = fields[0]
@@ -169,6 +170,7 @@ class Network:
 
 
 class Wifi:
+
     def __get_status(self) -> str:
         return subprocess.run(
             ['nmcli', '--color', 'no', 'radio', 'wifi'],

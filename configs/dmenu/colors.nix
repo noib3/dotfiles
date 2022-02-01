@@ -9,9 +9,6 @@ let
       highlight.fg = hexlib.scale 0.9 palette.normal.blue;
       selected.bg = hexlib.scale 1.25 palette.normal.black;
     };
-    "onedark" = {
-      highlight.fg = hexlib.scale 0.9 palette.normal.blue;
-    };
   };
 in
 rec {
