@@ -29,7 +29,7 @@ in
     lg = "lazygit";
     t = "tdtd";
   } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-    nrs = "sudo nixos-rebuild switch --flake ${cloudDir}/dotfiles";
+    nrs = "sudo nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure";
   };
 
   interactiveShellInit = ''

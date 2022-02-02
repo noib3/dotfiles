@@ -3,6 +3,7 @@
 , palette
 , shell
 , optionals
+, optionalAttrs
 , isDarwin
 , isLinux
 }:
@@ -15,24 +16,19 @@ in
   settings = {
     inherit shell font colors;
 
-    window = (
-      if machine == "blade" then
-        {
-          padding = {
-            x = 3;
-            y = 0;
-          };
-        }
-      else if machine == "mbair" then
-        {
-          decorations = "buttonless";
-          padding = {
-            x = 14;
-            y = 6;
-          };
-        }
-      else { }
-    );
+    window = optionalAttrs (machine == "blade")
+      {
+        padding = {
+          x = 3;
+          y = 0;
+        };
+      } // optionalAttrs (machine == "mbair")
+      {
+        padding = {
+          x = 14;
+          y = 6;
+        };
+      };
 
     cursor.style = "Beam";
 

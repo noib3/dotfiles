@@ -1,15 +1,15 @@
-{ machine
+{ pkgs
+, lib
+, config
+, machine
 , colorscheme
-, palette
 , font-family
+, palette
 , configDir
 , cloudDir
-, overlays
-, modules
 , hexlib
+, ...
 }:
-
-{ pkgs, lib, config, ... }:
 
 let
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
@@ -26,12 +26,7 @@ let
     (builtins.readFile "${configDir}/ripgrep/rg-previewer.sh");
 in
 {
-  imports = modules;
-
-  nixpkgs = {
-    config.allowUnfree = true;
-    overlays = overlays;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   home.packages = with pkgs; [
     brave
@@ -61,6 +56,7 @@ in
         "RobotoMono"
       ];
     })
+    peek
     pfetch
     previewer
     (python310.withPackages (pp: with pp; [
@@ -80,13 +76,16 @@ in
     tokei
     unzip
     vimv
+    yarn # Used by markdown-preview.nvim
     zip
   ] ++ lib.lists.optionals pkgs.stdenv.isDarwin [
     findutils
     gnused
   ] ++ lib.lists.optionals pkgs.stdenv.isLinux [
     calcurse
-    dmenu
+    (import "${configDir}/dmenu" {
+      inherit pkgs colorscheme font-family palette hexlib;
+    })
     feh
     flameshot
     lf_w_image_previews
@@ -185,6 +184,7 @@ in
   } // (import "${configDir}/alacritty" {
     inherit font-family machine palette;
     inherit (lib.lists) optionals;
+    inherit (lib.attrsets) optionalAttrs;
     inherit (pkgs.stdenv) isDarwin isLinux;
     shell = {
       program = "${pkgs.fish}/bin/fish";

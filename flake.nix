@@ -8,17 +8,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    peek.url = "path:/home/noib3/Dropbox/projects/peek";
     tdtd.url = "path:/home/noib3/Dropbox/projects/tdtd";
   };
 
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
+      # TODO: what system to use here? I just want to access pkgs.stdenv :(
       homeDirectory = with nixpkgs.legacyPackages.x86_64-linux.stdenv;
-        if isLinux then
-          "/home/${username}"
-        else if isDarwin then
+        if isDarwin then
           "/Users/${username}"
+        else if isLinux then
+          "/home/${username}"
         else "";
 
       configDir = ./configs;
@@ -30,34 +32,21 @@
       palette = import (./palettes + "/${colorscheme}.nix");
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
 
-      overlays = [
-        neovim-nightly-overlay.overlay
-        tdtd.overlay
-      ];
-
-      modules = [
-        ./modules/programs/skhd.nix
-        ./modules/programs/spacebar.nix
-        ./modules/programs/vivid.nix
-        ./modules/programs/yabai.nix
-      ];
-
       mkSystemConfiguration = args: nixpkgs.lib.nixosSystem {
         inherit (args) system;
+        specialArgs = {
+          inherit (args) machine;
+          inherit
+            username
+            homeDirectory
+            colorscheme
+            palette
+            configDir
+            hexlib
+            ;
+        };
         modules = [
-          # TODO: make this relative import work.
-          # (import ./configuration.nix {
-          (import "${cloudDir}/dotfiles/configuration.nix" {
-            inherit (args) machine;
-            inherit
-              username
-              homeDirectory
-              colorscheme
-              palette
-              configDir
-              hexlib
-              ;
-          })
+          ./configuration.nix
         ];
       };
 
@@ -65,7 +54,21 @@
         inherit username homeDirectory;
         inherit (args) system;
         stateVersion = "22.05";
-        configuration = import ./home.nix {
+        pkgs = import nixpkgs {
+          inherit (args) system;
+          overlays = [
+            neovim-nightly-overlay.overlay
+            tdtd.overlay
+            peek.overlay
+          ];
+        };
+        extraModules = [
+          ./modules/programs/skhd.nix
+          ./modules/programs/spacebar.nix
+          ./modules/programs/vivid.nix
+          ./modules/programs/yabai.nix
+        ];
+        extraSpecialArgs = {
           inherit (args) machine;
           inherit
             colorscheme
@@ -74,10 +77,9 @@
             configDir
             cloudDir
             hexlib
-            overlays
-            modules
             ;
         };
+        configuration = import ./home.nix;
       };
     in
     {

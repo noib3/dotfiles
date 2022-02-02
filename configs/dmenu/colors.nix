@@ -1,8 +1,6 @@
-{ colorscheme, palette }:
+{ colorscheme, palette, hexlib }:
 
 let
-  hexlib = import ../../palettes/hexlib.nix;
-
   c = {
     "afterglow" = {
       prompt.fg = palette.normal.magenta;

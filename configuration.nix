@@ -1,13 +1,15 @@
-{ username
+{ pkgs
+, lib
+, config
+, username
 , homeDirectory
 , machine
 , colorscheme
 , palette
 , configDir
 , hexlib
+, ...
 }:
-
-{ config, lib, pkgs, ... }:
 
 let
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
