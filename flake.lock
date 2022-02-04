@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "crate2nix": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1643636139,
-        "narHash": "sha256-d+SsMV/ysXNu5mE1qIywpQdgleEKOdsK6L4h58AoFdc=",
-        "owner": "kolloch",
-        "repo": "crate2nix",
-        "rev": "7178e530f7d617ac0b61a6e53c7f3b28710fb6cf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kolloch",
-        "repo": "crate2nix",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -62,21 +46,6 @@
         "type": "github"
       }
     },
-    "flake-utils_3": {
-      "locked": {
-        "lastModified": 1642700792,
-        "narHash": "sha256-XqHrk7hFb+zBvRg6Ghl+AZDq03ov6OshJLiSWOoX5es=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "846b2ae0fc4cc943637d3d1def4454213e203cba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -95,6 +64,24 @@
         "owner": "nix-community",
         "ref": "master",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "naersk": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1639947939,
+        "narHash": "sha256-pGsM8haJadVP80GFq4xhnSpNitYNQpaXk4cnA796Cso=",
+        "owner": "nix-community",
+        "repo": "naersk",
+        "rev": "2fc8ce9d3c025d59fee349c1f80be9785049d653",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "naersk",
         "type": "github"
       }
     },
@@ -176,17 +163,16 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1643788632,
-        "narHash": "sha256-cXetzRvPyMHynNmJYAhcMm2cfV6l6Ey+dSAhSnAKdOE=",
+        "lastModified": 1643472818,
+        "narHash": "sha256-qzVPxKDUubYIxKRSuDl/JgzXWSmGvUVYny9SxFMfPJM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f85152d72d3bc4676cd4486b578afef8d9fd7f28",
+        "rev": "7f65e4abd5ecaad12d2d26e4380d1a7d8edafea7",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "type": "github"
+        "id": "nixpkgs",
+        "type": "indirect"
       }
     },
     "nixpkgs_4": {
@@ -204,38 +190,22 @@
         "type": "github"
       }
     },
-    "peek": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_3"
-      },
-      "locked": {
-        "narHash": "sha256-4cWRX49Rmd0kNPdH9U+Vs1R4ku66U9RweegieyNqSb0=",
-        "path": "/home/noib3/Dropbox/projects/peek",
-        "type": "path"
-      },
-      "original": {
-        "path": "/home/noib3/Dropbox/projects/peek",
-        "type": "path"
-      }
-    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_2",
-        "peek": "peek",
         "tdtd": "tdtd"
       }
     },
     "tdtd": {
       "inputs": {
-        "crate2nix": "crate2nix",
-        "flake-utils": "flake-utils_3",
+        "flake-utils": "flake-utils_2",
+        "naersk": "naersk",
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "narHash": "sha256-31vkfkT5AwTY60d0a8CGR0HWA/9kvHFmJOMwaTadh34=",
+        "narHash": "sha256-/wwAuxkbxCBjHRrdDjrovwAAPibXaw4HMFTuNpn1cuQ=",
         "path": "/home/noib3/Dropbox/projects/tdtd",
         "type": "path"
       },

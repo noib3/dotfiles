@@ -79,17 +79,9 @@ in
 
     loader.grub = {
       enable = true;
-      devices = [ "nodev" ];
-      efiSupport = true;
-      useOSProber = true;
-      gfxmodeEfi = "1920x1080";
-      gfxmodeBios = "1920x1080";
-      # TODO: create derivation for the background image and pass it to theme
-      # splashImage = background-image;
-      theme = import "${configDir}/grub" {
-        inherit pkgs colorscheme palette hexlib;
-      };
-    };
+    } // (import "${configDir}/grub" {
+      inherit pkgs machine colorscheme palette hexlib;
+    });
 
     loader.efi.canTouchEfiVariables = true;
   };

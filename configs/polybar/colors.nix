@@ -1,27 +1,32 @@
 { colorscheme, palette, hexlib }:
 
 let
-  c = {
+  overrides = {
     "afterglow" = {
       bag.fg = hexlib.scale 0.95 palette.normal.white;
       workspaces.empty.fg = palette.bright.white;
+    };
+    "tokyonight" = {
+      workspaces.focused.bg = hexlib.scale 0.5 palette.bright.black;
     };
   };
 in
 rec {
   bar = {
-    fg = c.${colorscheme}.bar.fg or palette.bright.white;
+    fg = overrides.${colorscheme}.bar.fg or palette.bright.white;
     bg = "#00000000";
   };
 
   power.icon = bar.fg;
 
   workspaces = rec {
-    focused.bg = palette.normal.black;
+    focused.bg =
+      overrides.${colorscheme}.workspaces.focused.bg
+        or palette.normal.black;
     focused.fg = occupied.fg;
     occupied.fg = bar.fg;
     empty.fg =
-      c.${colorscheme}.workspaces.empty.fg
+      overrides.${colorscheme}.workspaces.empty.fg
         or (hexlib.scale 0.7 palette.bright.white);
   };
 

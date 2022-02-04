@@ -56,7 +56,6 @@ in
         "RobotoMono"
       ];
     })
-    peek
     pfetch
     previewer
     (python310.withPackages (pp: with pp; [
@@ -87,7 +86,6 @@ in
       inherit pkgs colorscheme font-family palette hexlib;
     })
     feh
-    flameshot
     lf_w_image_previews
     libnotify
     pick-colour-picker
@@ -97,7 +95,6 @@ in
     xdotool
     xorg.xev
     xorg.xwininfo
-    xtitle
     (pkgs.makeDesktopItem {
       name = "qutebrowser";
       desktopName = "qutebrowser";
@@ -266,7 +263,7 @@ in
   programs.vivid = {
     enable = true;
   } // (import "${configDir}/vivid" {
-    inherit palette;
+    inherit colorscheme palette;
     inherit (lib.strings) removePrefix;
   });
 
@@ -283,12 +280,21 @@ in
     inherit colorscheme font-family palette hexlib;
   }));
 
+  services.dropbox = lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    path = cloudDir;
+  };
+
   services.dunst = lib.mkIf pkgs.stdenv.isLinux ({
     enable = true;
   } // (import "${configDir}/dunst" {
     inherit colorscheme font-family palette hexlib;
     inherit (pkgs) hicolor-icon-theme;
   }));
+
+  services.flameshot = lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+  };
 
   # services.fusuma = {
   #   enable = true;
@@ -331,6 +337,8 @@ in
   services.udiskie = lib.mkIf pkgs.stdenv.isLinux ({
     enable = true;
   } // (import "${configDir}/udiskie"));
+
+  systemd.user.startServices = true;
 
   xsession = lib.mkIf pkgs.stdenv.isLinux ({
     enable = true;

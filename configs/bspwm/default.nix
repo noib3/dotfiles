@@ -3,11 +3,22 @@
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
 
-  mpv-focus-prev = pkgs.writeShellScriptBin "mpv-focus-prev"
-    (builtins.readFile ./scripts/mpv-focus-prev.sh);
+  mpv-focus-prev = with pkgs; writeShellApplication {
+    name = "mpv-focus-prev";
+    runtimeInputs = [
+      bspwm
+      xdo
+    ];
+    text = (builtins.readFile ./scripts/mpv-focus-prev.sh);
+  };
 
-  bspwm-external-rules = pkgs.writeShellScriptBin "bspwm-external-rules"
-    (builtins.readFile ./scripts/bspwm-external-rules.sh);
+  bspwm-external-rules = with pkgs; writeShellApplication {
+    name = "bspwm-external-rules";
+    runtimeInputs = [
+      xtitle
+    ];
+    text = (builtins.readFile ./scripts/bspwm-external-rules.sh);
+  };
 in
 {
   settings = {
@@ -42,12 +53,10 @@ in
     "${pkgs.fusuma}/bin/fusuma"
     "${pkgs.unclutter-xfixes}/bin/unclutter -idle 5"
     "${pkgs.xbanish}/bin/xbanish"
-    "PATH=$PATH:${pkgs.xdo}/bin:${pkgs.bspwm}/bin ${mpv-focus-prev}/bin/mpv-focus-prev"
+    "${mpv-focus-prev}/bin/mpv-focus-prev"
   ];
 
   extraConfig = ''
-    ${pkgs.dropbox-cli}/bin/dropbox start
-
     # Turn off the screen saver (`man xset` for more infos).
     xset s off
 

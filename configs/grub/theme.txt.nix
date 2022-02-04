@@ -1,9 +1,9 @@
-{ colors }:
+{ colors, backgroundImageFilename }:
 
 ''
   # Global properties
   title-text: ""
-  desktop-image: "background.png"
+  desktop-image: "${backgroundImageFilename}"
   terminal-left: "0"
   terminal-top: "0"
   terminal-width: "100%"

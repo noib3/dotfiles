@@ -1,10 +1,10 @@
-{ palette, removePrefix }:
+{ colorscheme, palette, removePrefix }:
 
 let
-  colors = 
+  colors =
     builtins.mapAttrs
       (name: hex: removePrefix "#" hex)
-      (import ./colors.nix { inherit palette; });
+      (import ./colors.nix { inherit colorscheme palette; });
 in
 {
   filetypes = {
