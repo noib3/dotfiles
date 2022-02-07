@@ -1,13 +1,12 @@
 { palette }:
 
 {
+  inherit (palette) normal bright;
+
   primary = {
     foreground = palette.primary.foreground or palette.normal.white;
     background = palette.primary.background or palette.normal.black;
   };
-
-  normal = palette.normal;
-  bright = palette.bright;
 
   cursor = {
     text = palette.cursor.text or palette.bright.black;

@@ -12,8 +12,8 @@ let
 in
 {
   default = {
-    bg = palette.normal.black;
-    fg = palette.normal.white;
+    bg = palette.primary.background or palette.normal.black;
+    fg = palette.primary.foreground or palette.normal.white;
   };
 
   inputbar = {

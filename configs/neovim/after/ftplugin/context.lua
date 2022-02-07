@@ -6,7 +6,7 @@ vim_localopt.spelllang = { 'en_us', 'it' }
 _G.localmap({
   modes = 'n',
   lhs = '<C-t>',
-  rhs = '<Cmd>!context --purge ./%<CR>',
+  rhs = '<Cmd>!context --purge %<CR>',
   opts = { silent = true },
 })
 

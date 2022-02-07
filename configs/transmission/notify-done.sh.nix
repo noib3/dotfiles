@@ -1,6 +1,6 @@
-let
-  pkgs = import <nixpkgs> { };
+{ pkgs }:
 
+let
   notify-done =
     if pkgs.stdenv.isLinux then
       ''

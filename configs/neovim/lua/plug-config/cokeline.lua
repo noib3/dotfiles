@@ -88,14 +88,41 @@ local components = {
       style = 'italic',
     },
     truncation = {
-      priority = 3,
-      direction = 'right',
+      priority = 4,
+      direction = 'left',
     },
   },
 
-  filename = {
+  filename_root = {
     text = function(buffer)
-      return buffer.filename
+      return vim.fn.fnamemodify(buffer.filename, ':r')
+    end,
+    hl = {
+      fg = function(buffer)
+        return
+          (buffer.diagnostics.errors ~= 0 and errors_fg)
+          or (buffer.diagnostics.warnings ~= 0 and warnings_fg)
+          or nil
+      end,
+      style = function(buffer)
+        return
+          ((buffer.is_focused and buffer.diagnostics.errors ~= 0)
+            and 'bold,underline')
+          or (buffer.is_focused and 'bold')
+          or (buffer.diagnostics.errors ~= 0 and 'underline')
+          or nil
+      end
+    },
+    truncation = {
+      priority = 3,
+      direction = 'middle',
+    },
+  },
+
+  filename_extension = {
+    text = function(buffer)
+      local ext = vim.fn.fnamemodify(buffer.filename, ':e')
+      return ext ~= '' and '.' .. ext or ''
     end,
     hl = {
       fg = function(buffer)
@@ -221,7 +248,8 @@ require('cokeline').setup({
     components.devicon_or_pick_letter,
     components.index,
     components.unique_prefix,
-    components.filename,
+    components.filename_root,
+    components.filename_extension,
     -- components.diagnostics,
     components.space,
     right_padding,

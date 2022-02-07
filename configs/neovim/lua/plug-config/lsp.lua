@@ -51,9 +51,6 @@ local lsps = {
     },
   },
 
-  -- Kotlin
-  kotlin_language_server = { on_attach = on_attach },
-
   -- Nix
   rnix = { on_attach = on_attach },
 

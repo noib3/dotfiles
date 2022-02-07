@@ -12,6 +12,8 @@
 }:
 
 let
+  inherit (pkgs.stdenv) isDarwin isLinux;
+
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
     (builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh");
 
@@ -29,8 +31,10 @@ in
   nixpkgs.config.allowUnfree = true;
 
   home.packages = with pkgs; [
+    asciinema
     brave
     calibre # Used by lf to get image previews for .epub files via `ebook-meta`
+    cargo
     chafa
     delta
     fd
@@ -40,7 +44,6 @@ in
     gcc # Used by tree-sitter to compile grammars
     gotop
     jq
-    kotlin-language-server
     ktlint
     imagemagick_light # Contains `convert`
     mediainfo
@@ -67,8 +70,9 @@ in
     rg-previewer
     ripgrep
     rnix-lsp
+    rustc
+    rustfmt
     rust-analyzer
-    rustup
     sumneko-lua-language-server
     tdtd
     texlive.combined.scheme-full
@@ -77,10 +81,10 @@ in
     vimv
     yarn # Used by markdown-preview.nvim
     zip
-  ] ++ lib.lists.optionals pkgs.stdenv.isDarwin [
+  ] ++ lib.lists.optionals isDarwin [
     findutils
     gnused
-  ] ++ lib.lists.optionals pkgs.stdenv.isLinux [
+  ] ++ lib.lists.optionals isLinux [
     calcurse
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;
@@ -119,8 +123,9 @@ in
     HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
     LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
     RIPGREP_CONFIG_PATH = "${configDir}/ripgrep/ripgreprc";
+    NPM_CONFIG_PREFIX = "$HOME/.npm_global_modules";
     TDTD_DATA_DIR = "${cloudDir}/tdtd";
-    OSFONTDIR = lib.strings.optionalString pkgs.stdenv.isLinux (
+    OSFONTDIR = lib.strings.optionalString isLinux (
       config.home.homeDirectory
       + "/.nix-profile/share/fonts/truetype/NerdFonts"
     );
@@ -131,7 +136,7 @@ in
       source = "${configDir}/fd/ignore";
     };
 
-    "fusuma/config.yml" = lib.mkIf pkgs.stdenv.isLinux {
+    "fusuma/config.yml" = lib.mkIf isLinux {
       source = "${configDir}/fusuma/config.yml";
     };
 
@@ -162,7 +167,7 @@ in
     };
   };
 
-  xdg.mimeApps = lib.mkIf pkgs.stdenv.isLinux {
+  xdg.mimeApps = lib.mkIf isLinux {
     enable = true;
     defaultApplications = {
       "application/pdf" = [ "org.pwmt.zathura.desktop" ];
@@ -172,7 +177,7 @@ in
     };
   };
 
-  fonts.fontconfig = lib.mkIf pkgs.stdenv.isLinux {
+  fonts.fontconfig = lib.mkIf isLinux {
     enable = true;
   };
 
@@ -182,7 +187,7 @@ in
     inherit font-family machine palette;
     inherit (lib.lists) optionals;
     inherit (lib.attrsets) optionalAttrs;
-    inherit (pkgs.stdenv) isDarwin isLinux;
+    inherit isDarwin isLinux;
     shell = {
       program = "${pkgs.fish}/bin/fish";
       args = [ "--interactive" ];
@@ -244,12 +249,12 @@ in
     inherit pkgs colorscheme font-family palette hexlib;
   });
 
-  programs.skhd = lib.mkIf pkgs.stdenv.isDarwin
+  programs.skhd = lib.mkIf isDarwin
     {
       enable = true;
     } // (import "${configDir}/skhd");
 
-  programs.spacebar = lib.mkIf pkgs.stdenv.isDarwin ({
+  programs.spacebar = lib.mkIf isDarwin ({
     enable = true;
   } // (import "${configDir}/spacebar" {
     inherit colorscheme font-family palette;
@@ -267,32 +272,32 @@ in
     inherit (lib.strings) removePrefix;
   });
 
-  programs.yabai = lib.mkIf pkgs.stdenv.isDarwin ({
+  programs.yabai = lib.mkIf isDarwin ({
     enable = true;
   } // (import "${configDir}/yabai" {
     inherit colorscheme palette hexlib;
     inherit (lib.strings) removePrefix;
   }));
 
-  programs.zathura = lib.mkIf pkgs.stdenv.isLinux ({
+  programs.zathura = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/zathura" {
     inherit colorscheme font-family palette hexlib;
   }));
 
-  services.dropbox = lib.mkIf pkgs.stdenv.isLinux {
+  services.dropbox = lib.mkIf isLinux {
     enable = true;
     path = cloudDir;
   };
 
-  services.dunst = lib.mkIf pkgs.stdenv.isLinux ({
+  services.dunst = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/dunst" {
     inherit colorscheme font-family palette hexlib;
     inherit (pkgs) hicolor-icon-theme;
   }));
 
-  services.flameshot = lib.mkIf pkgs.stdenv.isLinux {
+  services.flameshot = lib.mkIf isLinux {
     enable = true;
   };
 
@@ -300,19 +305,19 @@ in
   #   enable = true;
   # } // (import "${configDir}/fusuma");
 
-  services.gpg-agent = lib.mkIf pkgs.stdenv.isLinux ({
+  services.gpg-agent = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/gpg/gpg-agent.nix"));
 
-  services.mpris-proxy = lib.mkIf pkgs.stdenv.isLinux {
+  services.mpris-proxy = lib.mkIf isLinux {
     enable = true;
   };
 
-  services.picom = lib.mkIf pkgs.stdenv.isLinux ({
+  services.picom = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/picom"));
 
-  services.polybar = lib.mkIf pkgs.stdenv.isLinux ({
+  services.polybar = lib.mkIf isLinux ({
     enable = true;
     package = pkgs.polybar.override {
       pulseSupport = true;
@@ -322,11 +327,11 @@ in
     inherit (lib) concatStringsSep;
   }));
 
-  services.redshift = lib.mkIf pkgs.stdenv.isLinux ({
+  services.redshift = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/redshift"));
 
-  services.sxhkd = lib.mkIf pkgs.stdenv.isLinux ({
+  services.sxhkd = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/sxhkd" {
     inherit configDir cloudDir;
@@ -334,13 +339,13 @@ in
     inherit (pkgs.writers) writePython3Bin;
   }));
 
-  services.udiskie = lib.mkIf pkgs.stdenv.isLinux ({
+  services.udiskie = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/udiskie"));
 
   systemd.user.startServices = true;
 
-  xsession = lib.mkIf pkgs.stdenv.isLinux ({
+  xsession = lib.mkIf isLinux ({
     enable = true;
 
     windowManager.bspwm = {

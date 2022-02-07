@@ -146,7 +146,9 @@ in
 
   services.transmission = {
     enable = true;
-  } // (import "${configDir}/transmission");
+  } // (import "${configDir}/transmission" {
+    inherit pkgs username homeDirectory;
+  });
 
   services.udisks2 = {
     enable = true;

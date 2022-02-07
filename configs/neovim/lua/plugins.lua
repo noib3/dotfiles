@@ -201,6 +201,16 @@ local spec = function()
   -- Set the `commentstring` option based on the current cursor location.
   use({'JoosepAlviste/nvim-ts-context-commentstring'})
 
+  -- Automatically add `end` block when writing Lua.
+  use({
+    'RRethy/nvim-treesitter-endwise',
+    config = function()
+      require('nvim-treesitter.configs').setup({
+        endwise = { enable = true },
+      })
+    end,
+  })
+
   -- Plugin manager.
   use({
     'wbthomason/packer.nvim',

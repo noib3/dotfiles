@@ -177,11 +177,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1643636025,
-        "narHash": "sha256-pGU2qvKLMJ7jUbPdcWcdE8jSujy5iBI6ZFejpVHazUw=",
+        "lastModified": 1643994120,
+        "narHash": "sha256-+24k6av7WkDCze3OwM1/PIIsmaTqDXuEH/awrflf0Ds=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "be41b14875ff8d0fbcf80c13ace036a3fa4a96c3",
+        "rev": "58b070361faf65bc35c282ca653f786d1e76d6cd",
         "type": "github"
       },
       "original": {
@@ -205,7 +205,7 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "narHash": "sha256-/wwAuxkbxCBjHRrdDjrovwAAPibXaw4HMFTuNpn1cuQ=",
+        "narHash": "sha256-+0LV7fn0AINmMgovuvVbz0kXbNtwUyb19dPPHKQP/Ok=",
         "path": "/home/noib3/Dropbox/projects/tdtd",
         "type": "path"
       },

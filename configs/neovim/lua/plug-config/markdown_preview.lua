@@ -33,16 +33,16 @@ vim.cmd([[
   endfunction
 ]])
 
-_G.localmap({
-  modes = 'n',
-  lhs = '<Leader>p',
-  rhs = '<Cmd>MarkdownPreview<CR>',
-  opts = { silent = true },
-})
+-- _G.localmap({
+--   modes = 'n',
+--   lhs = '<Leader>p',
+--   rhs = '<Cmd>MarkdownPreview<CR>',
+--   opts = { silent = true },
+-- })
 
-_G.localmap({
-  modes = 'n',
-  lhs = '<Leader>k',
-  rhs = '<Cmd>MarkdownPreviewStop<CR>',
-  opts = { silent = true },
-})
+-- _G.localmap({
+--   modes = 'n',
+--   lhs = '<Leader>k',
+--   rhs = '<Cmd>MarkdownPreviewStop<CR>',
+--   opts = { silent = true },
+-- })

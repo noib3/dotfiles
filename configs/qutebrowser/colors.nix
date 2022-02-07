@@ -39,6 +39,8 @@ let
     "tokyonight" = {
       tabs.unfocused.fg = palette.bright.white;
       tabs.focused.bg = palette.bright.white;
+      statusbar.private.bg = "#3b4261";
+      statusbar.private.fg = "#bb9af7";
     };
   };
 in
@@ -82,7 +84,7 @@ in
     bg = c.${colorscheme}.statusbar.bg or palette.bright.black;
     fg = c.${colorscheme}.statusbar.fg or palette.normal.white;
     private.bg = c.${colorscheme}.statusbar.private.bg or palette.normal.magenta;
-    private.fg = fg;
+    private.fg = c.${colorscheme}.statusbar.private.fg or fg;
   };
 
   messages = {

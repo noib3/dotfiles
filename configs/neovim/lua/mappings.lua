@@ -130,20 +130,6 @@ local mappings = {
     opts = { silent = true },
   },
 
-  -- Move the screen up or down without moving the cursor.
-  {
-    modes = 'n',
-    lhs = 'J',
-    rhs = '1<C-d>',
-    opts = { noremap = true },
-  },
-  {
-    modes = 'n',
-    lhs = 'K',
-    rhs = '1<C-u>',
-    opts = { noremap = true },
-  },
-
   -- Open a new terminal buffer in a horizontal or vertical split.
   {
     modes = 'n',

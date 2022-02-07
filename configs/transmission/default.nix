@@ -1,13 +1,13 @@
-let
-  pkgs = import <nixpkgs> { };
+{ pkgs, username, homeDirectory }:
 
+let
   notify-done = pkgs.writeShellScriptBin "notify-done"
-    (import ./notify-done.sh.nix);
+    (import ./notify-done.sh.nix { inherit pkgs; });
 in
 {
-  user = "noib3";
+  user = username;
   settings = {
-    download-dir = "/home/noib3/Downloads";
+    download-dir = "${homeDirectory}/Downloads";
     script-torrent-done-enabled = true;
     script-torrent-done-filename = "${notify-done}/bin/notify-done";
   };
