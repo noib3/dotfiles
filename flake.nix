@@ -14,7 +14,7 @@
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
-      colorscheme = "tokyonight";
+      colorscheme = "vscode";
       font-family = "Iosevka Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };

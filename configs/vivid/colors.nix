@@ -6,6 +6,10 @@ let
       orange = "#ff9e64";
       gray = "#565f89";
     };
+    vscode = {
+      orange = "#ce9178";
+      gray = "#5a5a5a";
+    };
   };
 in
 {

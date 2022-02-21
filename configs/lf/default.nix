@@ -1,11 +1,8 @@
-{ pkgs }:
+{ pkgs, previewer }:
 
 let
   cleaner = pkgs.writeShellScriptBin "cleaner"
     (builtins.readFile ./cleaner.sh);
-
-  previewer = pkgs.writeShellScriptBin "previewer"
-    (builtins.readFile ./previewer.sh);
 in
 {
   settings = {

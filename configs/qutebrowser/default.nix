@@ -220,6 +220,9 @@ in
       "gh" = "open ${homePage}";
       "th" = "open -t ${homePage}";
 
+      "gtb" = "open https://github.com/noib3";
+      "ttb" = "open -t https://github.com/noib3";
+
       "gma" = "open https://mail.protonmail.com/inbox";
       "tma" = "open -t https://mail.protonmail.com/inbox";
 
@@ -231,9 +234,6 @@ in
 
       "gbg" = "open https://rarbgunblocked.org/torrents.php";
       "tbg" = "open -t https://rarbgunblocked.org/torrents.php";
-
-      "glg" = "open https://libgen.li";
-      "tlg" = "open -t https://libgen.li";
 
       "g12ft" = "open https://12ft.io/";
       "t12ft" = "open -t https://12ft.io/";

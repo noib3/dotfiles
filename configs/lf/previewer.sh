@@ -5,7 +5,7 @@ FILE="$1"
 
 if [ -n "$FZF_PREVIEW_COLUMNS" ]; then
   # fzf previews
-  read TERMINAL_LINES TERMINAL_COLUMNS < <(</dev/tty stty size)
+  read -r _ TERMINAL_COLUMNS < <(</dev/tty stty size)
   WIDTH="$FZF_PREVIEW_COLUMNS"
   HEIGHT="$FZF_PREVIEW_LINES"
   X=$((TERMINAL_COLUMNS - FZF_PREVIEW_COLUMNS - 1))
@@ -20,7 +20,7 @@ else
 fi
 
 function hash() {
-  local hash="$(
+  hash="$(
     stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$1")" \
       | sha256sum \
       | awk '{print $1}' \
@@ -29,8 +29,9 @@ function hash() {
 }
 
 function draw() {
-  if [ -n "$UEBERZUG_FIFO" ] && ! [ -n "$FZF_PREVIEW_COLUMNS" ]; then
+  if [ -n "$UEBERZUG_FIFO" ] && [ -z "$FZF_PREVIEW_COLUMNS" ]; then
     path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+    declare cmd
     declare -A -p cmd=(\
       [action]=add \
       [identifier]=preview \

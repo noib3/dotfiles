@@ -1,5 +1,6 @@
 local has_bufdelete, _ = pcall(require, 'bufdelete')
 local has_cokeline, _ = pcall(require, 'cokeline')
+local compleet = require('compleet')
 
 local tbl_insert = table.insert
 
@@ -8,6 +9,46 @@ local vim_fn = vim.fn
 local vim_g = vim.g
 local vim_list_extend = vim.list_extend
 local vim_map = vim.keymap.set
+
+
+
+
+
+local eval_viml = vim.api.nvim_eval
+local set_keymap = vim.keymap.set
+
+---@return string
+local i_Tab = function()
+  return
+    (compleet.is_menu_visible() and '<Plug>(compleet-next-completion)')
+    or (compleet.has_completions() and '<Plug>(compleet-show-completions)')
+    or '<Tab>'
+end
+
+---@return string
+local i_STab = function()
+  return
+    (compleet.is_menu_visible() and '<Plug>(compleet-prev-completion)')
+    or (eval_viml('delimitMate#ShouldJump()') and '<Plug>delimitMateS-Tab')
+    or '<S-Tab>'
+end
+
+---@return string
+local i_CR = function()
+  return
+    compleet.is_completion_selected()
+    and '<Plug>(compleet-accept-completion)'
+     or '<Plug>delimitMateCR'
+end
+
+
+
+
+
+
+
+
+
 
 -- Either closes the window or deletes the current buffer.
 local close = function()
@@ -88,13 +129,19 @@ local mappings = {
 
   -- Make `<Tab>`, `<S-Tab>`, `<CR>` and `<Esc>` work nicely with the popup
   -- menu and delimitMate.
+  -- {
+  --   modes = 'i',
+  --   lhs = '<Tab>',
+  --   rhs =
+  --      'lua require("compleet").completion_menu_is_visible()'
+  --      .. ' ? "<Plug>(compleet-select-next-completion)"'
+  --      .. ' : "\\<Tab>"',
+  --   opts = { expr = true, noremap = true, silent = true },
+  -- },
   {
     modes = 'i',
     lhs = '<Tab>',
-    rhs =
-      'pumvisible()'
-      .. ' ? (complete_info().selected == -1 ? "\\<C-n>\\<C-y>" : "\\<C-n>")'
-      .. ' : "\\<Tab>"',
+    rhs = 'pumvisible() ? "\\<C-n>" : "\\<Tab>"',
     opts = { expr = true, noremap = true, silent = true },
   },
   {
@@ -281,12 +328,15 @@ if has_cokeline then
 end
 
 local setup = function()
+  set_keymap('i', '<Tab>', i_Tab, { expr = true })
+  set_keymap('i', '<S-Tab>', i_STab, { expr = true })
+  set_keymap('i', '<CR>', i_CR, { expr = true })
+
   vim_g.mapleader = ','
   vim_g.maplocalleader = ','
   for _, mapping in ipairs(mappings) do _G.map(mapping) end
 end
 
 return {
-  close = close,
   setup = setup,
 }

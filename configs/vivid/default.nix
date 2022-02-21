@@ -229,6 +229,7 @@ in
 
       text = {
         foreground = "yellow";
+        licenses = { };
         readme = {
           foreground = "yellow";
           font-style = "underline";

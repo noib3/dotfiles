@@ -75,6 +75,13 @@ _G.localmap = function(m)
   end
 end
 
+---@param autocmd  table
+_G.autocmd = function(autocmd)
+  vim_cmd(('autocmd %s %s %s'):format(
+    autocmd.event, autocmd.pattern, autocmd.cmd
+  ))
+end
+
 ---@param augroup  table
 _G.augroup = function(augroup)
   ---@param autocmd  table

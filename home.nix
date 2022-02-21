@@ -21,6 +21,23 @@ let
     (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
   );
 
+  # previewer = with pkgs; writeShellApplication {
+  #   name = "previewer";
+  #   runtimeInputs = [
+  #     atool # contains `als` used for archives
+  #     bat # text files
+  #     calibre # contains `ebook-meta` used for epubs
+  #     chafa # fallback if ueberzug isn't available (e.g. macOS)
+  #     ffmpegthumbnailer # videos
+  #     file
+  #     inkscape # SVGs
+  #     mediainfo # audios
+  #     mkvtoolnix-cli # videos
+  #     poppler_utils # contains `pdftoppm` used for PDFs
+  #   ];
+  #   text = (builtins.readFile "${configDir}/lf/previewer.sh");
+  # };
+
   previewer = pkgs.writeShellScriptBin "previewer"
     (builtins.readFile "${configDir}/lf/previewer.sh");
 
@@ -73,6 +90,7 @@ in
     rustc
     rustfmt
     rust-analyzer
+    stylua
     sumneko-lua-language-server
     tdtd
     texlive.combined.scheme-full
@@ -237,7 +255,9 @@ in
 
   programs.lf = {
     enable = true;
-  } // (import "${configDir}/lf" { inherit pkgs; });
+  } // (import "${configDir}/lf" {
+    inherit pkgs previewer;
+  });
 
   programs.mpv = {
     enable = true;
