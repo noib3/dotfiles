@@ -1,107 +1,107 @@
-local vim_opt = vim.opt
-
-local options = {
+local setup = function()
   -- Automatically set the current working directory to the one of the
   -- currently focused buffer.
-  autochdir = true,
+  vim.o.autochdir = true
 
   -- Yank, delete, change etc. to and from the system clipboard.
-  clipboard = 'unnamedplus',
+  vim.o.clipboard = "unnamedplus"
 
   -- Display a vertical column at 80 characters.
-  colorcolumn = '80',
+  vim.o.colorcolumn = "80"
 
   -- Do not automatically insert completion items until one is explicitly
   -- selected (no idea how this isn't the default behaviour), and show the
   -- popup menu even when there's a single completion item.
-  completeopt = 'menuone,noinsert',
+  vim.o.completeopt = "menuone,noinsert"
 
   -- Automatically expand tabs to spaces.
-  expandtab = true,
+  vim.o.expandtab = true
 
   -- Fill `foldtext` with spaces.
-  fillchars = 'fold: ',
+  vim.o.fillchars = "fold: "
 
   -- Open files will all fold levels opened.
-  foldlevelstart = 99,
+  vim.o.foldlevelstart = 99
 
   -- Enable tree-sitter based folding
-  foldmethod = 'expr',
-  foldexpr = 'nvim_treesitter#foldexpr()',
+  vim.o.foldmethod = "expr"
+  vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 
-  foldtext = 'g:FoldText()',
+  vim.o.foldtext = "g:FoldText()"
 
   -- Enable marking some characters with particular glyphs.
-  list = true,
+  vim.o.list = true
 
   -- Specify the glyphs to mark newlines, tabs and spaces with (needs `list` to
   -- be set).
-  listchars = 'eol:¬,tab:⇥ ,space:·',
+  vim.o.listchars = "eol:¬,tab:⇥ ,space:·"
 
   -- Keep a buffer in memory if it gets temporarily abandoned.
-  hidden = true,
+  vim.o.hidden = true
 
   -- Ignore upper or lower casing in search results.
-  ignorecase = true,
+  vim.o.ignorecase = true
 
   -- Enable mouse support in normal and visual mode.
-  mouse = 'nv',
+  vim.o.mouse = "nv"
 
   -- Show line numbers.
-  number = true,
+  vim.o.number = true
 
   -- Maximum height for the completion menu.
-  pumheight = 7,
+  vim.o.pumheight = 7
 
   -- Show other line numbers relative to the current one.
-  relativenumber = true,
+  vim.o.relativenumber = true
 
   -- If possible show at least this many lines before and after the current
   -- line.
-  scrolloff = 1,
+  vim.o.scrolloff = 1
 
   -- Number of spaces inserted when indenting with `<<` and `>>`.
-  shiftwidth = 2,
+  vim.o.shiftwidth = 2
 
   -- Show an arrow at the start of wrapped lines.
-  showbreak = '↪ ',
+  vim.o.showbreak = "↪ "
 
   -- Don't show the current mode in Insert, Replace or Visual mode.
-  showmode = false,
+  vim.o.showmode = false
 
   -- Only match upper case characters when the search pattern contains upper
   -- cased characters (overrides `ignorecase`).
-  smartcase = true,
+  vim.o.smartcase = true
 
   -- Add the new window to the *right* of the current one when splitting
   -- vertically.
-  splitright = true,
+  vim.o.splitright = true
 
   -- Add the new window *below* the current one when splitting horizontally.
-  splitbelow = true,
+  vim.o.splitbelow = true
 
   -- Swap files are evil.
-  swapfile = false,
+  vim.o.swapfile = false
 
   -- Number of spaces a <Tab> will expand to if `expandtab` is set.
-  tabstop = 2,
+  vim.o.tabstop = 2
 
   -- Enable 24-bit RGB colors.
-  termguicolors = true,
+  vim.o.termguicolors = true
 
   -- Automatically insert a newline after this many characters.
-  textwidth = 79,
+  vim.o.textwidth = 79
 
   -- Save undo history to a file.
-  undofile = true,
+  vim.o.undofile = true
 
   -- Wait this many milliseconds before triggering the `CursorHold` event.
-  updatetime = 1000,
-}
+  vim.o.updatetime = 1000
+
+  -- Consider underscores as `word` delimiters.
+  vim.opt.iskeyword:remove({ "_" })
+end
 
 vim.cmd([[
   function! g:FoldText()
-    " return 'ciaone'
     let l:title = getline(v:foldstart)
     let l:column = 78
     let l:nlines = v:foldend - v:foldstart + 1
@@ -124,15 +124,6 @@ vim.cmd([[
       \ printf(l:format, l:title, repeat('·', l:fill_num), l:nlines)
   endfunction
 ]])
-
-local setup = function()
-  -- Consider underscores as `word` delimiters.
-  vim_opt.iskeyword:remove({'_'})
-
-  for k, v in pairs(options) do
-    vim_opt[k] = v
-  end
-end
 
 return {
   setup = setup,

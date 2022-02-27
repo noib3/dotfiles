@@ -1,340 +1,163 @@
-local has_bufdelete, _ = pcall(require, 'bufdelete')
-local has_cokeline, _ = pcall(require, 'cokeline')
-local compleet = require('compleet')
+local has_bufdelete, _ = pcall(require, "bufdelete")
+local has_cokeline, _ = pcall(require, "cokeline")
+local has_compleet, compleet = pcall(require, "compleet")
 
-local tbl_insert = table.insert
-
-local vim_cmd = vim.cmd
-local vim_fn = vim.fn
-local vim_g = vim.g
-local vim_list_extend = vim.list_extend
-local vim_map = vim.keymap.set
-
-
-
-
-
+local keymap = vim.keymap
 local eval_viml = vim.api.nvim_eval
-local set_keymap = vim.keymap.set
 
 ---@return string
 local i_Tab = function()
-  return
-    (compleet.is_menu_visible() and '<Plug>(compleet-next-completion)')
-    or (compleet.has_completions() and '<Plug>(compleet-show-completions)')
-    or '<Tab>'
+  return (compleet.is_menu_visible() and "<Plug>(compleet-next-completion)")
+    or (compleet.has_completions() and "<Plug>(compleet-show-completions)")
+    or "<Tab>"
 end
 
 ---@return string
 local i_STab = function()
-  return
-    (compleet.is_menu_visible() and '<Plug>(compleet-prev-completion)')
-    or (eval_viml('delimitMate#ShouldJump()') and '<Plug>delimitMateS-Tab')
-    or '<S-Tab>'
+  return (compleet.is_menu_visible() and "<Plug>(compleet-prev-completion)")
+    or (eval_viml("delimitMate#ShouldJump()") and "<Plug>delimitMateS-Tab")
+    or "<S-Tab>"
+end
+
+---@return string
+local i_Right = function()
+  return compleet.is_hint_visible()
+      and "<Plug>(compleet-insert-hinted-completion)"
+    or "<Right>"
 end
 
 ---@return string
 local i_CR = function()
-  return
-    compleet.is_completion_selected()
-    and '<Plug>(compleet-accept-completion)'
-     or '<Plug>delimitMateCR'
+  return compleet.is_completion_selected()
+      and "<Plug>(compleet-insert-selected-completion)"
+    or "<Plug>delimitMateCR"
 end
-
-
-
-
-
-
-
-
-
 
 -- Either closes the window or deletes the current buffer.
 local close = function()
-  local bdelete = has_bufdelete and 'Bdelete' or 'bdelete'
+  local bdelete = has_bufdelete and "Bdelete" or "bdelete"
   local filetype, buftype = vim.bo.filetype, vim.bo.buftype
-  vim_cmd(
-    (filetype == 'startify' and 'bd')
-    or (filetype == 'help' and 'q')
-    or (buftype == 'nofile' and 'q')
-    or (buftype == 'terminal' and ('%s!'):format(bdelete))
-    or (#vim_fn.getbufinfo({buflisted = 1}) == 1 and 'q')
-    or bdelete
-  )
-end
 
--- https://github.com/neovim/neovim/pull/16591/files
-vim_map('n', '<C-w>', close, {silent=true})
-
-local mappings = {
-  -- Save the file.
-  {
-    modes = 'n',
-    lhs = '<C-s>',
-    rhs = '<Cmd>w<CR>',
-    opts = { silent = true },
-  },
-
-  -- Jump to the first non-whitespace character in the displayed line.
-  {
-    modes = {'n', 'v'},
-    lhs = '<C-a>',
-    rhs = 'g^',
-  },
-  {
-    modes = 'i',
-    lhs = '<C-a>',
-    rhs = '<C-o>g^',
-  },
-
-  -- Jump to the end of the displayed line.
-  {
-    modes = {'n', 'v'},
-    lhs = '<C-e>',
-    rhs = 'g$',
-  },
-  {
-    modes = 'i',
-    lhs = '<C-e>',
-    rhs = 'pumvisible() ? "\\<C-e>" : "\\<C-o>g$"',
-    opts = { expr = true, noremap = true },
-  },
-
-  -- Move between displayed lines instead of physical ones.
-  {
-    modes = {'n', 'v'},
-    lhs = '<Up>',
-    rhs = 'g<Up>',
-    opts = { noremap = true, silent = true },
-  },
-  {
-    modes = 'i',
-    lhs = '<Up>',
-    rhs = 'pumvisible() ? "<C-p>" : "<C-o>g<Up>"',
-    opts = { expr = true, noremap = true, silent = true },
-  },
-  {
-    modes = {'n', 'v'},
-    lhs = '<Down>',
-    rhs = 'g<Down>',
-    opts = { noremap = true, silent = true },
-  },
-  {
-    modes = 'i',
-    lhs = '<Down>',
-    rhs = 'pumvisible() ? "<C-n>" : "<C-o>g<Down>"',
-    opts = { expr = true, noremap = true, silent = true },
-  },
-
-  -- Make `<Tab>`, `<S-Tab>`, `<CR>` and `<Esc>` work nicely with the popup
-  -- menu and delimitMate.
-  -- {
-  --   modes = 'i',
-  --   lhs = '<Tab>',
-  --   rhs =
-  --      'lua require("compleet").completion_menu_is_visible()'
-  --      .. ' ? "<Plug>(compleet-select-next-completion)"'
-  --      .. ' : "\\<Tab>"',
-  --   opts = { expr = true, noremap = true, silent = true },
-  -- },
-  {
-    modes = 'i',
-    lhs = '<Tab>',
-    rhs = 'pumvisible() ? "\\<C-n>" : "\\<Tab>"',
-    opts = { expr = true, noremap = true, silent = true },
-  },
-  {
-    modes = 'i',
-    lhs = '<S-Tab>',
-    rhs =
-      'pumvisible()'
-      .. ' ? (complete_info().selected == -1 ? "\\<C-e><Plug>delimitMateS-Tab" : "\\<C-p>")'
-      .. ' : (delimitMate#ShouldJump() ? "<Plug>delimitMateS-Tab" : "<BS>")',
-    opts = { expr = true, silent = true },
-  },
-  {
-    modes = 'i',
-    lhs = '<CR>',
-    rhs =
-      'pumvisible()'
-      .. ' ? (complete_info().selected == -1 ? "\\<C-e><Plug>delimitMateCR" : "\\<C-y>")'
-      .. ' : "<Plug>delimitMateCR"',
-    opts = { expr = true, silent = true },
-  },
-  {
-    modes = 'i',
-    lhs = '<Esc>',
-    rhs = 'pumvisible() ? "\\<C-e>\\<Esc>" : "\\<Esc>"',
-    opts = { expr = true, noremap = true },
-  },
-
-  -- Display diagnostics in a floating window.
-  {
-    modes = 'n',
-    lhs = '?',
-    rhs = '<Cmd>lua vim.diagnostic.open_float()<CR>',
-    opts = { silent = true },
-  },
-
-  -- Open a new terminal buffer in a horizontal or vertical split.
-  {
-    modes = 'n',
-    lhs = '<Leader>spt',
-    rhs = '<Cmd>sp<Bar>term<CR>',
-    opts = { silent = true },
-  },
-  {
-    modes = 'n',
-    lhs = '<Leader>vspt',
-    rhs = '<Cmd>vsp<Bar>term<CR>',
-    opts = { silent = true },
-  },
-
-  -- Toggle code folds.
-  {
-    modes = 'n',
-    lhs = '<Space>',
-    rhs = '<Cmd>silent! execute "normal! za"<CR>',
-  },
-
-  -- Disable the `s` mapping in normal and visual mode.
-  {
-    modes = {'n', 'v'},
-    lhs = 's',
-    rhs = ''
-  },
-
-  -- Navigate window splits.
-  {
-    modes = 'n',
-    lhs = '<S-Up>',
-    rhs = '<C-w>k',
-    opts = { noremap = true },
-  },
-  {
-    modes = 'n',
-    lhs = '<S-Down>',
-    rhs = '<C-w>j',
-    opts = { noremap = true },
-  },
-  {
-    modes = 'n',
-    lhs = '<S-Left>',
-    rhs = '<C-w>h',
-    opts = { noremap = true },
-  },
-  {
-    modes = 'n',
-    lhs = '<S-Right>',
-    rhs = '<C-w>l',
-    opts = { noremap = true },
-  },
-
-  -- Delete the previous word in insert mode.
-  {
-    modes = 'i',
-    lhs = '<M-BS>',
-    rhs = '<C-w>',
-    opts = { noremap = true },
-  },
-
-  -- Escape terminal mode.
-  {
-    modes = 't',
-    lhs = '<M-Esc>',
-    rhs = '<C-\\><C-n>',
-    opts = { noremap = true },
-  },
-
-  -- Jump to the beginning of the line in command mode.
-  {
-    modes = 'c',
-    lhs = '<C-a>',
-    rhs = '<C-b>',
-  },
-
-  -- Substitute globally
-  {
-    modes = 'n',
-    lhs = 'ss',
-    rhs = ':%s//g<Left><Left>',
-  },
-
-  -- Substitute locally.
-  {
-    modes = 'v',
-    lhs = 'ss',
-    rhs = ':s//g<Left><Left>',
-  },
-
-  -- Stop highlighting the latest search results.
-  {
-    modes = 'n',
-    lhs = '<C-g>',
-    rhs = '<Cmd>noh<CR>',
-    opts = { silent = true },
-  },
-}
-
-if has_cokeline then
-  vim_list_extend(mappings, {
-    {
-      modes = 'n',
-      lhs = '<S-Tab>',
-      rhs = '<Plug>(cokeline-focus-prev)',
-      opts = { silent = true },
-    },
-    {
-      modes = 'n',
-      lhs = '<Tab>',
-      rhs = '<Plug>(cokeline-focus-next)',
-      opts = { silent = true },
-    },
-    {
-      modes = 'n',
-      lhs = '<Leader>p',
-      rhs = '<Plug>(cokeline-switch-prev)',
-      opts = { silent = true },
-    },
-    {
-      modes = 'n',
-      lhs = '<Leader>n',
-      rhs = '<Plug>(cokeline-switch-next)',
-      opts = { silent = true },
-    },
-    {
-      modes = 'n',
-      lhs = '<Leader>a',
-      rhs = '<Plug>(cokeline-pick-focus)',
-      opts = { silent = true },
-    },
-    {
-      modes = 'n',
-      lhs = '<Leader>b',
-      rhs = '<Plug>(cokeline-pick-close)',
-      opts = { silent = true },
-    },
-  })
-
-  for i = 1,9 do
-    tbl_insert(mappings, {
-      modes = 'n',
-      lhs = ('<F%s>'):format(i),
-      rhs = ('<Plug>(cokeline-focus-%s)'):format(i),
-      opts = { silent = true },
-    })
+  if filetype == "startify" then
+    vim.cmd("bd")
+  elseif
+    filetype == "help"
+    or buftype == "nofile"
+    or #vim.fn.getbufinfo({ buflisted = 1 }) == 1
+  then
+    vim.cmd("q")
+  elseif buftype == "terminal" then
+    vim.cmd(bdelete .. "!")
+  else
+    vim.cmd(bdelete)
   end
 end
 
 local setup = function()
-  set_keymap('i', '<Tab>', i_Tab, { expr = true })
-  set_keymap('i', '<S-Tab>', i_STab, { expr = true })
-  set_keymap('i', '<CR>', i_CR, { expr = true })
+  vim.g.mapleader = ","
+  vim.g.maplocalleader = ","
 
-  vim_g.mapleader = ','
-  vim_g.maplocalleader = ','
-  for _, mapping in ipairs(mappings) do _G.map(mapping) end
+  -- Save the file.
+  keymap.set("n", "<C-s>", "<Cmd>w<CR>")
+
+  -- Either quit, close a window or delete a buffer depending on a bunch of
+  -- conditions.
+  keymap.set("n", "<C-w>", close)
+
+  -- Jump to the first non-whitespace character in the displayed line.
+  keymap.set({ "n", "v" }, "<C-a>", "g^")
+  keymap.set("i", "<C-a>", "<C-o>g^")
+
+  -- Jump to the end of the displayed line.
+  keymap.set({ "n", "v" }, "<C-e>", "g$")
+  keymap.set(
+    "i",
+    "<C-e>",
+    'pumvisible() ? "\\<C-e>" : "\\<C-o>g$"',
+    { expr = true, noremap = true }
+  )
+
+  -- Move between displayed lines instead of physical ones.
+  keymap.set({ "n", "v" }, "<Up>", "g<Up>", { noremap = true })
+  keymap.set(
+    "i",
+    "<Up>",
+    'pumvisible() ? "<C-p>" : "<C-o>g<Up>"',
+    { expr = true, noremap = true }
+  )
+  keymap.set({ "n", "v" }, "<Down>", "g<Down>", { noremap = true })
+  keymap.set(
+    "i",
+    "<Down>",
+    'pumvisible() ? "<C-n>" : "<C-o>g<Down>"',
+    { expr = true, noremap = true }
+  )
+
+  -- Make escape behave nicely when the popup menu is visible
+  keymap.set(
+    "i",
+    "<Esc>",
+    'pumvisible() ? "\\<C-e>\\<Esc>" : "\\<Esc>"',
+    { expr = true, noremap = true }
+  )
+
+  -- Display diagnostics in a floating window.
+  keymap.set("n", "?", vim.diagnostic.open_float)
+
+  -- Open a new terminal buffer in a horizontal or vertical split.
+  keymap.set("n", "<Leader>spt", "<Cmd>sp<Bar>term<CR>")
+  keymap.set("n", "<Leader>vspt", "<Cmd>vsp<Bar>term<CR>")
+
+  -- Toggle code folds.
+  keymap.set("n", "<Space>", '<Cmd>silent! execute "normal! za"<CR>')
+
+  -- Disable the `s` mapping in normal and visual mode.
+  keymap.set({ "n", "v" }, "s", "")
+
+  -- Navigate window splits.
+  keymap.set("n", "<S-Up>", "<C-w>k", { noremap = true })
+  keymap.set("n", "<S-Down>", "<C-w>j", { noremap = true })
+  keymap.set("n", "<S-Left>", "<C-w>h", { noremap = true })
+  keymap.set("n", "<S-Right>", "<C-w>l", { noremap = true })
+
+  -- Delete the previous word in insert mode.
+  keymap.set("i", "<M-BS>", "<C-w>", { noremap = true })
+
+  -- Escape terminal mode.
+  keymap.set("t", "<M-Esc>", "<C-\\><C-n>", { noremap = true })
+
+  -- Jump to the beginning of the line in command mode.
+  keymap.set("c", "<C-a>", "<C-b>")
+
+  -- Substitute globally and locally in the selected region.
+  keymap.set("n", "ss", ":%s//g<Left><Left>")
+  keymap.set("v", "ss", ":%s//g<Left><Left>")
+
+  -- Stop highlighting the latest search results.
+  keymap.set("n", "<C-g>", "<Cmd>noh<CR>", { silent = true })
+
+  if has_cokeline then
+    keymap.set("n", "<Tab>", "<Plug>(cokeline-focus-next)")
+    keymap.set("n", "<S-Tab>", "<Plug>(cokeline-focus-prev)")
+    keymap.set("n", "<Leader>p", "<Plug>(cokeline-switch-prev)")
+    keymap.set("n", "<Leader>n", "<Plug>(cokeline-switch-prev)")
+    keymap.set("n", "<Leader>a", "<Plug>(cokeline-pick-focus)")
+    keymap.set("n", "<Leader>b", "<Plug>(cokeline-pick-close)")
+    for i = 1, 9 do
+      keymap.set(
+        "n",
+        ("<F%s>"):format(i),
+        ("<Plug>(cokeline-focus-%s)"):format(i)
+      )
+    end
+  end
+
+  if has_compleet then
+    keymap.set("i", "<Tab>", i_Tab, { expr = true, remap = true })
+    keymap.set("i", "<S-Tab>", i_STab, { expr = true, remap = true })
+    keymap.set("i", "<Right>", i_Right, { expr = true, remap = true })
+    keymap.set("i", "<CR>", i_CR, { expr = true, remap = true })
+  end
 end
 
 return {

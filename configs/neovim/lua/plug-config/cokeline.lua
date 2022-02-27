@@ -208,7 +208,7 @@ require("cokeline").setup({
   buffers = {
     -- filter_valid = function(buffer) return buffer.type ~= 'terminal' end,
     -- filter_visible = function(buffer) return buffer.type ~= 'terminal' end,
-    focus_on_delete = "prev",
+    focus_on_delete = "next",
     new_buffers_position = "next",
   },
 

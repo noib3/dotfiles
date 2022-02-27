@@ -127,6 +127,10 @@ in
     enable = true;
   };
 
+  services.blueman = {
+    enable = true;
+  };
+
   services.couchdb = {
     enable = true;
     package = pkgs.couchdb3;

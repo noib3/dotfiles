@@ -1,10 +1,10 @@
 local vim_g = vim.g
 
 vim_g.mkdp_auto_close = 0
-vim_g.mkdp_browser = 'qutebrowser'
-vim_g.mkdp_browserfunc = 'g:MkdpBrowserfunc'
-vim_g.mkdp_filetypes = { 'markdown' }
-vim_g.mkdp_page_title = '${name}'
+vim_g.mkdp_browser = "qutebrowser"
+vim_g.mkdp_browserfunc = "g:MkdpBrowserfunc"
+vim_g.mkdp_filetypes = { "markdown" }
+vim_g.mkdp_page_title = "${name}"
 
 vim.cmd([[
   function! g:MkdpBrowserfunc(url)

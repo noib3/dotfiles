@@ -48,6 +48,8 @@ in
   nixpkgs.config.allowUnfree = true;
 
   home.packages = with pkgs; [
+    # For the `ar` program used to build mlua Rust crate in nvim-compleet
+    clang # TODO: try removing and see if nvim-compleet still compiles
     asciinema
     brave
     calibre # Used by lf to get image previews for .epub files via `ebook-meta`
@@ -58,7 +60,8 @@ in
     ffmpegthumbnailer
     file
     fuzzy-ripgrep
-    gcc # Used by tree-sitter to compile grammars
+    # gcc # Used by tree-sitter to compile grammars
+    gnumake # TODO: try removing and see if nvim-compleet still compiles
     gotop
     jq
     ktlint
@@ -103,6 +106,7 @@ in
     findutils
     gnused
   ] ++ lib.lists.optionals isLinux [
+    blueman
     calcurse
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;

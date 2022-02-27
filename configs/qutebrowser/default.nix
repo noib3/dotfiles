@@ -21,8 +21,8 @@ in
   searchEngines = {
     "DEFAULT" = "https://google.com/search?q={}";
     "yt" = "https://youtube.com/results?search_query={}";
-    "nixo" = "https://search.nixos.org/options?channel=21.05&query={}";
-    "nixp" = "https://search.nixos.org/packages?channel=21.05&query={}";
+    "nixo" = "https://search.nixos.org/options?channel=unstable&query={}";
+    "nixp" = "https://search.nixos.org/packages?channel=unstable&query={}";
   };
 
   settings = {

@@ -1,12 +1,10 @@
-local vim_localopt = vim.opt_local
+vim.bo.errorformat = [[%*\sFile "%f"\, line %l\, %m,]]
+vim.opt_local.formatoptions:remove({ "r" })
+vim.bo.makeprg = "python3 %"
 
-vim_localopt.errorformat = [[%*\sFile "%f"\, line %l\, %m,]]
-vim_localopt.formatoptions:remove({'r'})
-vim_localopt.makeprg = 'python3 %'
-
-_G.localmap({
-  modes = 'n',
-  lhs = '<C-t>',
-  rhs = '<Cmd>make!<Bar>silent cc<CR>',
-  opts = { silent = true },
-})
+vim.keymap.set(
+  "n",
+  "<C-t>",
+  "<Cmd>make!<Bar>silent cc<CR>",
+  { silent = true, buffer = true }
+)

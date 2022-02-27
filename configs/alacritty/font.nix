@@ -1,7 +1,7 @@
 { family, machine }:
 
 let
-  f = {
+  overrides = {
     "FiraCode Nerd Font" = {
       bold_italic.style = "Bold";
       "blade".size = 9;
@@ -54,7 +54,7 @@ in
 
   bold = {
     inherit family;
-    style = f.${family}.bold.style or "Bold";
+    style = overrides.${family}.bold.style or "Bold";
   };
 
   italic = {
@@ -64,10 +64,10 @@ in
 
   bold_italic = {
     inherit family;
-    style = f.${family}.bold_italic.style or "Bold Italic";
+    style = overrides.${family}.bold_italic.style or "Bold Italic";
   };
 
-  size = f.${family}.${machine}.size or default_size.${machine};
-  offset.y = f.${family}.${machine}.offset.y or 0;
-  glyph_offset.y = f.${family}.${machine}.glyph_offset.y or 0;
+  size = overrides.${family}.${machine}.size or default_size.${machine};
+  offset.y = overrides.${family}.${machine}.offset.y or 0;
+  glyph_offset.y = overrides.${family}.${machine}.glyph_offset.y or 0;
 }

@@ -1,29 +1,23 @@
-local vim_localopt = vim.opt_local
+vim.opt_local.formatoptions:remove({ "r", "o" })
+vim.opt_local.spelllang = { "en_us", "it" }
 
-vim_localopt.formatoptions:remove({'r', 'o'})
-vim_localopt.spelllang = { 'en_us', 'it' }
+vim.keymap.set(
+  "n",
+  "<C-t>",
+  "<Cmd>!context --purge %<CR>",
+  { silent = true, buffer = true }
+)
 
-_G.localmap({
-  modes = 'n',
-  lhs = '<C-t>',
-  rhs = '<Cmd>!context --purge %<CR>',
-  opts = { silent = true },
-})
+vim.keymap.set(
+  "n",
+  "<Leader>lv",
+  "<Cmd>silent call v:lua.open_tex_pdf()<CR>",
+  { buffer = true, silent = true }
+)
 
-_G.localmap({
-  modes = 'n',
-  lhs = '<Leader>lv',
-  rhs = '<Cmd>silent call v:lua.open_tex_pdf()<CR>',
-  opts = { silent = true },
-})
-
-_G.augroup({
-  name = 'TeX',
-  autocmds = {
-    {
-      event = 'BufUnload',
-      pattern = '*.tex',
-      cmd = 'silent call v:lua.close_tex_pdf()',
-    },
-  }
-})
+vim.cmd([[
+  augroup ConTeXt
+    autocmd!
+    autocmd BufUnload *.tex silent call v:lua.close_tex_pdf()
+  augroup END
+]])

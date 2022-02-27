@@ -1,8 +1,6 @@
-local vim_localopt = vim.opt_local
-
-vim_localopt.commentstring = '<!-- %s -->'
-vim_localopt.foldcolumn = '0'
-vim_localopt.foldenable = false
-vim_localopt.spell = false
-vim_localopt.spelllang = 'en_us,it'
-vim_localopt.textwidth = 79
+vim.bo.commentstring = "<!-- %s -->"
+vim.bo.foldcolumn = "0"
+vim.bo.foldenable = false
+vim.bo.spell = false
+vim.bo.spelllang = "en_us,it"
+vim.bo.textwidth = 79
