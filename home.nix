@@ -55,6 +55,7 @@ in
     calibre # Used by lf to get image previews for .epub files via `ebook-meta`
     cargo
     chafa
+    # dart # Contains Dart's language server
     delta
     fd
     ffmpegthumbnailer
@@ -64,7 +65,6 @@ in
     gnumake # TODO: try removing and see if nvim-compleet still compiles
     gotop
     jq
-    ktlint
     imagemagick_light # Contains `convert`
     mediainfo
     mkvtoolnix-cli # Used by lf to get image previews for videos
@@ -79,6 +79,7 @@ in
         "RobotoMono"
       ];
     })
+    noto-fonts-emoji
     pfetch
     previewer
     (python310.withPackages (pp: with pp; [
@@ -125,7 +126,7 @@ in
       name = "qutebrowser";
       desktopName = "qutebrowser";
       exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-      mimeType = lib.concatStringsSep ";" [
+      mimeTypes = [
         "text/html"
         "x-scheme-handler/http"
         "x-scheme-handler/https"
@@ -158,6 +159,13 @@ in
       source = "${configDir}/fd/ignore";
     };
 
+    # Forcing an update w/ `fc-cache --really-force` may be needed on Linux.
+    "fontconfig/fonts.conf" = {
+      text = import "${configDir}/fontconfig/fonts.conf.nix" {
+        fontFamily = font-family;
+      };
+    };
+
     "fusuma/config.yml" = lib.mkIf isLinux {
       source = "${configDir}/fusuma/config.yml";
     };
@@ -171,14 +179,6 @@ in
       text = import "${configDir}/neovim/lua/colorscheme.lua.nix" {
         inherit colorscheme palette;
       };
-    };
-
-    "nvim/lua/plug-config/lsp-sumneko-paths.lua" = {
-      text = import
-        "${configDir}/neovim/lua/plug-config/lsp-sumneko-paths.lua.nix"
-        {
-          inherit (pkgs) sumneko-lua-language-server;
-        };
     };
 
     "redshift/hooks/notify-change" = {

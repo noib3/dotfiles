@@ -1,4 +1,8 @@
-{ colorscheme, palette, hexlib, removePrefix }:
+{ colorscheme
+, palette
+, hexlib
+, removePrefix
+}:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };

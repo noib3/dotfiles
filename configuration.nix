@@ -63,7 +63,7 @@ in
 
   environment.systemPackages = with pkgs; [
     nvidia-offload
-    vim
+    neovim
   ];
 
   boot = {

@@ -1,4 +1,8 @@
-{ pkgs, colorscheme, palette, hexlib }:
+{ pkgs
+, colorscheme
+, palette
+, hexlib
+}:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };

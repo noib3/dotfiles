@@ -3,6 +3,10 @@ local setup = function()
   -- currently focused buffer.
   vim.o.autochdir = true
 
+  -- Deleting words with <C-w> doesn't stop at the column where insert mode was
+  -- entered.
+  -- vim.o.backspace = "indent,eol,nostop"
+
   -- Yank, delete, change etc. to and from the system clipboard.
   vim.o.clipboard = "unnamedplus"
 

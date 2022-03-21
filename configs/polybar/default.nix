@@ -1,4 +1,9 @@
-{ colorscheme, font-family, palette, hexlib, concatStringsSep }:
+{ colorscheme
+, font-family
+, palette
+, hexlib
+, concatStringsSep
+}:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };

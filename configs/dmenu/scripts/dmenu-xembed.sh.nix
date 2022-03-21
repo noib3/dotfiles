@@ -1,4 +1,8 @@
-{ colorscheme, font-family, palette, pkgs ? import <nixpkgs> { } }:
+{ colorscheme
+, font-family
+, palette
+, pkgs ? import <nixpkgs> { }
+}:
 
 let
   colors = (import ../../qutebrowser/colors.nix { inherit colorscheme palette; }).dmenu;

@@ -1,4 +1,6 @@
-{ colorscheme, palette }:
+{ colorscheme
+, palette
+}:
 
 let
   hexlib = import ../../colorschemes/hexlib.nix;

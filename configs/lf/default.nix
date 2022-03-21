@@ -1,4 +1,6 @@
-{ pkgs, previewer }:
+{ pkgs
+, previewer
+}:
 
 let
   cleaner = pkgs.writeShellScriptBin "cleaner"

@@ -1,4 +1,6 @@
-{ colors, backgroundImageFilename }:
+{ colors
+, backgroundImageFilename
+}:
 
 ''
   # Global properties

@@ -1,4 +1,9 @@
-{ pkgs, colorscheme, palette, cloudDir, removePrefix }:
+{ pkgs
+, colorscheme
+, palette
+, cloudDir
+, removePrefix
+}:
 
 let
   colors =
@@ -87,6 +92,10 @@ in
     direnv hook fish | source
 
     ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
+
+    # It doesn't let you source it more than once.
+    # bass source ~/.nix-profile/etc/profile.d/hm-session-vars.sh 2>/dev/null \
+    #   || true
   '' + pkgs.lib.strings.optionalString pkgs.stdenv.isDarwin ''
     bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
       || true

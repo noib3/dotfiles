@@ -1,4 +1,8 @@
-{ colorscheme, font-family, palette, removePrefix }:
+{ colorscheme
+, font-family
+, palette
+, removePrefix
+}:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette; };

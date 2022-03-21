@@ -1,4 +1,7 @@
-{ colorscheme, palette, removePrefix }:
+{ colorscheme
+, palette
+, removePrefix
+}:
 
 let
   colors =

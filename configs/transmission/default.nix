@@ -1,4 +1,7 @@
-{ pkgs, username, homeDirectory }:
+{ pkgs
+, username
+, homeDirectory
+}:
 
 let
   notify-done = pkgs.writeShellScriptBin "notify-done"

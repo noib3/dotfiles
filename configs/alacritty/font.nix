@@ -1,4 +1,6 @@
-{ family, machine }:
+{ family
+, machine
+}:
 
 let
   overrides = {

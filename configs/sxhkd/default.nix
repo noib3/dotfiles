@@ -1,4 +1,8 @@
-{ configDir, cloudDir, writeShellScriptBin, writePython3Bin }:
+{ configDir
+, cloudDir
+, writeShellScriptBin
+, writePython3Bin
+}:
 
 let
   toggle-gaps = writeShellScriptBin "toggle-gaps"

@@ -1,4 +1,9 @@
-{ colorscheme, font-family, machine, palette, lib ? import <nixpkgs/lib> }:
+{ colorscheme
+, font-family
+, machine
+, palette
+, lib ? import <nixpkgs/lib>
+}:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette; };

@@ -7,6 +7,7 @@ local eval_viml = vim.api.nvim_eval
 
 ---@return string
 local i_Tab = function()
+  compleet.has_completions()
   return (compleet.is_menu_visible() and "<Plug>(compleet-next-completion)")
     or (compleet.has_completions() and "<Plug>(compleet-show-completions)")
     or "<Tab>"
@@ -140,7 +141,7 @@ local setup = function()
     keymap.set("n", "<Tab>", "<Plug>(cokeline-focus-next)")
     keymap.set("n", "<S-Tab>", "<Plug>(cokeline-focus-prev)")
     keymap.set("n", "<Leader>p", "<Plug>(cokeline-switch-prev)")
-    keymap.set("n", "<Leader>n", "<Plug>(cokeline-switch-prev)")
+    keymap.set("n", "<Leader>n", "<Plug>(cokeline-switch-next)")
     keymap.set("n", "<Leader>a", "<Plug>(cokeline-pick-focus)")
     keymap.set("n", "<Leader>b", "<Plug>(cokeline-pick-close)")
     for i = 1, 9 do

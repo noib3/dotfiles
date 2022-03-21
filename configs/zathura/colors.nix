@@ -1,4 +1,7 @@
-{ colorscheme, palette, hexlib }:
+{ colorscheme
+, palette
+, hexlib
+}:
 
 let
   c = {

@@ -7,15 +7,16 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly-overlay.url =
+      "github:nix-community/neovim-nightly-overlay/master";
     tdtd.url = "path:/home/noib3/Dropbox/projects/tdtd";
   };
 
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
-      colorscheme = "vscode";
-      font-family = "Iosevka Nerd Font";
+      colorscheme = "tokyonight";
+      font-family = "Mononoki Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
       palette = import (./palettes + "/${colorscheme}.nix");

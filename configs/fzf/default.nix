@@ -1,9 +1,9 @@
-{
-  colorscheme,
-  palette,
-  hexlib,
-  concatStringsSep,
-  removePrefix,
+{ colorscheme
+, palette
+, hexlib
+, concatStringsSep
+, removePrefix
+,
 }:
 
 let

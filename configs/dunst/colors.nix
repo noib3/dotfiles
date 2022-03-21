@@ -1,4 +1,7 @@
-{ colorscheme, palette, hexlib }:
+{ colorscheme
+, palette
+, hexlib
+}:
 let
   c = {
     "afterglow".border = hexlib.scale 0.95 palette.normal.white;

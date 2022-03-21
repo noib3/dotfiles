@@ -11,14 +11,14 @@ local spec = function()
       vim_g.ale_disable_lsp = 1
       vim_g.ale_fix_on_save = 1
       vim_g.ale_linters_explicit = 1
-      vim_g.ale_lua_stylua_options =
-        "--config-path ~/Dropbox/projects/nvim-cokeline/stylua.toml"
+      -- vim_g.ale_lua_stylua_options =
+      --   "--config-path ~/Dropbox/projects/nvim-cokeline/stylua.toml"
 
       vim_g.ale_fixers = {
         javascript = { "prettier" },
         kt = { "ktlint" },
         kotlin = { "ktlint" },
-        lua = { "stylua" },
+        -- lua = { "stylua" },
         nix = { "nixpkgs-fmt" },
         python = { "isort", "yapf" },
         typescript = { "prettier" },
@@ -167,8 +167,31 @@ local spec = function()
     "~/Dropbox/projects/nvim-compleet",
     config = function()
       require("compleet").setup({
-        autoshow_menu = false,
-        show_hints = true,
+        ui = {
+          menu = {
+            anchor = "cursor",
+            max_height = 7,
+            border = {
+              enable = false,
+              style = "single",
+            }
+          },
+
+          details = {
+            border = {
+              enable = false,
+              style = "single",
+            },
+          },
+
+          hint = { enable = true },
+        },
+
+        completion = { while_deleting = true },
+
+        sources = {
+          lipsum = { enable = true },
+        }
       })
     end,
   })

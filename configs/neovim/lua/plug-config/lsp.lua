@@ -1,15 +1,17 @@
 local lspconfig = require("lspconfig")
-local sumneko_paths = require("plug-config/lsp-sumneko-paths")
+
+local fn = vim.fn
+local keymap = vim.keymap
 
 local on_attach = function(_, bufnr)
-  vim.keymap.set(
+  keymap.set(
     "n",
     "K",
     vim.lsp.buf.hover,
     { buffer = bufnr, silent = true }
   )
 
-  vim.keymap.set(
+  keymap.set(
     "n",
     "<Leader>rn",
     vim.lsp.buf.rename,
@@ -22,20 +24,29 @@ local on_attach = function(_, bufnr)
 end
 
 local setup = function()
+  -- Dart
+  local dartls_snapshot_path = string.format(
+    "%s/snapshots/analysis_server.dart.snapshot",
+    fn.trim(fn.system("dirname (readlink -f (which dart))"))
+  )
+
+  lspconfig.dartls.setup({
+    cmd = { "dart", dartls_snapshot_path, "--lsp" },
+    on_attach = on_attach,
+  })
+
   -- Lua
-  -- Why is this language server so damn complicated to configure compared to
-  -- all the others? Will have to make my own lua language server one day.
-  local sumneko_rtp = vim.split(package.path, ";")
-  table.insert(sumneko_rtp, "lua/?.lua")
-  table.insert(sumneko_rtp, "lua/?/init.lua")
+  local runtime_path = vim.split(package.path, ";")
+  table.insert(runtime_path, "lua/?.lua")
+  table.insert(runtime_path, "lua/?/init.lua")
+
   lspconfig.sumneko_lua.setup({
-    cmd = { sumneko_paths.bin, "-E", sumneko_paths.main },
     on_attach = on_attach,
     settings = {
       Lua = {
         runtime = {
           version = "LuaJIT",
-          path = sumneko_rtp,
+          path = runtime_path,
         },
         diagnostics = { globals = { "vim" } },
         workspace = { library = vim.api.nvim_get_runtime_file("", true) },
