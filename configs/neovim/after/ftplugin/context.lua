@@ -1,19 +1,10 @@
 vim.opt_local.formatoptions:remove({ "r", "o" })
 vim.opt_local.spelllang = { "en_us", "it" }
 
-vim.keymap.set(
-  "n",
-  "<C-t>",
-  "<Cmd>!context --purge %<CR>",
-  { silent = true, buffer = true }
-)
+local opts = { silent = true, buffer = true }
 
-vim.keymap.set(
-  "n",
-  "<Leader>lv",
-  "<Cmd>silent call v:lua.open_tex_pdf()<CR>",
-  { buffer = true, silent = true }
-)
+vim.keymap.set("n", "<C-t>", "<Cmd>!context --purge %<CR>", opts)
+vim.keymap.set("n", "<Leader>lv", "<Cmd>lua _G.open_tex_pdf()<CR>", opts)
 
 vim.cmd([[
   augroup ConTeXt

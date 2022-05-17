@@ -49,6 +49,7 @@ in
         "input"
         "networkmanager"
         "plugdev"
+        "vboxusers"
       ];
     };
 
@@ -62,6 +63,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    glibc
     nvidia-offload
     neovim
   ];
@@ -201,6 +203,9 @@ in
       EndSection
     '';
   };
+
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "noib3" ];
 
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;

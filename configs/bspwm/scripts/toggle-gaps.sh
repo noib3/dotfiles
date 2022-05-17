@@ -10,10 +10,8 @@ case $(bspc config -d focused top_padding) in
     window_gap=0
     border_width=0
     top_padding=10
-    # top_padding=5
     ;;
   10)
-  # 5)
     window_gap=0
     border_width=0
     top_padding=-"$bspwm_top_padding"

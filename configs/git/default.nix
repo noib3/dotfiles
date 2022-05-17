@@ -43,6 +43,10 @@ in
         commit-decoration-style = "bold yellow box ul";
       };
     };
+
+    merge = {
+      tool = "nvimdiff";
+    };
   };
 
   ignores = [

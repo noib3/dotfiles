@@ -142,7 +142,7 @@ in
   } // (
     if pkgs.stdenv.isLinux then
       {
-        drag-and-drop = "%${pkgs.dragon-drop}/bin/dragon -a -x $fx";
+        drag-and-drop = "%${pkgs.xdragon}/bin/dragon -a -x $fx";
       }
     else if pkgs.stdenv.isDarwin then
       {

@@ -21,53 +21,44 @@ let
     (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
   );
 
-  # previewer = with pkgs; writeShellApplication {
-  #   name = "previewer";
-  #   runtimeInputs = [
-  #     atool # contains `als` used for archives
-  #     bat # text files
-  #     calibre # contains `ebook-meta` used for epubs
-  #     chafa # fallback if ueberzug isn't available (e.g. macOS)
-  #     ffmpegthumbnailer # videos
-  #     file
-  #     inkscape # SVGs
-  #     mediainfo # audios
-  #     mkvtoolnix-cli # videos
-  #     poppler_utils # contains `pdftoppm` used for PDFs
-  #   ];
-  #   text = (builtins.readFile "${configDir}/lf/previewer.sh");
-  # };
-
-  previewer = pkgs.writeShellScriptBin "previewer"
-    (builtins.readFile "${configDir}/lf/previewer.sh");
+  previewer = with pkgs; writeShellApplication {
+    name = "previewer";
+    runtimeInputs = [
+      atool # contains `als` used for archives
+      bat
+      calibre # contains `ebook-meta` used for epubs
+      chafa
+      ffmpegthumbnailer
+      file
+      inkscape # SVGs
+      mediainfo # audios
+      mkvtoolnix-cli # videos
+      poppler_utils # contains `pdftoppm` used for PDFs
+    ] ++ lib.lists.optionals isLinux [
+      ueberzug
+    ];
+    text = (builtins.readFile "${configDir}/lf/previewer.sh");
+  };
 
   rg-previewer = pkgs.writeShellScriptBin "rg-previewer"
     (builtins.readFile "${configDir}/ripgrep/rg-previewer.sh");
 in
 {
-  nixpkgs.config.allowUnfree = true;
-
   home.packages = with pkgs; [
-    # For the `ar` program used to build mlua Rust crate in nvim-compleet
-    clang # TODO: try removing and see if nvim-compleet still compiles
     asciinema
     brave
-    calibre # Used by lf to get image previews for .epub files via `ebook-meta`
     cargo
-    chafa
-    # dart # Contains Dart's language server
+    clang-tools
     delta
+    dua
     fd
-    ffmpegthumbnailer
     file
     fuzzy-ripgrep
-    # gcc # Used by tree-sitter to compile grammars
-    gnumake # TODO: try removing and see if nvim-compleet still compiles
+    gcc
     gotop
+    helix
     jq
     imagemagick_light # Contains `convert`
-    mediainfo
-    mkvtoolnix-cli # Used by lf to get image previews for videos
     neovim-nightly
     (nerdfonts.override {
       fonts = [
@@ -80,6 +71,7 @@ in
       ];
     })
     noto-fonts-emoji
+    ookla-speedtest
     pfetch
     previewer
     (python310.withPackages (pp: with pp; [
@@ -94,14 +86,15 @@ in
     rustc
     rustfmt
     rust-analyzer
+    nodePackages.svelte-language-server
     stylua
     sumneko-lua-language-server
-    tdtd
     texlive.combined.scheme-full
     tokei
+    nodePackages.typescript-language-server
+    stylua
     unzip
     vimv
-    yarn # Used by markdown-preview.nvim
     zip
   ] ++ lib.lists.optionals isDarwin [
     findutils
@@ -113,9 +106,13 @@ in
       inherit pkgs colorscheme font-family palette hexlib;
     })
     feh
+    glibc
     lf_w_image_previews
     libnotify
+    obs-studio
+    peek
     pick-colour-picker
+    signal-desktop
     ueberzug
     wmctrl
     xclip
@@ -152,6 +149,14 @@ in
       config.home.homeDirectory
       + "/.nix-profile/share/fonts/truetype/NerdFonts"
     );
+  };
+
+  home.pointerCursor = lib.mkIf isLinux {
+    package = pkgs.vanilla-dmz;
+    name = "Vanilla-DMZ";
+    size = 16;
+    x11.enable = true;
+    x11.defaultCursor = "left_ptr";
   };
 
   xdg.configFile = {
@@ -376,13 +381,6 @@ in
       enable = true;
     } // (import "${configDir}/bspwm") {
       inherit pkgs colorscheme palette hexlib;
-    };
-
-    pointerCursor = {
-      package = pkgs.vanilla-dmz;
-      name = "Vanilla-DMZ";
-      size = 16;
-      defaultCursor = "left_ptr";
     };
 
     profileExtra = ''

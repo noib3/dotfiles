@@ -11,7 +11,7 @@ local setup = function()
   vim.o.clipboard = "unnamedplus"
 
   -- Display a vertical column at 80 characters.
-  vim.o.colorcolumn = "80"
+  vim.o.colorcolumn = "+1"
 
   -- Do not automatically insert completion items until one is explicitly
   -- selected (no idea how this isn't the default behaviour), and show the

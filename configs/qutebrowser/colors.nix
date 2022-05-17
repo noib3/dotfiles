@@ -70,7 +70,7 @@ in
 
   completion = rec {
     fg = c.${colorscheme}.completion.fg or palette.normal.white;
-    odd.bg = c.${colorscheme}.completion.odd.bg or hexlib.scale 1.2 palette.bright.black;
+    odd.bg = c.${colorscheme}.completion.odd.bg or (hexlib.scale 1.2 palette.bright.black);
     even.bg = c.${colorscheme}.completion.odd.bg or palette.bright.black;
     header.bg = palette.normal.black;
     header.fg = c.${colorscheme}.completion.header.fg or palette.normal.blue;

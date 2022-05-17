@@ -9,14 +9,13 @@
     };
     neovim-nightly-overlay.url =
       "github:nix-community/neovim-nightly-overlay/master";
-    tdtd.url = "path:/home/noib3/Dropbox/projects/tdtd";
   };
 
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
       colorscheme = "tokyonight";
-      font-family = "Mononoki Nerd Font";
+      font-family = "FiraCode Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
       palette = import (./palettes + "/${colorscheme}.nix");
@@ -54,9 +53,9 @@
         stateVersion = "22.05";
         pkgs = import nixpkgs {
           inherit (args) system;
+          config.allowUnfree = true;
           overlays = [
             neovim-nightly-overlay.overlay
-            tdtd.overlay
           ];
         };
         extraModules = [

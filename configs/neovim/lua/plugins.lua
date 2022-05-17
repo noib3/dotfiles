@@ -125,8 +125,8 @@ local spec = function()
   -- Colorscheme.
   use({ "morhetz/gruvbox" })
 
-  -- Colorscheme
-  use({ "rebelot/kanagawa.nvim" })
+  -- -- Colorscheme
+  -- use({ "rebelot/kanagawa.nvim" })
 
   -- Nicer UI for LSP-related things
   -- use({
@@ -177,23 +177,31 @@ local spec = function()
             }
           },
 
-          details = {
-            border = {
-              enable = false,
-              style = "single",
-            },
-          },
+          -- details = {
+          --   border = {
+          --     enable = true,
+          --     style = "single",
+          --   },
+          -- },
 
           hint = { enable = true },
         },
 
-        completion = { while_deleting = true },
+        completion = {
+          while_deleting = true,
+          after_inserting = false,
+        },
 
         sources = {
-          lipsum = { enable = true },
+          -- lipsum = { enable = true },
+          lsp = {
+            enable = true,
+            highlight_completions = true,
+          },
         }
       })
     end,
+    -- run = "./install.sh release",
   })
 
   use({ "nvim-lua/plenary.nvim" })
@@ -221,8 +229,8 @@ local spec = function()
     end,
   })
 
-  -- Used to show step-by-step type hints of chained Rust code.
-  use({ "nvim-lua/lsp_extensions.nvim" })
+  -- -- Used to show step-by-step type hints of chained Rust code.
+  -- use({ "nvim-lua/lsp_extensions.nvim" })
 
   -- File tree.
   use({
@@ -234,11 +242,13 @@ local spec = function()
   })
 
   -- Now this is some revolutionary stuff.
+  use({ "nvim-treesitter/playground" })
+
   use({
     "nvim-treesitter/nvim-treesitter",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = "maintained",
+        ensure_installed = "all",
         highlight = {
           enable = true,
           disable = { "markdown" },
@@ -246,9 +256,11 @@ local spec = function()
         context_commentstring = {
           enable = true,
         },
+        playground = { enable = true },
       })
     end,
   })
+
 
   -- Set the `commentstring` option based on the current cursor location.
   use({ "JoosepAlviste/nvim-ts-context-commentstring" })

@@ -3,7 +3,7 @@ mkdir -p "$CACHE_DIR"
 
 FILE="$1"
 
-if [ -n "$FZF_PREVIEW_COLUMNS" ]; then
+if [ -n "${FZF_PREVIEW_COLUMNS-}" ]; then
   # fzf previews
   read -r _ TERMINAL_COLUMNS < <(</dev/tty stty size)
   WIDTH="$FZF_PREVIEW_COLUMNS"
@@ -29,7 +29,7 @@ function hash() {
 }
 
 function draw() {
-  if [ -n "$UEBERZUG_FIFO" ] && [ -z "$FZF_PREVIEW_COLUMNS" ]; then
+  if [ -n "${UEBERZUG_FIFO-}" ] && [ -z "${FZF_PREVIEW_COLUMNS-}" ]; then
     path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
     declare cmd
     declare -A -p cmd=(\

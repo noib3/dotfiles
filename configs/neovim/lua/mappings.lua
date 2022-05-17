@@ -7,31 +7,30 @@ local eval_viml = vim.api.nvim_eval
 
 ---@return string
 local i_Tab = function()
-  compleet.has_completions()
-  return (compleet.is_menu_visible() and "<Plug>(compleet-next-completion)")
-    or (compleet.has_completions() and "<Plug>(compleet-show-completions)")
-    or "<Tab>"
+  return (compleet.is_menu_open() and "<Plug>(compleet-next-completion)")
+      or (compleet.has_completions() and "<Plug>(compleet-show-completions)")
+      or "<Tab>"
 end
 
 ---@return string
 local i_STab = function()
-  return (compleet.is_menu_visible() and "<Plug>(compleet-prev-completion)")
-    or (eval_viml("delimitMate#ShouldJump()") and "<Plug>delimitMateS-Tab")
-    or "<S-Tab>"
+  return (compleet.is_menu_open() and "<Plug>(compleet-prev-completion)")
+      or (eval_viml("delimitMate#ShouldJump()") and "<Plug>delimitMateS-Tab")
+      or "<S-Tab>"
 end
 
 ---@return string
 local i_Right = function()
   return compleet.is_hint_visible()
-      and "<Plug>(compleet-insert-hinted-completion)"
-    or "<Right>"
+      and "<Plug>(compleet-insert-first-completion)"
+      or "<Right>"
 end
 
 ---@return string
 local i_CR = function()
   return compleet.is_completion_selected()
       and "<Plug>(compleet-insert-selected-completion)"
-    or "<Plug>delimitMateCR"
+      or "<Plug>delimitMateCR"
 end
 
 -- Either closes the window or deletes the current buffer.
@@ -41,10 +40,9 @@ local close = function()
 
   if filetype == "startify" then
     vim.cmd("bd")
-  elseif
-    filetype == "help"
-    or buftype == "nofile"
-    or #vim.fn.getbufinfo({ buflisted = 1 }) == 1
+  elseif filetype == "help"
+      or buftype == "nofile"
+      or #vim.fn.getbufinfo({ buflisted = 1 }) == 1
   then
     vim.cmd("q")
   elseif buftype == "terminal" then
@@ -132,7 +130,7 @@ local setup = function()
 
   -- Substitute globally and locally in the selected region.
   keymap.set("n", "ss", ":%s//g<Left><Left>")
-  keymap.set("v", "ss", ":%s//g<Left><Left>")
+  keymap.set("v", "ss", ":s//<Left>")
 
   -- Stop highlighting the latest search results.
   keymap.set("n", "<C-g>", "<Cmd>noh<CR>", { silent = true })

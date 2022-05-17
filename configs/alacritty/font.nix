@@ -23,10 +23,9 @@ let
     "JetBrainsMono Nerd Font" = {
       bold.style = "Extra Bold";
       bold_italic.style = "Extra Bold";
-      "blade".size = 9;
+      "blade".size = 9.5;
       "mbair".size = 19;
       "mbair".offset.y = 1;
-      "mbair".glyph_offset.y = 1;
     };
 
     "Mononoki Nerd Font" = {
@@ -71,5 +70,4 @@ in
 
   size = overrides.${family}.${machine}.size or default_size.${machine};
   offset.y = overrides.${family}.${machine}.offset.y or 0;
-  glyph_offset.y = overrides.${family}.${machine}.glyph_offset.y or 0;
 }

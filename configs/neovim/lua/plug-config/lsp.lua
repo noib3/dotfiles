@@ -1,4 +1,10 @@
 local lspconfig = require("lspconfig")
+local has_compleet, compleet = pcall(require, "compleet")
+
+local capabilities =
+has_compleet
+    and compleet.lsp_client_capabilities()
+    or vim.lsp.protocol.make_client_capabilities()
 
 local fn = vim.fn
 local keymap = vim.keymap
@@ -24,6 +30,12 @@ local on_attach = function(_, bufnr)
 end
 
 local setup = function()
+  -- C
+  lspconfig.clangd.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+  })
+
   -- Dart
   local dartls_snapshot_path = string.format(
     "%s/snapshots/analysis_server.dart.snapshot",
@@ -31,6 +43,7 @@ local setup = function()
   )
 
   lspconfig.dartls.setup({
+    capabilities = capabilities,
     cmd = { "dart", dartls_snapshot_path, "--lsp" },
     on_attach = on_attach,
   })
@@ -57,16 +70,31 @@ local setup = function()
 
   -- Nix
   lspconfig.rnix.setup({
+    capabilities = capabilities,
     on_attach = on_attach,
   })
 
   -- Python
   lspconfig.jedi_language_server.setup({
+    capabilities = capabilities,
     on_attach = on_attach,
   })
 
   -- Rust
   lspconfig.rust_analyzer.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+  })
+
+  -- Svelte
+  lspconfig.svelte.setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+  })
+
+  -- Typescript
+  lspconfig.tsserver.setup({
+    capabilities = capabilities,
     on_attach = on_attach,
   })
 end
