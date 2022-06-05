@@ -14,36 +14,24 @@
   homebrew = {
     enable = true;
     cleanup = "zap";
-    taps = [
-      "koekeishiya/formulae"
-    ];
     brews = [
       "mas"
-      "yabai"
-      "skhd"
+    ];
+    casks = [
+      "alacritty"
+      "nordvpn"
+      "signal"
+      "zoom"
     ];
   };
 
-  # networking = {
-  #   computerName = machine;
-  #   hostName = machine;
-  #   localHostName = machine;
-  # };
-
-  services.nix-daemon.enable = true;
-
-  services.skhd = {
-    enable = false;
-    package = pkgs.skhd;
-    skhdConfig = "cmd - return : alacritty";
+  networking = {
+    computerName = machine;
+    hostName = machine;
+    localHostName = machine;
   };
 
-  # services.yabai = {
-  #   enable = false;
-  # } // (import "${configDir}/yabai" {
-  #   inherit pkgs colorscheme palette hexlib;
-  #   inherit (lib.strings) removePrefix;
-  # });
+  services.nix-daemon.enable = true;
 
   system.defaults = {
     dock = {
@@ -66,8 +54,6 @@
       AppleShowAllFiles = true;
       InitialKeyRepeat = 10;
       KeyRepeat = 2;
-      # Enable trackpad's tap to click
-      # com.apple.mouse.tapBehaviour = 1;
     };
 
     SoftwareUpdate.AutomaticallyInstallMacOSUpdates = true;

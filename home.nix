@@ -292,19 +292,6 @@ in
     inherit pkgs colorscheme font-family palette hexlib;
   });
 
-  programs.skhd = lib.mkIf isDarwin
-    {
-      enable = true;
-      config = ''
-        cmd - return : alacritty
-        alt - f : skhd --key "ctrl + cmd - f"
-      '';
-    };
-
-  # // (import "${configDir}/skhd" {
-  # inherit (pkgs) writeShellScriptBin;
-  # });
-
   # programs.spacebar = lib.mkIf isDarwin ({
   #   enable = true;
   # } // (import "${configDir}/spacebar" {
@@ -322,10 +309,6 @@ in
     inherit colorscheme palette;
     inherit (lib.strings) removePrefix;
   });
-
-  programs.yabai = lib.mkIf isDarwin ({
-    enable = true;
-  } // (import "${configDir}/yabai"));
 
   programs.zathura = lib.mkIf isLinux ({
     enable = true;
@@ -379,6 +362,12 @@ in
     enable = true;
   } // (import "${configDir}/redshift"));
 
+  services.skhd = lib.mkIf isDarwin ({
+    enable = true;
+  } // (import "${configDir}/skhd" {
+    inherit pkgs;
+  }));
+
   services.sxhkd = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/sxhkd" {
@@ -390,6 +379,10 @@ in
   services.udiskie = lib.mkIf isLinux ({
     enable = true;
   } // (import "${configDir}/udiskie"));
+
+  # services.yabai = lib.mkIf isDarwin ({
+  #   enable = false;
+  # } // (import "${configDir}/yabai"));
 
   systemd.user.startServices = true;
 

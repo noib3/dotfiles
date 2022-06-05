@@ -96,10 +96,10 @@
           ];
         };
         extraModules = [
-          ./modules/programs/skhd.nix
           ./modules/programs/spacebar.nix
           ./modules/programs/vivid.nix
-          ./modules/programs/yabai.nix
+          # ./modules/services/yabai.nix
+          ./modules/services/skhd.nix
         ];
         extraSpecialArgs = {
           cloudDir = "${getHomeDirectory args.system}/Dropbox";

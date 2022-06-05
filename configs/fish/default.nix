@@ -17,6 +17,7 @@ in
 {
   shellAliases = {
     cat = "bat";
+    gc = "git clone";
     grep = "rg";
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
@@ -40,7 +41,7 @@ in
   } // optionalAttrs isLinux {
     nrs = "nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure --use-remote-sudo";
   } // optionalAttrs isDarwin {
-    nrs = "darwin-rebuild switch --flake ${cloudDir}/dotfiles";
+    drs = "darwin-rebuild switch --flake ${cloudDir}/dotfiles";
   };
 
   interactiveShellInit = ''

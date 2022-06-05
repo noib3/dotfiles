@@ -1,13 +1,9 @@
 {
-  # package = pkgs.yabai;
-
-  # enableScriptingAddition = true;
-
   config = {
-    window_placement = "second_child";
-    window_border = "off";
-    focus_follows_mouse = "autofocus";
     layout = "bsp";
+    focus_follows_mouse = "autofocus";
+    window_border = "off";
+    window_placement = "second_child";
     top_padding = 20;
     bottom_padding = 30;
     left_padding = 30;
@@ -16,7 +12,7 @@
   };
 
   extraConfig = ''
-    yabai -m rule --add app="Digital Colour Meter" manage=off
+     yabai -m rule --add app="Digital Colour Meter" manage=off
     yabai -m rule --add app="System Preferences" manage=off
     yabai -m rule --add app="Activity Monitor" manage=off
     yabai -m rule --add app="Font Book" manage=off
