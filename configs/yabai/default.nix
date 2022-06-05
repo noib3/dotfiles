@@ -1,29 +1,15 @@
-{ colorscheme
-, palette
-, hexlib
-, removePrefix
-}:
-
-let
-  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
-
-  # Converts a color from hexadecimal to the format required by Yabai.
-  #
-  # Example:
-  #   toYabaiFormat "#abb2bf" => "0xffabb2bf"
-  toYabaiFormat = color: "0xff" + removePrefix "#" color;
-in
 {
+  # package = pkgs.yabai;
+
+  # enableScriptingAddition = true;
+
   config = {
     window_placement = "second_child";
-    window_border = "on";
-    window_border_width = 4;
-    normal_window_border_color = toYabaiFormat colors.border.unfocused;
-    active_window_border_color = toYabaiFormat colors.border.focused;
+    window_border = "off";
+    focus_follows_mouse = "autofocus";
     layout = "bsp";
-    external_bar = "all:20:0";
     top_padding = 20;
-    bottom_padding = 20;
+    bottom_padding = 30;
     left_padding = 30;
     right_padding = 30;
     window_gap = 20;
@@ -36,7 +22,6 @@ in
     yabai -m rule --add app="Font Book" manage=off
     yabai -m rule --add app="App Store" manage=off
     yabai -m rule --add app="System Information" manage=off
-    yabai -m rule --add app="Logi Options" manage=off
 
     yabai -m rule --add title="floating" manage=off
 

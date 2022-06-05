@@ -237,6 +237,9 @@ in
       "grhm" = "open https://github.com/nix-community/home-manager/find/master";
       "trhm" = "open -t https://github.com/nix-community/home-manager/find/master";
 
+      "gnv" = "open https://github.com/neovim/neovim/tree/master/src/nvim";
+      "tnv" = "open -t https://github.com/neovim/neovim/tree/master/src/nvim";
+
       "gbg" = "open https://rarbgunblocked.org/torrents.php";
       "tbg" = "open -t https://rarbgunblocked.org/torrents.php";
 

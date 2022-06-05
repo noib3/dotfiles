@@ -2,7 +2,7 @@
 , font-family
 , machine
 , palette
-, lib ? import <nixpkgs/lib>
+, lib
 }:
 
 let

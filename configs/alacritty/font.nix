@@ -44,7 +44,7 @@ let
 
   default_size = {
     "blade" = 10;
-    "mbair" = 19;
+    "skunk" = 16;
   };
 in
 {

@@ -163,46 +163,46 @@ local spec = function()
   })
 
   -- Wannabe completion framework.
-  use({
-    "~/Dropbox/projects/nvim-compleet",
-    config = function()
-      require("compleet").setup({
-        ui = {
-          menu = {
-            anchor = "cursor",
-            max_height = 7,
-            border = {
-              enable = false,
-              style = "single",
-            }
-          },
+  -- use({
+  --   "~/Dropbox/projects/nvim-compleet",
+  --   config = function()
+  --     require("compleet").setup({
+  --       ui = {
+  --         menu = {
+  --           anchor = "cursor",
+  --           max_height = 7,
+  --           border = {
+  --             enable = false,
+  --             style = "single",
+  --           }
+  --         },
 
-          -- details = {
-          --   border = {
-          --     enable = true,
-          --     style = "single",
-          --   },
-          -- },
+  --         -- details = {
+  --         --   border = {
+  --         --     enable = true,
+  --         --     style = "single",
+  --         --   },
+  --         -- },
 
-          hint = { enable = true },
-        },
+  --         hint = { enable = true },
+  --       },
 
-        completion = {
-          while_deleting = true,
-          after_inserting = false,
-        },
+  --       completion = {
+  --         while_deleting = true,
+  --         after_inserting = false,
+  --       },
 
-        sources = {
-          -- lipsum = { enable = true },
-          lsp = {
-            enable = true,
-            highlight_completions = true,
-          },
-        }
-      })
-    end,
-    -- run = "./install.sh release",
-  })
+  --       sources = {
+  --         -- lipsum = { enable = true },
+  --         lsp = {
+  --           enable = true,
+  --           highlight_completions = true,
+  --         },
+  --       }
+  --     })
+  --   end,
+  --   -- run = "./install.sh release",
+  -- })
 
   use({ "nvim-lua/plenary.nvim" })
   use({ "TimUntersberger/neogit" })

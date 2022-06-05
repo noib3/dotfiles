@@ -26,7 +26,7 @@ let
     runtimeInputs = [
       atool # contains `als` used for archives
       bat
-      calibre # contains `ebook-meta` used for epubs
+      # calibre # contains `ebook-meta` used for epubs
       chafa
       ffmpegthumbnailer
       file
@@ -46,16 +46,12 @@ in
 {
   home.packages = with pkgs; [
     asciinema
-    brave
-    cargo
-    clang-tools
+    bottom
     delta
     dua
     fd
     file
     fuzzy-ripgrep
-    gcc
-    gotop
     helix
     jq
     imagemagick_light # Contains `convert`
@@ -70,10 +66,10 @@ in
         "RobotoMono"
       ];
     })
-    noto-fonts-emoji
-    ookla-speedtest
+    # ookla-speedtest
     pfetch
     previewer
+    # procs
     (python310.withPackages (pp: with pp; [
       ipython
       isort
@@ -83,8 +79,8 @@ in
     rg-previewer
     ripgrep
     rnix-lsp
-    rustc
-    rustfmt
+    # rust-bin.nightly.latest.default
+    rust-bin.stable.latest.default
     rust-analyzer
     nodePackages.svelte-language-server
     stylua
@@ -97,10 +93,12 @@ in
     vimv
     zip
   ] ++ lib.lists.optionals isDarwin [
+    coreutils
     findutils
     gnused
   ] ++ lib.lists.optionals isLinux [
     blueman
+    brave
     calcurse
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;
@@ -109,6 +107,7 @@ in
     glibc
     lf_w_image_previews
     libnotify
+    noto-fonts-emoji
     obs-studio
     peek
     pick-colour-picker
@@ -157,6 +156,13 @@ in
     size = 16;
     x11.enable = true;
     x11.defaultCursor = "left_ptr";
+  };
+
+  nix = {
+    package = pkgs.nixUnstable;
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+    };
   };
 
   xdg.configFile = {
@@ -236,6 +242,13 @@ in
     inherit (lib.strings) removePrefix;
   });
 
+  # programs.firefox = lib.mkIf isDarwin
+  #   {
+  #     enable = true;
+  #   } // (import "${configDir}/firefox" {
+  #   inherit lib colorscheme font-family machine palette;
+  # });
+
   programs.fzf = {
     enable = true;
   } // (import "${configDir}/fzf" {
@@ -272,23 +285,32 @@ in
     enable = true;
   } // (import "${configDir}/mpv");
 
-  programs.qutebrowser = {
-    enable = true;
-  } // (import "${configDir}/qutebrowser" {
+  programs.qutebrowser = lib.mkIf isLinux
+    {
+      enable = true;
+    } // (import "${configDir}/qutebrowser" {
     inherit pkgs colorscheme font-family palette hexlib;
   });
 
   programs.skhd = lib.mkIf isDarwin
     {
       enable = true;
-    } // (import "${configDir}/skhd");
+      config = ''
+        cmd - return : alacritty
+        alt - f : skhd --key "ctrl + cmd - f"
+      '';
+    };
 
-  programs.spacebar = lib.mkIf isDarwin ({
-    enable = true;
-  } // (import "${configDir}/spacebar" {
-    inherit colorscheme font-family palette;
-    inherit (lib.strings) removePrefix;
-  }));
+  # // (import "${configDir}/skhd" {
+  # inherit (pkgs) writeShellScriptBin;
+  # });
+
+  # programs.spacebar = lib.mkIf isDarwin ({
+  #   enable = true;
+  # } // (import "${configDir}/spacebar" {
+  #   inherit colorscheme font-family palette;
+  #   inherit (lib.strings) removePrefix;
+  # }));
 
   programs.starship = {
     enable = true;
@@ -303,10 +325,7 @@ in
 
   programs.yabai = lib.mkIf isDarwin ({
     enable = true;
-  } // (import "${configDir}/yabai" {
-    inherit colorscheme palette hexlib;
-    inherit (lib.strings) removePrefix;
-  }));
+  } // (import "${configDir}/yabai"));
 
   programs.zathura = lib.mkIf isLinux ({
     enable = true;

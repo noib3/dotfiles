@@ -130,7 +130,7 @@ local setup = function()
 
   -- Substitute globally and locally in the selected region.
   keymap.set("n", "ss", ":%s//g<Left><Left>")
-  keymap.set("v", "ss", ":s//<Left>")
+  keymap.set("v", "ss", ":s//g<Left><Left>")
 
   -- Stop highlighting the latest search results.
   keymap.set("n", "<C-g>", "<Cmd>noh<CR>", { silent = true })

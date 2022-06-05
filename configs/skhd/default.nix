@@ -1,7 +1,7 @@
-let
-  pkgs = import <nixpkgs> { };
+{ writeShellScriptBin }:
 
-  take-screenshot = pkgs.writeShellScriptBin "take-screenshot"
+let
+  take-screenshot = writeShellScriptBin "take-screenshot"
     (import ./take-screenshot.sh.nix);
 in
 {
@@ -13,7 +13,7 @@ in
     cmd - a : alacritty -e calcurse \
                 -C ${builtins.toString ../calcurse} \
                 -D $SYNCDIR/calcurse
-    cmd - g : alacritty -e gotop
+    cmd - g : alacritty -e btm
     cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
     ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app
 

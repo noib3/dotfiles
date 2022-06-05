@@ -30,7 +30,7 @@ in
 
     # Get a shell or launch some other terminal based program
     "super + Return" = "alacritty";
-    "super + g" = "alacritty -e gotop";
+    "super + g" = "alacritty -e btm";
     "super + f" = "alacritty -e lf ~/Downloads";
     "super + a" = ''
       alacritty -e calcurse \

@@ -6,6 +6,9 @@
 }:
 
 let
+  inherit (pkgs.lib.attrsets) optionalAttrs;
+  inherit (pkgs.stdenv) isDarwin isLinux;
+
   colors =
     builtins.mapAttrs
       (name: hex: removePrefix "#" hex)
@@ -18,10 +21,10 @@ in
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
     wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
-  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+  } // optionalAttrs isDarwin {
     reboot = ''osascript -e "tell app \"System Events\" to restart"'';
     shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
-  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+  } // optionalAttrs isLinux {
     reboot = "sudo shutdown -r now";
     shutdown = "sudo shutdown now";
     xclip = "xclip -selection c";
@@ -30,11 +33,14 @@ in
   shellAbbrs = {
     hmn = "home-manager news";
     hms = "home-manager switch --flake ${cloudDir}/dotfiles";
+    ngc = "nix store gc";
     ipy = "ipython";
     lg = "lazygit";
     t = "tdtd";
-  } // pkgs.lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-    nrs = "sudo nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure";
+  } // optionalAttrs isLinux {
+    nrs = "nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure --use-remote-sudo";
+  } // optionalAttrs isDarwin {
+    nrs = "darwin-rebuild switch --flake ${cloudDir}/dotfiles";
   };
 
   interactiveShellInit = ''
@@ -92,11 +98,7 @@ in
     direnv hook fish | source
 
     ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
-
-    # It doesn't let you source it more than once.
-    # bass source ~/.nix-profile/etc/profile.d/hm-session-vars.sh 2>/dev/null \
-    #   || true
-  '' + pkgs.lib.strings.optionalString pkgs.stdenv.isDarwin ''
+  '' + pkgs.lib.strings.optionalString isDarwin ''
     bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
       || true
   '';
@@ -111,7 +113,7 @@ in
         sha256 = "073wb83qcn0hfkywjcly64k6pf0d7z5nxxwls5sa80jdwchvd2rs";
       };
     }
-  ] ++ pkgs.lib.lists.optionals pkgs.stdenv.isDarwin [
+  ] ++ pkgs.lib.lists.optionals isDarwin [
     {
       name = "bass";
       src = pkgs.fetchFromGitHub {

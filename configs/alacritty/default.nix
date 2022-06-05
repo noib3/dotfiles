@@ -22,13 +22,15 @@ in
           x = 3;
           y = 0;
         };
-      } // optionalAttrs (machine == "mbair")
+      } // optionalAttrs (machine == "skunk")
       {
         padding = {
-          x = 14;
-          y = 6;
+          x = 10;
+          y = 5;
         };
-      };
+      } // optionalAttrs (isDarwin) {
+      decorations = "buttonless";
+    };
 
     cursor.style = "Beam";
 

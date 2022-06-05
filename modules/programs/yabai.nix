@@ -62,10 +62,13 @@ in
     home.packages = [ cfg.package ];
 
     xdg.configFile = {
-      "yabai/yabairc".text = (
-        if (cfg.config != { }) then "${toYabaiConfig cfg.config}"
-        else ""
-      ) + optionalString (cfg.extraConfig != "") ("\n" + cfg.extraConfig);
+      "yabai/yabairc" = {
+        text = (
+          if (cfg.config != { }) then "${toYabaiConfig cfg.config}"
+          else ""
+        ) + optionalString (cfg.extraConfig != "") ("\n" + cfg.extraConfig);
+        executable = true;
+      };
     };
   };
 }
