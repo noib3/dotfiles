@@ -235,8 +235,8 @@ in
 
   programs.direnv = {
     enable = true;
-  };
-  # } // (import "${configDir}/direnv");
+    # };
+  } // (import "${configDir}/direnv");
 
   programs.fish = {
     enable = true;
@@ -383,9 +383,9 @@ in
     enable = true;
   } // (import "${configDir}/udiskie"));
 
-  # services.yabai = lib.mkIf isDarwin ({
-  #   enable = false;
-  # } // (import "${configDir}/yabai"));
+  services.yabai = lib.mkIf isDarwin ({
+    enable = true;
+  } // (import "${configDir}/yabai"));
 
   systemd.user.startServices = true;
 

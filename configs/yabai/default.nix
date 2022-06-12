@@ -12,7 +12,7 @@
   };
 
   extraConfig = ''
-     yabai -m rule --add app="Digital Colour Meter" manage=off
+    yabai -m rule --add app="Digital Colour Meter" manage=off
     yabai -m rule --add app="System Preferences" manage=off
     yabai -m rule --add app="Activity Monitor" manage=off
     yabai -m rule --add app="Font Book" manage=off

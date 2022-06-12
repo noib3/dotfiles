@@ -98,7 +98,7 @@
         extraModules = [
           ./modules/programs/spacebar.nix
           ./modules/programs/vivid.nix
-          # ./modules/services/yabai.nix
+          ./modules/services/yabai.nix
           ./modules/services/skhd.nix
         ];
         extraSpecialArgs = {
