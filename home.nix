@@ -93,9 +93,11 @@ in
     vimv
     zip
   ] ++ lib.lists.optionals isDarwin [
+    binutils
     coreutils
     findutils
     gnused
+    libtool
   ] ++ lib.lists.optionals isLinux [
     blueman
     brave
@@ -234,6 +236,7 @@ in
   programs.direnv = {
     enable = true;
   };
+  # } // (import "${configDir}/direnv");
 
   programs.fish = {
     enable = true;

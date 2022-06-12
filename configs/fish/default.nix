@@ -25,6 +25,7 @@ in
   } // optionalAttrs isDarwin {
     reboot = ''osascript -e "tell app \"System Events\" to restart"'';
     shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
+    ldd = "otool -L";
   } // optionalAttrs isLinux {
     reboot = "sudo shutdown -r now";
     shutdown = "sudo shutdown now";

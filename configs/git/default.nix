@@ -52,6 +52,7 @@ in
   ignores = [
     ".direnv"
     ".envrc"
-    "shell.nix"
+    # "flake.nix"
+    # "flake.lock"
   ];
 }

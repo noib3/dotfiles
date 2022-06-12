@@ -11,6 +11,11 @@
 }:
 
 {
+  environment = {
+    loginShell = "${pkgs.fish}/bin/fish";
+    shells = [ pkgs.fish ];
+  };
+
   homebrew = {
     enable = true;
     cleanup = "zap";
@@ -19,6 +24,7 @@
     ];
     casks = [
       "alacritty"
+      "docker"
       "nordvpn"
       "signal"
       "zoom"
@@ -30,6 +36,8 @@
     hostName = machine;
     localHostName = machine;
   };
+
+  programs.fish.enable = true;
 
   services.nix-daemon.enable = true;
 

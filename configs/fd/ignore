@@ -2,6 +2,7 @@
 !/Dropbox
 !/Downloads
 !/.config
+!/dev
 /.config/*
 **/.direnv
 **/.dropbox.cache
