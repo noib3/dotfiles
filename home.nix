@@ -53,9 +53,11 @@ in
     file
     fuzzy-ripgrep
     helix
+    hexyl
     jq
     imagemagick_light # Contains `convert`
-    neovim-nightly
+    neovim
+    # neovim-nightly
     (nerdfonts.override {
       fonts = [
         "FiraCode"
@@ -71,6 +73,7 @@ in
     previewer
     # procs
     (python310.withPackages (pp: with pp; [
+      grip
       ipython
       isort
       jedi-language-server
@@ -79,20 +82,25 @@ in
     rg-previewer
     ripgrep
     rnix-lsp
-    # rust-bin.nightly.latest.default
-    rust-bin.stable.latest.default
+    nodejs
+    (rust-bin.stable.latest.default.override {
+      extensions = [ "rust-src" ];
+    })
     rust-analyzer
-    nodePackages.svelte-language-server
     stylua
     sumneko-lua-language-server
+    tdtd
     texlive.combined.scheme-full
     tokei
-    nodePackages.typescript-language-server
     stylua
     unzip
     vimv
     zip
-  ] ++ lib.lists.optionals isDarwin [
+  ] ++ (with nodePackages; [
+    pyright
+    svelte-language-server
+    typescript-language-server
+  ]) ++ lib.lists.optionals isDarwin [
     binutils
     coreutils
     findutils
@@ -184,7 +192,7 @@ in
     };
 
     "nvim" = {
-      source = "${configDir}/neovim";
+      source = "${configDir}/meovim";
       recursive = true;
     };
 

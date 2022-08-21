@@ -24,6 +24,7 @@
     ];
     casks = [
       "alacritty"
+      "brave-browser"
       "docker"
       "nordvpn"
       "signal"

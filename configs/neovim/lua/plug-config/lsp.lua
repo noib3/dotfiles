@@ -24,9 +24,9 @@ local on_attach = function(_, bufnr)
     { buffer = bufnr, silent = true }
   )
 
-  vim.cmd([[
-    autocmd BufWritePre <buffer> lua vim.lsp.buf.format()
-  ]])
+  -- vim.cmd([[
+  --   autocmd BufWritePre <buffer> lua vim.lsp.buf.format()
+  -- ]])
 end
 
 local setup = function()

@@ -19,17 +19,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # neovim-nightly-overlay = {
+    #   url = "github:nix-community/neovim-nightly-overlay/master";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    tdtd.url = "path:/Users/noib3/Dropbox/projects/tdtd";
   };
 
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
-      colorscheme = "tokyonight";
-      font-family = "FiraCode Nerd Font";
+      colorscheme = "gruvbox";
+      font-family = "JetBrainsMono Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
       palette = import (./palettes + "/${colorscheme}.nix");
@@ -91,8 +93,9 @@
             allowUnsupportedSystem = true;
           };
           overlays = [
-            neovim-nightly-overlay.overlay
-            rust-overlay.overlay
+            # neovim-nightly-overlay.overlay
+            rust-overlay.overlays.default
+            tdtd.overlay
           ];
         };
         extraModules = [
