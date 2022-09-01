@@ -21,13 +21,16 @@
     cleanup = "zap";
     brews = [
       "mas"
+      "swift-format"
     ];
     casks = [
       "alacritty"
       "brave-browser"
       "docker"
       "nordvpn"
+      "selfcontrol"
       "signal"
+      "visual-studio-code"
       "zoom"
     ];
   };

@@ -14,10 +14,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # rust-overlay = {
+    #   url = "github:oxalica/rust-overlay";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # neovim-nightly-overlay = {
     #   url = "github:nix-community/neovim-nightly-overlay/master";
@@ -81,10 +81,6 @@
       };
 
       mkHomeConfig = args: home-manager.lib.homeManagerConfiguration {
-        inherit username;
-        inherit (args) system;
-        homeDirectory = getHomeDirectory args.system;
-        stateVersion = "22.05";
         pkgs = import nixpkgs {
           inherit (args) system;
           config = {
@@ -94,15 +90,24 @@
           };
           overlays = [
             # neovim-nightly-overlay.overlay
-            rust-overlay.overlays.default
+            # rust-overlay.overlays.default
             tdtd.overlay
           ];
         };
-        extraModules = [
+        modules = [
+          ./home.nix
           ./modules/programs/spacebar.nix
           ./modules/programs/vivid.nix
           ./modules/services/yabai.nix
           ./modules/services/skhd.nix
+          {
+            home = {
+              inherit username;
+              # inherit (args) system;
+              homeDirectory = getHomeDirectory args.system;
+              stateVersion = "22.11";
+            };
+          }
         ];
         extraSpecialArgs = {
           cloudDir = "${getHomeDirectory args.system}/Dropbox";
@@ -115,7 +120,13 @@
             hexlib
             ;
         };
-        configuration = import ./home.nix;
+        # inherit username;
+        # inherit (args) system;
+        # homeDirectory = getHomeDirectory args.system;
+        # stateVersion = "22.05";
+        # extraModules = [
+        # ];
+        # configuration = import ./home.nix;
       };
     in
     {

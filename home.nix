@@ -83,16 +83,15 @@ in
     ripgrep
     rnix-lsp
     nodejs
-    (rust-bin.stable.latest.default.override {
-      extensions = [ "rust-src" ];
-    })
+    # (rust-bin.stable.latest.default.override {
+    #   extensions = [ "rust-src" ];
+    # })
     rust-analyzer
     stylua
     sumneko-lua-language-server
     tdtd
     texlive.combined.scheme-full
     tokei
-    stylua
     unzip
     vimv
     zip

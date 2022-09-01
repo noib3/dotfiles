@@ -17,7 +17,7 @@ in
 {
   shellAliases = {
     cat = "bat";
-    gc = "git clone";
+    gcl = "git clone";
     grep = "rg";
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
@@ -134,5 +134,6 @@ in
     fuzzy-kill = builtins.readFile ./functions/fuzzy-kill.fish;
     fuzzy-ripgrep = builtins.readFile ./functions/fuzzy-ripgrep.fish;
     fuzzy-search = builtins.readFile ./functions/fuzzy-search.fish;
+    gri = builtins.readFile ./functions/gri.fish;
   };
 }
