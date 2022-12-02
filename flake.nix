@@ -4,34 +4,27 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # rust-overlay = {
-    #   url = "github:oxalica/rust-overlay";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    # neovim-nightly-overlay = {
-    #   url = "github:nix-community/neovim-nightly-overlay/master";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    tdtd.url = "path:/Users/noib3/Dropbox/projects/tdtd";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, ... }@inputs: with inputs;
     let
       username = "noib3";
-      colorscheme = "gruvbox";
-      font-family = "JetBrainsMono Nerd Font";
+      colorscheme = "tokyonight";
+      font-family = "SauceCodePro Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
       palette = import (./palettes + "/${colorscheme}.nix");
@@ -65,7 +58,7 @@
       mkDarwinConfig = args: darwin.lib.darwinSystem {
         inherit (args) system;
         specialArgs = {
-          cloudDir = "${getHomeDirectory args.system}/Dropbox";
+          cloudDir = "${getHomeDirectory args.system}/Documents";
           inherit (args) machine;
           inherit
             colorscheme
@@ -84,14 +77,11 @@
         pkgs = import nixpkgs {
           inherit (args) system;
           config = {
-            # allowBroken = true;
             allowUnfree = true;
             allowUnsupportedSystem = true;
           };
           overlays = [
-            # neovim-nightly-overlay.overlay
-            # rust-overlay.overlays.default
-            tdtd.overlay
+            rust-overlay.overlays.default
           ];
         };
         modules = [
@@ -103,7 +93,6 @@
           {
             home = {
               inherit username;
-              # inherit (args) system;
               homeDirectory = getHomeDirectory args.system;
               stateVersion = "22.11";
             };
@@ -120,13 +109,6 @@
             hexlib
             ;
         };
-        # inherit username;
-        # inherit (args) system;
-        # homeDirectory = getHomeDirectory args.system;
-        # stateVersion = "22.05";
-        # extraModules = [
-        # ];
-        # configuration = import ./home.nix;
       };
     in
     {

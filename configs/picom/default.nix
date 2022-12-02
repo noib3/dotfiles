@@ -4,7 +4,7 @@
   fade = true;
   fadeDelta = 3;
 
-  extraOptions = ''
+  settings = ''
     blur:
     {
       method = "gaussian";

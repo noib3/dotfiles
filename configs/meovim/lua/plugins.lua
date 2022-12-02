@@ -150,6 +150,14 @@ local plugins = function()
     opts = true,
   })
 
+  use({
+    "folke/tokyonight.nvim",
+    config = function()
+      vim.g.tokyonight_style = "storm"
+      vim.g.tokyonight_transparent = true
+    end,
+  })
+
   -- Comment and uncomment code with `gc`.
   use({ "tpope/vim-commentary" })
 

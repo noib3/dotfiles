@@ -17,9 +17,13 @@
   };
 
   homebrew = {
+    onActivation = {
+      cleanup = "zap";
+      upgrade = true;
+    };
     enable = true;
-    cleanup = "zap";
     brews = [
+      "llvm"
       "mas"
       "swift-format"
     ];
@@ -30,7 +34,6 @@
       "nordvpn"
       "selfcontrol"
       "signal"
-      "visual-studio-code"
       "zoom"
     ];
   };

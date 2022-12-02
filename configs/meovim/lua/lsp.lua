@@ -43,7 +43,7 @@ local on_attach = function(_ --[[ client ]] , bufnr)
       group = lsp_augroup_id,
       buffer = bufnr,
       desc = "Formats the buffer before saving it to disk",
-      callback = function() lsp.buf.formatting_sync({}, 1000) end,
+      callback = function() lsp.buf.format({}, 1000) end,
     }
   )
 end
