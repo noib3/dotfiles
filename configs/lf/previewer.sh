@@ -47,7 +47,6 @@ function draw() {
   else
     chafa --size "${WIDTH}x${HEIGHT}" "$1"
   fi
-  exit 1
 }
 
 case "$FILE" in
@@ -55,21 +54,18 @@ case "$FILE" in
   *.lha|*.lrz|*.lz|*.lzh|*.lzma|*.lzo|*.rar|*.rpm|*.rz|*.t7z|*.tar|*.tbz|\
   *.tbz2|*.tgz|*.tlz|*.txz|*.tZ|*.tzo|*.war|*.xz|*.Z|*.zip)
     als -- "$FILE"
-    exit 0
     ;;
   *.svg)
     cache="$(hash "$FILE").png"
     [ -f "$cache" ] \
       || inkscape -z -w 1024 -h 1024 "$FILE" -o "$cache"
     draw "$cache"
-    exit 0
     ;;
   *.epub)
     cache="$(hash "$FILE").jpg"
     [ -f "$cache" ] \
       || ebook-meta --get-cover="$cache" "$FILE" &>/dev/null
     draw "$cache"
-    exit 0
     ;;
 esac
 
@@ -104,5 +100,3 @@ case "$(file -Lb --mime-type -- "$FILE")" in
     file -Lb --mime-type -- "$FILE"
     ;;
 esac
-
-exit 0

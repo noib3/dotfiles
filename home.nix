@@ -32,7 +32,7 @@ let
       file
       inkscape # SVGs
       mediainfo # audios
-      mkvtoolnix-cli # videos
+      # mkvtoolnix-cli # videos
       poppler_utils # contains `pdftoppm` used for PDFs
     ] ++ lib.lists.optionals isLinux [
       ueberzug
@@ -76,8 +76,9 @@ in
     pfetch
     previewer
     procs
-    (python310.withPackages (pp: with pp; [
+    (python39.withPackages (pp: with pp; [
       ipython
+      virtualenv
     ]))
     rg-previewer
     ripgrep
@@ -100,6 +101,7 @@ in
     svelte-language-server
     typescript-language-server
   ]) ++ lib.lists.optionals isDarwin [
+    # binutils
     coreutils
     findutils
     gnused
@@ -273,9 +275,7 @@ in
 
   programs.gpg = {
     enable = true;
-  } // (import "${configDir}/gpg/gpg.nix" {
-    homedir = "${cloudDir}/share/gnupg";
-  });
+  };
 
   programs.home-manager = {
     enable = true;

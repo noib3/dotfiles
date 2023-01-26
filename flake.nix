@@ -99,7 +99,7 @@
           }
         ];
         extraSpecialArgs = {
-          cloudDir = "${getHomeDirectory args.system}/Dropbox";
+          cloudDir = "${getHomeDirectory args.system}/Documents";
           inherit (args) machine;
           inherit
             colorscheme

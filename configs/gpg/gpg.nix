@@ -1,5 +1,0 @@
-{ homedir }:
-
-{
-  inherit homedir;
-}

@@ -7,11 +7,11 @@ let
   );
 in
 {
-  userName = "noib3";
-  userEmail = "riccardo.mazzarini@pm.me";
+  userName = "Riccardo Mazzarini";
+  userEmail = "me@noib3.dev";
 
   signing = {
-    key = "riccardo.mazzarini@pm.me";
+    key = "me@noib3.dev";
     signByDefault = true;
   };
 
@@ -52,7 +52,5 @@ in
   ignores = [
     ".direnv"
     ".envrc"
-    # "flake.nix"
-    # "flake.lock"
   ];
 }
