@@ -46,7 +46,6 @@
       "$zig"
       "$conda"
       "$memory_usage"
-      "$gcloud"
       "$openstack"
       "$env_var"
       "$crystal"

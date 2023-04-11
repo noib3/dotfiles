@@ -22,6 +22,8 @@ local plugins = function()
   -- Delete buffers without closing the window they're in.
   use({ "famiu/bufdelete.nvim" })
 
+  use({ "github/copilot.vim" })
+
   -- Automatically insert/delete matching parenthesis.
   use({
     "Raimondi/delimitMate",
@@ -95,6 +97,13 @@ local plugins = function()
         { names = false }
       )
     end
+  })
+
+  use({
+    "iamcco/markdown-preview.nvim",
+    run = "cd app && npm install",
+    setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+    ft = { "markdown" },
   })
 
   -- Contains default configurations for many LSPs.

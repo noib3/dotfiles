@@ -50,6 +50,7 @@ in
     cargo-deny
     cargo-flamegraph
     cargo-fuzz
+    cmake
     delta
     dua
     fd
@@ -84,10 +85,8 @@ in
     ripgrep
     rnix-lsp
     nodejs
-    (rust-bin.stable.latest.default.override {
-      extensions = [ "rust-src" ];
-    })
     rust-analyzer
+    rustup
     stylua
     sumneko-lua-language-server
     texlive.combined.scheme-full
