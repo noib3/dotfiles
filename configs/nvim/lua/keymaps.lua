@@ -1,223 +1,136 @@
-local has_telescope, telescope = pcall("telescope")
+local has_bufdelete, _ = pcall(require, "bufdelete")
 
-vim.g.mapleader = ","
+local diagnostic = vim.diagnostic
 
---- Closes a window or deletes a buffer or closes Neovim, in that order.
-local close_ctx = function()
-  vim.cmd("q")
-end
+local keymap = vim.keymap
 
-local keymaps = {
-  -- Disable "s".
-  {
-    mode = { "n", "v" },
-    lhs = "s",
-    rhs = "",
-  },
-
-  -- Save the file.
-  {
-    mode = "n",
-    lhs = "<C-s>",
-    rhs = "<Cmd>w<CR>",
-  },
-
-  -- Close the current context.
-  {
-    mode = "n",
-    lhs = "<C-w>",
-    rhs = close_ctx,
-  },
-
-  -- Jump to the first non-whitespace character in the displayed line.
-  {
-    mode = { "n", "v" },
-    lhs = "<C-a>",
-    rhs = "g^",
-  },
-  {
-    mode = "i",
-    lhs = "<C-a>",
-    rhs = "<C-o>g^",
-  },
-
-  -- Move between displayed lines instead of logical ones, taking count of
-  -- soft wrapping.
-  {
-    mode = { "n", "v" },
-    lhs = "<Up>",
-    rhs = "g<Up>",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = { "n", "v" },
-    lhs = "<Down>",
-    rhs = "g<Down>",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = "i",
-    lhs = "<Up>",
-    rhs = "<C-o>g<Up>",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = "i",
-    lhs = "<Down>",
-    rhs = "<C-o>g<Down>",
-    opts = {
-      noremap = true,
-    },
-  },
-
-  -- Jump to end of the displayed line.
-  {
-    mode = { "n", "v" },
-    lhs = "<C-e>",
-    rhs = "g$",
-  },
-  {
-    mode = "i",
-    lhs = "<C-e>",
-    rhs = "<C-o>g$",
-  },
-
-  -- Navigate window splits.
-  {
-    mode = "n",
-    lhs = "<S-Up>",
-    rhs = "<C-w>k",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = "n",
-    lhs = "<S-Down>",
-    rhs = "<C-w>j",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = "n",
-    lhs = "<S-Left>",
-    rhs = "<C-w>h",
-    opts = {
-      noremap = true,
-    },
-  },
-  {
-    mode = "n",
-    lhs = "<S-Right>",
-    rhs = "<C-w>l",
-    opts = {
-      noremap = true,
-    },
-  },
-
-  -- Delete the previous word in insert mode.
-  {
-    mode = "n",
-    lhs = "<M-BS>",
-    rhs = "<C-w>",
-    opts = {
-      noremap = true,
-    },
-  },
-
-  -- Escape terminal mode.
-  {
-    mode = "t",
-    lhs = "<M-Esc>",
-    rhs = "<C-\\><C-n>",
-    opts = { noremap = true },
-  },
-
-  -- Substitute globally and in the visually selected region.
-  {
-    mode = "n",
-    lhs = "ss",
-    rhs = ":%s///g<Left><Left><Left>",
-  },
-  {
-    mode = "v",
-    lhs = "ss",
-    rhs = ":s///g<Left><Left><Left>",
-  },
-
-  -- Display the diagnostics in a floating window.
-  {
-    mode = "n",
-    lhs = "?",
-    rhs = vim.diagnostic.open_float,
-  },
-
-  -- Navigate to the next/previous diagnostic
-  {
-    mode = "n",
-    lhs = "dn",
-    rhs = vim.diagnostic.goto_next,
-  },
-  {
-    mode = "n",
-    lhs = "dp",
-    rhs = vim.diagnostic.goto_prev,
-  },
-
-  -- Display infos.
-  {
-    mode = "n",
-    lhs = "K",
-    rhs = vim.lsp.buf.hover,
-  },
-
-  -- Rename symbol.
-  {
-    mode = "n",
-    lhs = "<leader>rn",
-    rhs = vim.lsp.buf.rename,
-  },
-
-  -- Show code actions.
-  {
-    mode = "n",
-    lhs = "<leader>ca",
-    rhs = vim.lsp.buf.code_action,
-  },
-
-  -- Jump to variable definition.
-  {
-    mode = "n",
-    lhs = "<leader>gd",
-    rhs = vim.lsp.buf.definition,
-  },
-
-  -- Jump to type definition.
-  {
-    mode = "n",
-    lhs = "<leader>gtd",
-    rhs = vim.lsp.buf.type_definition,
-  },
+local direction = {
+  Up = 1,
+  Down = 2,
+  Left = 3,
+  Right = 4,
 }
 
-if has_telescope then
-  local project_dir = function()
-    local is_under_git = vim.fn.system("git status"):find("fatal") ~= nil
-    if is_under_git then
-      return vim.fn.systemlist("git rev-parse --show-toplevel")[0]
-    else
-      return vim.fn.expand("%:p:h")
-    end
+-- Open a new split window in a given direction and run a command in it.
+local open_split = function(dir, cmd)
+  local is_vertical = dir == direction.Up or dir == direction.Down
+
+  local split = is_vertical and "split" or "vsplit"
+
+  local hjkl =
+      (dir == direction.Up and "k")
+      or (dir == direction.Down and "j")
+      or (dir == direction.Left and "h")
+      or "l"
+
+  -- Splitting will move the cursor to the new window, so we move it
+  -- back to the previous one before moving in the desired direction. This
+  -- way it doesn't matter what the values of `splitbelow` and `splitright`
+  -- are.
+  local split_cmd = split .. " | wincmd p | wincmd " .. hjkl
+
+  if cmd then
+    split_cmd = split_cmd .. " | " .. cmd
   end
 
-  table.insert(keymaps, {})
+  return function()
+    vim.cmd(split_cmd)
+  end
 end
 
-return keymaps
+
+-- Either quit Neovim, close a window or delete a buffer based on the current
+-- context.
+local close = function()
+  -- Returns `true` if there's only one buffer left.
+  local is_last_buffer = function()
+    return #vim.fn.getbufinfo({ buflisted = 1 }) == 1
+  end
+
+  -- The current buffer filetype and buffer type.
+  local filetype, buftype = vim.bo.filetype, vim.bo.buftype
+
+  -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
+  -- to avoid messing w/ the window layout.
+  local bd = has_bufdelete and "Bdelete" or "bdelete"
+
+  local cmd =
+      (
+        (filetype == "help" or buftype == "nofile" or is_last_buffer())
+        and "q"
+      )
+      or (buftype == "terminal" and "bdelete!")
+      or bd
+
+  vim.cmd(cmd)
+end
+
+
+
+-- Disable `s`.
+keymap.set({ "n", "v" }, "s", "")
+
+-- Save the file
+keymap.set("n", "<C-s>", "<Cmd>w<CR>")
+
+keymap.set("n", "<C-w>", close)
+
+-- Jump to the first non-whitepspace character in the displayed line.
+keymap.set({ "n", "v" }, "<C-a>", "g^")
+keymap.set("i", "<C-a>", "<C-o>g^")
+
+-- Jump to the end of the displayed line.
+keymap.set({ "n", "v" }, "<C-e>", "g$")
+keymap.set("i", "<C-e>", "<C-o>g$")
+
+-- Move between displayed lines instead of physical ones (i.e. take count of
+-- soft-wrapping).
+keymap.set({ "n", "v" }, "<Up>", "g<Up>", { noremap = true })
+keymap.set({ "n", "v" }, "<Down>", "g<Down>", { noremap = true })
+
+keymap.set("i", "<Up>", "<C-o>g<Up>", { noremap = true })
+keymap.set("i", "<Down>", "<C-o>g<Down>", { noremap = true })
+
+-- Open a new split window.
+keymap.set("n", "s<Up>", open_split(direction.Up))
+keymap.set("n", "s<Down>", open_split(direction.Down))
+keymap.set("n", "s<Left>", open_split(direction.Left))
+keymap.set("n", "s<Right>", open_split(direction.Right))
+
+-- Navigate window splits.
+keymap.set("n", "<S-Up>", "<C-w>k", { noremap = true })
+keymap.set("n", "<S-Down>", "<C-w>j", { noremap = true })
+keymap.set("n", "<S-Left>", "<C-w>h", { noremap = true })
+keymap.set("n", "<S-Right>", "<C-w>l", { noremap = true })
+
+-- Delete the previou word in insert mode.
+keymap.set("i", "<M-BS>", "<C-w>", { noremap = true })
+
+-- Jump to the beginning of the line in command mode.
+keymap.set("c", "<C-a>", "<C-b>")
+
+-- Substitute globally and in the visually selected region.
+keymap.set("n", "ss", ":%s///g<Left><Left><Left>")
+keymap.set("v", "ss", ":s///g<Left><Left><Left>")
+
+-- Display diagnostics in a floating window.
+keymap.set("n", "?", diagnostic.open_float)
+
+-- Navigate to the previous/next diagnostic.
+keymap.set("n", "dp", diagnostic.goto_prev)
+keymap.set("n", "dn", diagnostic.goto_next)
+
+-- Escape terminal mode.
+keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
+
+keymap.set("n", "tt", function() vim.cmd("terminal") end)
+
+-- Open a terminal in a new split window.
+local open_terminal = function(dir)
+  return open_split(dir, "terminal")
+end
+
+keymap.set("n", "t<Up>", open_terminal(direction.Up))
+keymap.set("n", "t<Down>", open_terminal(direction.Down))
+keymap.set("n", "t<Left>", open_terminal(direction.Left))
+keymap.set("n", "t<Right>", open_terminal(direction.Right))

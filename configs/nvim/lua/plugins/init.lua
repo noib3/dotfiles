@@ -2,7 +2,17 @@ return {
   -- Delete buffers without closing the window they're in.
   "famiu/bufdelete.nvim",
 
-  --
+  "github/copilot.vim",
+
+  -- Lua port of `vim-commentary`.
+  {
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup()
+    end
+  },
+
+  -- Shows the latest version of every dependency in `Cargo.toml` files.
   {
     "saecki/crates.nvim",
     dependencies = {
@@ -23,6 +33,32 @@ return {
       )
     end
   },
+
+  -- Automatically insert/delete matching parenthesis.
+  {
+    "Raimondi/delimitMate",
+    config = function()
+      vim.g.delimitMate_expand_cr = 1
+      vim.g.delimitMate_expand_space = 1
+    end,
+  },
+
+  --
+  -- {
+  --   "junegunn/fzf",
+  --   config = function()
+  --     vim.g.fzf_layout = {
+  --       window = {
+  --         width = 1,
+  --         height = 9,
+  --         yoffset = 0,
+  --         highlight = "FzfBorder",
+  --         border = "bottom",
+  --       },
+  --     }
+  --     vim.cmd("source ~/.config/nvim/lua/plug-config/fzf.vim")
+  --   end,
+  -- },
 
   -- Qutebrowser-like buffer navigation.
   {
@@ -45,10 +81,27 @@ return {
   -- Default configs for many LSPs.
   "neovim/nvim-lspconfig",
 
+  -- Lua port of `vim-surround`.
+  {
+    "kylechui/nvim-surround",
+    version = "*",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup({})
+    end
+  },
+
+  -- Opens a rendered preview of Markdown files in the browser.
+  {
+    "iamcco/markdown-preview.nvim",
+    config = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+  },
+
   -- Telescope.
   {
     "nvim-telescope/telescope.nvim",
-    enabled = false,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
@@ -98,6 +151,8 @@ return {
         function() builtin.find_files({ cwd = project_dir() }) end
       )
 
+      -- vim.keymap.set("n", "<C-x><C-e>", builtin.find_files({ cwd = project_dir() }))
+
       vim.keymap.set(
         "n",
         "<Tab>",
@@ -141,5 +196,50 @@ return {
         },
       })
     end
+  },
+
+  -- Delete, rename files while they're open in a buffer.
+  "tpope/vim-eunuch",
+
+  -- Floating terminal, doesn't react to `VimResized` so not that good.
+  {
+    "voldikss/vim-floaterm",
+    config = function()
+      vim.g.floaterm_autoclose = 2
+      vim.g.floaterm_height = 0.8
+      vim.g.floaterm_opener = 'edit'
+      vim.g.floaterm_title = ''
+      vim.g.floaterm_width = 0.8
+
+      LfOpener = function(path)
+        print(path)
+
+        local filetype =
+            vim.fn.system(('file -Lb --mime-type "%s"'):format(path)):gsub('\n', '')
+
+        local is_textfile =
+            (filetype):find('text')
+            or filetype == 'application/json'
+            or filetype == 'inode/x-empty'
+
+        local cmd = is_textfile
+            and ('%s %s'):format(vim.g.floaterm_opener, path)
+            or ('silent execute "!open %s"'):format(vim.fn.shellescape(path))
+
+        vim.cmd(cmd)
+      end
+
+      local lf_select_current_buffer = function()
+        local filename = vim.api.nvim_buf_get_name(0)
+        if filename ~= '' then
+          filename = vim.fn.shellescape(filename)
+        end
+        vim.cmd('FloatermNew --opener=LfOpener lf ' .. filename)
+      end
+
+      vim.cmd('command! -nargs=* LfOpener call luaeval("LfOpener(_A)", <q-args>)')
+      vim.keymap.set("n", "ll", lf_select_current_buffer, { silent = true })
+      vim.keymap.set("n", "lg", '<Cmd>FloatermNew lazygit<CR>', { silent = true })
+    end,
   },
 }

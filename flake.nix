@@ -19,7 +19,7 @@
     let
       username = "noib3";
       colorscheme = "tokyonight";
-      font-family = "Iosevka Nerd Font";
+      font-family = "Inconsolata Nerd Font";
 
       hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
       palette = import (./palettes + "/${colorscheme}.nix");

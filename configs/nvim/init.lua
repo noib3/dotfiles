@@ -14,19 +14,13 @@ end
 
 vim.opt.runtimepath:append(lazypath)
 
--- Set options.
-local options = require("options")
+require("augroups")
+require("diagnostic")
+require("options")
 
-for key, value in pairs(options) do
-  vim.opt[key] = value
-end
-
--- Set keymaps.
-local keymaps = require("keymaps")
-
-for _, opts in ipairs(keymaps) do
-  vim.keymap.set(opts.mode, opts.lhs, opts.rhs, opts.opts)
-end
+-- These have to be set before loading the plugins or lazy.nvim will complain.
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 
 -- Load plugins.
 require("lazy").setup(
@@ -38,5 +32,6 @@ require("lazy").setup(
   }
 )
 
--- Load custom settings for LSPs.
+-- These modules should be loaded *after* the plugins.
+require("keymaps")
 require("lsp")
