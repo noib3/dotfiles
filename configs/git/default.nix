@@ -8,6 +8,7 @@ let
 in
 {
   userName = "Riccardo Mazzarini";
+
   userEmail = "me@noib3.dev";
 
   signing = {
@@ -17,7 +18,7 @@ in
 
   extraConfig = {
     init = {
-      defaultBranch = "master";
+      defaultBranch = "main";
     };
 
     pull = {
