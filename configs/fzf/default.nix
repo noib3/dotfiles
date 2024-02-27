@@ -30,7 +30,7 @@ in
   defaultCommand = ''
     fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=f --color=always \
       | sort -r \
-      | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g'
+      | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g'
   '';
 
   defaultOptions = [
@@ -53,9 +53,9 @@ in
 
   changeDirWidgetCommand = ''
     fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=d --color=always \
-      | sed 's/\(.*\)\x1b\[${col-dirs}m\//\1/' \
-      | sed 's/\x1b\[${col-dirs}m/\x1b\[${col-grayed-out-dirs}m/g' \
-      | sed 's/\(.*\)\x1b\[${col-grayed-out-dirs}m/\1\x1b\[${col-dirs}m/'
+      | sed 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
+      | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
+      | sed 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
   '';
 
   changeDirWidgetOptions = [
