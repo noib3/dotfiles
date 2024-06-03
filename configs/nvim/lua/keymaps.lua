@@ -70,6 +70,12 @@ end
 -- Disable `s`.
 keymap.set({ "n", "v" }, "s", "")
 
+-- Disable `<C-w>d`.
+keymap.del("n", "<C-w>d")
+
+-- Disable `<C-w><C-d>`.
+keymap.del("n", "<C-w><C-d>")
+
 -- Save the file
 keymap.set("n", "<C-s>", "<Cmd>w<CR>")
 

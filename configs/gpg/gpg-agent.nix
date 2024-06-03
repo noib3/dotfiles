@@ -7,5 +7,5 @@
   sshKeys = [
     "2FDC1C0B4FC5EAB272C75383FA8026DE3DEA8F16"
   ];
-  pinentryFlavor = "qt";
+  pinentryPackage = "qt";
 }

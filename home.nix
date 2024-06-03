@@ -32,6 +32,7 @@ let
       file
       inkscape # SVGs
       mediainfo # audios
+      imagemagick_light # Contains `convert`
       # mkvtoolnix-cli # videos
       poppler_utils # contains `pdftoppm` used for PDFs
     ] ++ lib.lists.optionals isLinux [
@@ -46,61 +47,46 @@ in
 {
   home.packages = with pkgs; [
     asciinema
-    bottom
+    cargo-criterion
     cargo-deny
+    cargo-expand
     cargo-flamegraph
     cargo-fuzz
+    # cargo-llvm-cov
     cmake
     delta
     dua
     fd
-    ffmpeg
-    file
     fuzzy-ripgrep
     gh
     helix
-    hexyl
     jq
-    imagemagick_light # Contains `convert`
     neovim
     (nerdfonts.override {
       fonts = [
         "FiraCode"
         "Inconsolata"
         "Iosevka"
-        "JetBrainsMono"
-        "Mononoki"
-        "RobotoMono"
         "SourceCodePro"
       ];
     })
     ookla-speedtest
     pfetch
     previewer
-    procs
-    (python39.withPackages (pp: with pp; [
-      ipython
-      grip
-      virtualenv
-    ]))
+    python312Packages.ipython
     rg-previewer
     ripgrep
-    rnix-lsp
-    nodejs
     rustup
     stylua
     sumneko-lua-language-server
-    texlive.combined.scheme-full
+    texliveConTeXt
+    # texliveSmall
     tokei
     tree
     unzip
     vimv
     zip
-  ] ++ (with nodePackages; [
-    pyright
-    svelte-language-server
-    typescript-language-server
-  ]) ++ lib.lists.optionals isDarwin [
+  ] ++ lib.lists.optionals isDarwin [
     # binutils
     coreutils
     findutils
@@ -169,7 +155,7 @@ in
   };
 
   nix = {
-    package = pkgs.nixUnstable;
+    package = pkgs.nix;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       warn-dirty = false;
