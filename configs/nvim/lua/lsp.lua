@@ -79,12 +79,6 @@ lspconfig.lua_ls.setup({
   },
 })
 
--- Nix -> https://github.com/nix-community/rnix-lsp
-lspconfig.rnix.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
 -- Rust -> https://github.com/rust-lang/rust-analyzer
 lspconfig.rust_analyzer.setup({
   capabilities = capabilities,

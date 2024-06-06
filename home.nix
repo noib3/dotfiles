@@ -62,6 +62,7 @@ in
     helix
     jq
     neovim
+    nodejs # Needed by Copilot
     (nerdfonts.override {
       fonts = [
         "FiraCode"
