@@ -4,11 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
 
-    darwin = {
-      url = "github:lnl7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,24 +42,6 @@
         };
         modules = [
           ./configuration.nix
-        ];
-      };
-
-      mkDarwinConfig = args: darwin.lib.darwinSystem {
-        inherit (args) system;
-        specialArgs = {
-          cloudDir = "${getHomeDirectory args.system}/Documents";
-          inherit (args) machine;
-          inherit
-            colorscheme
-            font-family
-            palette
-            configDir
-            hexlib
-            ;
-        };
-        modules = [
-          ./darwin-configuration.nix
         ];
       };
 
@@ -115,11 +92,6 @@
       homeConfigurations."${username}@blade" = mkHomeConfig {
         system = "x86_64-linux";
         machine = "blade";
-      };
-
-      darwinConfigurations.skunk = mkDarwinConfig {
-        system = "x86_64-darwin";
-        machine = "skunk";
       };
 
       homeConfigurations."${username}@skunk" = mkHomeConfig {
