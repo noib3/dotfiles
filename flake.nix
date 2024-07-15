@@ -2,101 +2,56 @@
   description = "noib3's dotfiles";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+  
+  outputs = { self, ... }@inputs: with inputs; {
+    nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configuration.nix
+        nixos-hardware.nixosModules.apple-t2
+      ];
+    };
 
-  outputs = { self, ... }@inputs: with inputs;
-    let
-      username = "noib3";
-      colorscheme = "tokyonight";
-      font-family = "Inconsolata Nerd Font";
+    homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
+      modules = [
+        ./home.nix
+        ./modules/programs/vivid.nix
+        ./modules/services/skhd.nix
+      ];
 
-      hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
-      palette = import (./palettes + "/${colorscheme}.nix");
-      configDir = ./configs;
-
-      getHomeDirectory = system: with nixpkgs.legacyPackages.${system}.stdenv;
-        if isDarwin then
-          "/Users/${username}"
-        else if isLinux then
-          "/home/${username}"
-        else "";
-
-      mkNixOSConfig = args: nixpkgs.lib.nixosSystem {
-        inherit (args) system;
-        specialArgs = {
-          homeDirectory = getHomeDirectory args.system;
-          inherit (args) machine;
-          inherit
-            username
-            colorscheme
-            palette
-            configDir
-            hexlib
-            ;
-        };
-        modules = [
-          ./configuration.nix
-        ];
-      };
-
-      mkHomeConfig = args: home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          inherit (args) system;
-          config = {
-            allowUnfree = true;
-            allowUnsupportedSystem = true;
-          };
-          # overlays = [
-          #   rust-overlay.overlays.default
-          # ];
-        };
-        modules = [
-          ./home.nix
-          ./modules/programs/spacebar.nix
-          ./modules/programs/vivid.nix
-          ./modules/services/yabai.nix
-          ./modules/services/skhd.nix
-          {
-            home = {
-              inherit username;
-              homeDirectory = getHomeDirectory args.system;
-              stateVersion = "22.11";
-            };
-          }
-        ];
-        extraSpecialArgs = {
-          cloudDir = "${getHomeDirectory args.system}/Documents";
-          inherit (args) machine;
-          inherit
-            colorscheme
-            font-family
-            palette
-            configDir
-            hexlib
-            ;
-        };
-      };
-    in
-    {
-      nixosConfigurations.blade = mkNixOSConfig {
-        system = "x86_64-linux";
-        machine = "blade";
-      };
-
-      homeConfigurations."${username}@blade" = mkHomeConfig {
-        system = "x86_64-linux";
-        machine = "blade";
-      };
-
-      homeConfigurations."${username}@skunk" = mkHomeConfig {
-        system = "x86_64-darwin";
+      extraSpecialArgs = rec {
+	colorscheme = "tokyonight";
+	configDir = ./home;
+	font-family = "Inconsolata Nerd Font";
+	hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
+	palette = import (./palettes + "/${colorscheme}.nix");
         machine = "skunk";
       };
+
+      pkgs = import nixpkgs {
+        system = "x86_64-darwin";
+      };
     };
+  };
+
+  # nixConfig = {
+  #   # Binary caches.
+  #   extra-substituters = [
+  #     "https://cache.soopy.moe"
+  #     "https://nix-community.cachix.org"
+  #   ];
+  #   extra-trusted-public-keys = [
+  #     "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
+  #     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+  #   ];
+  # };
 }

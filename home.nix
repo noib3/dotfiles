@@ -6,16 +6,15 @@
 , font-family
 , palette
 , configDir
-, cloudDir
 , hexlib
 , ...
 }:
 
 let
-  inherit (pkgs.stdenv) isDarwin isLinux;
-
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
     (builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh");
+
+  inherit (pkgs.stdenv) isDarwin isLinux;
 
   lf_w_image_previews = with pkgs; hiPrio (writeShellScriptBin "lf"
     (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
@@ -43,8 +42,19 @@ let
 
   rg-previewer = pkgs.writeShellScriptBin "rg-previewer"
     (builtins.readFile "${configDir}/ripgrep/rg-previewer.sh");
-in
+in rec
 {
+  home = rec {
+    homeDirectory =
+      if isDarwin then "/Users/${username}"
+      else if isLinux then "/home/${username}"
+      else throw "What's the home directory for this OS?";
+    
+    stateVersion = "22.11";
+
+    username = "noib3";
+  };
+
   home.packages = with pkgs; [
     asciinema
     cargo-criterion
@@ -81,21 +91,18 @@ in
     stylua
     sumneko-lua-language-server
     texliveConTeXt
-    # texliveSmall
     tokei
     tree
     unzip
     vimv
     zip
   ] ++ lib.lists.optionals isDarwin [
-    # binutils
     coreutils
     findutils
     gnused
     libtool
   ] ++ lib.lists.optionals isLinux [
     blueman
-    brave
     calcurse
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;
@@ -106,7 +113,6 @@ in
     libnotify
     noto-fonts-emoji
     obs-studio
-    peek
     pick-colour-picker
     signal-desktop
     ueberzug
@@ -139,8 +145,6 @@ in
     HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
     LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
     RIPGREP_CONFIG_PATH = "${configDir}/ripgrep/ripgreprc";
-    # NPM_CONFIG_PREFIX = "$HOME/.npm_global_modules";
-    TDTD_DATA_DIR = "${cloudDir}/tdtd";
     OSFONTDIR = lib.strings.optionalString isLinux (
       config.home.homeDirectory
       + "/.nix-profile/share/fonts/truetype/NerdFonts"
@@ -162,6 +166,10 @@ in
       warn-dirty = false;
     };
   };
+
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "ookla-speedtest"
+  ];
 
   xdg.configFile = {
     "fd/ignore" = {
@@ -231,14 +239,14 @@ in
 
   programs.direnv = {
     enable = true;
-    # };
   } // (import "${configDir}/direnv");
 
   programs.fish = {
     enable = true;
   } // (import "${configDir}/fish" {
-    inherit pkgs colorscheme palette cloudDir;
+    inherit pkgs colorscheme palette;
     inherit (lib.strings) removePrefix;
+    cloudDir = home.homeDirectory + "/Documents";
   });
 
   # programs.firefox =
@@ -355,7 +363,7 @@ in
   services.sxhkd = ({
     enable = isLinux;
   } // (import "${configDir}/sxhkd" {
-    inherit configDir cloudDir;
+    inherit configDir;
     inherit (pkgs) writeShellScriptBin;
     inherit (pkgs.writers) writePython3Bin;
   }));
@@ -363,10 +371,6 @@ in
   services.udiskie = ({
     enable = isLinux;
   } // (import "${configDir}/udiskie"));
-
-  # services.yabai = ({
-  #   enable = isDarwin;
-  # } // (import "${configDir}/yabai"));
 
   systemd.user.startServices = true;
 

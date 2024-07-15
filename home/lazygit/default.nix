@@ -5,6 +5,9 @@
       colorArg = "always";
       pager = "delta --paging=never";
     };
-    gui.showCommandLog = false;
+    gui = {
+      nerdFontsVersion = "3";
+      showCommandLog = false;
+    };
   };
 }

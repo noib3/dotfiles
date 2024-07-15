@@ -1,13 +1,9 @@
 { configDir
-, cloudDir
 , writeShellScriptBin
 , writePython3Bin
 }:
 
 let
-  toggle-gaps = writeShellScriptBin "toggle-gaps"
-    (builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh");
-
   dmenu-bluetooth = writePython3Bin "dmenu-bluetooth" { }
     (builtins.readFile "${configDir}/dmenu/scripts/dmenu-bluetooth.py");
 
@@ -22,6 +18,8 @@ let
   dmenu-wifi = writePython3Bin "dmenu-wifi" { }
     (builtins.readFile "${configDir}/dmenu/scripts/dmenu-wifi.py");
 
+  toggle-gaps = writeShellScriptBin "toggle-gaps"
+    (builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh");
 in
 {
   keybindings = {
@@ -32,13 +30,8 @@ in
     "super + Return" = "alacritty";
     "super + g" = "alacritty -e btm";
     "super + f" = "alacritty -e lf ~/Downloads";
-    "super + a" = ''
-      alacritty -e calcurse \
-        -C ${builtins.toString ../calcurse} \
-        -D ${cloudDir}/share/calcurse
-    '';
 
-    # Open the web browser 
+    # Open the web browser
     "alt + w" = "qutebrowser";
 
     # Launch the program runner and the file opener
@@ -98,6 +91,6 @@ in
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
     "super + shift + {3,4}" =
-      "flameshot {full, gui} -p ${cloudDir}/screenshots";
+      "flameshot {full, gui} -p ~/screenshots";
   };
 }

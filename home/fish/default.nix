@@ -18,12 +18,9 @@ in
   shellAliases = {
     cat = "bat";
     gcl = "git clone";
-    gpl = "git pull";
-    gps = "git push";
     grep = "rg";
     ipython = "ipython --no-confirm-exit";
     ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
-    ps = "procs";
     wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
   } // optionalAttrs isDarwin {
     reboot = ''osascript -e "tell app \"System Events\" to restart"'';
@@ -44,8 +41,6 @@ in
     t = "tdtd";
   } // optionalAttrs isLinux {
     nrs = "nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure --use-remote-sudo";
-  } // optionalAttrs isDarwin {
-    drs = "darwin-rebuild switch --flake ${cloudDir}/dotfiles";
   };
 
   interactiveShellInit = ''
