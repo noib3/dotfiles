@@ -1,9 +1,15 @@
 { config, lib, pkgs, ... }:
 
+let
+  common = import ../common.nix {
+    inherit lib pkgs;
+    hostname = "skunk";
+  };
+in
 {
   imports = [
     ./hardware-configuration.nix
-    ../default.nix
+    common
   ];
 
   boot = {

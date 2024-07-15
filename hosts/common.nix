@@ -34,12 +34,12 @@
   ];
 
   nixpkgs.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-  ];;
+  ];
 
   networking = {
     hostName = hostname;
     networkmanager.enable = true;
-  }
+  };
 
   security.sudo.wheelNeedsPassword = false;
 
