@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -16,7 +16,7 @@
     nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        ./configuration.nix
+        ./hosts/skunk/configuration.nix
         nixos-hardware.nixosModules.apple-t2
       ];
     };
@@ -29,11 +29,11 @@
       ];
 
       extraSpecialArgs = rec {
-	colorscheme = "tokyonight";
-	configDir = ./home;
-	font-family = "Inconsolata Nerd Font";
-	hexlib = import ./palettes/hexlib.nix { inherit (nixpkgs) lib; };
-	palette = import (./palettes + "/${colorscheme}.nix");
+        colorscheme = "tokyonight";
+        configDir = ./home;
+        font-family = "Inconsolata Nerd Font";
+        hexlib = import ./lib/hex.nix { inherit (nixpkgs) lib; };
+        palette = import (./palettes + "/${colorscheme}.nix");
         machine = "skunk";
       };
 
