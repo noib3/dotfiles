@@ -14,7 +14,7 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/af201f95-bef3-46a7-84b6-107a60ae45da";
+    { device = "/dev/disk/by-uuid/19816665-2890-4a07-a5a5-08c7c80e44f4";
       fsType = "ext4";
     };
 
@@ -24,8 +24,8 @@
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
-  fileSystems."/macos-share" =
-    { device = "/dev/disk/by-uuid/6693-5F74";
+  fileSystems."/shared" =
+    { device = "/dev/disk/by-uuid/6695-F500";
       fsType = "exfat";
     };
 
@@ -36,7 +36,7 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp2s0f1u1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

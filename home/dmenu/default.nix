@@ -26,16 +26,16 @@ let
 in
 pkgs.dmenu.override ({
   patches = [
-    patches.caseinsensitive
-    patches.fuzzyhighlight
-    patches.fuzzymatch
-    patches.listfullwidth
-    patches.numbers
-    patches.password
-    patches.preselect
-    patches.tsv
-    patches.lineheight
-    patches.colorprompt
-    patches.fontcolors
+    # patches.caseinsensitive
+    # patches.fuzzyhighlight
+    # patches.fuzzymatch
+    # patches.listfullwidth
+    # patches.numbers
+    # patches.password
+    # patches.preselect
+    # patches.tsv
+    # patches.lineheight
+    # patches.colorprompt
+    # patches.fontcolors
   ];
 })

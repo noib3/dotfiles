@@ -39,6 +39,7 @@
 
   environment.systemPackages = [
     pkgs.git
+    pkgs.home-manager
     pkgs.neovim
   ];
 
@@ -48,12 +49,16 @@
     enable = true;
   };
 
+  hardware.graphics = {
+    enable = true;
+  };
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
 
-  nixpkgs.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
   ];
 
   networking = {
@@ -61,12 +66,37 @@
     networkmanager.enable = true;
   };
 
+  # See https://evanrelf.com/nixos-fix-command-not-found-database-file-error
+  programs.command-not-found.enable = false;
+
+  programs.fish = {
+    enable = true;
+  };
+
+  programs.hyprland.enable = true;
+
   # programs.nm-applet = {
   #   enable = true;
   # };
 
   security.sudo.wheelNeedsPassword = false;
-  #
+
+  services.displayManager = {
+    enable = true;
+    autoLogin = {
+      enable = true;
+      user = username;
+    };
+  };
+
+  services.libinput = {
+    enable = true;
+    touchpad = {
+      naturalScrolling = true;
+      disableWhileTyping = true;
+    };
+  };
+
   # services.blueman = {
   #   enable = true;
   # };
@@ -99,38 +129,24 @@
   # };
   #
   # services.xserver = {
-  #   enable = true;
-  #   autoRepeatDelay = 150;
+  #   enable = false;
   #   autoRepeatInterval = 33;
-  #   layout = "us";
-  #   videoDrivers = [ "nvidia" ];
-  #
-  #   libinput = {
-  #     enable = true;
-  #     touchpad = {
-  #       naturalScrolling = true;
-  #       disableWhileTyping = true;
-  #     };
-  #   };
-  #
-  #   displayManager = {
-  #     autoLogin = {
-  #       enable = true;
-  #       user = username;
-  #     };
-  #   };
+  #   xkb.layout = "us";
+  #   # TODO: remove this.
+  #   videoDrivers = [ "amdgpu-pro" ];
+  #   # videoDrivers = [ "nvidia" ];
   #
   #   windowManager = {
   #     bspwm.enable = true;
   #   };
   #
-  #   # This together with 'xset s off'should disable every display power
-  #   # management option. See [1] and [2] for more infos.
-  #   config = ''
-  #     Section "Extensions"
-  #         Option "DPMS" "off"
-  #     EndSection
-  #   '';
+  #   # # This together with 'xset s off'should disable every display power
+  #   # # management option. See [1] and [2] for more infos.
+  #   # config = ''
+  #   #   Section "Extensions"
+  #   #       Option "DPMS" "off"
+  #   #   EndSection
+  #   # '';
   # };
 
   services.pipewire = {
@@ -141,7 +157,7 @@
   time.timeZone = "Asia/Singapore";
 
   users.users."${username}" = {
-    home = homeDirectory;
+    home = homedir;
     shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [

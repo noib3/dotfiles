@@ -109,10 +109,12 @@ in rec
     })
     feh
     glibc
+    glxinfo
     lf_w_image_previews
     libnotify
     noto-fonts-emoji
     obs-studio
+    pciutils # Contains lspci.
     pick-colour-picker
     signal-desktop
     ueberzug
@@ -313,16 +315,16 @@ in rec
     inherit colorscheme font-family palette hexlib;
   }));
 
-  services.dunst = ({
-    enable = isLinux;
-  } // (import "${configDir}/dunst" {
-    inherit colorscheme font-family palette hexlib;
-    inherit (pkgs) hicolor-icon-theme;
-  }));
+  # services.dunst = ({
+  #   enable = isLinux;
+  # } // (import "${configDir}/dunst" {
+  #   inherit colorscheme font-family palette hexlib;
+  #   inherit (pkgs) hicolor-icon-theme;
+  # }));
 
-  services.flameshot = {
-    enable = isLinux;
-  };
+  # services.flameshot = {
+  #   enable = isLinux;
+  # };
 
   # services.fusuma = {
   #   enable = true;
@@ -330,43 +332,45 @@ in rec
 
   services.gpg-agent = ({
     enable = isLinux;
-  } // (import "${configDir}/gpg/gpg-agent.nix"));
-
-  services.mpris-proxy = {
-    enable = isLinux;
-  };
-
-  services.picom = ({
-    enable = isLinux;
-  } // (import "${configDir}/picom"));
-
-  services.polybar = ({
-    enable = isLinux;
-    package = pkgs.polybar.override {
-      pulseSupport = true;
-    };
-  } // (import "${configDir}/polybar" {
-    inherit colorscheme font-family palette hexlib;
-    inherit (lib) concatStringsSep;
-  }));
-
-  services.redshift = ({
-    enable = isLinux;
-  } // (import "${configDir}/redshift"));
-
-  services.skhd = ({
-    enable = isDarwin;
-  } // (import "${configDir}/skhd" {
+  } // (import "${configDir}/gpg/gpg-agent.nix" {
     inherit pkgs;
   }));
 
-  services.sxhkd = ({
-    enable = isLinux;
-  } // (import "${configDir}/sxhkd" {
-    inherit configDir;
-    inherit (pkgs) writeShellScriptBin;
-    inherit (pkgs.writers) writePython3Bin;
-  }));
+  # services.mpris-proxy = {
+  #   enable = isLinux;
+  # };
+
+  # services.picom = ({
+  #   enable = isLinux;
+  # } // (import "${configDir}/picom"));
+  #
+  # services.polybar = ({
+  #   enable = isLinux;
+  #   package = pkgs.polybar.override {
+  #     pulseSupport = true;
+  #   };
+  # } // (import "${configDir}/polybar" {
+  #   inherit colorscheme font-family palette hexlib;
+  #   inherit (lib) concatStringsSep;
+  # }));
+
+  # services.redshift = ({
+  #   enable = isLinux;
+  # } // (import "${configDir}/redshift"));
+
+  # services.skhd = ({
+  #   enable = isDarwin;
+  # } // (import "${configDir}/skhd" {
+  #   inherit pkgs;
+  # }));
+
+  # services.sxhkd = ({
+  #   enable = isLinux;
+  # } // (import "${configDir}/sxhkd" {
+  #   inherit configDir;
+  #   inherit (pkgs) writeShellScriptBin;
+  #   inherit (pkgs.writers) writePython3Bin;
+  # }));
 
   services.udiskie = ({
     enable = isLinux;
@@ -374,18 +378,24 @@ in rec
 
   systemd.user.startServices = true;
 
-  xsession = lib.mkIf isLinux ({
-    enable = true;
+  wayland.windowManager.hyprland.settings = {
+    bind = [
+      "SUPER, return, exec, alacritty"
+    ];
+  };
 
-    windowManager.bspwm = {
-      enable = true;
-    } // (import "${configDir}/bspwm") {
-      inherit pkgs colorscheme palette hexlib;
-    };
-
-    profileExtra = ''
-      ${pkgs.hsetroot}/bin/hsetroot \
-        -solid "${hexlib.scale 0.75 palette.primary.background}"
-    '';
-  });
+  # xsession = lib.mkIf isLinux ({
+  #   enable = true;
+  #
+  #   windowManager.bspwm = {
+  #     enable = true;
+  #   } // (import "${configDir}/bspwm") {
+  #     inherit pkgs colorscheme palette hexlib;
+  #   };
+  #
+  #   profileExtra = ''
+  #     ${pkgs.hsetroot}/bin/hsetroot \
+  #       -solid "${hexlib.scale 0.75 palette.primary.background}"
+  #   '';
+  # });
 }

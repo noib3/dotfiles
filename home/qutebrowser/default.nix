@@ -15,7 +15,7 @@ let
   fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden"
     {
       libraries = [
-        pkgs.python38Packages.tldextract
+        pkgs.python310Packages.tldextract
       ];
     }
     (builtins.readFile ./scripts/fill-bitwarden.py);
