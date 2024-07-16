@@ -127,6 +127,19 @@
     pulse.enable = true;
   };
 
+  systemd.user = {
+    services.hyprland = {
+      enable = true;
+      description = "Automatically start Hyprland";
+      after = [ "graphical-session.target" ];
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.hyprland}/bin/hyprland";
+        Restart = "on-failure";
+      };
+    };
+  };
+
   time.timeZone = "Asia/Singapore";
 
   users.users."${username}" = {
