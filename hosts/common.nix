@@ -81,13 +81,15 @@
 
   security.sudo.wheelNeedsPassword = false;
 
-  services.displayManager = {
-    enable = true;
-    autoLogin = {
-      enable = true;
-      user = username;
-    };
-  };
+  # services.blueman = {
+  #   enable = true;
+  # };
+
+  # services.geoclue2 = {
+  #   enable = true;
+  # };
+
+  services.getty.autologinUser = username;
 
   services.libinput = {
     enable = true;
@@ -97,28 +99,20 @@
     };
   };
 
-  # services.blueman = {
-  #   enable = true;
-  # };
-  #
-  # services.geoclue2 = {
-  #   enable = true;
-  # };
-  #
   # services.tlp = {
   #   enable = true;
   # };
-  #
+
   # services.transmission = {
   #   enable = true;
   # } // (import "${configDir}/transmission" {
   #   inherit pkgs username homeDirectory;
   # });
-  #
+
   # services.udisks2 = {
   #   enable = true;
   # };
-  #
+
   # services.udev = {
   #   extraHwdb = ''
   #     evdev:input:b0003v1532p026F*
@@ -126,27 +120,6 @@
   #      KEYBOARD_KEY_700e3=leftalt
   #      KEYBOARD_KEY_700e6=rightmeta
   #   '';
-  # };
-  #
-  # services.xserver = {
-  #   enable = false;
-  #   autoRepeatInterval = 33;
-  #   xkb.layout = "us";
-  #   # TODO: remove this.
-  #   videoDrivers = [ "amdgpu-pro" ];
-  #   # videoDrivers = [ "nvidia" ];
-  #
-  #   windowManager = {
-  #     bspwm.enable = true;
-  #   };
-  #
-  #   # # This together with 'xset s off'should disable every display power
-  #   # # management option. See [1] and [2] for more infos.
-  #   # config = ''
-  #   #   Section "Extensions"
-  #   #       Option "DPMS" "off"
-  #   #   EndSection
-  #   # '';
   # };
 
   services.pipewire = {
