@@ -368,6 +368,10 @@ in rec
   #   inherit pkgs;
   # }));
 
+  services.ssh-agent = {
+    enable = true;
+  };
+
   # services.sxhkd = ({
   #   enable = isLinux;
   # } // (import "${configDir}/sxhkd" {
@@ -381,12 +385,6 @@ in rec
   } // (import "${configDir}/udiskie"));
 
   systemd.user.startServices = true;
-
-  wayland.windowManager.hyprland.settings = {
-    bind = [
-      "SUPER, return, exec, alacritty"
-    ];
-  };
 
   # xsession = lib.mkIf isLinux ({
   #   enable = true;
