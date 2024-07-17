@@ -189,6 +189,10 @@ in rec
       source = "${configDir}/fusuma/config.yml";
     };
 
+    "hypr/hyprland.conf" = {
+      source = "${configDir}/hyprland/hyprland.conf";
+    };
+
     # "nvim" = {
     #   source = "${configDir}/meovim";
     #   recursive = true;
@@ -288,9 +292,9 @@ in rec
     inherit pkgs previewer;
   });
 
-  programs.mpv = {
-    enable = true;
-  } // (import "${configDir}/mpv");
+  # programs.mpv = {
+  #   enable = true;
+  # } // (import "${configDir}/mpv");
 
   programs.qutebrowser = {
     enable = isLinux;
