@@ -301,6 +301,11 @@ in rec
     inherit pkgs colorscheme font-family palette hexlib;
   });
 
+  programs.nix-index = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
   programs.starship = {
     enable = true;
   } // (import "${configDir}/starship" { inherit (lib) concatStrings; });
