@@ -110,6 +110,7 @@ in rec
     feh
     glibc
     glxinfo
+    grimblast
     lf_w_image_previews
     libnotify
     noto-fonts-emoji
@@ -329,10 +330,6 @@ in rec
   #   inherit colorscheme font-family palette hexlib;
   #   inherit (pkgs) hicolor-icon-theme;
   # }));
-
-  # services.flameshot = {
-  #   enable = isLinux;
-  # };
 
   # services.fusuma = {
   #   enable = true;
