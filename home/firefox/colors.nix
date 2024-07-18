@@ -1,10 +1,9 @@
 { colorscheme
 , palette
+, hexlib
 }:
 
 let
-  hexlib = import ../../colorschemes/hexlib.nix;
-
   c = {
     "afterglow" = {
       tabs.unfocused = {

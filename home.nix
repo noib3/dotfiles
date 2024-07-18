@@ -255,12 +255,11 @@ in rec
     cloudDir = home.homeDirectory + "/Documents";
   });
 
-  # programs.firefox =
-  #   {
-  #     enable = isDarwin;
-  #   } // (import "${configDir}/firefox" {
-  #   inherit lib colorscheme font-family machine palette;
-  # });
+  programs.firefox = {
+    enable = true;
+  } // (import "${configDir}/firefox" {
+    inherit lib colorscheme font-family machine palette hexlib;
+  });
 
   programs.fzf = {
     enable = true;
