@@ -106,6 +106,21 @@ in
         chars = "\\u0015"; # C-u
       }
       {
+        key = "=";
+        mods = "Super";
+        action = "IncreaseFontSize";
+      }
+      {
+        key = "-";
+        mods = "Super";
+        action = "DecreaseFontSize";
+      }
+      {
+        key = "0";
+        mods = "Super";
+        action = "ResetFontSize";
+      }
+      {
         key = "Key1";
         mods = "Super";
         chars = "\\u001b\\u004f\\u0050"; # F1
