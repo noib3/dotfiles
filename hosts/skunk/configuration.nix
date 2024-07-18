@@ -2,7 +2,7 @@
 
 let
   common = import ../common.nix {
-    inherit lib pkgs;
+    inherit config lib pkgs;
     hostname = "skunk";
   };
 in
@@ -34,6 +34,11 @@ in
       '';
     }))
   ];
+
+  services.logind = {
+    lidSwitch = "lock";
+    lidSwitchExternalPower = "lock";
+  };
 
   # This option defines the first version of NixOS installed on this particular
   # machine, and should NEVER be changed after the initial install.

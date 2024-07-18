@@ -1,6 +1,7 @@
 # System-wide config shared by every host.
 
-{ lib
+{ config
+, lib
 , pkgs
 , homedir ? "/home/${username}"
 , hostname ? "nixos"
