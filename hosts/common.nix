@@ -80,6 +80,8 @@
   #   enable = true;
   # };
 
+  programs.solaar.enable = true;
+
   security.sudo.wheelNeedsPassword = false;
 
   # services.blueman = {
