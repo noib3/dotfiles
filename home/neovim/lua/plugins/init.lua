@@ -23,17 +23,6 @@ return {
     end,
   },
 
-  -- Highlights hex-formatted color strings in the color they represent.
-  {
-    "norcalli/nvim-colorizer.lua",
-    config = function()
-      require("colorizer").setup(
-        { "*" },
-        { names = false }
-      )
-    end
-  },
-
   -- Automatically insert/delete matching parenthesis.
   {
     "Raimondi/delimitMate",
@@ -141,17 +130,6 @@ return {
         "<Tab>",
         function() builtin.buffers() end
       )
-    end,
-  },
-
-  -- Tokyonight colorscheme.
-  {
-    "folke/tokyonight.nvim",
-    enabled = true,
-    config = function()
-      vim.g.tokyonight_style = "night"
-      vim.g.tokyonight_transparent = true
-      vim.cmd("colorscheme tokyonight-night")
     end,
   },
 
