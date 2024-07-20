@@ -91,24 +91,12 @@ return {
     end
   },
 
-  -- Opens a rendered preview of Markdown files in the browser.
-  {
-    "iamcco/markdown-preview.nvim",
-    config = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-  },
-
   -- Telescope.
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "make",
-      },
     },
     config = function()
       local project_dir = function()
@@ -142,8 +130,6 @@ return {
           },
         },
       })
-
-      ts.load_extension("fzf")
 
       vim.keymap.set(
         "n",
@@ -181,7 +167,7 @@ return {
     },
     config = function()
       require("nvim-treesitter/configs").setup({
-        ensure_installed = "all",
+        ensure_installed = { "c", "lua", "javascript", "nix", "rust" },
         context_commentstring = {
           enable = true,
         },

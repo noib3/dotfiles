@@ -104,6 +104,7 @@ in rec
   ] ++ lib.lists.optionals isLinux [
     blueman
     calcurse
+    clang # Needed by Neovim to compile Tree-sitter grammars.
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;
     })
@@ -194,11 +195,11 @@ in rec
       source = "${configDir}/hyprland/hyprland.conf";
     };
 
-    # "nvim" = {
-    #   source = "${configDir}/meovim";
-    #   recursive = true;
-    # };
-    #
+    "nvim" = {
+      source = "${configDir}/neovim";
+      recursive = true;
+    };
+    
     # "nvim/lua/colorscheme.lua" = {
     #   text = import "${configDir}/neovim/lua/colorscheme.lua.nix" {
     #     inherit colorscheme palette;
