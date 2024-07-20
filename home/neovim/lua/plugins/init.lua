@@ -78,9 +78,6 @@ return {
     end,
   },
 
-  -- Default configs for many LSPs.
-  "neovim/nvim-lspconfig",
-
   -- Lua port of `vim-surround`.
   {
     "kylechui/nvim-surround",
