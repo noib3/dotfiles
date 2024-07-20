@@ -1,17 +1,11 @@
-local signs = {
-  ["Error"] = ">>",
-  ["Warn"] = "??",
-  ["Info"] = "--",
-  ["Hint"] = "--",
-}
-
--- `:h diagnostic-highlights`
-for name, sign in pairs(signs) do
-  local hl = ("DiagnosticSign%s"):format(name)
-  vim.cmd(("sign define %s text=%s texthl=%s"):format(hl, sign, hl))
-end
-
--- `:h diagnostic-api`
 vim.diagnostic.config({
+  -- Sort diagnostics by severity.
   severity_sort = true,
+
+  -- Disable the sign column, I don't like the entire buffer shifting left and
+  -- right.
+  signs = false,
+
+  -- Update diagnostics while in insert mode.
+  update_in_insert = true,
 })
