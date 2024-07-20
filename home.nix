@@ -116,6 +116,7 @@ in rec
     libnotify
     noto-fonts-emoji
     obs-studio
+    playerctl
     pciutils # Contains lspci.
     pick-colour-picker
     signal-desktop
@@ -342,9 +343,9 @@ in rec
     inherit pkgs;
   }));
 
-  # services.mpris-proxy = {
-  #   enable = isLinux;
-  # };
+  services.mpris-proxy = {
+    enable = isLinux;
+  };
 
   # services.picom = ({
   #   enable = isLinux;
