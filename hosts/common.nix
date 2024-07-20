@@ -54,10 +54,17 @@
     enable = true;
   };
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings =  {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+
+    trusted-substituters = [
+      "https://cache.soopy.moe"
+      "https://nix-community.cachix.org"
+    ];
+  };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
   ];
