@@ -9,7 +9,7 @@ let
     };
 
     "Inconsolata Nerd Font" = {
-      "skunk".size = 17;
+      "skunk".size = 16.5;
     };
 
     "JetBrainsMono Nerd Font" = {
