@@ -6,45 +6,24 @@ let
   overrides = {
     "FiraCode Nerd Font" = {
       bold_italic.style = "Bold";
-      "blade".size = 9;
-      "mbair".size = 19;
     };
 
     "Inconsolata Nerd Font" = {
-      "blade".size = 11;
-      "skunk".size = 19;
-    };
-
-    "Iosevka Nerd Font" = {
-      "blade".size = 11;
-      "mbair".size = 19;
+      "skunk".size = 17;
     };
 
     "JetBrainsMono Nerd Font" = {
       bold.style = "Extra Bold";
       bold_italic.style = "Extra Bold";
-      "blade".size = 9.5;
-      "mbair".size = 19;
-      "mbair".offset.y = 1;
     };
 
     "Mononoki Nerd Font" = {
       bold_italic.style = "Bold";
-      "blade".size = 10;
-      "mbair".size = 19;
-    };
-
-    "RobotoMono Nerd Font" = {
-      "blade".size = 10;
-      "blade".offset.y = 1;
-      "mbair".size = 19;
-      "mbair".offset.y = 1;
     };
   };
 
   default_size = {
-    "blade" = 10;
-    "skunk" = 16;
+    "skunk" = 10;
   };
 in
 {
