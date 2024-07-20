@@ -2,7 +2,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local lspconfig = require("lsp")
+      local lspconfig = require("lspconfig")
 
       local capabilities = vim.tbl_deep_extend(
         "force",
