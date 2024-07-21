@@ -2,8 +2,6 @@ return {
   -- Delete buffers without closing the window they're in.
   "famiu/bufdelete.nvim",
 
-  "github/copilot.vim",
-
   -- Lua port of `vim-commentary`.
   {
     'numToStr/Comment.nvim',
