@@ -12,17 +12,6 @@ return {
     end
   },
 
-  -- Shows the latest version of every dependency in `Cargo.toml` files.
-  {
-    "saecki/crates.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    config = function()
-      require('crates').setup()
-    end,
-  },
-
   -- Automatically insert/delete matching parenthesis.
   {
     "Raimondi/delimitMate",

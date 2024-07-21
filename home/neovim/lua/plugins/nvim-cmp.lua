@@ -17,9 +17,16 @@ return {
 
       return {
         sources = cmp.config.sources({
+          { name = "crates" },
           { name = "nvim_lsp" },
           { name = "path" },
         }),
+        view = {
+          entries = {
+            name = 'custom',
+            selection_order = 'near_cursor',
+          }
+        }
       }
     end,
 
