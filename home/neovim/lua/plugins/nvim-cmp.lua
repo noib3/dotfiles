@@ -47,6 +47,7 @@ return {
     config = function(_, opts)
       local cmp = require("cmp")
       local luasnip = require("luasnip")
+      local neotab = require("neotab")
 
       vim.api.nvim_set_keymap("i", "<Tab>", "", {
         desc = "Select next completion or jump to next snippet or fallback",
@@ -56,7 +57,7 @@ return {
           elseif luasnip.jumpable(1) then
             luasnip.jump(1)
           else
-            fallback("<Tab>")
+            neotab.tabout()
           end
         end,
       })
