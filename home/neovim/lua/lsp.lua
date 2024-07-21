@@ -9,7 +9,10 @@ local on_attach = function(_ --[[ client ]], bufnr)
   keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
   -- Rename the symbol under the cursor.
-  keymap.set("n", "grn", vim.lsp.buf.rename, opts)
+  local inc_rename = function()
+    return ":IncRename " .. vim.fn.expand("<cword>")
+  end
+  keymap.set("n", "R", inc_rename, { expr = true, buffer = bufnr })
 
   -- Selects a code action available at the current cursor position.
   keymap.set("n", "gca", vim.lsp.buf.code_action, opts)
