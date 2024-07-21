@@ -111,34 +111,8 @@ return {
     end,
   },
 
-  {
-    "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      "nvim-treesitter/playground",
-      "JoosepAlviste/nvim-ts-context-commentstring",
-      "RRethy/nvim-treesitter-endwise",
-    },
-    config = function()
-      require("nvim-treesitter/configs").setup({
-        ensure_installed = { "c", "lua", "javascript", "nix", "rust" },
-        context_commentstring = {
-          enable = true,
-        },
-        endwise = {
-          enable = true,
-        },
-        highlight = {
-          enable = true,
-        },
-        playground = {
-          enable = true
-        },
-      })
-    end
-  },
-
   -- Delete, rename files while they're open in a buffer.
-  "tpope/vim-eunuch",
+  -- "tpope/vim-eunuch",
 
   -- Floating terminal, doesn't react to `VimResized` so not that good.
   {
