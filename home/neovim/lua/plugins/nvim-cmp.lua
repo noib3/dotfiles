@@ -22,6 +22,7 @@ return {
         }),
       }
     end,
+
     config = function(_, opts)
       local cmp = require("cmp")
       local luasnip = require("luasnip")
@@ -31,10 +32,37 @@ return {
         callback = function()
           if cmp.visible() then
             cmp.select_next_item()
-          elseif luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
+          elseif luasnip.jumpable(1) then
+            luasnip.jump(1)
           else
             fallback("<Tab>")
+          end
+        end,
+      })
+
+      vim.api.nvim_set_keymap("i", "<S-Tab>", "", {
+        desc = "Select previous completion or jump to previous snippet or fallback",
+        callback = function()
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback("<S-Tab>")
+          end
+        end,
+      })
+
+      vim.api.nvim_set_keymap("i", "<CR>", "", {
+        desc = "Accept current completion or fallback",
+        callback = function()
+          if cmp.visible() and cmp.get_active_entry() then
+            cmp.confirm({
+              behavior = cmp.ConfirmBehavior.Replace,
+              select = false
+            })
+          else
+            fallback("<CR>")
           end
         end,
       })
