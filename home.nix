@@ -121,6 +121,7 @@ in rec
     pick-colour-picker
     signal-desktop
     ueberzug
+    wl-clipboard-rs
     wmctrl
     xclip
     xdotool
