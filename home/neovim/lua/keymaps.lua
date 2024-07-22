@@ -192,6 +192,16 @@ vim.api.nvim_set_keymap("i", "<CR>", "", {
   end,
 })
 
+vim.api.nvim_set_keymap("i", "<Esc>", "", {
+  desc = "Close the completion menu, restoring the original text",
+  callback = function()
+    if cmp.visible() then
+      cmp.abort()
+    end
+    fallback("<Esc>")
+  end,
+})
+
 vim.api.nvim_set_keymap("i", "<D-Tab>", "", {
   desc = "Request completions at the current cursor position",
   callback = function()
