@@ -191,3 +191,10 @@ vim.api.nvim_set_keymap("i", "<CR>", "", {
     end
   end,
 })
+
+vim.api.nvim_set_keymap("i", "<D-Tab>", "", {
+  desc = "Request completions at the current cursor position",
+  callback = function()
+    cmp.complete()
+  end,
+})
