@@ -25,6 +25,7 @@ require("lazy").setup("plugins", {
 
 require("autocmds")
 require("diagnostic")
-require("options")
 require("keymaps")
 require("lsp")
+require("options")
+require("winbar")
