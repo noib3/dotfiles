@@ -141,3 +141,53 @@ keymap.set("n", "t<Up>", open_terminal(direction.Up))
 keymap.set("n", "t<Down>", open_terminal(direction.Down))
 keymap.set("n", "t<Left>", open_terminal(direction.Left))
 keymap.set("n", "t<Right>", open_terminal(direction.Right))
+
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+local neotab = require("neotab")
+
+--- @param key string
+local fallback = function(key)
+  local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
+  vim.api.nvim_feedkeys(keys, "n", false)
+end
+
+vim.api.nvim_set_keymap("i", "<Tab>", "", {
+  desc = "Select next completion or jump to next snippet or fallback",
+  callback = function()
+    if cmp.visible() then
+      cmp.select_next_item()
+    elseif luasnip.jumpable(1) then
+      luasnip.jump(1)
+    else
+      neotab.tabout()
+    end
+  end,
+})
+
+vim.api.nvim_set_keymap("i", "<S-Tab>", "", {
+  desc = "Select previous completion or jump to previous snippet or fallback",
+  callback = function()
+    if cmp.visible() then
+      cmp.select_prev_item()
+    elseif luasnip.jumpable(-1) then
+      luasnip.jump(-1)
+    else
+      fallback("<S-Tab>")
+    end
+  end,
+})
+
+vim.api.nvim_set_keymap("i", "<CR>", "", {
+  desc = "Accept current completion or fallback",
+  callback = function()
+    if cmp.visible() and cmp.get_active_entry() then
+      cmp.confirm({
+        behavior = cmp.ConfirmBehavior.Replace,
+        select = false,
+      })
+    else
+      fallback("<CR>")
+    end
+  end,
+})
