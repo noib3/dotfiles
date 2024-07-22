@@ -39,32 +39,37 @@ return {
         },
       })
 
-      -- https://github.com/rust-lang/rust-analyzer
-      lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
-        cmd = { "rustup", "run", "nightly", "rust-analyzer" },
-        settings = {
-          ["rust-analyzer"] = {
-            check = {
-              command = "clippy",
-            },
-            completion = {
-              limit = 69,
-              privateEditable = {
-                enable = true,
-              },
-            },
-            imports = {
-              merge = {
-                blob = false,
-              },
-            },
-            procMacro = {
-              enable = true,
-            },
-          },
-        },
-      })
+      -- rustaceanvim will complain if this is enabled because it uses its own
+      -- rust-analyzer setup.
+      --
+      -- TODO: replace rustaceanvim with something that respects your config.
+      --
+      -- -- https://github.com/rust-lang/rust-analyzer
+      -- lspconfig.rust_analyzer.setup({
+      --   capabilities = capabilities,
+      --   cmd = { "rustup", "run", "nightly", "rust-analyzer" },
+      --   settings = {
+      --     ["rust-analyzer"] = {
+      --       check = {
+      --         command = "clippy",
+      --       },
+      --       completion = {
+      --         limit = 69,
+      --         privateEditable = {
+      --           enable = true,
+      --         },
+      --       },
+      --       imports = {
+      --         merge = {
+      --           blob = false,
+      --         },
+      --       },
+      --       procMacro = {
+      --         enable = true,
+      --       },
+      --     },
+      --   },
+      -- })
     end,
   }
 }

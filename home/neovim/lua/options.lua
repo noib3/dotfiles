@@ -18,6 +18,9 @@ opt.expandtab = true
 -- Ignore upper/lower casing in search results.
 opt.ignorecase = true
 
+-- Make the statusline global.
+opt.laststatus = 3
+
 -- Specify the glyphs to mark newlines, tabs and spaces with.
 opt.list = true
 opt.listchars = "eol:¬,tab:⇥ ,space:·"
