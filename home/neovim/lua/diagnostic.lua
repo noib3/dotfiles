@@ -7,5 +7,5 @@ vim.diagnostic.config({
   signs = false,
 
   -- Update diagnostics while in insert mode.
-  update_in_insert = true,
+  update_in_insert = false,
 })
