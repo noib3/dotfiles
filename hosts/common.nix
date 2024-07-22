@@ -1,6 +1,7 @@
 # System-wide config shared by every host.
 
-{ lib
+{ config
+, lib
 , pkgs
 , homedir ? "/home/${username}"
 , hostname ? "nixos"
@@ -53,10 +54,17 @@
     enable = true;
   };
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings =  {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+
+    trusted-substituters = [
+      "https://cache.soopy.moe"
+      "https://nix-community.cachix.org"
+    ];
+  };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
   ];
@@ -78,6 +86,8 @@
   # programs.nm-applet = {
   #   enable = true;
   # };
+
+  programs.solaar.enable = true;
 
   security.sudo.wheelNeedsPassword = false;
 

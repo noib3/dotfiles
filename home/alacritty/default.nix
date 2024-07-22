@@ -16,19 +16,12 @@ in
   settings = {
     inherit shell font colors;
 
-    window = optionalAttrs (machine == "blade")
-      {
-        padding = {
-          x = 3;
-          y = 0;
-        };
-      } // optionalAttrs (machine == "skunk")
-      {
-        padding = {
-          x = 10;
-          y = 5;
-        };
-      } // optionalAttrs (isDarwin) {
+    window = optionalAttrs (machine == "skunk") {
+      padding = {
+        x = 10;
+        y = 5;
+      };
+    } // optionalAttrs (isDarwin) {
       decorations = "buttonless";
     };
 
@@ -106,6 +99,21 @@ in
         chars = "\\u0015"; # C-u
       }
       {
+        key = "=";
+        mods = "Super";
+        action = "IncreaseFontSize";
+      }
+      {
+        key = "-";
+        mods = "Super";
+        action = "DecreaseFontSize";
+      }
+      {
+        key = "0";
+        mods = "Super";
+        action = "ResetFontSize";
+      }
+      {
         key = "Key1";
         mods = "Super";
         chars = "\\u001b\\u004f\\u0050"; # F1
@@ -160,47 +168,6 @@ in
         key = "V";
         mods = "Super";
         action = "Paste";
-      }
-    ] ++ optionals (machine == "mbair") [
-      {
-        key = "LBracket";
-        mods = "Alt|Shift";
-        chars = "\\u007B"; # {
-      }
-      {
-        key = "RBracket";
-        mods = "Alt|Shift";
-        chars = "\\u007D"; # }
-      }
-      {
-        key = "LBracket";
-        mods = "Alt";
-        chars = "\\u005B"; # [
-      }
-      {
-        key = "RBracket";
-        mods = "Alt";
-        chars = "\\u005D"; # ]
-      }
-      {
-        key = 23;
-        mods = "Alt";
-        chars = "\\u007E"; # ~
-      }
-      {
-        key = 41;
-        mods = "Alt";
-        chars = "\\u0040"; # @
-      }
-      {
-        key = 39;
-        mods = "Alt";
-        chars = "\\u0023"; # #
-      }
-      {
-        key = 10;
-        mods = "Alt";
-        chars = "\\u0060"; # `
       }
     ];
   };

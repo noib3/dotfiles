@@ -10,6 +10,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    solaar = {
+      url = "https://flakehub.com/f/Svenum/Solaar-Flake/1.1.13.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   
   outputs = { self, ... }@inputs: with inputs; {
@@ -18,6 +23,7 @@
       modules = [
         ./hosts/skunk/configuration.nix
         nixos-hardware.nixosModules.apple-t2
+        solaar.nixosModules.default
       ];
     };
 

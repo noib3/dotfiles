@@ -1,9 +1,12 @@
 { pkgs }:
 
+let 
+  seven_days = 604800;
+in
 {
-  defaultCacheTtl = 604800;
-  defaultCacheTtlSsh = 604800;
-  maxCacheTtl = 604800;
-  maxCacheTtlSsh = 604800;
+  defaultCacheTtl = seven_days;
+  maxCacheTtl = seven_days;
+  defaultCacheTtlSsh = seven_days;
+  maxCacheTtlSsh = seven_days;
   pinentryPackage = pkgs.pinentry-qt;
 }

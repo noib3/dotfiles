@@ -1,40 +1,32 @@
-local fn = vim.fn
-
--- Automatically install Packer if it's not already installed
-local install_path =
-  ("%s/site/pack/packer/opt/packer.nvim"):format(fn.stdpath("data"))
-
-if fn.empty(fn.glob(install_path)) > 0 then
-  local packer_repo = "https://github.com/wbthomason/packer.nvim"
-  fn.system({ "git", "clone", packer_repo, install_path })
+-- Bootstrap lazy.nvim.
+local lazypath = vim.fn.stdpath("data") .. "lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=main",
+    lazypath,
+  })
 end
+vim.opt.runtimepath:append(lazypath)
 
-require("globalutils")
-local rq_colorscheme = require("colorscheme")
-local rq_diagnostics = require("diagnostics")
-local rq_highlights = require("highlights")
-local rq_mappings = require("mappings")
-local rq_misc = require("misc")
-local rq_options = require("options")
-local rq_plugins = require("plugins")
+-- These have to be set before loading the plugins or lazy will complain.
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 
-local vim_fn = vim.fn
-rq_diagnostics.setup()
-rq_highlights.setup()
-rq_misc.setup()
-rq_options.setup()
-rq_plugins.setup()
+-- Load plugins.
+require("lazy").setup("plugins", {
+  change_detection = {
+    notify = false,
+  },
+})
 
--- For some reason these don't get set in time by the config function inside
--- packer.
-vim.g.vscode_style = "dark"
-vim.g.vscode_italic_comments = 1
-
--- Set the colorscheme and the key mappings after all the plugins have been
--- loaded.
-rq_colorscheme.setup()
-rq_mappings.setup()
-
--- Use filetype.lua instead of filetype.vim
--- vim.g.do_filetype_lua = 1
--- vim.g.did_load_filetypes = 0
+require("autocmds")
+require("diagnostic")
+require("keymaps")
+require("lsp")
+require("options")
+require("statusline")
+require("winbar")

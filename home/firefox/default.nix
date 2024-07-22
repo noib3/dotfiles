@@ -2,23 +2,24 @@
 , font-family
 , machine
 , palette
+, hexlib
 , lib
 }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette; };
+  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
   font = import ./font.nix { inherit machine; family = font-family; };
+  extensions = import ./extensions.nix;
 in
 {
-  extensions = with (import ./extensions.nix);
-    [
-      bitwarden
-      # downloads-sidebar
-      # tridactyl-no-new-tab
-    ];
-
   profiles = {
     home = {
+      # extensions = with extensions; [
+      #   bitwarden
+      #   # downloads-sidebar
+      #   # tridactyl-no-new-tab
+      # ];
+
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         "apz.allow_zooming" = true;

@@ -27,7 +27,7 @@ in
         text_files=()
         image_files=()
         for file in $fx; do
-          case $(file -Lb --mime-type $file) in
+          case $(${pkgs.file}/bin/file -Lb --mime-type $file) in
             text/*|application/json|application/csv|inode/x-empty)
               text_files+=("$file")
               ;;

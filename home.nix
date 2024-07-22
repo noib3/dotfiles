@@ -104,20 +104,24 @@ in rec
   ] ++ lib.lists.optionals isLinux [
     blueman
     calcurse
+    clang # Needed by Neovim to compile Tree-sitter grammars.
     (import "${configDir}/dmenu" {
       inherit pkgs colorscheme font-family palette hexlib;
     })
     feh
     glibc
     glxinfo
+    grimblast
     lf_w_image_previews
     libnotify
     noto-fonts-emoji
     obs-studio
+    playerctl
     pciutils # Contains lspci.
     pick-colour-picker
     signal-desktop
     ueberzug
+    wl-clipboard-rs
     wmctrl
     xclip
     xdotool
@@ -193,11 +197,11 @@ in rec
       source = "${configDir}/hyprland/hyprland.conf";
     };
 
-    # "nvim" = {
-    #   source = "${configDir}/meovim";
-    #   recursive = true;
-    # };
-    #
+    "nvim" = {
+      source = "${configDir}/neovim";
+      recursive = true;
+    };
+    
     # "nvim/lua/colorscheme.lua" = {
     #   text = import "${configDir}/neovim/lua/colorscheme.lua.nix" {
     #     inherit colorscheme palette;
@@ -255,12 +259,11 @@ in rec
     cloudDir = home.homeDirectory + "/Documents";
   });
 
-  # programs.firefox =
-  #   {
-  #     enable = isDarwin;
-  #   } // (import "${configDir}/firefox" {
-  #   inherit lib colorscheme font-family machine palette;
-  # });
+  programs.firefox = {
+    enable = true;
+  } // (import "${configDir}/firefox" {
+    inherit lib colorscheme font-family machine palette hexlib;
+  });
 
   programs.fzf = {
     enable = true;
@@ -302,6 +305,11 @@ in rec
     inherit pkgs colorscheme font-family palette hexlib;
   });
 
+  programs.nix-index = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
   programs.starship = {
     enable = true;
   } // (import "${configDir}/starship" { inherit (lib) concatStrings; });
@@ -326,10 +334,6 @@ in rec
   #   inherit (pkgs) hicolor-icon-theme;
   # }));
 
-  # services.flameshot = {
-  #   enable = isLinux;
-  # };
-
   # services.fusuma = {
   #   enable = true;
   # } // (import "${configDir}/fusuma");
@@ -340,9 +344,9 @@ in rec
     inherit pkgs;
   }));
 
-  # services.mpris-proxy = {
-  #   enable = isLinux;
-  # };
+  services.mpris-proxy = {
+    enable = isLinux;
+  };
 
   # services.picom = ({
   #   enable = isLinux;

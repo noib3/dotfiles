@@ -1,13 +1,4 @@
-vim.opt_local.formatoptions:remove({ "r", "o" })
-vim.bo.textwidth = 79
+local localopt = vim.opt_local
 
-if not vim.fn.exists("current_compiler") then
-  vim.cmd("compiler cargo")
-end
-
-vim.keymap.set(
-  "n",
-  "<C-t>",
-  "<Cmd>make!<Bar>silent cc<CR>",
-  { silent = true, buffer = true }
-)
+localopt.formatoptions:append("c")
+localopt.textwidth = 79
