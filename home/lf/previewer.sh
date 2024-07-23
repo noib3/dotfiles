@@ -70,7 +70,7 @@ case "$FILE" in
 esac
 
 case "$(file -Lb --mime-type -- "$FILE")" in
-  text/*|application/json|application/csv)
+  text/*|application/javascript|application/json|application/csv)
     bat --color=always "$FILE"
     ;;
   */pdf)
