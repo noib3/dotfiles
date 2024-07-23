@@ -222,3 +222,10 @@ vim.api.nvim_set_keymap("n", "<D-t>", "", {
     vim.defer_fn(function() vim.cmd("normal! G") end, 20)
   end,
 })
+
+vim.api.nvim_set_keymap("n", "ll", "", {
+  desc = "Open lf in a new floating terminal window",
+  callback = function()
+    require("lf").start()
+  end,
+})
