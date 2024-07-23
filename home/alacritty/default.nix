@@ -64,11 +64,6 @@ in
         chars = "\\u0013"; # C-s
       }
       {
-        key = "T";
-        mods = "Super";
-        chars = "\\u0014"; # C-t
-      }
-      {
         key = "W";
         mods = "Super";
         chars = "\\u0017"; # C-w
