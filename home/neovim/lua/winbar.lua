@@ -49,27 +49,29 @@ M.render = function()
 
   local root_path = buf_project_root(bufnr)
 
-  local buf_abs_path = vim.api.nvim_buf_get_name(bufnr)
-  local buf_rel_path = buf_abs_path:gsub("^" .. root_path .. sep, "")
+  local root_name =
+      root_path == vim.env.HOME and "~"
+      or root_path:match("([^/]+)$")
 
-  -- The path of the buffer relative to the project root, without the root
-  -- and the filename.
-  local buf_intermediate_path = vim.fs.dirname(buf_rel_path)
+  -- The absolute path of the buffer relative to the project root.
+  local buf_abs_path = vim.api.nvim_buf_get_name(bufnr):sub(#root_path + 1)
 
-  local intermediates = vim.iter(vim.split(buf_intermediate_path, sep)):map(
-    function(dirname)
-      return dirname
-    end
-  )
+  local buf_parent_path = vim.fs.dirname(buf_abs_path)
 
-  local root_name = root_path:match("([^/]+)$")
-  local intermediate_dirs = sep .. intermediates:join(sep) .. sep
+  local intermediates =
+      buf_parent_path == "/" and sep
+      or vim.iter(vim.split(buf_parent_path, sep)):map(
+        function(dirname)
+          return dirname
+        end
+      ):join(sep) .. sep
+
   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
 
   return table.concat({
     highlight(" ", "Normal"),
     highlight(root_name, "Title"),
-    highlight(intermediate_dirs, "Comment"),
+    highlight(intermediates, "Comment"),
     highlight(filename, "Debug"),
     -- highlight(" ", "Normal"),
     -- highlight(buf_icon(bufnr), "Normal"),
