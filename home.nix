@@ -96,6 +96,7 @@ in rec
     unzip
     vimv
     zip
+    zoom-us
   ] ++ lib.lists.optionals isDarwin [
     coreutils
     findutils
@@ -176,6 +177,7 @@ in rec
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "ookla-speedtest"
+    "zoom"
   ];
 
   xdg.configFile = {
