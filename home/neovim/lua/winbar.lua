@@ -1,4 +1,5 @@
 local devicons = require("nvim-web-devicons")
+local highlights = require("highlights")
 
 local sep = "/"
 
@@ -69,10 +70,10 @@ M.render = function()
   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
 
   return table.concat({
-    highlight(" ", "Normal"),
-    highlight(root_name, "Title"),
-    highlight(intermediates, "Comment"),
-    highlight(filename, "Debug"),
+    highlight(" ", highlights.WinBar.name),
+    highlight(root_name, highlights.WinBarPath.name),
+    highlight(intermediates, highlights.WinBarPath.name),
+    highlight(filename, highlights.WinBarFileName.name),
     -- highlight(" ", "Normal"),
     -- highlight(buf_icon(bufnr), "Normal"),
   })
