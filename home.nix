@@ -125,6 +125,7 @@ in rec
     wmctrl
     xclip
     xdotool
+    xdg-utils
     xorg.xev
     xorg.xwininfo
     (pkgs.makeDesktopItem {
