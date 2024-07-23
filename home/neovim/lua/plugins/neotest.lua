@@ -7,11 +7,15 @@ return {
     },
     config = function()
       require("neotest").setup({
+        adapters = {
+          require("rustaceanvim.neotest"),
+        },
         output = {
           open_on_run = false,
         },
-        adapters = {
-          require("rustaceanvim.neotest"),
+        status = {
+          signs = false,
+          virtual_text = true,
         },
       })
     end
