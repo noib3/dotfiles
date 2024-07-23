@@ -145,6 +145,7 @@ keymap.set("n", "t<Right>", open_terminal(direction.Right))
 local cmp = require("cmp")
 local luasnip = require("luasnip")
 local neotab = require("neotab")
+local neotest = require("neotest")
 
 --- @param key string
 local fallback = function(key)
@@ -206,5 +207,18 @@ vim.api.nvim_set_keymap("i", "<D-Tab>", "", {
   desc = "Request completions at the current cursor position",
   callback = function()
     cmp.complete()
+  end,
+})
+
+vim.api.nvim_set_keymap("n", "<D-t>", "", {
+  desc = "Open a terminal window with the output of the current test",
+  callback = function()
+    neotest.output.open({ enter = true })
+
+    -- Scroll to the bottom of the terminal window, which is usually where the
+    -- error message is.
+    --
+    -- TODO: this is hacky, do it w/o a timer.
+    vim.defer_fn(function() vim.cmd("normal! G") end, 20)
   end,
 })
