@@ -53,6 +53,13 @@ local WinBar = HlGroup:new({
   bg = hl_bg("WinBar"),
 })
 
+-- The default highlight group for the winbar.
+local WinBarSavedIndicator = HlGroup:new({
+  name = "WinBarSavedIndicator",
+  fg = hl_fg("String"),
+  bg = hl_bg("WinBar"),
+})
+
 -- The highlight group used to display the file path in the winbar, i.e.
 -- `/path/to` in `/path/to/file.txt`.
 local WinBarPath = HlGroup:new({
@@ -71,6 +78,7 @@ local WinBarFileName = HlGroup:new({
 
 local highlights = {
   WinBar = WinBar,
+  WinBarSavedIndicator = WinBarSavedIndicator,
   WinBarPath = WinBarPath,
   WinBarFileName = WinBarFileName,
 }

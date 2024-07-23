@@ -44,10 +44,16 @@ end
 
 local M = {}
 
---- Renders the winbar.
-M.render = function()
-  local bufnr = vim.api.nvim_get_current_buf()
+--- @param bufnr number
+--- @return string
+M.saved_indicator = function(bufnr)
+  local is_modified = vim.api.nvim_buf_get_option(bufnr, "modified")
+  return
+      is_modified and highlight("", highlights.WinBarSavedIndicator.name)
+      or " "
+end
 
+M.file_path = function(bufnr)
   local root_path = buf_project_root(bufnr)
 
   local root_name =
@@ -76,6 +82,16 @@ M.render = function()
     highlight(filename, highlights.WinBarFileName.name),
     -- highlight(" ", "Normal"),
     -- highlight(buf_icon(bufnr), "Normal"),
+  })
+end
+
+--- Renders the winbar.
+M.render = function()
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  return table.concat({
+    M.saved_indicator(bufnr),
+    M.file_path(bufnr),
   })
 end
 
