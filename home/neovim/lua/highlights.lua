@@ -1,7 +1,3 @@
-local devicons = require("nvim-web-devicons")
-
-local colorscheme = vim.g.colors_name
-
 --- Returns the background color in "#aabbcc" format for the given highlight
 --- group.
 ---
@@ -35,52 +31,23 @@ function HlGroup:new(opts)
   this.name = opts.name
   this.fg = opts.fg
   this.bg = opts.bg
+  this.bold = opts.bold
   this.ns = opts.ns or 0
 
   vim.api.nvim_set_hl(this.ns, this.name, {
     fg = this.fg,
     bg = this.bg,
+    bold = this.bold,
     force = true,
   })
 
   return this
 end
 
--- The default highlight group for the winbar.
-local WinBar = HlGroup:new({
-  name = "WinBar",
-  fg = hl_fg("Comment"),
-  bg = hl_bg("WinBar"),
-})
-
--- The default highlight group for the winbar.
-local WinBarSavedIndicator = HlGroup:new({
-  name = "WinBarSavedIndicator",
-  fg = hl_fg("String"),
-  bg = hl_bg("WinBar"),
-})
-
--- The highlight group used to display the file path in the winbar, i.e.
--- `/path/to` in `/path/to/file.txt`.
-local WinBarPath = HlGroup:new({
-  name = "WinBarPath",
-  fg = hl_fg("Comment"),
-  bg = hl_bg("WinBar"),
-})
-
--- The highlight group used to display the file name in the winbar, i.e.
--- `file.txt` in `/path/to/file.txt`.
-local WinBarFileName = HlGroup:new({
-  name = "WinBarFileName",
-  fg = hl_fg("Label"),
-  bg = hl_bg("WinBar"),
-})
-
 local highlights = {
-  WinBar = WinBar,
-  WinBarSavedIndicator = WinBarSavedIndicator,
-  WinBarPath = WinBarPath,
-  WinBarFileName = WinBarFileName,
+  fg_of = hl_fg,
+  bg_of = hl_bg,
+  HlGroup = HlGroup,
 }
 
 return highlights

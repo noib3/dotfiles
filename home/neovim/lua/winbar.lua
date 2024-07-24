@@ -2,15 +2,8 @@ local devicons = require("nvim-web-devicons")
 local highlights = require("highlights")
 
 local sep = "/"
-
---- Returns the file type icon for the given buffer.
---- @param bufnr number
---- @return string
-local buf_icon = function(bufnr)
-  local filepath = vim.api.nvim_buf_get_name(bufnr)
-  local extension = vim.fn.fnamemodify(filepath, ":e")
-  return devicons.get_icon(filepath, extension, { default = true })
-end
+local winbar_hl = "WinBar"
+local winbar_bg = highlights.bg_of(winbar_hl)
 
 --- Returns the full path of the project root for the given buffer.
 --- @param bufnr number
@@ -44,15 +37,58 @@ end
 
 local M = {}
 
+--- A component that displays the devicon for the current buffer in the correct
+--- highlight group.
+---
 --- @param bufnr number
 --- @return string
-M.saved_indicator = function(bufnr)
-  local is_modified = vim.api.nvim_buf_get_option(bufnr, "modified")
-  return
-      is_modified and highlight("", highlights.WinBarSavedIndicator.name)
-      or " "
+M.devicon = function(bufnr)
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  local extension = vim.fn.fnamemodify(filepath, ":e")
+  local icon, hl = devicons.get_icon(filepath, extension, { default = true })
+  -- Having to re-create a new hl group for each icon just to make the
+  -- background color blend in is honestly kinda retarded.
+  local hl_group = highlights.HlGroup:new({
+    name = hl .. "Noib3",
+    fg = highlights.fg_of(hl),
+    bg = winbar_bg,
+  })
+  return highlight(("%s"):format(icon), hl_group.name)
 end
 
+--- @param bufnr number
+--- @param modified_char string
+--- @return string
+M.saved_indicator = function(bufnr, modified_char)
+  local is_modified = vim.api.nvim_buf_get_option(bufnr, "modified")
+
+  local char =
+      is_modified and modified_char
+      or (" "):rep(vim.fn.strwidth(modified_char))
+
+  local hl_group = highlights.HlGroup:new({
+    name = "WinBarSavedIndicator",
+    fg = highlights.fg_of("WarningMsg"),
+    bg = winbar_bg,
+  })
+
+  return highlight(char, hl_group.name)
+end
+
+--- @param bufnr number
+--- @return string
+M.file_name = function(bufnr)
+  local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
+  local hl_group = highlights.HlGroup:new({
+    name = "WinBarFileName",
+    fg = highlights.fg_of("Label"),
+    bg = winbar_bg,
+  })
+  return highlight(filename, hl_group.name)
+end
+
+--- @param bufnr number
+--- @return string
 M.file_path = function(bufnr)
   local root_path = buf_project_root(bufnr)
 
@@ -73,15 +109,15 @@ M.file_path = function(bufnr)
         end
       ):join(sep) .. sep
 
-  local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
+  local hl_group = highlights.HlGroup:new({
+    name = "WinBarPath",
+    fg = highlights.fg_of("Title"),
+    bg = winbar_bg,
+  })
 
   return table.concat({
-    highlight(" ", highlights.WinBar.name),
-    highlight(root_name, highlights.WinBarPath.name),
-    highlight(intermediates, highlights.WinBarPath.name),
-    highlight(filename, highlights.WinBarFileName.name),
-    -- highlight(" ", "Normal"),
-    -- highlight(buf_icon(bufnr), "Normal"),
+    highlight(root_name, hl_group.name),
+    highlight(intermediates, hl_group.name),
   })
 end
 
@@ -90,7 +126,11 @@ M.render = function()
   local bufnr = vim.api.nvim_get_current_buf()
 
   return table.concat({
-    M.saved_indicator(bufnr),
+    M.saved_indicator(bufnr, "▏"), -- 
+    M.devicon(bufnr),
+    highlight("  ", winbar_hl),
+    M.file_name(bufnr),
+    highlight(" in ", winbar_hl),
     M.file_path(bufnr),
   })
 end
