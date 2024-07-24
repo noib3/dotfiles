@@ -6,6 +6,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    nur.url = "github:nix-community/NUR";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,7 +46,10 @@
       };
 
       pkgs = import nixpkgs {
-        system = "x86_64-darwin";
+        system = "x86_64-linux";
+        overlays = [
+          inputs.nur.overlay
+        ];
       };
     };
   };
