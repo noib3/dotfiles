@@ -11,6 +11,16 @@
 {
   boot = {
     consoleLogLevel = 0;
+
+    extraModulePackages = with config.boot.kernelPackages; [
+      # Enables virtual video devices. Used to use OBS in video calls.
+      v4l2loopback
+    ];
+
+    kernelModules = [
+      "v4l2loopback"
+    ];
+
     kernelParams = [
       "quiet"
     ];
