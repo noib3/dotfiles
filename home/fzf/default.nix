@@ -10,9 +10,10 @@ let
   colors = import ./colors.nix { inherit hexlib colorscheme palette; };
   col-dirs = hexlib.toANSI colors.directories;
   col-grayed-out-dirs = hexlib.toANSI colors.grayed-out-directories;
+  lf-recursive = "${scripts.lf-recursive}/bin/${scripts.lf-recursive.name}";
 in
 {
-  defaultCommand = "${scripts.lf-recursive.outPath} $HOME";
+  defaultCommand = "${lf-recursive} $HOME";
 
   defaultOptions = [
     "--reverse"

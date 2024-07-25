@@ -9,12 +9,14 @@ let
 in
 pkgs.writeShellApplication {
   name = "lf-recursive";
+
   runtimeInputs = with pkgs; [
     fd
     gnused
     # Contains `sort`.
     uutils-coreutils-noprefix
   ];
+
   text = ''
     inner_lf_recursive() {
       ${builtins.readFile ./lf-recursive.sh}
@@ -26,7 +28,7 @@ pkgs.writeShellApplication {
     fi
 
     if [ ! -d "$1" ]; then
-      echo "error: the provided path is not a directory"
+      echo "error: the argument is not a path to a directory"
       exit 1
     fi
 

@@ -5,4 +5,5 @@
 
 {
   lf-recursive = import ./lf-recursive.nix { inherit pkgs hexlib palette; };
+  preview = import ./preview.nix { inherit pkgs; };
 }

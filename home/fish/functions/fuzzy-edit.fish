@@ -1,5 +1,5 @@
 set -l filenames (
-  fzf --multi --prompt='Edit> ' --preview='previewer ~/{}' \
+  fzf --multi --prompt='Edit> ' --preview='preview ~/{}' \
     | sed 's/\ /\\\ /g;s!^!~/!' \
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'

@@ -1,5 +1,5 @@
 set -l filenames (
-  fzf --multi --prompt='Paste> ' --preview='previewer ~/{}' \
+  fzf --multi --prompt='Paste> ' --preview='preview ~/{}' \
     | sed 's/\ /\\\ /g;s!^!~/!' \
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'

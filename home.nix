@@ -22,26 +22,6 @@ let
     (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
   );
 
-  previewer = with pkgs; writeShellApplication {
-    name = "previewer";
-    runtimeInputs = [
-      atool # contains `als` used for archives
-      bat
-      # calibre # contains `ebook-meta` used for epubs
-      chafa
-      ffmpegthumbnailer
-      file
-      inkscape # SVGs
-      mediainfo # audios
-      imagemagick_light # Contains `convert`
-      # mkvtoolnix-cli # videos
-      poppler_utils # contains `pdftoppm` used for PDFs
-    ] ++ lib.lists.optionals isLinux [
-      ueberzug
-    ];
-    text = (builtins.readFile "${configDir}/lf/previewer.sh");
-  };
-
   rg-previewer = pkgs.writeShellScriptBin "rg-previewer"
     (builtins.readFile "${configDir}/ripgrep/rg-previewer.sh");
 in rec
@@ -85,12 +65,12 @@ in rec
     })
     ookla-speedtest
     pfetch
-    previewer
     python312Packages.ipython
     rg-previewer
     ripgrep
     rustup
     scripts.lf-recursive
+    scripts.preview
     stylua
     sumneko-lua-language-server
     texliveConTeXt
@@ -298,7 +278,7 @@ in rec
   programs.lf = {
     enable = true;
   } // (import "${configDir}/lf" {
-    inherit pkgs previewer;
+    inherit pkgs scripts;
   });
 
   # programs.mpv = {

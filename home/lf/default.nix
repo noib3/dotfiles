@@ -1,10 +1,12 @@
 { pkgs
-, previewer
+, scripts
 }:
 
 let
   cleaner = pkgs.writeShellScriptBin "cleaner"
     (builtins.readFile ./cleaner.sh);
+
+  preview = "${scripts.preview}/bin/${scripts.preview.name}";
 in
 {
   settings = {
@@ -101,7 +103,7 @@ in
       ''${{
         clear
         readarray -t filenames < <(\
-          fzf --multi --prompt='Edit> ' --preview='previewer ~/{}' \
+          fzf --multi --prompt='Edit> ' --preview='${preview} ~/{}' \
             | sed -r "s!^!$HOME/!" \
         )
         [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"
@@ -203,6 +205,6 @@ in
     "<down>" = "cmd-history-next";
   };
 
-  previewer.source = "${previewer}/bin/previewer";
+  previewer.source = preview;
   extraConfig = "set cleaner ${cleaner}/bin/cleaner";
 }
