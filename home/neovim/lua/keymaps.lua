@@ -231,7 +231,6 @@ vim.api.nvim_set_keymap("n", "ll", "", {
   end,
 })
 
-
 local fzf_opts = {
   ["--multi"] = true,
   ["--preview"] = "preview ~/{}",
@@ -270,31 +269,41 @@ local open_qf_list = function(file_paths)
   vim.api.nvim_set_current_win(win)
 end
 
+--- Fuzzy searches files in the given directory, and opens the selected ones.
+local fzf_files = function(search_root)
+  fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
+    actions = {
+      default = function(selected_paths)
+        local full_paths = vim.tbl_map(function(path)
+          return vim.fs.joinpath(search_root, path)
+        end, selected_paths)
+
+        local first = table.remove(full_paths, 1)
+
+        if not first then
+          return
+        end
+
+        vim.cmd(("edit %s"):format(first))
+
+        open_qf_list(full_paths)
+      end,
+    },
+    fzf_opts = fzf_opts,
+  })
+end
+
 vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
-  desc = "Fuzzy find a file in the current git repo and open it",
+  desc = "Fuzzy find files in the current git repo",
   callback = function()
-    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
-    local search_root = git_root or vim.env.HOME
+    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+    fzf_files(git_root or vim.env.HOME)
+  end,
+})
 
-    fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
-      actions = {
-        default = function(selected_paths)
-          local full_paths = vim.tbl_map(function(path)
-            return vim.fs.joinpath(search_root, path)
-          end, selected_paths)
-
-          local first = table.remove(full_paths, 1)
-
-          if not first then
-            return
-          end
-
-          vim.cmd(("edit %s"):format(first))
-
-          open_qf_list(full_paths)
-        end,
-      },
-      fzf_opts = fzf_opts,
-    })
+vim.api.nvim_set_keymap("n", "<C-x><C-f>", "", {
+  desc = "Fuzzy find file in the home directory",
+  callback = function()
+    fzf_files(vim.env.HOME)
   end,
 })
