@@ -233,8 +233,6 @@ vim.api.nvim_set_keymap("n", "ll", "", {
 
 local fzf_opts = {
   ["--multi"] = true,
-  ["--preview"] = "preview ~/{}",
-  ["--prompt"] = "Edit> ",
   ["--reverse"] = true,
   ["--no-bold"] = true,
   ["--info"] = "inline",
@@ -271,6 +269,11 @@ end
 
 --- Fuzzy searches files in the given directory, and opens the selected ones.
 local fzf_files = function(search_root)
+  local opts = vim.tbl_extend("keep", fzf_opts, {
+    ["--preview"] = ("preview %s/{}"):format(search_root),
+    ["--prompt"] = "Open> ",
+  })
+
   fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
     actions = {
       default = function(selected_paths)
@@ -289,7 +292,7 @@ local fzf_files = function(search_root)
         open_qf_list(full_paths)
       end,
     },
-    fzf_opts = fzf_opts,
+    fzf_opts = opts,
   })
 end
 
@@ -302,7 +305,7 @@ vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
 })
 
 vim.api.nvim_set_keymap("n", "<C-x><C-f>", "", {
-  desc = "Fuzzy find file in the home directory",
+  desc = "Fuzzy find files in the home directory",
   callback = function()
     fzf_files(vim.env.HOME)
   end,
