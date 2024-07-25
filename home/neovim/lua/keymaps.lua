@@ -143,6 +143,7 @@ keymap.set("n", "t<Left>", open_terminal(direction.Left))
 keymap.set("n", "t<Right>", open_terminal(direction.Right))
 
 local cmp = require("cmp")
+local fzf_lua = require("fzf-lua")
 local luasnip = require("luasnip")
 local neotab = require("neotab")
 local neotest = require("neotest")
@@ -227,5 +228,73 @@ vim.api.nvim_set_keymap("n", "ll", "", {
   desc = "Open lf in a new floating terminal window",
   callback = function()
     require("lf").start()
+  end,
+})
+
+
+local fzf_opts = {
+  ["--multi"] = true,
+  ["--preview"] = "preview ~/{}",
+  ["--prompt"] = "Edit> ",
+  ["--reverse"] = true,
+  ["--no-bold"] = true,
+  ["--info"] = "inline",
+  ["--hscroll-off"] = 50,
+  ["--preview-window"] = table.concat({
+    "sharp",
+    "border-left",
+  }, ","),
+  ["--color"] = table.concat({
+    "hl:-1:underline",
+    "fg+:-1:regular:italic",
+    "hl+:-1:underline:italic",
+    "prompt:4:regular",
+    "pointer:1",
+  }, ","),
+}
+
+--- Populates the quickfix list with the given file paths, and opens it.
+---
+---@param file_paths string[]
+local open_qf_list = function(file_paths)
+  if #file_paths == 0 then
+    return
+  end
+
+  local fun = function(path) return { filename = path } end
+  local qf_entries = vim.tbl_map(fun, file_paths)
+  vim.fn.setqflist(qf_entries, "r")
+
+  local win = vim.api.nvim_get_current_win()
+  vim.cmd("copen")
+  vim.api.nvim_set_current_win(win)
+end
+
+vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
+  desc = "Fuzzy find a file in the current git repo and open it",
+  callback = function()
+    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+    local search_root = git_root or vim.env.HOME
+
+    fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
+      actions = {
+        default = function(selected_paths)
+          local full_paths = vim.tbl_map(function(path)
+            return vim.fs.joinpath(search_root, path)
+          end, selected_paths)
+
+          local first = table.remove(full_paths, 1)
+
+          if not first then
+            return
+          end
+
+          vim.cmd(("edit %s"):format(first))
+
+          open_qf_list(full_paths)
+        end,
+      },
+      fzf_opts = fzf_opts,
+    })
   end,
 })
