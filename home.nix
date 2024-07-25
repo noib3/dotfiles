@@ -11,6 +11,8 @@
 }:
 
 let
+  scripts = import ./scripts { inherit pkgs hexlib palette; };
+
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
     (builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh");
 
@@ -88,6 +90,7 @@ in rec
     rg-previewer
     ripgrep
     rustup
+    scripts.lf-recursive
     stylua
     sumneko-lua-language-server
     texliveConTeXt
@@ -265,13 +268,13 @@ in rec
   programs.firefox = {
     enable = true;
   } // (import "${configDir}/firefox" {
-    inherit lib colorscheme font-family machine palette hexlib;
+    inherit pkgs lib colorscheme font-family machine palette hexlib;
   });
 
   programs.fzf = {
     enable = true;
   } // (import "${configDir}/fzf" {
-    inherit colorscheme palette hexlib;
+    inherit colorscheme palette hexlib scripts;
     inherit (lib) concatStringsSep;
     inherit (lib.strings) removePrefix;
   });

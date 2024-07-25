@@ -3,35 +3,16 @@
 , hexlib
 , concatStringsSep
 , removePrefix
-,
+, scripts
 }:
 
 let
   colors = import ./colors.nix { inherit hexlib colorscheme palette; };
-
-  # Converts a color from hexadecimal to the format used in ANSI escape
-  # sequences.
-  #
-  # Example:
-  #   toANSIFormat "#61afef" => "1;38;2;97;175;239"
-  toANSIFormat = color:
-    "1;38;2;" + (
-      concatStringsSep ";" (
-        builtins.map (x: builtins.toString (hexlib.toDec x)) (
-          hexlib.splitEveryTwo (removePrefix "#" color)
-        )
-      )
-    );
-
-  col-dirs = toANSIFormat colors.directories;
-  col-grayed-out-dirs = toANSIFormat colors.grayed-out-directories;
+  col-dirs = hexlib.toANSI colors.directories;
+  col-grayed-out-dirs = hexlib.toANSI colors.grayed-out-directories;
 in
 {
-  defaultCommand = ''
-    fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=f --color=always \
-      | sort -r \
-      | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g'
-  '';
+  defaultCommand = "${scripts.lf-recursive.outPath} $HOME";
 
   defaultOptions = [
     "--reverse"

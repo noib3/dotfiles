@@ -29,6 +29,19 @@ with lib; rec {
     in
     pow' base exponent base;
 
+  # Converts a color from hexadecimal to the format used in ANSI escape
+  # sequences.
+  #
+  # Example:
+  #   toANSI "#61afef" => "1;38;2;97;175;239"
+  toANSI = color: "1;38;2;" + (
+    concatStringsSep ";" (
+      builtins.map (x: builtins.toString (toDec x)) (
+        splitEveryTwo (removePrefix "#" color)
+      )
+    )
+  );
+
   # Converts a two character string from hexadecimal into decimal.
   #
   # Example:
