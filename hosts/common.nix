@@ -111,6 +111,28 @@
 
   services.getty.autologinUser = username;
 
+  services.greetd =
+  let
+    hyprland = "${pkgs.hyprland}/bin/Hyprland";
+    tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+  in {
+    enable = true;
+    settings = {
+      initial_session = {
+        command = "${hyprland}";
+        user = username;
+      };
+      default_session = {
+        command = ''
+          ${tuigreet} \
+            --greeting "Welcome to NixOS!" --asterisks --remember \
+            --remember-user-session --time -cmd ${hyprland}
+        '';
+        user = "greeter";
+      };
+    };
+  };
+
   services.libinput = {
     enable = true;
     touchpad = {
