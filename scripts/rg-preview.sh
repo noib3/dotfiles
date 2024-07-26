@@ -20,20 +20,6 @@ if [[ -n "$CENTER" && ! "$CENTER" =~ ^[0-9] ]]; then
 fi
 CENTER=${CENTER/[^0-9]*/}
 
-# MS Win support
-if [[ $FILE =~ '\' ]]; then
-  if [ -z "$MSWINHOME" ]; then
-    MSWINHOME="$HOMEDRIVE$HOMEPATH"
-  fi
-  if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
-    MSWINHOME="${MSWINHOME//\\/\\\\}"
-    FILE="${FILE/#\~\\/$MSWINHOME\\}"
-    FILE=$(wslpath -u "$FILE")
-  elif [ -n "$MSWINHOME" ]; then
-    FILE="${FILE/#\~\\/$MSWINHOME\\}"
-  fi
-fi
-
 FILE="${FILE/#\~\//$HOME/}"
 if [ ! -r "$FILE" ]; then
   echo "File not found ${FILE}"
@@ -60,7 +46,7 @@ fi
 
 if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATNAME:+x}" ]; then
   ${BATNAME} --style="${BAT_STYLE:-numbers}" --color=always --pager=never \
-      --highlight-line=$CENTER "$FILE"
+      --highlight-line="$CENTER" "$FILE"
   exit $?
 fi
 

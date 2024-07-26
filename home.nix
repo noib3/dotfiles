@@ -22,8 +22,6 @@ let
     (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
   );
 
-  rg-previewer = pkgs.writeShellScriptBin "rg-previewer"
-    (builtins.readFile "${configDir}/ripgrep/rg-previewer.sh");
 in rec
 {
   home = rec {
@@ -66,11 +64,11 @@ in rec
     ookla-speedtest
     pfetch
     python312Packages.ipython
-    rg-previewer
     ripgrep
     rustup
     scripts.lf-recursive
     scripts.preview
+    scripts.rg-preview
     stylua
     sumneko-lua-language-server
     texliveConTeXt
