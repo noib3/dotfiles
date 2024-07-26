@@ -35,6 +35,13 @@ in
     }))
   ];
 
+  hardware.logitech.wireless = {
+    enable = true;
+    enableGraphical = true;
+  };
+
+  # Setting these to "suspend", which is the default, causes the system to
+  # remain in an unresponsive state when the lid is re-opened.
   services.logind = {
     lidSwitch = "lock";
     lidSwitchExternalPower = "lock";

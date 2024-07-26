@@ -97,8 +97,6 @@
   #   enable = true;
   # };
 
-  programs.solaar.enable = true;
-
   security.sudo.wheelNeedsPassword = false;
 
   # services.blueman = {
@@ -170,14 +168,15 @@
   };
 
   systemd.user = {
-    services.hyprland = {
+    services.auto-start-solaar = {
       enable = true;
-      description = "Automatically start Hyprland";
+      description = ''
+        Start Solaar to enable custom settings for Logitech devices
+      '';
       after = [ "graphical-session.target" ];
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.hyprland}/bin/hyprland";
-        Restart = "on-failure";
+        ExecStart = "${pkgs.solaar}/bin/solaar";
       };
     };
   };
