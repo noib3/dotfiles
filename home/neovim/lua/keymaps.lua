@@ -252,24 +252,21 @@ local fzf_opts = {
 
 --- Populates the quickfix list with the given file paths, and opens it.
 ---
----@param file_paths string[]
-local open_qf_list = function(file_paths)
-  if #file_paths == 0 then
+---@param qf_entries string[]
+local open_qf_list = function(qf_entries)
+  if #qf_entries == 0 then
     return
   end
 
-  local fun = function(path) return { filename = path } end
-  local qf_entries = vim.tbl_map(fun, file_paths)
-  vim.fn.setqflist(qf_entries, "r")
-
   local win = vim.api.nvim_get_current_win()
+  vim.fn.setqflist(qf_entries, "r")
   vim.cmd("copen")
   vim.api.nvim_set_current_win(win)
 end
 
 --- Fuzzy searches files in the given directory, and opens the selected ones.
 local fzf_files = function(search_root)
-  local opts = vim.tbl_extend("keep", fzf_opts, {
+  local opts = vim.tbl_extend("force", fzf_opts, {
     ["--preview"] = ("preview %s/{}"):format(search_root),
     ["--prompt"] = "Open> ",
   })
@@ -277,19 +274,22 @@ local fzf_files = function(search_root)
   fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
     actions = {
       default = function(selected_paths)
-        local full_paths = vim.tbl_map(function(path)
-          return vim.fs.joinpath(search_root, path)
-        end, selected_paths)
-
-        local first = table.remove(full_paths, 1)
-
-        if not first then
+        if #selected_paths == 0 then
           return
         end
 
-        vim.cmd(("edit %s"):format(first))
+        local qf_entries = {}
 
-        open_qf_list(full_paths)
+        for _, path in ipairs(selected_paths) do
+          table.insert(qf_entries, {
+            filename = vim.fs.joinpath(search_root, path)
+          })
+        end
+
+        local first = table.remove(qf_entries, 1)
+        vim.cmd(("edit %s"):format(first.filename))
+
+        open_qf_list(qf_entries)
       end,
     },
     fzf_opts = opts,
@@ -308,5 +308,60 @@ vim.api.nvim_set_keymap("n", "<C-x><C-f>", "", {
   desc = "Fuzzy find files in the home directory",
   callback = function()
     fzf_files(vim.env.HOME)
+  end,
+})
+
+local fzf_live_ripgrep = function(search_root)
+  local opts = vim.tbl_extend("force", fzf_opts, {
+    ["--bind"] = "change:reload:rg-pattern {q}",
+    ["--delimiter"] = ":",
+    ["--disabled"] = true,
+    ["--preview"] = "rg-preview {1,2}",
+    ["--preview-window"] = "+{2}-/2",
+    ["--prompt"] = "Rg> ",
+    ["--with-nth"] = "1,2,4..",
+  })
+
+  local query = function(query)
+    return ("rg-pattern '%s' %s"):format(query or "", search_root)
+  end
+
+  fzf_lua.fzf_live(query, {
+    actions = {
+      default = function(selected_paths)
+        if #selected_paths == 0 then
+          return
+        end
+
+        local regex = "^([^:]*):([^:]*):([^:]*):.*$"
+        local qf_entries = {}
+
+        for _, item in ipairs(selected_paths) do
+          local path, line, col = item:match(regex)
+          table.insert(qf_entries, {
+            filename = vim.fs.joinpath(search_root, path),
+            lnum = tonumber(line),
+            col = tonumber(col),
+          })
+        end
+
+        local first = table.remove(qf_entries, 1)
+        vim.cmd(("edit %s"):format(first.filename))
+        vim.fn.cursor(first.lnum, first.col)
+
+        open_qf_list(qf_entries)
+      end,
+    },
+    exec_empty_query = true,
+    -- query = "",
+    fzf_opts = opts,
+  })
+end
+
+vim.api.nvim_set_keymap("n", "<C-x><C-r>", "", {
+  desc = "Execute a live ripgrep search in the current git repo",
+  callback = function()
+    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+    fzf_live_ripgrep(git_root or vim.env.HOME)
   end,
 })
