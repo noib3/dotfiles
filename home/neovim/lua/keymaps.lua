@@ -353,7 +353,6 @@ local fzf_live_ripgrep = function(search_root)
       end,
     },
     exec_empty_query = true,
-    -- query = "",
     fzf_opts = opts,
   })
 end
