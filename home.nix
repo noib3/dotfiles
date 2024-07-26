@@ -68,6 +68,7 @@ in rec
     rustup
     scripts.lf-recursive
     scripts.preview
+    scripts.rg-pattern
     scripts.rg-preview
     stylua
     sumneko-lua-language-server

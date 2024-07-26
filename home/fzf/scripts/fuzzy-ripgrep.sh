@@ -1,24 +1,15 @@
-# Piping ripgrep's output into sed to filter empty lines
-query_format=\
-'rg --column --color=always -- %s'\
-" | sed '/.*:\\x1b\\[0m[0-9]*\\x1b\\[0m:$/d'"\
-' || true'
-
-initial_query=$(printf "$query_format" '""')
-reload_query=$(printf "$query_format" '{q}')
-
 git status &> /dev/null
 [ $? != 0 ] || cd "$(git rev-parse --show-toplevel)"
 
 results="$(\
-  eval "$initial_query" \
+  rg-pattern "" \
     | fzf \
         --multi \
         --prompt='Rg> ' \
         --disabled \
         --delimiter=':' \
         --with-nth='1,2,4..' \
-        --bind="change:reload:$reload_query" \
+        --bind="change:reload:rg-pattern {q}" \
         --preview='rg-preview {1,2}' \
         --preview-window='+{2}-/2' \
 )"
