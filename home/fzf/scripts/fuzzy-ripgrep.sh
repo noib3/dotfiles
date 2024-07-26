@@ -10,7 +10,7 @@ results="$(\
         --delimiter=':' \
         --with-nth='1,2,4..' \
         --bind="change:reload:rg-pattern {q}" \
-        --preview='rg-preview {1,2}' \
+        --preview='rg-preview {1}:{2}' \
         --preview-window='+{2}-/2' \
 )"
 
