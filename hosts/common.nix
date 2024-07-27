@@ -101,6 +101,17 @@
 
   security.sudo.wheelNeedsPassword = false;
 
+  services.block-domains = {
+    enable = true;
+    blocked = [
+      "youtube.com"
+      "twitch.tv"
+      "x.com"
+    ];
+    blockAt = "08:00";
+    unblockAt = "20:00";
+  };
+
   # services.blueman = {
   #   enable = true;
   # };

@@ -29,6 +29,7 @@
       system = "x86_64-linux";
       modules = [
         ./hosts/skunk/configuration.nix
+        ./modules/block-domains.nix
         nixos-hardware.nixosModules.apple-t2
         solaar.nixosModules.default
       ];
