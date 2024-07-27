@@ -70,6 +70,7 @@ in rec
     scripts.preview
     scripts.rg-pattern
     scripts.rg-preview
+    scripts.website-blocker
     stylua
     sumneko-lua-language-server
     texliveConTeXt
