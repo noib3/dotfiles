@@ -3,6 +3,7 @@
 { config
 , lib
 , pkgs
+, scripts
 , homedir ? "/home/${username}"
 , hostname ? "nixos"
 , username ? "noib3"
@@ -48,10 +49,11 @@
 
   console.keyMap = "us";
 
-  environment.systemPackages = [
-    pkgs.git
-    pkgs.home-manager
-    pkgs.neovim
+  environment.systemPackages = with pkgs; [
+    git
+    home-manager
+    neovim
+    scripts.website-blocker
   ];
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -176,7 +178,7 @@
       after = [ "graphical-session.target" ];
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.solaar}/bin/solaar";
+        ExecStart = "${pkgs.solaar}/bin/solaar --window=hide";
       };
     };
   };

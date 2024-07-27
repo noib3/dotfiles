@@ -32,6 +32,9 @@
         nixos-hardware.nixosModules.apple-t2
         solaar.nixosModules.default
       ];
+      specialArgs = {
+        inherit colorscheme font;
+      };
     };
 
     homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
