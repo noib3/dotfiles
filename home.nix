@@ -1,16 +1,17 @@
 { pkgs
 , lib
 , config
-, machine
 , colorscheme
-, font-family
-, palette
-, configDir
-, hexlib
+, font
+, machine
 , ...
 }:
 
 let
+  configDir = ./home;
+  font-family = font;
+  hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
+  palette = import (./palettes + "/${colorscheme}.nix");
   scripts = import ./scripts { inherit pkgs hexlib palette; };
 
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"

@@ -19,7 +19,12 @@
     };
   };
   
-  outputs = { self, ... }@inputs: with inputs; {
+  outputs = { self, ... }@inputs: with inputs;
+  let
+    colorscheme = "tokyonight";
+    font = "Inconsolata Nerd Font";
+  in
+  {
     nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -37,11 +42,7 @@
       ];
 
       extraSpecialArgs = rec {
-        colorscheme = "tokyonight";
-        configDir = ./home;
-        font-family = "Inconsolata Nerd Font";
-        hexlib = import ./lib/hex.nix { inherit (nixpkgs) lib; };
-        palette = import (./palettes + "/${colorscheme}.nix");
+        inherit colorscheme font;
         machine = "skunk";
       };
 
