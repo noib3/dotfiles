@@ -53,7 +53,7 @@
     };
   in
   {
-    nixosConfigurations.skunk = pkgs.lib.nixosSystem {
+    nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
       inherit pkgs;
       system = "x86_64-linux";
       modules = [

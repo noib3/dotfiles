@@ -21,63 +21,91 @@ in
     };
 
     blockAt = mkOption {
-      type = types.str;
-      default = "9:00";
+      type = types.listOf types.str;
+      default = [ ];
       description = ''
-        Configure when to start blocking the given domains (HH:mm:ss).
+        A list of times when the given domains will be blocked, in (HH:mm:ss)
+        format.
       '';
-      example = "9:00";
+      example = [ "9:00" ];
     };
 
     unblockAt = mkOption {
-      type = types.str;
-      default = "18:00";
+      type = types.listOf types.str;
+      default = [ ];
       description = ''
-        Configure when to stop blocking the given domains (HH:mm:ss).
+        A list of times when the given domains will be unblocked, in (HH:mm:ss)
+        format.
       '';
-      example = "18:00";
+      example = [ "18:00" ];
     };
   };
 
   config = 
   let
+    blockDomainsServiceName = "block-domains";
+
+    unblockDomainsServiceName = "unblock-domains";
+
+    mkBlockDomainsTimer = time: {
+      description = "Block domains at ${time}";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = time;
+        Unit = "${blockDomainsServiceName}.service";
+        Persistent = "true";
+      };
+    };
+
+    mkUnblockDomainsTimer = time: {
+      description = "Unblock domains at ${time}";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = time;
+        Unit = "${unblockDomainsServiceName}.service";
+        Persistent = "true";
+      };
+    };
+
+    blockDomainsTimers = builtins.listToAttrs (
+      map
+      (time: {
+        name = "block-domains-${builtins.replaceStrings [":"] ["-"] time}";
+        value = mkBlockDomainsTimer time;
+      })
+      cfg.blockAt
+    );
+
+    unblockDomainsTimers = builtins.listToAttrs (
+      map
+      (time: {
+        name = "unblock-domains-${builtins.replaceStrings [":"] ["-"] time}";
+        value = mkUnblockDomainsTimer time;
+      })
+      cfg.unblockAt
+    );
+
+    # The script to execute to block the domains.
     blockDomains = builtins.concatStringsSep "\n" (
       map (domain: "${website-blocker} block ${domain} || true") cfg.blocked
     );
 
+    # The script to execute to unblock the domains.
     unblockDomains = builtins.concatStringsSep "\n" (
-      map (domain: "${website-blocker} unblock ${domain} || true")  cfg.blocked
+      map (domain: "${website-blocker} unblock ${domain} || true") cfg.blocked
     );
   in
   mkIf cfg.enable {
     systemd = {
-      timers.block-domains = {
-        description = "Block domains timer";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = cfg.blockAt;
-          Unit = "block-domains.service";
-          Persistent = "true";
-        };
-      };
+      timers = blockDomainsTimers // unblockDomainsTimers;
 
-      services.block-domains = {
+      services.${blockDomainsServiceName} = {
         description = "Block certain domains";
         enable = true;
         script = blockDomains;
       };
 
-      timers.unblock-domains = {
-        description = "Unblock domains timer";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = cfg.unblockAt;
-          Unit = "unblock-domains.service";
-          Persistent = "true";
-        };
-      };
-
-      services.unblock-domains = {
+      services.${unblockDomainsServiceName} = {
         description = "Unblock the blocked domains";
         enable = true;
         script = unblockDomains;

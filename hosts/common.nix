@@ -104,8 +104,14 @@
       "twitch.tv"
       "x.com"
     ];
-    blockAt = "08:00";
-    unblockAt = "20:00";
+    blockAt = [
+      "8:00"
+      "14:00"
+    ];
+    unblockAt = [
+      "13:00"
+      "20:00"
+    ];
   };
 
   # services.blueman = {
