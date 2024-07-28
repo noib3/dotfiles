@@ -8,6 +8,6 @@ local old_dirs_col="$2"
 # The new color of the directories in ANSI format.
 local new_dirs_col="$3"
 
-fd --base-directory="$dir_path" --no-ignore --hidden --strip-cwd-prefix --type=f --color=always \
+fd --base-directory="$dir_path" --hidden --strip-cwd-prefix --type=f --color=always \
   | sort -r \
   | sed "s|\x1b\[${old_dirs_col}m|\x1b\[${new_dirs_col}m|g"
