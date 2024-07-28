@@ -213,9 +213,9 @@ in rec
     enable = isLinux;
     defaultApplications = {
       "application/pdf" = [ "org.pwmt.zathura.desktop" ];
-      "text/html" = [ "qutebrowser.desktop" ];
-      "x-scheme-handler/http" = [ "qutebrowser.desktop" ];
-      "x-scheme-handler/https" = [ "qutebrowser.desktop" ];
+      "text/html" = [ "firefox.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
     };
   };
 
