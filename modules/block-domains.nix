@@ -5,6 +5,7 @@
 let
   inherit (lib) mkOption mkEnableOption mkIf types;
   cfg = config.services.block-domains;
+  website-blocker = "${pkgs.scripts.website-blocker}/bin/website-blocker";
 in
 {
   options.services.block-domains = {
@@ -41,11 +42,11 @@ in
   config = 
   let
     blockDomains = builtins.concatStringsSep "\n" (
-      map (domain: "website-blocker block ${domain} || true") cfg.blocked
+      map (domain: "${website-blocker} block ${domain} || true") cfg.blocked
     );
 
     unblockDomains = builtins.concatStringsSep "\n" (
-      map (domain: "website-blocker unblock ${domain} || true")  cfg.blocked
+      map (domain: "${website-blocker} unblock ${domain} || true")  cfg.blocked
     );
   in
   mkIf cfg.enable {

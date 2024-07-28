@@ -23,9 +23,31 @@
   let
     colorscheme = "tokyonight";
     font = "Inconsolata Nerd Font";
+
+    pkgs = import nixpkgs { 
+      system = "x86_64-linux";
+      config = {
+        allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+          "megasync"
+          "ookla-speedtest"
+          "spotify"
+          "zoom"
+        ];
+      };
+      overlays = [
+        inputs.nur.overlay
+        (final: prev: {
+          scripts = import ./scripts {
+            inherit colorscheme;
+            pkgs = prev;
+          };
+        })
+      ];
+    };
   in
   {
     nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
+      inherit pkgs;
       system = "x86_64-linux";
       modules = [
         ./hosts/skunk/configuration.nix
@@ -39,6 +61,8 @@
     };
 
     homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+
       modules = [
         ./home.nix
         ./modules/programs/vivid.nix
@@ -48,13 +72,6 @@
       extraSpecialArgs = rec {
         inherit colorscheme font;
         machine = "skunk";
-      };
-
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        overlays = [
-          inputs.nur.overlay
-        ];
       };
     };
   };

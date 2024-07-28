@@ -9,10 +9,9 @@
 let
   hexlib = import ../../lib/hex.nix { inherit lib; };
   palette = import (../../palettes + "/${colorscheme}.nix");
-  scripts = import ../../scripts { inherit pkgs hexlib palette; };
 
   common = import ../common.nix {
-    inherit config lib pkgs scripts;
+    inherit config lib pkgs;
     hostname = "skunk";
   };
 in

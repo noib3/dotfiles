@@ -12,7 +12,6 @@ let
   font-family = font;
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
   palette = import (./palettes + "/${colorscheme}.nix");
-  scripts = import ./scripts { inherit pkgs hexlib palette; };
 
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
     (builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh");
@@ -158,11 +157,6 @@ in rec
     };
   };
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "ookla-speedtest"
-    "zoom"
-  ];
-
   xdg.configFile = {
     "fd/ignore" = {
       source = "${configDir}/fd/ignore";
@@ -254,7 +248,7 @@ in rec
   programs.fzf = {
     enable = true;
   } // (import "${configDir}/fzf" {
-    inherit colorscheme palette hexlib scripts;
+    inherit pkgs colorscheme palette hexlib;
     inherit (lib) concatStringsSep;
     inherit (lib.strings) removePrefix;
   });
@@ -278,7 +272,7 @@ in rec
   programs.lf = {
     enable = true;
   } // (import "${configDir}/lf" {
-    inherit pkgs scripts;
+    inherit pkgs;
   });
 
   # programs.mpv = {

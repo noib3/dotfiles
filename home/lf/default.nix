@@ -1,12 +1,11 @@
 { pkgs
-, scripts
 }:
 
 let
   cleaner = pkgs.writeShellScriptBin "cleaner"
     (builtins.readFile ./cleaner.sh);
 
-  preview = "${scripts.preview}/bin/${scripts.preview.name}";
+  preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
 in
 {
   settings = {

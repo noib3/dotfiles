@@ -3,7 +3,6 @@
 { config
 , lib
 , pkgs
-, scripts
 , homedir ? "/home/${username}"
 , hostname ? "nixos"
 , username ? "noib3"
@@ -77,9 +76,6 @@
       "https://nix-community.cachix.org"
     ];
   };
-
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-  ];
 
   networking = {
     hostName = hostname;
