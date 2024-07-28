@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     solaar = {
       url = "https://flakehub.com/f/Svenum/Solaar-Flake/1.1.13.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -36,6 +41,7 @@
       };
       overlays = [
         inputs.nur.overlay
+        inputs.neovim-nightly-overlay.overlays.default
         (final: prev: {
           scripts = import ./scripts {
             inherit colorscheme;
