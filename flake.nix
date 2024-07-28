@@ -24,7 +24,8 @@
     };
   };
 
-  outputs = inputs:
+  outputs =
+    inputs:
     with inputs;
     let
       colorscheme = "tokyonight";
@@ -34,7 +35,8 @@
       pkgs = import nixpkgs {
         system = "x86_64-linux";
         config = {
-          allowUnfreePredicate = pkg:
+          allowUnfreePredicate =
+            pkg:
             builtins.elem (nixpkgs.lib.getName pkg) [
               "megasync"
               "ookla-speedtest"
@@ -53,7 +55,8 @@
           })
         ];
       };
-    in {
+    in
+    {
       nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
         inherit pkgs;
         system = "x86_64-linux";
@@ -63,30 +66,33 @@
           nixos-hardware.nixosModules.apple-t2
           solaar.nixosModules.default
         ];
-        specialArgs = { inherit colorscheme font; };
+        specialArgs = {
+          inherit colorscheme font;
+        };
       };
 
-      homeConfigurations."noib3@skunk" =
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
+      homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
 
-          modules = [
-            ./home.nix
-            ./modules/programs/vivid.nix
-            ./modules/services/skhd.nix
-          ];
+        modules = [
+          ./home.nix
+          ./modules/programs/vivid.nix
+          ./modules/services/skhd.nix
+        ];
 
-          extraSpecialArgs = {
-            inherit colorscheme font;
-            machine = "skunk";
-          };
+        extraSpecialArgs = {
+          inherit colorscheme font;
+          machine = "skunk";
         };
+      };
     };
 
   nixConfig = {
     # Binary caches.
-    extra-substituters =
-      [ "https://cache.soopy.moe" "https://nix-community.cachix.org" ];
+    extra-substituters = [
+      "https://cache.soopy.moe"
+      "https://nix-community.cachix.org"
+    ];
     extra-trusted-public-keys = [
       "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="

@@ -1,10 +1,11 @@
-{ pkgs
-, lib
-, config
-, colorscheme
-, font
-, machine
-, ...
+{
+  pkgs,
+  lib,
+  config,
+  colorscheme,
+  font,
+  machine,
+  ...
 }:
 
 let
@@ -13,21 +14,24 @@ let
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
   palette = import (./palettes + "/${colorscheme}.nix");
 
-  fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep"
-    (builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh");
+  fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep" (
+    builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh"
+  );
 
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  lf_w_image_previews = with pkgs; hiPrio (writeShellScriptBin "lf"
-    (import "${configDir}/lf/launcher.sh.nix" { inherit lf; })
-  );
-
-in rec
-{
+  lf_w_image_previews =
+    with pkgs;
+    hiPrio (writeShellScriptBin "lf" (import "${configDir}/lf/launcher.sh.nix" { inherit lf; }));
+in
+rec {
   nix = {
     package = pkgs.nix;
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       warn-dirty = false;
     };
   };
@@ -36,117 +40,132 @@ in rec
     # Pass `--ozone-platform=wayland` to Spotify, or it'll look blurry on
     # Wayland.
     (final: prev: {
-      spotify = prev.spotify.overrideAttrs (oldAttrs: rec {
-        postFixup = oldAttrs.postFixup or "" + ''
-          wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
-        '';
+      spotify = prev.spotify.overrideAttrs (oldAttrs: {
+        postFixup =
+          oldAttrs.postFixup or ""
+          + ''
+            wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
+          '';
       });
     })
   ];
 
   home = rec {
     homeDirectory =
-      if isDarwin then "/Users/${username}"
-      else if isLinux then "/home/${username}"
-      else throw "What's the home directory for this OS?";
+      if isDarwin then
+        "/Users/${username}"
+      else if isLinux then
+        "/home/${username}"
+      else
+        throw "What's the home directory for this OS?";
 
     stateVersion = "22.11";
 
     username = "noib3";
   };
 
-  home.packages = with pkgs; [
-    asciinema
-    cargo-criterion
-    cargo-deny
-    cargo-expand
-    cargo-flamegraph
-    cargo-fuzz
-    # cargo-llvm-cov
-    cmake
-    delta
-    dua
-    fd
-    fuzzy-ripgrep
-    gh
-    helix
-    jq
-    neovim
-    nil
-    nixfmt-classic
-    # Needed by Copilot.
-    nodejs
-    (nerdfonts.override {
-      fonts = [
-        "FiraCode"
-        "Inconsolata"
-        "Iosevka"
-        "SourceCodePro"
-      ];
-    })
-    ookla-speedtest
-    pfetch
-    python312Packages.ipython
-    ripgrep
-    rustup
-    scripts.lf-recursive
-    scripts.preview
-    scripts.rg-pattern
-    scripts.rg-preview
-    spotify
-    stylua
-    sumneko-lua-language-server
-    texliveConTeXt
-    tokei
-    tree
-    unzip
-    vimv
-    zip
-    zoom-us
-  ] ++ lib.lists.optionals isDarwin [
-    coreutils
-    findutils
-    gnused
-    libtool
-  ] ++ lib.lists.optionals isLinux [
-    blueman
-    calcurse
-    clang # Needed by Neovim to compile Tree-sitter grammars.
-    (import "${configDir}/dmenu" {
-      inherit pkgs colorscheme font-family palette hexlib;
-    })
-    feh
-    glibc
-    glxinfo
-    grimblast
-    lf_w_image_previews
-    libnotify
-    noto-fonts-emoji
-    obs-studio
-    playerctl
-    pciutils # Contains lspci.
-    pick-colour-picker
-    signal-desktop
-    ueberzug
-    wl-clipboard-rs
-    wmctrl
-    xclip
-    xdotool
-    xdg-utils
-    xorg.xev
-    xorg.xwininfo
-    (pkgs.makeDesktopItem {
-      name = "qutebrowser";
-      desktopName = "qutebrowser";
-      exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-      mimeTypes = [
-        "text/html"
-        "x-scheme-handler/http"
-        "x-scheme-handler/https"
-      ];
-      icon = "qutebrowser";
-    })
-  ];
+  home.packages =
+    with pkgs;
+    [
+      asciinema
+      cargo-criterion
+      cargo-deny
+      cargo-expand
+      cargo-flamegraph
+      cargo-fuzz
+      # cargo-llvm-cov
+      cmake
+      delta
+      dua
+      fd
+      fuzzy-ripgrep
+      gh
+      helix
+      jq
+      neovim
+      nil
+      nixfmt-rfc-style
+      # Needed by Copilot.
+      nodejs
+      (nerdfonts.override {
+        fonts = [
+          "FiraCode"
+          "Inconsolata"
+          "Iosevka"
+          "SourceCodePro"
+        ];
+      })
+      ookla-speedtest
+      pfetch
+      python312Packages.ipython
+      ripgrep
+      rustup
+      scripts.lf-recursive
+      scripts.preview
+      scripts.rg-pattern
+      scripts.rg-preview
+      spotify
+      stylua
+      sumneko-lua-language-server
+      texliveConTeXt
+      tokei
+      tree
+      unzip
+      vimv
+      zip
+      zoom-us
+    ]
+    ++ lib.lists.optionals isDarwin [
+      coreutils
+      findutils
+      gnused
+      libtool
+    ]
+    ++ lib.lists.optionals isLinux [
+      blueman
+      calcurse
+      clang # Needed by Neovim to compile Tree-sitter grammars.
+      (import "${configDir}/dmenu" {
+        inherit
+          pkgs
+          colorscheme
+          font-family
+          palette
+          hexlib
+          ;
+      })
+      feh
+      glibc
+      glxinfo
+      grimblast
+      lf_w_image_previews
+      libnotify
+      noto-fonts-emoji
+      obs-studio
+      playerctl
+      pciutils # Contains lspci.
+      pick-colour-picker
+      signal-desktop
+      ueberzug
+      wl-clipboard-rs
+      wmctrl
+      xclip
+      xdotool
+      xdg-utils
+      xorg.xev
+      xorg.xwininfo
+      (pkgs.makeDesktopItem {
+        name = "qutebrowser";
+        desktopName = "qutebrowser";
+        exec = "${pkgs.qutebrowser}/bin/qutebrowser";
+        mimeTypes = [
+          "text/html"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+        ];
+        icon = "qutebrowser";
+      })
+    ];
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -160,8 +179,7 @@ in rec
     LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
     RIPGREP_CONFIG_PATH = "${configDir}/ripgrep/ripgreprc";
     OSFONTDIR = lib.strings.optionalString isLinux (
-      config.home.homeDirectory
-      + "/.nix-profile/share/fonts/truetype/NerdFonts"
+      config.home.homeDirectory + "/.nix-profile/share/fonts/truetype/NerdFonts"
     );
   };
 
@@ -180,14 +198,10 @@ in rec
 
     # Forcing an update w/ `fc-cache --really-force` may be needed on Linux.
     "fontconfig/fonts.conf" = {
-      text = import "${configDir}/fontconfig/fonts.conf.nix" {
-        fontFamily = font-family;
-      };
+      text = import "${configDir}/fontconfig/fonts.conf.nix" { fontFamily = font-family; };
     };
 
-    "fusuma/config.yml" = lib.mkIf isLinux {
-      source = "${configDir}/fusuma/config.yml";
-    };
+    "fusuma/config.yml" = lib.mkIf isLinux { source = "${configDir}/fusuma/config.yml"; };
 
     "hypr/hyprland.conf" = {
       source = "${configDir}/hyprland/hyprland.conf";
@@ -197,7 +211,7 @@ in rec
       source = "${configDir}/neovim";
       recursive = true;
     };
-    
+
     # "nvim/lua/colorscheme.lua" = {
     #   text = import "${configDir}/neovim/lua/colorscheme.lua.nix" {
     #     inherit colorscheme palette;
@@ -205,9 +219,7 @@ in rec
     # };
 
     "redshift/hooks/notify-change" = lib.mkIf isLinux {
-      text = import "${configDir}/redshift/notify-change.sh.nix" {
-        inherit pkgs;
-      };
+      text = import "${configDir}/redshift/notify-change.sh.nix" { inherit pkgs; };
       executable = true;
     };
   };
@@ -226,18 +238,20 @@ in rec
     enable = isLinux;
   };
 
-  programs.alacritty = {
-    enable = true;
-  } // (import "${configDir}/alacritty" {
-    inherit font-family machine palette;
-    inherit (lib.lists) optionals;
-    inherit (lib.attrsets) optionalAttrs;
-    inherit isDarwin isLinux;
-    shell = {
-      program = "${pkgs.fish}/bin/fish";
-      args = [ "--interactive" ];
-    };
-  });
+  programs.alacritty =
+    {
+      enable = true;
+    }
+    // (import "${configDir}/alacritty" {
+      inherit font-family machine palette;
+      inherit (lib.lists) optionals;
+      inherit (lib.attrsets) optionalAttrs;
+      inherit isDarwin isLinux;
+      shell = {
+        program = "${pkgs.fish}/bin/fish";
+        args = [ "--interactive" ];
+      };
+    });
 
   programs.bat = {
     enable = true;
@@ -247,27 +261,46 @@ in rec
     enable = true;
   } // (import "${configDir}/direnv");
 
-  programs.fish = {
-    enable = true;
-  } // (import "${configDir}/fish" {
-    inherit pkgs colorscheme palette;
-    inherit (lib.strings) removePrefix;
-    cloudDir = home.homeDirectory + "/Documents";
-  });
+  programs.fish =
+    {
+      enable = true;
+    }
+    // (import "${configDir}/fish" {
+      inherit pkgs colorscheme palette;
+      inherit (lib.strings) removePrefix;
+      cloudDir = home.homeDirectory + "/Documents";
+    });
 
-  programs.firefox = {
-    enable = true;
-  } // (import "${configDir}/firefox" {
-    inherit pkgs lib colorscheme font-family machine palette hexlib;
-  });
+  programs.firefox =
+    {
+      enable = true;
+    }
+    // (import "${configDir}/firefox" {
+      inherit
+        pkgs
+        lib
+        colorscheme
+        font-family
+        machine
+        palette
+        hexlib
+        ;
+    });
 
-  programs.fzf = {
-    enable = true;
-  } // (import "${configDir}/fzf" {
-    inherit pkgs colorscheme palette hexlib;
-    inherit (lib) concatStringsSep;
-    inherit (lib.strings) removePrefix;
-  });
+  programs.fzf =
+    {
+      enable = true;
+    }
+    // (import "${configDir}/fzf" {
+      inherit
+        pkgs
+        colorscheme
+        palette
+        hexlib
+        ;
+      inherit (lib) concatStringsSep;
+      inherit (lib.strings) removePrefix;
+    });
 
   programs.git = {
     enable = true;
@@ -287,19 +320,25 @@ in rec
 
   programs.lf = {
     enable = true;
-  } // (import "${configDir}/lf" {
-    inherit pkgs;
-  });
+  } // (import "${configDir}/lf" { inherit pkgs; });
 
   programs.mpv = {
     enable = isLinux;
   } // (import "${configDir}/mpv");
 
-  programs.qutebrowser = {
-    enable = isLinux;
-  } // (import "${configDir}/qutebrowser" {
-    inherit pkgs colorscheme font-family palette hexlib;
-  });
+  programs.qutebrowser =
+    {
+      enable = isLinux;
+    }
+    // (import "${configDir}/qutebrowser" {
+      inherit
+        pkgs
+        colorscheme
+        font-family
+        palette
+        hexlib
+        ;
+    });
 
   programs.nix-index = {
     enable = true;
@@ -310,18 +349,28 @@ in rec
     enable = true;
   } // (import "${configDir}/starship" { inherit (lib) concatStrings; });
 
-  programs.vivid = {
-    enable = true;
-  } // (import "${configDir}/vivid" {
-    inherit colorscheme palette;
-    inherit (lib.strings) removePrefix;
-  });
+  programs.vivid =
+    {
+      enable = true;
+    }
+    // (import "${configDir}/vivid" {
+      inherit colorscheme palette;
+      inherit (lib.strings) removePrefix;
+    });
 
-  programs.zathura = ({
-    enable = isLinux;
-  } // (import "${configDir}/zathura" {
-    inherit colorscheme font-family palette hexlib;
-  }));
+  programs.zathura = (
+    {
+      enable = isLinux;
+    }
+    // (import "${configDir}/zathura" {
+      inherit
+        colorscheme
+        font-family
+        palette
+        hexlib
+        ;
+    })
+  );
 
   # services.dunst = ({
   #   enable = isLinux;
@@ -336,11 +385,9 @@ in rec
   #   inherit pkgs;
   # });
 
-  services.gpg-agent = ({
-    enable = isLinux;
-  } // (import "${configDir}/gpg/gpg-agent.nix" {
-    inherit pkgs;
-  }));
+  services.gpg-agent = (
+    { enable = isLinux; } // (import "${configDir}/gpg/gpg-agent.nix" { inherit pkgs; })
+  );
 
   services.mpris-proxy = {
     enable = isLinux;
@@ -382,9 +429,7 @@ in rec
   #   inherit (pkgs.writers) writePython3Bin;
   # }));
 
-  services.udiskie = ({
-    enable = isLinux;
-  } // (import "${configDir}/udiskie"));
+  services.udiskie = ({ enable = isLinux; } // (import "${configDir}/udiskie"));
 
   systemd.user.startServices = true;
 
