@@ -329,7 +329,9 @@ in rec
 
   # services.fusuma = {
   #   enable = true;
-  # } // (import "${configDir}/fusuma");
+  # } // (import "${configDir}/fusuma" {
+  #   inherit pkgs;
+  # });
 
   services.gpg-agent = ({
     enable = isLinux;
