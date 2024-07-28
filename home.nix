@@ -288,9 +288,9 @@ in rec
     inherit pkgs;
   });
 
-  # programs.mpv = {
-  #   enable = true;
-  # } // (import "${configDir}/mpv");
+  programs.mpv = {
+    enable = isLinux;
+  } // (import "${configDir}/mpv");
 
   programs.qutebrowser = {
     enable = isLinux;
