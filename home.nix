@@ -24,12 +24,32 @@ let
 
 in rec
 {
+  nix = {
+    package = pkgs.nix;
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      warn-dirty = false;
+    };
+  };
+
+  nixpkgs.overlays = [
+    # Pass `--ozone-platform=wayland` to Spotify, or it'll look blurry on
+    # Wayland.
+    (final: prev: {
+      spotify = prev.spotify.overrideAttrs (oldAttrs: rec {
+        postFixup = oldAttrs.postFixup or "" + ''
+          wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
+        '';
+      });
+    })
+  ];
+
   home = rec {
     homeDirectory =
       if isDarwin then "/Users/${username}"
       else if isLinux then "/home/${username}"
       else throw "What's the home directory for this OS?";
-    
+
     stateVersion = "22.11";
 
     username = "noib3";
@@ -70,6 +90,7 @@ in rec
     scripts.preview
     scripts.rg-pattern
     scripts.rg-preview
+    spotify
     stylua
     sumneko-lua-language-server
     texliveConTeXt
@@ -147,14 +168,6 @@ in rec
     size = 16;
     x11.enable = true;
     x11.defaultCursor = "left_ptr";
-  };
-
-  nix = {
-    package = pkgs.nix;
-    settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      warn-dirty = false;
-    };
   };
 
   xdg.configFile = {
