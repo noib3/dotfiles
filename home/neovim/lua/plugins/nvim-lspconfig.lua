@@ -39,6 +39,18 @@ return {
         },
       })
 
+      -- https://github.com/oxalica/nil
+      lspconfig.nil_ls.setup({
+        capabilities = capabilities,
+        settings = {
+          ["nil"] = {
+            formatting = {
+              command = { "nixfmt" },
+            },
+          }
+        }
+      })
+
       -- rustaceanvim will complain if this is enabled because it uses its own
       -- rust-analyzer setup.
       --

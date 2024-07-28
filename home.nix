@@ -72,7 +72,10 @@ in rec
     helix
     jq
     neovim
-    nodejs # Needed by Copilot
+    nil
+    nixfmt-classic
+    # Needed by Copilot.
+    nodejs
     (nerdfonts.override {
       fonts = [
         "FiraCode"

@@ -24,71 +24,69 @@
     };
   };
 
-  outputs = inputs: with inputs;
-  let
-    colorscheme = "tokyonight";
+  outputs = inputs:
+    with inputs;
+    let
+      colorscheme = "tokyonight";
 
-    font = "Inconsolata Nerd Font";
+      font = "Inconsolata Nerd Font";
 
-    pkgs = import nixpkgs { 
-      system = "x86_64-linux";
-      config = {
-        allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-          "megasync"
-          "ookla-speedtest"
-          "spotify"
-          "zoom"
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config = {
+          allowUnfreePredicate = pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "megasync"
+              "ookla-speedtest"
+              "spotify"
+              "zoom"
+            ];
+        };
+        overlays = [
+          nur.overlay
+          neovim-nightly-overlay.overlays.default
+          (final: prev: {
+            scripts = import ./scripts {
+              inherit colorscheme;
+              pkgs = prev;
+            };
+          })
         ];
       };
-      overlays = [
-        nur.overlay
-        neovim-nightly-overlay.overlays.default
-        (final: prev: {
-          scripts = import ./scripts {
-            inherit colorscheme;
-            pkgs = prev;
+    in {
+      nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
+        inherit pkgs;
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/skunk/configuration.nix
+          ./modules/block-domains.nix
+          nixos-hardware.nixosModules.apple-t2
+          solaar.nixosModules.default
+        ];
+        specialArgs = { inherit colorscheme font; };
+      };
+
+      homeConfigurations."noib3@skunk" =
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+
+          modules = [
+            ./home.nix
+            ./modules/programs/vivid.nix
+            ./modules/services/skhd.nix
+          ];
+
+          extraSpecialArgs = {
+            inherit colorscheme font;
+            machine = "skunk";
           };
-        })
-      ];
+        };
     };
-  in
-  {
-    nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
-      inherit pkgs;
-      system = "x86_64-linux";
-      modules = [
-        ./hosts/skunk/configuration.nix
-        ./modules/block-domains.nix
-        nixos-hardware.nixosModules.apple-t2
-        solaar.nixosModules.default
-      ];
-      specialArgs = {
-        inherit colorscheme font;
-      };
-    };
-
-    homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
-
-      modules = [
-        ./home.nix
-        ./modules/programs/vivid.nix
-        ./modules/services/skhd.nix
-      ];
-
-      extraSpecialArgs = rec {
-        inherit colorscheme font;
-        machine = "skunk";
-      };
-    };
-  };
 
   nixConfig = {
     # Binary caches.
-    extra-substituters = [
-      "https://cache.soopy.moe"
-      "https://nix-community.cachix.org"
-    ];
+    extra-substituters =
+      [ "https://cache.soopy.moe" "https://nix-community.cachix.org" ];
     extra-trusted-public-keys = [
       "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
