@@ -75,6 +75,8 @@
       "https://cache.soopy.moe"
       "https://nix-community.cachix.org"
     ];
+
+    warn-dirty = false;
   };
 
   networking = {
