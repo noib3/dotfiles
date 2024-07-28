@@ -23,10 +23,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  
-  outputs = { self, ... }@inputs: with inputs;
+
+  outputs = inputs: with inputs;
   let
     colorscheme = "tokyonight";
+
     font = "Inconsolata Nerd Font";
 
     pkgs = import nixpkgs { 
@@ -40,8 +41,8 @@
         ];
       };
       overlays = [
-        inputs.nur.overlay
-        inputs.neovim-nightly-overlay.overlays.default
+        nur.overlay
+        neovim-nightly-overlay.overlays.default
         (final: prev: {
           scripts = import ./scripts {
             inherit colorscheme;
@@ -52,7 +53,7 @@
     };
   in
   {
-    nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.skunk = pkgs.lib.nixosSystem {
       inherit pkgs;
       system = "x86_64-linux";
       modules = [
