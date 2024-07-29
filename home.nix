@@ -9,22 +9,35 @@
 }:
 
 let
+  inherit (pkgs.stdenv) isDarwin isLinux;
+
   configDir = ./home;
+
   font-family = font;
+
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
+
   palette = import (./palettes + "/${colorscheme}.nix");
+
+  username = "noib3";
+
+  homeDirectory =
+    if isDarwin then
+      "/Users/${username}"
+    else if isLinux then
+      "/home/${username}"
+    else
+      throw "What's the home directory for this OS?";
 
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep" (
     builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh"
   );
 
-  inherit (pkgs.stdenv) isDarwin isLinux;
-
   lf_w_image_previews =
     with pkgs;
     hiPrio (writeShellScriptBin "lf" (import "${configDir}/lf/launcher.sh.nix" { inherit lf; }));
 in
-rec {
+{
   nix = {
     package = pkgs.nix;
     settings = {
@@ -50,30 +63,15 @@ rec {
     })
   ];
 
-  home = rec {
-    homeDirectory =
-      if isDarwin then
-        "/Users/${username}"
-      else if isLinux then
-        "/home/${username}"
-      else
-        throw "What's the home directory for this OS?";
-
+  home = {
+    inherit homeDirectory username;
     stateVersion = "22.11";
-
-    username = "noib3";
   };
 
   home.packages =
     with pkgs;
     [
       asciinema
-      cargo-criterion
-      cargo-deny
-      cargo-expand
-      cargo-flamegraph
-      cargo-fuzz
-      # cargo-llvm-cov
       cmake
       delta
       dua
@@ -97,7 +95,6 @@ rec {
       pfetch
       python312Packages.ipython
       ripgrep
-      rustup
       scripts.lf-recursive
       scripts.preview
       scripts.rg-pattern
@@ -172,7 +169,28 @@ rec {
         ];
         icon = "qutebrowser";
       })
-    ];
+    ]
+    # Rust.
+    ++ (
+      let
+        components = [
+          "clippy"
+          "rust-analyzer"
+          "rustfmt"
+        ];
+      in
+      [
+        (rust-bin.selectLatestNightlyWith (
+          toolchain: toolchain.minimal.override { extensions = components; }
+        ))
+        cargo-criterion
+        cargo-deny
+        cargo-expand
+        cargo-flamegraph
+        cargo-fuzz
+        cargo-llvm-cov
+      ]
+    );
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -275,7 +293,7 @@ rec {
     // (import "${configDir}/fish" {
       inherit pkgs colorscheme palette;
       inherit (lib.strings) removePrefix;
-      cloudDir = home.homeDirectory + "/Documents";
+      cloudDir = homeDirectory + "/Documents";
     });
 
   programs.firefox =

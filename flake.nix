@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     solaar = {
       url = "https://flakehub.com/f/Svenum/Solaar-Flake/1.1.13.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -45,8 +50,9 @@
             ];
         };
         overlays = [
-          nur.overlay
           neovim-nightly-overlay.overlays.default
+          nur.overlay
+          rust-overlay.overlays.default
           (final: prev: {
             scripts = import ./scripts {
               inherit colorscheme;
