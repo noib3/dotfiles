@@ -5,23 +5,24 @@ pkgs.writeShellApplication {
 
   runtimeInputs = with pkgs; [
     # Contains `als`, used for archives.
-    atool 
+    atool
     bat
     # Contains `ebook-meta`, used for epubs.
-    calibre 
+    calibre
     chafa
     ffmpegthumbnailer
     file
     # Used for SVGs.
-    inkscape 
+    inkscape
     # Used for audios.
-    mediainfo 
+    mediainfo
     # Contains `convert`.
-    imagemagick_light 
+    imagemagick_light
     # Used for videos.
-    mkvtoolnix-cli 
+    mkvtoolnix-cli
     # Contains `pdftoppm`, used for PDFs.
-    poppler_utils 
+    poppler_utils
+    ueberzugpp
   ];
 
   text = ''

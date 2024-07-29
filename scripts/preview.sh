@@ -29,21 +29,11 @@ function hash() {
 }
 
 function draw() {
-  if [ -n "${UEBERZUG_FIFO-}" ] && [ -z "${FZF_PREVIEW_COLUMNS-}" ]; then
-    path="$(printf '%s' "$1" | sed 's/\\/\\\\/g;s/"/\\"/g')"
-    declare cmd
-    declare -A -p cmd=(\
-      [action]=add \
-      [identifier]=preview \
-      [x]="$X" \
-      [y]="$Y" \
-      [width]="$WIDTH" \
-      [height]="$HEIGHT" \
-      [scaler]=contain \
-      [scaling_position_x]=0.5 \
-      [scaling_position_y]=0.5 \
-      [path]="$path" \
-    ) > "${UEBERZUG_FIFO}"
+  if [ -n "${UB_SOCKET-}" ] && [ -z "${FZF_PREVIEW_COLUMNS-}" ]; then
+    ueberzugpp \
+      cmd -s "$UB_SOCKET" -a add -i PREVIEW \
+      -x "$X" -y "$Y" --max-width "$WIDTH" --max-height "$HEIGHT" \
+      -f "$FILE"
   else
     chafa --size "${WIDTH}x${HEIGHT}" "$1"
   fi

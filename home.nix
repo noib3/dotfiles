@@ -33,9 +33,6 @@ let
     builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh"
   );
 
-  lf_w_image_previews =
-    with pkgs;
-    hiPrio (writeShellScriptBin "lf" (import "${configDir}/lf/launcher.sh.nix" { inherit lf; }));
 in
 {
   nix = {
@@ -142,7 +139,6 @@ in
       glibc
       glxinfo
       grimblast
-      lf_w_image_previews
       libnotify
       noto-fonts-emoji
       obs-studio
@@ -150,7 +146,6 @@ in
       pciutils # Contains lspci.
       pick-colour-picker
       signal-desktop
-      ueberzug
       wl-clipboard-rs
       wmctrl
       xclip
