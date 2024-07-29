@@ -10,7 +10,7 @@ return {
         require("cmp_nvim_lsp").default_capabilities()
       )
 
-      -- https://github.com/sumneko/lua-language-server
+      -- Lua.
       lspconfig.lua_ls.setup({
         capabilities = capabilities,
         settings = {
@@ -39,7 +39,12 @@ return {
         },
       })
 
-      -- https://github.com/oxalica/nil
+      -- Markdown.
+      lspconfig.marksman.setup({
+        capabilities = capabilities,
+      })
+
+      -- Nix.
       lspconfig.nil_ls.setup({
         capabilities = capabilities,
         settings = {
@@ -56,7 +61,7 @@ return {
       --
       -- TODO: replace rustaceanvim with something that respects your config.
       --
-      -- -- https://github.com/rust-lang/rust-analyzer
+      -- -- Rust.
       -- lspconfig.rust_analyzer.setup({
       --   capabilities = capabilities,
       --   cmd = { "rustup", "run", "nightly", "rust-analyzer" },

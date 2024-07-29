@@ -83,8 +83,6 @@ rec {
       helix
       jq
       neovim
-      nil
-      nixfmt-rfc-style
       # Needed by Copilot.
       nodejs
       (nerdfonts.override {
@@ -105,8 +103,6 @@ rec {
       scripts.rg-pattern
       scripts.rg-preview
       spotify
-      stylua
-      sumneko-lua-language-server
       texliveConTeXt
       tokei
       tree
@@ -114,6 +110,17 @@ rec {
       vimv
       zip
       zoom-us
+    ]
+    # Formatters.
+    ++ [
+      nixfmt-rfc-style
+      stylua
+    ]
+    # LSP servers.
+    ++ [
+      marksman
+      nil
+      sumneko-lua-language-server
     ]
     ++ lib.lists.optionals isDarwin [
       coreutils
