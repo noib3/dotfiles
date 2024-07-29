@@ -236,17 +236,6 @@ in
       source = "${configDir}/neovim";
       recursive = true;
     };
-
-    # "nvim/lua/colorscheme.lua" = {
-    #   text = import "${configDir}/neovim/lua/colorscheme.lua.nix" {
-    #     inherit colorscheme palette;
-    #   };
-    # };
-
-    "redshift/hooks/notify-change" = lib.mkIf isLinux {
-      text = import "${configDir}/redshift/notify-change.sh.nix" { inherit pkgs; };
-      executable = true;
-    };
   };
 
   xdg.mimeApps = {
@@ -432,10 +421,6 @@ in
   #   inherit (lib) concatStringsSep;
   # }));
 
-  # services.redshift = ({
-  #   enable = isLinux;
-  # } // (import "${configDir}/redshift"));
-
   # services.skhd = ({
   #   enable = isDarwin;
   # } // (import "${configDir}/skhd" {
@@ -455,6 +440,8 @@ in
   # }));
 
   services.udiskie = ({ enable = isLinux; } // (import "${configDir}/udiskie"));
+
+  services.wlsunset = ({ enable = isLinux; } // (import "${configDir}/wlsunset"));
 
   systemd.user.startServices = true;
 
