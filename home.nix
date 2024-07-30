@@ -174,6 +174,8 @@ in
           # Needed by `cargo-llvm-cov`.
           "llvm-tools"
           "rust-analyzer"
+          # Needed by `rust-analyzer` to index `std`.
+          "rust-src"
           "rustfmt"
         ];
       in
