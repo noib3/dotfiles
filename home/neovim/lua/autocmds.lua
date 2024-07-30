@@ -16,6 +16,18 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
   command = "set guicursor=a:ver25",
 })
 
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = create_augroup("noib3/remove-trailing-whitespace-on-save"),
+  desc = "Removes trailing whitespace on save",
+  callback = function()
+    local cur_search = vim.fn.getreg("/")
+    local cur_view = vim.fn.winsaveview()
+    vim.cmd([[%s/\s\+$//e]])
+    vim.fn.setreg("/", cur_search)
+    vim.fn.winrestview(cur_view)
+  end,
+})
+
 vim.api.nvim_create_autocmd({ "BufWritePost" }, {
   group = create_augroup("noib3/rust-rerun-tests-on-save"),
   pattern = "*.rs",
