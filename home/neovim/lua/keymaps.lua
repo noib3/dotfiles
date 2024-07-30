@@ -1,3 +1,10 @@
+local cmp = require("cmp")
+local fzf_lua = require("fzf-lua")
+local luasnip = require("luasnip")
+local neotab = require("neotab")
+local neotest = require("neotest")
+local trouble = require("trouble")
+
 local keymap = vim.keymap
 
 -- Either quit Neovim, close a window or delete a buffer based on the current
@@ -142,12 +149,6 @@ keymap.set("n", "t<Down>", open_terminal(direction.Down))
 keymap.set("n", "t<Left>", open_terminal(direction.Left))
 keymap.set("n", "t<Right>", open_terminal(direction.Right))
 
-local cmp = require("cmp")
-local fzf_lua = require("fzf-lua")
-local luasnip = require("luasnip")
-local neotab = require("neotab")
-local neotest = require("neotest")
-
 --- @param key string
 local fallback = function(key)
   local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
@@ -242,6 +243,20 @@ vim.api.nvim_set_keymap("n", "q", "", {
   end,
 })
 
+vim.api.nvim_set_keymap("n", "<S-d>", "", {
+  desc = "Open a trouble.nvim window with diagnostics for the current project",
+  callback = function()
+    trouble.open({
+      mode = "diagnostics",
+      new = true,
+    })
+
+    if trouble.is_open("diagnostics") then
+      trouble.focus("diagnostics")
+    end
+  end,
+})
+
 local fzf_opts = {
   ["--multi"] = true,
   ["--reverse"] = true,
@@ -261,17 +276,22 @@ local fzf_opts = {
   }, ","),
 }
 
---- Populates the quickfix list with the given file paths, and opens it.
+--- Opens a trouble.nvim with w/ the given entries in quickfix formats
+--- (`:h setqflist).
 ---
 ---@param qf_entries string[]
-local open_qf_list = function(qf_entries)
+local open_trouble_qf = function(qf_entries)
   if #qf_entries == 0 then
     return
   end
 
   local win = vim.api.nvim_get_current_win()
   vim.fn.setqflist(qf_entries, "r")
-  vim.cmd("copen")
+  trouble.open({
+    mode = "quickfix",
+    new = false,
+    refresh = true,
+  });
   vim.api.nvim_set_current_win(win)
 end
 
@@ -300,7 +320,7 @@ local fzf_files = function(search_root)
         local first = table.remove(qf_entries, 1)
         vim.cmd(("edit %s"):format(first.filename))
 
-        open_qf_list(qf_entries)
+        open_trouble_qf(qf_entries)
       end,
     },
     fzf_opts = opts,
@@ -360,7 +380,7 @@ local fzf_live_ripgrep = function(search_root)
         vim.cmd(("edit %s"):format(first.filename))
         vim.fn.cursor(first.lnum, first.col)
 
-        open_qf_list(qf_entries)
+        open_trouble_qf(qf_entries)
       end,
     },
     exec_empty_query = true,

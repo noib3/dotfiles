@@ -16,7 +16,7 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
   command = "set guicursor=a:ver25",
 })
 
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+vim.api.nvim_create_autocmd("BufWritePre", {
   group = create_augroup("noib3/remove-trailing-whitespace-on-save"),
   desc = "Removes trailing whitespace on save",
   callback = function()
@@ -28,7 +28,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   end,
 })
 
-vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+vim.api.nvim_create_autocmd("BufWritePost", {
   group = create_augroup("noib3/rust-rerun-tests-on-save"),
   pattern = "*.rs",
   desc = "In Rust files, reruns all the tests on save",
@@ -39,7 +39,7 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 })
 
 -- TODO: this doesnt' work. The callback is executed but the tests are not run.
-vim.api.nvim_create_autocmd({ "BufAdd" }, {
+vim.api.nvim_create_autocmd("BufAdd", {
   group = create_augroup("noib3/rust-run-tests-on-open"),
   pattern = "*.rs",
   desc = "In Rust files, runs all the tests when a file is opened for the 1st time",

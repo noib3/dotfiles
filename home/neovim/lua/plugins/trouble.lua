@@ -1,0 +1,5 @@
+return {
+  {
+    "folke/trouble.nvim",
+  }
+}

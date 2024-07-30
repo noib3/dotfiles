@@ -30,5 +30,6 @@
   "rustaceanvim": { "branch": "master", "commit": "047f9c9d8cd2861745eb9de6c1570ee0875aa795" },
   "toggleterm.nvim": { "branch": "main", "commit": "8ed0f52006d3207ec6c94de7db62da840937ef2a" },
   "tokyonight.nvim": { "branch": "main", "commit": "7b6b1d9b22a5e04d86e6275326878fdd16736a4e" },
+  "trouble.nvim": { "branch": "main", "commit": "6efc446226679fda0547c0fd6a7892fd5f5b15d8" },
   "vim-floaterm": { "branch": "master", "commit": "4e28c8dd0271e10a5f55142fb6fe9b1599ee6160" }
 }

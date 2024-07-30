@@ -7,8 +7,7 @@ vim.b.delimitMate_matchpairs = "(:),[:],{:},`:'"
 vim.b.delimitMate_quotes = "$"
 
 vim.b["surround_" .. vim.fn.char2nr("c")] = "\\\1command: \1{\r}"
-vim.b["surround_" .. vim.fn.char2nr("e")] =
-  "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
+vim.b["surround_" .. vim.fn.char2nr("e")] = "\\begin{\1environment: \1}\n\t\r\n\\end{\1\1}"
 
 vim.keymap.set(
   "n",
