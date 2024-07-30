@@ -231,6 +231,17 @@ vim.api.nvim_set_keymap("n", "ll", "", {
   end,
 })
 
+vim.api.nvim_set_keymap("n", "q", "", {
+  desc = "Close the quickfix window with 'q'",
+  callback = function()
+    if vim.bo.buftype == "quickfix" then
+      vim.cmd("cclose")
+    else
+      fallback("q")
+    end
+  end,
+})
+
 local fzf_opts = {
   ["--multi"] = true,
   ["--reverse"] = true,
