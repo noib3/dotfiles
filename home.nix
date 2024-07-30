@@ -125,7 +125,8 @@ in
     ++ lib.lists.optionals isLinux [
       blueman
       calcurse
-      clang # Needed by Neovim to compile Tree-sitter grammars.
+      # Needed by Neovim to compile Tree-sitter grammars.
+      clang
       (import "${configDir}/dmenu" {
         inherit
           pkgs
@@ -170,6 +171,8 @@ in
       let
         components = [
           "clippy"
+          # Needed by `cargo-llvm-cov`.
+          "llvm-tools"
           "rust-analyzer"
           "rustfmt"
         ];
