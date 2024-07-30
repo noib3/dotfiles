@@ -61,3 +61,12 @@ vim.api.nvim_create_autocmd("TermOpen", {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd("BufAdd", {
+  group = create_augroup("noib3/disable-wrapping-in-lock-files"),
+  pattern = "*.lock,lazy-lock.json",
+  desc = "Disable soft wrapping in lock files",
+  callback = function()
+    vim.wo.wrap = false
+  end,
+})
