@@ -1,0 +1,5 @@
+return {
+  {
+    "famiu/bufdelete.nvim",
+  }
+}
