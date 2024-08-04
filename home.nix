@@ -35,34 +35,14 @@ let
 
 in
 {
-  nix = {
-    package = pkgs.nix;
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      warn-dirty = false;
-    };
-  };
-
-  nixpkgs.overlays = [
-    # Pass `--ozone-platform=wayland` to Spotify, or it'll look blurry on
-    # Wayland.
-    (final: prev: {
-      spotify = prev.spotify.overrideAttrs (oldAttrs: {
-        postFixup =
-          oldAttrs.postFixup or ""
-          + ''
-            wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
-          '';
-      });
-    })
-  ];
-
   home = {
     inherit homeDirectory username;
     stateVersion = "22.11";
+  };
+
+  home.file.".mozilla/firefox/${username}/chrome" = {
+    source = "${configDir}/firefox/chrome";
+    recursive = true;
   };
 
   home.packages =
@@ -192,6 +172,14 @@ in
       ]
     );
 
+  home.pointerCursor = lib.mkIf isLinux {
+    package = pkgs.vanilla-dmz;
+    name = "Vanilla-DMZ";
+    size = 16;
+    x11.enable = true;
+    x11.defaultCursor = "left_ptr";
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
     MANPAGER = "nvim +Man! -";
@@ -208,13 +196,34 @@ in
     );
   };
 
-  home.pointerCursor = lib.mkIf isLinux {
-    package = pkgs.vanilla-dmz;
-    name = "Vanilla-DMZ";
-    size = 16;
-    x11.enable = true;
-    x11.defaultCursor = "left_ptr";
+  fonts.fontconfig = {
+    enable = isLinux;
   };
+
+  nix = {
+    package = pkgs.nix;
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      warn-dirty = false;
+    };
+  };
+
+  nixpkgs.overlays = [
+    # Pass `--ozone-platform=wayland` to Spotify, or it'll look blurry on
+    # Wayland.
+    (final: prev: {
+      spotify = prev.spotify.overrideAttrs (oldAttrs: {
+        postFixup =
+          oldAttrs.postFixup or ""
+          + ''
+            wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
+          '';
+      });
+    })
+  ];
 
   xdg.configFile = {
     "fd/ignore" = {
@@ -246,10 +255,6 @@ in
       "x-scheme-handler/http" = [ "firefox.desktop" ];
       "x-scheme-handler/https" = [ "firefox.desktop" ];
     };
-  };
-
-  fonts.fontconfig = {
-    enable = isLinux;
   };
 
   programs.alacritty =
