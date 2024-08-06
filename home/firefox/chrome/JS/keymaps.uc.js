@@ -1,4 +1,7 @@
 // See [1] for a list of valid modifiers.
+//
+// The startup cache may have to be cleared for these bindings to take effect.
+// To do that, go to `about:support` and click "Clear Startup Cache".
 
 SessionStore.promiseInitialized.then(() => {
   // TODO: Copy w/ Super+c.
@@ -72,6 +75,26 @@ SessionStore.promiseInitialized.then(() => {
     focusTab.setAttribute("modifiers", "meta");
     focusTab.setAttribute("key", `${i}`);
   }
+
+  // Reload w/ Super+r.
+  let reload = document.getElementById("key_reload");
+  reload.setAttribute("modifiers", "meta");
+  reload.setAttribute("key", "R");
+
+  // Zoom in w/ Super+=.
+  let zoomIn = document.getElementById("key_fullZoomEnlarge");
+  zoomIn.setAttribute("modifiers", "meta");
+  zoomIn.setAttribute("key", "=");
+
+  // Zoom out w/ Super+-.
+  let zoomOut = document.getElementById("key_fullZoomReduce");
+  zoomOut.setAttribute("modifiers", "meta");
+  zoomOut.setAttribute("key", "-");
+
+  // Reset zoom w/ Super+0.
+  let zoomReset = document.getElementById("key_fullZoomReset");
+  zoomReset.setAttribute("modifiers", "meta");
+  zoomReset.setAttribute("key", "0");
 });
 
 // [1]: https://web.archive.org/web/20191007211804/https://developer.mozilla.org/en-US/docs/Archive/Mozilla/XUL/Tutorial/Keyboard_Shortcuts
