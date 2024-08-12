@@ -104,9 +104,9 @@ in
     ++ lib.lists.optionals isLinux [
       blueman
       calcurse
+      cameractrls
       # Needed by Neovim to compile Tree-sitter grammars.
       clang
-      cameractrls
       (import "${configDir}/dmenu" {
         inherit
           pkgs
@@ -129,11 +129,7 @@ in
       signal-desktop
       wl-clipboard-rs
       wmctrl
-      xclip
-      xdotool
       xdg-utils
-      xorg.xev
-      xorg.xwininfo
       (pkgs.makeDesktopItem {
         name = "qutebrowser";
         desktopName = "qutebrowser";
