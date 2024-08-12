@@ -296,6 +296,8 @@ in
         ;
     });
 
+  programs.fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
+
   programs.fzf =
     {
       enable = true;

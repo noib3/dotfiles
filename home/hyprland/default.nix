@@ -105,15 +105,15 @@
     # ********** Key Bindings **********
     # See https://wiki.hyprland.org/Configuring/Binds/ for more.
 
-    "$terminal" = "alacritty";
+    "$launcher" = "fuzzel";
     "$browser" = "qutebrowser";
+    "$terminal" = "alacritty";
 
-    # TODO: add a program launcher
-    # TODO: add a file opener
     # Launch programs.
     bind = [
-      "SUPER, Return, exec, $terminal"
+      "SUPER, Space, exec, $launcher"
       "ALT, W, exec, $browser"
+      "SUPER, Return, exec, $terminal"
       # Toggle fullscreen.
       "ALT, F, fullscreen"
       # Focus windows.
