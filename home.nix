@@ -125,17 +125,6 @@ in
       wl-clipboard-rs
       wmctrl
       xdg-utils
-      (pkgs.makeDesktopItem {
-        name = "qutebrowser";
-        desktopName = "qutebrowser";
-        exec = "${pkgs.qutebrowser}/bin/qutebrowser";
-        mimeTypes = [
-          "text/html"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-        ];
-        icon = "qutebrowser";
-      })
     ]
     # Rust.
     ++ (
