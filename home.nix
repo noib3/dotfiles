@@ -47,7 +47,6 @@ in
       cmake
       delta
       dua
-      fd
       gh
       helix
       jq
@@ -218,10 +217,6 @@ in
   ];
 
   xdg.configFile = {
-    "fd/ignore" = {
-      source = "${configDir}/fd/ignore";
-    };
-
     # Forcing an update w/ `fc-cache --really-force` may be needed on Linux.
     "fontconfig/fonts.conf" = {
       text = import "${configDir}/fontconfig/fonts.conf.nix" { fontFamily = font-family; };
@@ -279,6 +274,8 @@ in
       inherit (lib.strings) removePrefix;
       cloudDir = homeDirectory + "/Documents";
     });
+
+  programs.fd = import "${configDir}/fd";
 
   programs.firefox =
     {
