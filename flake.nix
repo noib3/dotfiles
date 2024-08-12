@@ -2,11 +2,14 @@
   description = "noib3's dotfiles";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     nixos-hardware.url = "github:NixOS/nixos-hardware";
-
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nur.url = "github:nix-community/NUR";
+
+    ags = {
+      url = "github:Aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -81,6 +84,7 @@
         inherit pkgs;
 
         modules = [
+          ags.homeManagerModules.default
           ./home.nix
           ./modules/programs/vivid.nix
           ./modules/services/skhd.nix

@@ -32,7 +32,6 @@ let
   fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep" (
     builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh"
   );
-
 in
 {
   home = {
@@ -271,6 +270,10 @@ in
         args = [ "--interactive" ];
       };
     });
+
+  programs.ags = {
+    enable = isLinux;
+  } // (import "${configDir}/ags" { inherit pkgs; });
 
   programs.bat = {
     enable = true;
