@@ -106,6 +106,7 @@ in
       calcurse
       # Needed by Neovim to compile Tree-sitter grammars.
       clang
+      cameractrls
       (import "${configDir}/dmenu" {
         inherit
           pkgs
