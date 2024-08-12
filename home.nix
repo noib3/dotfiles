@@ -236,10 +236,6 @@ in
 
     "fusuma/config.yml" = lib.mkIf isLinux { source = "${configDir}/fusuma/config.yml"; };
 
-    "hypr/hyprland.conf" = {
-      source = "${configDir}/hyprland/hyprland.conf";
-    };
-
     "nvim" = {
       source = "${configDir}/neovim";
       recursive = true;
@@ -271,9 +267,7 @@ in
       };
     });
 
-  programs.ags = {
-    enable = isLinux;
-  } // (import "${configDir}/ags" { inherit pkgs; });
+  programs.ags = import "${configDir}/ags" { inherit pkgs; };
 
   programs.bat = {
     enable = true;
@@ -452,6 +446,8 @@ in
   services.wlsunset = ({ enable = isLinux; } // (import "${configDir}/wlsunset"));
 
   systemd.user.startServices = true;
+
+  wayland.windowManager.hyprland = import "${configDir}/hyprland" { inherit pkgs; };
 
   # xsession = lib.mkIf isLinux ({
   #   enable = true;
