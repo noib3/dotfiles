@@ -1,5 +1,6 @@
-git status &> /dev/null
-[ $? != 0 ] || cd "$(git rev-parse --show-toplevel)"
+if git status &>/dev/null; then
+  cd "$(git rev-parse --show-toplevel)"
+fi
 
 results="$(\
   rg-pattern "" \
@@ -14,7 +15,7 @@ results="$(\
         --preview-window='+{2}-/2' \
 )"
 
-[ ! -z "$results" ] || exit 0
+[ -n "$results" ] || exit 0
 
 regex='^([^:]*):([^:]*):([^:]*):.*$'
 
@@ -26,4 +27,4 @@ filenames="$(\
 lnum="$(echo "$results" | head -n 1 | sed -r "s/$regex/\2/")"
 col="$(echo "$results" | head -n 1 | sed -r "s/$regex/\3/")"
 
-nvim "+call cursor($lnum, $col)" $filenames
+nvim "+call cursor($lnum, $col)" "$filenames"

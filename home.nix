@@ -28,10 +28,6 @@ let
       "/home/${username}"
     else
       throw "What's the home directory for this OS?";
-
-  fuzzy-ripgrep = pkgs.writeShellScriptBin "fuzzy_ripgrep" (
-    builtins.readFile "${configDir}/fzf/scripts/fuzzy-ripgrep.sh"
-  );
 in
 {
   home = {
@@ -52,7 +48,6 @@ in
       delta
       dua
       fd
-      fuzzy-ripgrep
       gh
       helix
       jq
@@ -71,6 +66,7 @@ in
       pfetch
       python312Packages.ipython
       ripgrep
+      scripts.fuzzy-ripgrep
       scripts.lf-recursive
       scripts.preview
       scripts.rg-pattern

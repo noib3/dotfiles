@@ -127,7 +127,7 @@ in
         }}
       '';
 
-      fuzzy-ripgrep = ''$clear; fuzzy_ripgrep'';
+      fuzzy-ripgrep = ''$clear; fuzzy-ripgrep'';
 
       unmount-device = (
         if pkgs.stdenv.isLinux then
