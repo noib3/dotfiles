@@ -34,6 +34,9 @@ function draw() {
       cmd -s "$UB_SOCKET" -a add -i PREVIEW \
       -x "$X" -y "$Y" --max-width "$WIDTH" --max-height "$HEIGHT" \
       -f "$FILE"
+    # Return with a non-zero exit code to disable the preview cache, or the
+    # cleaner script won't get called.
+    exit 1
   else
     chafa --size "${WIDTH}x${HEIGHT}" "$1"
   fi

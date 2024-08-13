@@ -1,11 +1,15 @@
 { pkgs }:
 
 let
-  cleaner = pkgs.writeShellApplication {
-    name = "lf-cleaner";
-    runtimeInputs = with pkgs; [ ueberzugpp ];
-    text = builtins.readFile ./cleaner.sh;
-  };
+  cleaner =
+    let
+      pkg = pkgs.writeShellApplication {
+        name = "lf-cleaner";
+        runtimeInputs = with pkgs; [ ueberzugpp ];
+        text = builtins.readFile ./cleaner.sh;
+      };
+    in
+    "${pkg}/bin/${pkg.name}";
 
   preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
 
@@ -227,5 +231,5 @@ in
   };
 
   previewer.source = preview;
-  extraConfig = "set cleaner ${cleaner}/bin/cleaner";
+  extraConfig = "set cleaner ${cleaner}";
 }
