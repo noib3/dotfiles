@@ -132,8 +132,8 @@
       "ALT, 7, workspace, 7"
       "ALT, 8, workspace, 8"
       # Focus prev/next workspace.
-      "CTRL, left, workspace, e-1"
-      "CTRL, right, workspace, e+1"
+      "CTRL, left, workspace, r-1"
+      "CTRL, right, workspace, r+1"
       # Send window to the given desktop.
       "ALT SHIFT, 1, movetoworkspace, 1"
       "ALT SHIFT, 2, movetoworkspace, 2"
