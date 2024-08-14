@@ -1,10 +1,9 @@
 {
-  pkgs,
-  lib,
   config,
+  lib,
+  pkgs,
   colorscheme,
-  font,
-  machine,
+  fontFamily,
   ...
 }:
 
@@ -12,8 +11,6 @@ let
   inherit (pkgs.stdenv) isDarwin isLinux;
 
   configDir = ./home;
-
-  font-family = font;
 
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
 
@@ -30,6 +27,8 @@ let
       throw "What's the home directory for this OS?";
 in
 {
+  inherit fontFamily;
+
   home = {
     inherit homeDirectory username;
     stateVersion = "22.11";
@@ -53,14 +52,6 @@ in
       neovim
       # Needed by Copilot.
       nodejs
-      (nerdfonts.override {
-        fonts = [
-          "FiraCode"
-          "Inconsolata"
-          "Iosevka"
-          "SourceCodePro"
-        ];
-      })
       ookla-speedtest
       pfetch
       python312Packages.ipython
@@ -102,15 +93,15 @@ in
       cameractrls
       # Needed by Neovim to compile Tree-sitter grammars.
       clang
-      (import "${configDir}/dmenu" {
-        inherit
-          pkgs
-          colorscheme
-          font-family
-          palette
-          hexlib
-          ;
-      })
+      # (import "${configDir}/dmenu" {
+      #   inherit
+      #     pkgs
+      #     colorscheme
+      #     font-family
+      #     palette
+      #     hexlib
+      #     ;
+      # })
       feh
       glibc
       glxinfo
@@ -208,7 +199,7 @@ in
   xdg.configFile = {
     # Forcing an update w/ `fc-cache --really-force` may be needed on Linux.
     "fontconfig/fonts.conf" = {
-      text = import "${configDir}/fontconfig/fonts.conf.nix" { fontFamily = font-family; };
+      text = import "${configDir}/fontconfig/fonts.conf.nix" { inherit config; };
     };
 
     "fusuma/config.yml" = lib.mkIf isLinux { source = "${configDir}/fusuma/config.yml"; };
@@ -234,7 +225,7 @@ in
       enable = true;
     }
     // (import "${configDir}/alacritty" {
-      inherit font-family machine palette;
+      inherit config palette;
       inherit (lib.lists) optionals;
       inherit (lib.attrsets) optionalAttrs;
       inherit isDarwin isLinux;
@@ -275,8 +266,6 @@ in
         pkgs
         lib
         colorscheme
-        font-family
-        machine
         palette
         hexlib
         ;
@@ -329,9 +318,9 @@ in
     }
     // (import "${configDir}/qutebrowser" {
       inherit
+        config
         pkgs
         colorscheme
-        font-family
         palette
         hexlib
         ;
@@ -361,8 +350,8 @@ in
     }
     // (import "${configDir}/zathura" {
       inherit
+        config
         colorscheme
-        font-family
         palette
         hexlib
         ;

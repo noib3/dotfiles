@@ -1,16 +1,17 @@
-{ colorscheme
-, font-family
-, palette
-, hexlib
+{
+  config,
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
-  font = import ./font.nix { family = font-family; };
+  font = config.fontFamily;
 in
 {
   options = {
-    font = "${font-family} Regular ${toString font.size}";
+    font = "${font.name} Regular ${toString font.size}";
 
     default-bg = colors.default.bg;
     default-fg = colors.default.fg;

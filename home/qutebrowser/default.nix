@@ -1,24 +1,19 @@
-{ pkgs
-, colorscheme
-, font-family
-, palette
-, hexlib
+{
+  pkgs,
+  config,
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
-  font = import ./font.nix { family = font-family; };
 
-  add-torrent = pkgs.writeShellScriptBin "add-torrent"
-    (builtins.readFile ./scripts/add-torrent.sh);
+  add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
 
-  fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden"
-    {
-      libraries = [
-        pkgs.python310Packages.tldextract
-      ];
-    }
-    (builtins.readFile ./scripts/fill-bitwarden.py);
+  fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden" {
+    libraries = [ pkgs.python310Packages.tldextract ];
+  } (builtins.readFile ./scripts/fill-bitwarden.py);
 
   homePage = "https://google.com";
 in
@@ -32,8 +27,8 @@ in
 
   settings = {
     fonts = {
-      default_family = font-family;
-      default_size = (toString font.size) + "pt";
+      default_family = config.fontFamily.name;
+      default_size = (toString config.fontFamily.qutebrowser.default_size) + "pt";
     };
 
     colors = {

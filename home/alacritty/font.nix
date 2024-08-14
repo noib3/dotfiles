@@ -1,52 +1,29 @@
-{ family
-, machine
-}:
+{ config }:
 
 let
-  overrides = {
-    "FiraCode Nerd Font" = {
-      bold_italic.style = "Bold";
-    };
-
-    "Inconsolata Nerd Font" = {
-      "skunk".size = 16.5;
-    };
-
-    "JetBrainsMono Nerd Font" = {
-      bold.style = "Extra Bold";
-      bold_italic.style = "Extra Bold";
-    };
-
-    "Mononoki Nerd Font" = {
-      bold_italic.style = "Bold";
-    };
-  };
-
-  default_size = {
-    "skunk" = 10;
-  };
+  family = config.fontFamily.name;
+  font = config.fontFamily.alacritty;
 in
 {
+  size = font.size or 16;
+
   normal = {
     inherit family;
-    style = "Regular";
+    style = font.regular.style or "Regular";
   };
 
   bold = {
     inherit family;
-    style = overrides.${family}.bold.style or "Bold";
+    style = font.bold.style or "Bold";
   };
 
   italic = {
     inherit family;
-    style = "Italic";
+    style = font.italic.style or "Italic";
   };
 
   bold_italic = {
     inherit family;
-    style = overrides.${family}.bold_italic.style or "Bold Italic";
+    style = font.bold_italic.style or "Bold Italic";
   };
-
-  size = overrides.${family}.${machine}.size or default_size.${machine};
-  offset.y = overrides.${family}.${machine}.offset.y or 0;
 }

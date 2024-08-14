@@ -2,8 +2,6 @@
   pkgs,
   lib,
   colorscheme,
-  font-family,
-  machine,
   palette,
   hexlib,
 }:
@@ -11,10 +9,6 @@
 let
   # extensions = import ./extensions.nix;
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
-  font = import ./font.nix {
-    inherit machine;
-    family = font-family;
-  };
 in
 {
   package = pkgs.firefox.override {

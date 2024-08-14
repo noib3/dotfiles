@@ -36,9 +36,10 @@
     inputs:
     with inputs;
     let
-      colorscheme = "tokyonight";
+      fontFamilies = import ./font-families;
 
-      font = "Inconsolata Nerd Font";
+      fontFamily = fontFamilies.inconsolata;
+      colorscheme = "tokyonight";
 
       pkgs = import nixpkgs {
         system = "x86_64-linux";
@@ -76,7 +77,7 @@
           solaar.nixosModules.default
         ];
         specialArgs = {
-          inherit colorscheme font;
+          inherit colorscheme fontFamily;
         };
       };
 
@@ -85,14 +86,14 @@
 
         modules = [
           ags.homeManagerModules.default
+          fontFamilies.homeManagerModule
           ./home.nix
           ./modules/programs/vivid.nix
           ./modules/services/skhd.nix
         ];
 
         extraSpecialArgs = {
-          inherit colorscheme font;
-          machine = "skunk";
+          inherit colorscheme fontFamily;
         };
       };
     };
