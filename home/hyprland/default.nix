@@ -4,6 +4,8 @@
   enable = pkgs.stdenv.isLinux;
 
   settings = {
+    exec-once = [ "${pkgs.solaar}/bin/solaar --window=hide" ];
+
     monitor = ",preferred,auto,auto";
 
     env = [
@@ -109,7 +111,6 @@
     "$browser" = "qutebrowser";
     "$terminal" = "alacritty";
 
-    # Launch programs.
     bind = [
       "SUPER, Space, exec, $launcher"
       "ALT, W, exec, $browser"

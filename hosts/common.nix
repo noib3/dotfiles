@@ -184,20 +184,6 @@
     pulse.enable = true;
   };
 
-  systemd.user = {
-    services.auto-start-solaar = {
-      enable = true;
-      description = ''
-        Start Solaar to enable custom settings for Logitech devices
-      '';
-      after = [ "graphical-session.target" ];
-      wantedBy = [ "default.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.solaar}/bin/solaar --window=hide";
-      };
-    };
-  };
-
   time.timeZone = "Asia/Singapore";
 
   users.users."${username}" = {
