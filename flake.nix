@@ -69,7 +69,7 @@
     {
       nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
         inherit pkgs;
-        system = "x86_64-linux";
+        inherit (pkgs) system;
         modules = [
           ./hosts/skunk/configuration.nix
           ./modules/block-domains.nix
