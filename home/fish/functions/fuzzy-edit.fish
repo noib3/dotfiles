@@ -1,6 +1,13 @@
+if git status &>/dev/null
+  set ROOT (git rev-parse --show-toplevel)
+else
+  set ROOT "$HOME"
+end
+
 set -l filenames (
-  fzf --multi --prompt='Edit> ' --preview='preview ~/{}' \
-    | sed 's/\ /\\\ /g;s!^!~/!' \
+  lf-recursive "$ROOT" \
+    | fzf --multi --prompt='Edit> ' --preview='preview ~/{}' \
+    | sed "s/\ /\\\ /g;s!^!$ROOT/!" \
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'
 )
