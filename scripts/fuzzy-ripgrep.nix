@@ -11,7 +11,7 @@ pkgs.writeShellApplication {
     git
     rg-pattern
     gnused
-    # Contains `head` and `tr`.
+    # Contains `head`.
     uutils-coreutils-noprefix
   ];
 

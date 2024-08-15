@@ -19,12 +19,8 @@ results="$(\
 
 regex='^([^:]*):([^:]*):([^:]*):.*$'
 
-filenames="$(\
-  echo "$results" \
-    | sed -r "s!$regex!\1!;s/\ /\\\ /g" \
-    | tr '\n' ' ' \
-)"
+mapfile -t filenames < <(echo -n "$results" | sed -r "s!$regex!\1!;s/\ /\\\ /g")
 lnum="$(echo "$results" | head -n 1 | sed -r "s/$regex/\2/")"
 col="$(echo "$results" | head -n 1 | sed -r "s/$regex/\3/")"
 
-nvim "+call cursor($lnum, $col)" "$filenames"
+nvim "+call cursor($lnum, $col)" "${filenames[@]}"
