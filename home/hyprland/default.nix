@@ -53,10 +53,18 @@
       };
     };
 
-    # https://wiki.hyprland.org/Configuring/Variables/#animations
-    animations = {
-      enabled = false;
-    };
+    # https://easings.net/#easeOutQuint
+    bezier = "ease_out_quint, 0.22, 1, 0.36, 1";
+
+    # Disable all animations, except for workspace switching.
+    animation = [
+      "workspaces, 1, 5, ease_out_quint, slide"
+      "windows, 0"
+      "layers, 0"
+      "fade, 0"
+      "border, 0"
+      "borderangle, 0"
+    ];
 
     dwindle = {
       force_split = 2;
