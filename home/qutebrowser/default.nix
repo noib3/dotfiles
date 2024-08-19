@@ -114,7 +114,6 @@ in
       show = "always";
       shrink = true;
       timestamp_format = "";
-      web_history.max_items = 7;
     };
 
     content = {
