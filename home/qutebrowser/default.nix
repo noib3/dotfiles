@@ -166,10 +166,10 @@ in
     };
 
     tabs = {
-      show = "multiple";
+      close_mouse_button = "right";
       last_close = "close";
       mode_on_change = "restore";
-      close_mouse_button = "right";
+      mousewheel_switching = false;
     };
 
     url = {
