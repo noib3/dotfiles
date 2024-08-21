@@ -112,6 +112,7 @@ in
       playerctl
       pciutils # Contains lspci.
       pick-colour-picker
+      protonvpn-cli_2
       signal-desktop
       wl-clipboard-rs
       wmctrl
