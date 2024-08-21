@@ -124,7 +124,7 @@ in
 
     downloads = {
       position = "bottom";
-      remove_finished = 0;
+      remove_finished = 3000;
     };
 
     fileselect = {
@@ -169,6 +169,7 @@ in
       last_close = "close";
       mode_on_change = "restore";
       mousewheel_switching = false;
+      title.format = "{perc}{audio}{index}: {current_title}";
     };
 
     url = {
