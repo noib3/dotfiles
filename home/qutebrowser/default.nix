@@ -105,7 +105,7 @@ in
     };
 
     completion = {
-      height = "30%";
+      height = "21%";
       open_categories = [ "history" ];
       scrollbar = {
         padding = 0;
