@@ -173,5 +173,10 @@
     ];
 
     windowrulev2 = "suppressevent maximize, class:.*";
+
+    # Xwayland can't handle scaling properly. Small is better than blurry.
+    xwayland = {
+      force_zero_scaling = true;
+    };
   };
 }

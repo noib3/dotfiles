@@ -91,17 +91,7 @@ in
       blueman
       calcurse
       cameractrls
-      # Needed by Neovim to compile Tree-sitter grammars.
-      clang
-      # (import "${configDir}/dmenu" {
-      #   inherit
-      #     pkgs
-      #     colorscheme
-      #     font-family
-      #     palette
-      #     hexlib
-      #     ;
-      # })
+      clang # Needed by Neovim to compile Tree-sitter grammars.
       feh
       glibc
       glxinfo
@@ -109,9 +99,9 @@ in
       libnotify
       noto-fonts-emoji
       obs-studio
-      playerctl
       pciutils # Contains lspci.
       pick-colour-picker
+      playerctl
       protonvpn-cli_2
       signal-desktop
       wl-clipboard-rs
@@ -182,20 +172,6 @@ in
       warn-dirty = false;
     };
   };
-
-  nixpkgs.overlays = [
-    # Pass `--ozone-platform=wayland` to Spotify, or it'll look blurry on
-    # Wayland.
-    (final: prev: {
-      spotify = prev.spotify.overrideAttrs (oldAttrs: {
-        postFixup =
-          oldAttrs.postFixup or ""
-          + ''
-            wrapProgram $out/bin/spotify --add-flags "--ozone-platform=wayland"
-          '';
-      });
-    })
-  ];
 
   xdg.configFile = {
     # Forcing an update w/ `fc-cache --really-force` may be needed on Linux.
