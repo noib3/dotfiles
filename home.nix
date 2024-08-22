@@ -34,11 +34,6 @@ in
     stateVersion = "22.11";
   };
 
-  home.file.".mozilla/firefox/${username}/chrome" = {
-    source = "${configDir}/firefox/chrome";
-    recursive = true;
-  };
-
   home.packages =
     with pkgs;
     [
@@ -187,9 +182,9 @@ in
     enable = isLinux;
     defaultApplications = {
       "application/pdf" = [ "org.pwmt.zathura.desktop" ];
-      "text/html" = [ "firefox.desktop" ];
-      "x-scheme-handler/http" = [ "firefox.desktop" ];
-      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "text/html" = [ "qutebrowser.desktop" ];
+      "x-scheme-handler/http" = [ "qutebrowser.desktop" ];
+      "x-scheme-handler/https" = [ "qutebrowser.desktop" ];
     };
   };
 
@@ -229,20 +224,6 @@ in
     });
 
   programs.fd = import "${configDir}/fd";
-
-  programs.firefox =
-    {
-      enable = true;
-    }
-    // (import "${configDir}/firefox" {
-      inherit
-        pkgs
-        lib
-        colorscheme
-        palette
-        hexlib
-        ;
-    });
 
   programs.fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
 
