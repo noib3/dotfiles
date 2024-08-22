@@ -43,15 +43,13 @@ in
     with pkgs;
     [
       asciinema
-      cmake
       delta
       dua
       gh
       helix
       jq
       neovim
-      # Needed by Copilot.
-      nodejs
+      nodejs # Needed by Copilot.
       ookla-speedtest
       pfetch
       python312Packages.ipython
@@ -89,11 +87,9 @@ in
     ]
     ++ lib.lists.optionals isLinux [
       blueman
-      calcurse
       cameractrls
       clang # Needed by Neovim to compile Tree-sitter grammars.
       feh
-      glibc
       glxinfo
       grimblast
       libnotify
@@ -106,7 +102,6 @@ in
       protonvpn-cli_2
       signal-desktop
       wl-clipboard-rs
-      wmctrl
       xdg-utils
     ]
     # Rust.
