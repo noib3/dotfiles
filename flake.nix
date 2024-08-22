@@ -83,6 +83,7 @@
           fontFamilies.homeManagerModule
           ./home.nix
           ./modules/programs/vivid.nix
+          ./modules/services/bluetooth-autoconnect.nix
           ./modules/services/skhd.nix
         ];
 

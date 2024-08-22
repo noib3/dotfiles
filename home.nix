@@ -214,7 +214,7 @@ in
     lazygit = import "${configDir}/lazygit";
     lf = import "${configDir}/lf" { inherit pkgs; };
     mpv = import "${configDir}/mpv" { inherit pkgs; };
-    nix-index = import "${configDir}/nix-index" { inherit pkgs; };
+    nix-index = import "${configDir}/nix-index";
   };
 
   programs.fish =
@@ -286,6 +286,12 @@ in
         ;
     })
   );
+
+  services = {
+    bluetooth-autoconnect = {
+      enable = true;
+    };
+  };
 
   # services.dunst = ({
   #   enable = isLinux;
