@@ -1,9 +1,9 @@
 { pkgs }:
 
 {
-  extraPackages = with pkgs; [
-    xdotool
-  ];
+  enable = pkgs.stdenv.isLinux;
+
+  extraPackages = with pkgs; [ xdotool ];
 
   settings = {
     swipe = {

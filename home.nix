@@ -170,8 +170,6 @@ in
       text = import "${configDir}/fontconfig/fonts.conf.nix" { inherit config; };
     };
 
-    "fusuma/config.yml" = lib.mkIf isLinux { source = "${configDir}/fusuma/config.yml"; };
-
     "nvim" = {
       source = "${configDir}/neovim";
       recursive = true;
@@ -300,11 +298,7 @@ in
   #   inherit (pkgs) hicolor-icon-theme;
   # }));
 
-  # services.fusuma = {
-  #   enable = true;
-  # } // (import "${configDir}/fusuma" {
-  #   inherit pkgs;
-  # });
+  # services.fusuma = import "${configDir}/fusuma" { inherit pkgs; };
 
   services.gpg-agent = (
     { enable = isLinux; } // (import "${configDir}/gpg/gpg-agent.nix" { inherit pkgs; })
