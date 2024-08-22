@@ -269,7 +269,7 @@ in
 
   services = {
     bluetooth-autoconnect = {
-      enable = true;
+      enable = isLinux;
     };
     # dunst = {
     #     enable = isLinux;
