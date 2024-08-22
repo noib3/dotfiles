@@ -1,4 +1,8 @@
+{ pkgs }:
+
 {
+  enable = pkgs.stdenv.isLinux;
+
   sunrise = "06:00";
 
   sunset = "22:00";

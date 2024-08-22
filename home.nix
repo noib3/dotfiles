@@ -78,7 +78,6 @@ in
         libtool
       ]
       ++ lib.lists.optionals isLinux [
-        blueman
         cameractrls
         clang # Needed by Neovim to compile Tree-sitter grammars.
         feh
@@ -137,8 +136,6 @@ in
       package = pkgs.vanilla-dmz;
       name = "Vanilla-DMZ";
       size = 16;
-      x11.enable = true;
-      x11.defaultCursor = "left_ptr";
     };
 
     sessionVariables = {
@@ -171,6 +168,20 @@ in
     };
   };
 
+  programs = {
+    ags = import "${configDir}/ags" { inherit pkgs; };
+    bat = import "${configDir}/bat";
+    direnv = import "${configDir}/direnv";
+    fd = import "${configDir}/fd";
+    fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
+    gpg = import "${configDir}/gpg";
+    home-manager = import "${configDir}/home-manager";
+    lazygit = import "${configDir}/lazygit";
+    lf = import "${configDir}/lf" { inherit pkgs; };
+    mpv = import "${configDir}/mpv" { inherit pkgs; };
+    nix-index = import "${configDir}/nix-index";
+  };
+
   programs.alacritty =
     {
       enable = true;
@@ -185,20 +196,6 @@ in
         args = [ "--interactive" ];
       };
     });
-
-  programs = {
-    ags = import "${configDir}/ags" { inherit pkgs; };
-    bat = import "${configDir}/bat";
-    direnv = import "${configDir}/direnv";
-    fd = import "${configDir}/fd";
-    fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
-    gpg = import "${configDir}/gpg";
-    home-manager = import "${configDir}/home-manager";
-    lazygit = import "${configDir}/lazygit";
-    lf = import "${configDir}/lf" { inherit pkgs; };
-    mpv = import "${configDir}/mpv" { inherit pkgs; };
-    nix-index = import "${configDir}/nix-index";
-  };
 
   programs.fish =
     {
@@ -274,60 +271,20 @@ in
     bluetooth-autoconnect = {
       enable = true;
     };
+    # dunst = {
+    #     enable = isLinux;
+    # };
+    fusuma = import "${configDir}/fusuma" { inherit pkgs; };
+    mpris-proxy = {
+      enable = isLinux;
+    };
+    gpg-agent = import "${configDir}/gpg/gpg-agent.nix" { inherit pkgs; };
+    ssh-agent = {
+      enable = true;
+    };
+    udiskie = import "${configDir}/udiskie" { inherit pkgs; };
+    wlsunset = import "${configDir}/wlsunset" { inherit pkgs; };
   };
-
-  # services.dunst = ({
-  #   enable = isLinux;
-  # } // (import "${configDir}/dunst" {
-  #   inherit colorscheme font-family palette hexlib;
-  #   inherit (pkgs) hicolor-icon-theme;
-  # }));
-
-  # services.fusuma = import "${configDir}/fusuma" { inherit pkgs; };
-
-  services.gpg-agent = (
-    { enable = isLinux; } // (import "${configDir}/gpg/gpg-agent.nix" { inherit pkgs; })
-  );
-
-  services.mpris-proxy = {
-    enable = isLinux;
-  };
-
-  # services.picom = ({
-  #   enable = isLinux;
-  # } // (import "${configDir}/picom"));
-  #
-  # services.polybar = ({
-  #   enable = isLinux;
-  #   package = pkgs.polybar.override {
-  #     pulseSupport = true;
-  #   };
-  # } // (import "${configDir}/polybar" {
-  #   inherit colorscheme font-family palette hexlib;
-  #   inherit (lib) concatStringsSep;
-  # }));
-
-  # services.skhd = ({
-  #   enable = isDarwin;
-  # } // (import "${configDir}/skhd" {
-  #   inherit pkgs;
-  # }));
-
-  services.ssh-agent = {
-    enable = true;
-  };
-
-  # services.sxhkd = ({
-  #   enable = isLinux;
-  # } // (import "${configDir}/sxhkd" {
-  #   inherit configDir;
-  #   inherit (pkgs) writeShellScriptBin;
-  #   inherit (pkgs.writers) writePython3Bin;
-  # }));
-
-  services.udiskie = ({ enable = isLinux; } // (import "${configDir}/udiskie"));
-
-  services.wlsunset = ({ enable = isLinux; } // (import "${configDir}/wlsunset"));
 
   systemd.user.startServices = true;
 
