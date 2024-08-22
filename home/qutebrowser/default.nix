@@ -160,8 +160,18 @@ in
     };
 
     statusbar = {
-      show = "never";
-      widgets = [ ];
+      widgets = [
+        "keypress"
+        "text: "
+        "search_match"
+        "text:  "
+        "url"
+        "text: "
+        "scroll"
+        "text: "
+        "history"
+        "text: "
+      ];
     };
 
     tabs = {
@@ -290,7 +300,7 @@ in
     config.unbind("tl")
     config.unbind("gt")
 
-    c.tabs.padding = {"bottom": 0, "left": 7, "right": 7, "top": 0}
+    c.tabs.padding = { "bottom": 3, "left": 8, "right": 8, "top": 3 }
 
     config.load_autoconfig(True)
   '';
