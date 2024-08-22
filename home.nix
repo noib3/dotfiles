@@ -203,15 +203,19 @@ in
       };
     });
 
-  programs.ags = import "${configDir}/ags" { inherit pkgs; };
-
-  programs.bat = {
-    enable = true;
-  } // (import "${configDir}/bat");
-
-  programs.direnv = {
-    enable = true;
-  } // (import "${configDir}/direnv");
+  programs = {
+    ags = import "${configDir}/ags" { inherit pkgs; };
+    bat = import "${configDir}/bat";
+    direnv = import "${configDir}/direnv";
+    fd = import "${configDir}/fd";
+    fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
+    gpg = import "${configDir}/gpg";
+    home-manager = import "${configDir}/home-manager";
+    lazygit = import "${configDir}/lazygit";
+    lf = import "${configDir}/lf" { inherit pkgs; };
+    mpv = import "${configDir}/mpv" { inherit pkgs; };
+    nix-index = import "${configDir}/nix-index" { inherit pkgs; };
+  };
 
   programs.fish =
     {
@@ -222,10 +226,6 @@ in
       inherit (lib.strings) removePrefix;
       cloudDir = homeDirectory + "/Documents";
     });
-
-  programs.fd = import "${configDir}/fd";
-
-  programs.fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
 
   programs.fzf =
     {
@@ -246,26 +246,6 @@ in
     enable = true;
   } // (import "${configDir}/git" { inherit colorscheme; });
 
-  programs.gpg = {
-    enable = true;
-  };
-
-  programs.home-manager = {
-    enable = true;
-  };
-
-  programs.lazygit = {
-    enable = true;
-  } // (import "${configDir}/lazygit");
-
-  programs.lf = {
-    enable = true;
-  } // (import "${configDir}/lf" { inherit pkgs; });
-
-  programs.mpv = {
-    enable = isLinux;
-  } // (import "${configDir}/mpv");
-
   programs.qutebrowser =
     {
       enable = isLinux;
@@ -279,11 +259,6 @@ in
         hexlib
         ;
     });
-
-  programs.nix-index = {
-    enable = true;
-    enableFishIntegration = true;
-  };
 
   programs.starship = {
     enable = true;
@@ -372,19 +347,4 @@ in
   systemd.user.startServices = true;
 
   wayland.windowManager.hyprland = import "${configDir}/hyprland" { inherit pkgs; };
-
-  # xsession = lib.mkIf isLinux ({
-  #   enable = true;
-  #
-  #   windowManager.bspwm = {
-  #     enable = true;
-  #   } // (import "${configDir}/bspwm") {
-  #     inherit pkgs colorscheme palette hexlib;
-  #   };
-  #
-  #   profileExtra = ''
-  #     ${pkgs.hsetroot}/bin/hsetroot \
-  #       -solid "${hexlib.scale 0.75 palette.primary.background}"
-  #   '';
-  # });
 }

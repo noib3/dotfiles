@@ -25,6 +25,8 @@ let
   );
 in
 {
+  enable = true;
+
   package = launcher;
 
   settings = {

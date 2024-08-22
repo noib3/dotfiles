@@ -1,4 +1,8 @@
+{ pkgs }:
+
 {
+  enable = pkgs.stdenv.isLinux;
+
   # See [1] for the full default config file containing all the possible
   # actions.
   bindings = {

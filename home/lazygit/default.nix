@@ -1,4 +1,6 @@
 {
+  enable = true;
+
   settings = {
     notARepository = "skip";
     git.paging = {

@@ -1,4 +1,6 @@
 {
+  enable = true;
+
   config = {
     decorations = "never";
     paging = "never";
