@@ -310,14 +310,14 @@ in
   };
 
   extraConfig = ''
+    c.statusbar.padding = { "top": 2", bottom": 2, "left": 8, "right": 8 }
+    c.tabs.padding = { "top": 2", bottom": 2, "left": 8, "right": 8 }
+
     config.unbind("gm")
     config.unbind("gd")
     config.unbind("gb")
     config.unbind("tl")
     config.unbind("gt")
-
-    c.tabs.padding = { "bottom": 3, "left": 8, "right": 8, "top": 3 }
-
     config.load_autoconfig(True)
   '';
 }
