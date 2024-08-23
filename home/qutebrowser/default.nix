@@ -77,15 +77,31 @@ in
       };
 
       statusbar = {
-        normal.bg = colors.statusbar.bg;
-        normal.fg = colors.statusbar.fg;
-        private.bg = colors.statusbar.private.bg;
-        private.fg = colors.statusbar.private.fg;
         command = {
           bg = colors.statusbar.bg;
           fg = colors.statusbar.fg;
           private.bg = colors.statusbar.private.bg;
           private.fg = colors.statusbar.private.fg;
+        };
+        insert = {
+          bg = colors.statusbar.insert.bg;
+          fg = colors.statusbar.insert.fg;
+        };
+        normal = {
+          bg = colors.statusbar.bg;
+          fg = colors.statusbar.fg;
+        };
+        passthrough = {
+          bg = colors.statusbar.passthrough.bg;
+          fg = colors.statusbar.passthrough.fg;
+        };
+        private = {
+          bg = colors.statusbar.private.bg;
+          fg = colors.statusbar.private.fg;
+        };
+        url = {
+          fg = colors.statusbar.url.fg;
+          hover.fg = colors.statusbar.url.hover.fg;
         };
       };
 

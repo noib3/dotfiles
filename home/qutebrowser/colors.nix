@@ -1,6 +1,7 @@
-{ colorscheme
-, palette
-, hexlib
+{
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
@@ -84,10 +85,28 @@ in
   };
 
   statusbar = rec {
-    bg = c.${colorscheme}.statusbar.bg or palette.bright.black;
-    fg = c.${colorscheme}.statusbar.fg or palette.normal.white;
-    private.bg = c.${colorscheme}.statusbar.private.bg or palette.normal.magenta;
-    private.fg = c.${colorscheme}.statusbar.private.fg or fg;
+    bg = c.${colorscheme}.statusbar.bg or palette.primary.background;
+    fg = c.${colorscheme}.statusbar.fg or palette.primary.foreground;
+
+    insert = {
+      bg = bg;
+      fg = c.${colorscheme}.statusbar.insert.fg or palette.normal.white;
+    };
+
+    passthrough = {
+      bg = bg;
+      fg = c.${colorscheme}.statusbar.fg or palette.normal.yellow;
+    };
+
+    private = {
+      bg = c.${colorscheme}.statusbar.private.bg or palette.normal.magenta;
+      fg = c.${colorscheme}.statusbar.private.fg or fg;
+    };
+
+    url = {
+      fg = palette.normal.green;
+      hover.fg = palette.normal.cyan;
+    };
   };
 
   messages = {
