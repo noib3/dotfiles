@@ -103,9 +103,13 @@ in
       fg = c.${colorscheme}.statusbar.private.fg or fg;
     };
 
-    url = {
+    url = rec {
       fg = palette.normal.green;
-      hover.fg = palette.normal.cyan;
+      hover.fg = fg;
+      success.http.fg = fg;
+      success.https.fg = fg;
+      warn.fg = palette.normal.yellow;
+      error.fg = palette.normal.red;
     };
   };
 

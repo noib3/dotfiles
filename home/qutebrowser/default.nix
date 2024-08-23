@@ -102,6 +102,10 @@ in
         url = {
           fg = colors.statusbar.url.fg;
           hover.fg = colors.statusbar.url.hover.fg;
+          success.http.fg = colors.statusbar.url.success.http.fg;
+          success.https.fg = colors.statusbar.url.success.https.fg;
+          warn.fg = colors.statusbar.url.warn.fg;
+          error.fg = colors.statusbar.url.error.fg;
         };
       };
 
@@ -310,8 +314,8 @@ in
   };
 
   extraConfig = ''
-    c.statusbar.padding = { "top": 2", bottom": 2, "left": 8, "right": 8 }
-    c.tabs.padding = { "top": 2", bottom": 2, "left": 8, "right": 8 }
+    c.statusbar.padding = { "top": 2, "bottom": 2, "left": 8, "right": 8 }
+    c.tabs.padding = { "top": 2, "bottom": 2, "left": 8, "right": 8 }
 
     config.unbind("gm")
     config.unbind("gd")
