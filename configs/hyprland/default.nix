@@ -120,9 +120,12 @@
     "$terminal" = "alacritty";
 
     bind = [
+      # Launch programs.
       "SUPER, Space, exec, $launcher"
       "ALT, W, exec, $browser"
       "SUPER, Return, exec, $terminal"
+      # Quit current program.
+      "SUPER, Q, killactive"
       # Toggle fullscreen.
       "ALT, F, fullscreen"
       # Focus windows.
