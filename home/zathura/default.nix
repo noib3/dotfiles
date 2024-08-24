@@ -7,11 +7,15 @@
 
 let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
-  font = config.fontFamily;
 in
 {
   options = {
-    font = "${font.name} Regular ${toString font.size}";
+    font =
+      let
+        font = config.fonts.serif;
+        size = toString (font.size config "zathura");
+      in
+      "${font.name} ${size}";
 
     default-bg = colors.default.bg;
     default-fg = colors.default.fg;

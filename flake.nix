@@ -31,11 +31,6 @@
     inputs:
     with inputs;
     let
-      fontFamilies = import ./font-families;
-
-      fontFamily = fontFamilies.inconsolata;
-      colorscheme = "tokyonight";
-
       pkgs = import nixpkgs {
         system = "x86_64-linux";
         config = {
@@ -60,6 +55,21 @@
           })
         ];
       };
+
+      fonts =
+        let
+          fonts = import ./fonts;
+        in
+        {
+          serif = fonts.monospace.inconsolata { inherit pkgs; };
+          sansSerif = fonts.monospace.inconsolata { inherit pkgs; };
+          monospace = fonts.monospace.inconsolata { inherit pkgs; };
+          emoji = fonts.emoji.noto-color { inherit pkgs; };
+        };
+
+      colorscheme = "tokyonight";
+
+      username = "noib3";
     in
     {
       nixosConfigurations.skunk = nixpkgs.lib.nixosSystem {
@@ -71,7 +81,7 @@
           nixos-hardware.nixosModules.apple-t2
         ];
         specialArgs = {
-          inherit colorscheme fontFamily;
+          inherit username;
         };
       };
 
@@ -80,7 +90,7 @@
 
         modules = [
           ags.homeManagerModules.default
-          fontFamilies.homeManagerModule
+          ./fonts/module.nix
           ./home.nix
           ./modules/programs/vivid.nix
           ./modules/services/bluetooth-autoconnect.nix
@@ -88,7 +98,7 @@
         ];
 
         extraSpecialArgs = {
-          inherit colorscheme fontFamily;
+          inherit colorscheme fonts username;
         };
       };
     };

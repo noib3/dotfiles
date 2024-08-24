@@ -26,10 +26,14 @@ in
   };
 
   settings = {
-    fonts = {
-      default_family = config.fontFamily.name;
-      default_size = (toString config.fontFamily.qutebrowser.default_size) + "pt";
-    };
+    fonts =
+      let
+        font = config.fonts.serif;
+      in
+      {
+        default_family = font.name;
+        default_size = toString (font.size config "qutebrowser") + "pt";
+      };
 
     colors = {
       tabs = {

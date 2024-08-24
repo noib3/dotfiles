@@ -3,44 +3,31 @@
   lib,
   pkgs,
   colorscheme,
-  fontFamily,
+  fonts,
+  username,
   ...
 }:
 
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  configDir = ./home;
-
+  configs = ./home;
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
-
   palette = import (./palettes + "/${colorscheme}.nix");
-
-  username = "noib3";
-
-  homeDirectory =
-    if isDarwin then
-      "/Users/${username}"
-    else if isLinux then
-      "/home/${username}"
-    else
-      throw "What's the home directory for this OS?";
 in
 {
-  inherit fontFamily;
-
-  fonts.fontconfig = {
-    enable = isLinux;
-    defaultFonts = {
-      serif = [ config.fontFamily.name ];
-      sansSerif = [ config.fontFamily.name ];
-      monospace = [ config.fontFamily.name ];
-      emoji = [ "Noto Color Emoji" ];
-    };
-  };
+  inherit fonts;
 
   home = {
-    inherit homeDirectory username;
+    inherit username;
+
+    homeDirectory =
+      if isDarwin then
+        "/Users/${username}"
+      else if isLinux then
+        "/home/${username}"
+      else
+        throw "What's the home directory for this OS?";
 
     packages =
       with pkgs;
@@ -84,7 +71,6 @@ in
         glxinfo
         grimblast
         libnotify
-        noto-fonts-emoji
         obs-studio
         pciutils # Contains lspci.
         pick-colour-picker
@@ -145,10 +131,10 @@ in
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
       LS_COLORS = "$(vivid generate current)";
-      LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
+      LF_ICONS = (builtins.readFile "${configs}/lf/LF_ICONS");
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
-      RIPGREP_CONFIG_PATH = "${configDir}/ripgrep/ripgreprc";
+      RIPGREP_CONFIG_PATH = "${configs}/ripgrep/ripgreprc";
       OSFONTDIR = lib.strings.optionalString isLinux (
         config.home.homeDirectory + "/.nix-profile/share/fonts/truetype/NerdFonts"
       );
@@ -169,24 +155,24 @@ in
   };
 
   programs = {
-    ags = import "${configDir}/ags" { inherit pkgs; };
-    bat = import "${configDir}/bat";
-    direnv = import "${configDir}/direnv";
-    fd = import "${configDir}/fd";
-    fuzzel = import "${configDir}/fuzzel" { inherit pkgs; };
-    gpg = import "${configDir}/gpg";
-    home-manager = import "${configDir}/home-manager";
-    lazygit = import "${configDir}/lazygit";
-    lf = import "${configDir}/lf" { inherit pkgs; };
-    mpv = import "${configDir}/mpv" { inherit pkgs; };
-    nix-index = import "${configDir}/nix-index";
+    ags = import "${configs}/ags" { inherit pkgs; };
+    bat = import "${configs}/bat";
+    direnv = import "${configs}/direnv";
+    fd = import "${configs}/fd";
+    fuzzel = import "${configs}/fuzzel" { inherit pkgs; };
+    gpg = import "${configs}/gpg";
+    home-manager = import "${configs}/home-manager";
+    lazygit = import "${configs}/lazygit";
+    lf = import "${configs}/lf" { inherit pkgs; };
+    mpv = import "${configs}/mpv" { inherit pkgs; };
+    nix-index = import "${configs}/nix-index";
   };
 
   programs.alacritty =
     {
       enable = true;
     }
-    // (import "${configDir}/alacritty" {
+    // (import "${configs}/alacritty" {
       inherit config palette;
       inherit (lib.lists) optionals;
       inherit (lib.attrsets) optionalAttrs;
@@ -201,17 +187,17 @@ in
     {
       enable = true;
     }
-    // (import "${configDir}/fish" {
+    // (import "${configs}/fish" {
       inherit pkgs colorscheme palette;
       inherit (lib.strings) removePrefix;
-      cloudDir = homeDirectory + "/Documents";
+      cloudDir = config.home.homeDirectory + "/Documents";
     });
 
   programs.fzf =
     {
       enable = true;
     }
-    // (import "${configDir}/fzf" {
+    // (import "${configs}/fzf" {
       inherit
         pkgs
         colorscheme
@@ -224,13 +210,13 @@ in
 
   programs.git = {
     enable = true;
-  } // (import "${configDir}/git" { inherit colorscheme; });
+  } // (import "${configs}/git" { inherit colorscheme; });
 
   programs.qutebrowser =
     {
       enable = isLinux;
     }
-    // (import "${configDir}/qutebrowser" {
+    // (import "${configs}/qutebrowser" {
       inherit
         config
         pkgs
@@ -242,13 +228,13 @@ in
 
   programs.starship = {
     enable = true;
-  } // (import "${configDir}/starship" { inherit (lib) concatStrings; });
+  } // (import "${configs}/starship" { inherit (lib) concatStrings; });
 
   programs.vivid =
     {
       enable = true;
     }
-    // (import "${configDir}/vivid" {
+    // (import "${configs}/vivid" {
       inherit colorscheme palette;
       inherit (lib.strings) removePrefix;
     });
@@ -257,7 +243,7 @@ in
     {
       enable = isLinux;
     }
-    // (import "${configDir}/zathura" {
+    // (import "${configs}/zathura" {
       inherit
         config
         colorscheme
@@ -274,26 +260,26 @@ in
     # dunst = {
     #     enable = isLinux;
     # };
-    fusuma = import "${configDir}/fusuma" { inherit pkgs; };
+    fusuma = import "${configs}/fusuma" { inherit pkgs; };
     mpris-proxy = {
       enable = isLinux;
     };
-    gpg-agent = import "${configDir}/gpg/gpg-agent.nix" { inherit pkgs; };
+    gpg-agent = import "${configs}/gpg/gpg-agent.nix" { inherit pkgs; };
     ssh-agent = {
       enable = true;
     };
-    udiskie = import "${configDir}/udiskie" { inherit pkgs; };
-    wlsunset = import "${configDir}/wlsunset" { inherit pkgs; };
+    udiskie = import "${configs}/udiskie" { inherit pkgs; };
+    wlsunset = import "${configs}/wlsunset" { inherit pkgs; };
   };
 
   systemd.user.startServices = true;
 
-  wayland.windowManager.hyprland = import "${configDir}/hyprland" { inherit pkgs; };
+  wayland.windowManager.hyprland = import "${configs}/hyprland" { inherit pkgs; };
 
   xdg = {
     configFile = {
       "nvim" = {
-        source = "${configDir}/neovim";
+        source = "${configs}/neovim";
         recursive = true;
       };
     };

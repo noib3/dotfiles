@@ -1,17 +1,19 @@
-{ config
-, lib
-, pkgs
-, colorscheme
-, font
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  ...
 }:
 
 let
-  hexlib = import ../../lib/hex.nix { inherit lib; };
-  palette = import (../../palettes + "/${colorscheme}.nix");
-
   common = import ../common.nix {
-    inherit config lib pkgs;
+    inherit
+      config
+      lib
+      pkgs
+      username
+      ;
     hostname = "skunk";
   };
 in

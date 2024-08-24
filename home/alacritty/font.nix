@@ -1,29 +1,29 @@
 { config }:
 
 let
-  family = config.fontFamily.name;
-  font = config.fontFamily.alacritty;
+  font = config.fonts.monospace;
+  family = font.name;
 in
 {
-  size = font.size or 16;
+  size = font.size config "alacritty";
 
   normal = {
     inherit family;
-    style = font.regular.style or "Regular";
+    style = font.normal;
   };
 
   bold = {
     inherit family;
-    style = font.bold.style or "Bold";
+    style = font.bold;
   };
 
   italic = {
     inherit family;
-    style = font.italic.style or "Italic";
+    style = font.italic;
   };
 
   bold_italic = {
     inherit family;
-    style = font.bold_italic.style or "Bold Italic";
+    style = font.bold_italic;
   };
 }

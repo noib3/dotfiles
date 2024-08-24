@@ -1,11 +1,11 @@
 # System-wide config shared by every host.
 
-{ config
-, lib
-, pkgs
-, homedir ? "/home/${username}"
-, hostname ? "nixos"
-, username ? "noib3"
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  hostname ? "nixos",
 }:
 
 {
@@ -17,13 +17,9 @@
       v4l2loopback
     ];
 
-    kernelModules = [
-      "v4l2loopback"
-    ];
+    kernelModules = [ "v4l2loopback" ];
 
-    kernelParams = [
-      "quiet"
-    ];
+    kernelParams = [ "quiet" ];
   };
 
   # boot = {
@@ -65,7 +61,7 @@
     enable = true;
   };
 
-  nix.settings =  {
+  nix.settings = {
     experimental-features = [
       "nix-command"
       "flakes"
@@ -127,26 +123,27 @@
   services.getty.autologinUser = username;
 
   services.greetd =
-  let
-    hyprland = "${pkgs.hyprland}/bin/Hyprland";
-    tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-  in {
-    enable = true;
-    settings = {
-      initial_session = {
-        command = "${hyprland}";
-        user = username;
-      };
-      default_session = {
-        command = ''
-          ${tuigreet} \
-            --greeting "Welcome to NixOS!" --asterisks --remember \
-            --remember-user-session --time -cmd ${hyprland}
-        '';
-        user = "greeter";
+    let
+      hyprland = "${pkgs.hyprland}/bin/Hyprland";
+      tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+    in
+    {
+      enable = true;
+      settings = {
+        initial_session = {
+          command = "${hyprland}";
+          user = username;
+        };
+        default_session = {
+          command = ''
+            ${tuigreet} \
+              --greeting "Welcome to NixOS!" --asterisks --remember \
+              --remember-user-session --time -cmd ${hyprland}
+          '';
+          user = "greeter";
+        };
       };
     };
-  };
 
   services.libinput = {
     enable = true;
@@ -187,7 +184,7 @@
   time.timeZone = "Asia/Singapore";
 
   users.users."${username}" = {
-    home = homedir;
+    home = "/home/${username}";
     shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [

@@ -1,1 +1,0 @@
-{ name = "SourceCodePro Nerd Font"; }
