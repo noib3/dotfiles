@@ -87,6 +87,11 @@ return {
       --     },
       --   },
       -- })
+
+      -- Typescript.
+      lspconfig.tsserver.setup({
+        capabilities = capabilities,
+      })
     end,
   }
 }
