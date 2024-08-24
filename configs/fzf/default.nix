@@ -1,9 +1,9 @@
-{ pkgs
-, colorscheme
-, palette
-, hexlib
-, concatStringsSep
-, removePrefix
+{
+  config,
+  pkgs,
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
@@ -13,6 +13,8 @@ let
   lf-recursive = "${pkgs.scripts.lf-recursive}/bin/${pkgs.scripts.lf-recursive.name}";
 in
 {
+  enable = true;
+
   defaultCommand = "${lf-recursive} $HOME";
 
   defaultOptions = [

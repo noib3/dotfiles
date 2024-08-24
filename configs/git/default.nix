@@ -1,12 +1,11 @@
 { colorscheme }:
 
 let
-  delta-syntax-theme = (
-    if colorscheme == "gruvbox" then "gruvbox-dark"
-    else "TwoDark"
-  );
+  delta-syntax-theme = (if colorscheme == "gruvbox" then "gruvbox-dark" else "TwoDark");
 in
 {
+  enable = true;
+
   userName = "Riccardo Mazzarini";
 
   userEmail = "me@noib3.dev";

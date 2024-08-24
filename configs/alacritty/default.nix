@@ -1,23 +1,29 @@
 {
   config,
+  lib,
+  pkgs,
   palette,
-  shell,
-  optionals,
-  optionalAttrs,
-  isDarwin,
-  isLinux,
 }:
 
 let
+  inherit (pkgs.stdenv) isDarwin isLinux;
   colors = import ./colors.nix { inherit palette; };
 in
 {
+  enable = true;
+
   settings = {
-    inherit shell colors;
+    inherit colors;
 
     font = import ./font.nix { inherit config; };
 
+    shell = {
+      program = "${pkgs.fish}/bin/fish";
+      args = [ "--interactive" ];
+    };
+
     window =
+      with lib.attrsets;
       optionalAttrs isDarwin { decorations = "buttonless"; }
       # // optionalAttrs config.machine.skunk.isCurrent {
       // optionalAttrs true {
@@ -157,7 +163,7 @@ in
           chars = "\\u001b\\u005b\\u0032\\u0030\\u007e"; # F9
         }
       ]
-      ++ optionals isLinux [
+      ++ lib.lists.optionals isLinux [
         {
           key = "C";
           mods = "Super";

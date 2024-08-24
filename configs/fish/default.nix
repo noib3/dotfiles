@@ -1,20 +1,24 @@
 {
+  config,
+  lib,
   pkgs,
   colorscheme,
   palette,
-  cloudDir,
-  removePrefix,
 }:
 
 let
   inherit (pkgs.lib.attrsets) optionalAttrs;
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  colors = builtins.mapAttrs (name: hex: removePrefix "#" hex) (
+  cloudDir = config.home.homeDirectory + "/Documents";
+
+  colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
     import ./colors.nix { inherit colorscheme palette; }
   );
 in
 {
+  enable = true;
+
   shellAliases =
     {
       cat = "bat";

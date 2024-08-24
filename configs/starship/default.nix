@@ -1,8 +1,10 @@
-{ concatStrings }:
+{ lib }:
 
 {
+  enable = true;
+
   settings = {
-    format = concatStrings [
+    format = lib.concatStrings [
       "$username"
       "$hostname"
       "$shlvl"

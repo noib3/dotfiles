@@ -12,9 +12,17 @@ let
   inherit (pkgs.stdenv) isDarwin isLinux;
 
   configDir = ./configs;
-  configs = import "${configDir}";
-  hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
-  palette = import (./palettes + "/${colorscheme}.nix");
+
+  configs = import "${configDir}" {
+    inherit
+      config
+      lib
+      pkgs
+      colorscheme
+      ;
+    hexlib = import ./lib/hex.nix { inherit lib; };
+    palette = import (./palettes + "/${colorscheme}.nix");
+  };
 in
 {
   inherit fonts;
@@ -155,127 +163,47 @@ in
   };
 
   programs = {
-    ags = configs.ags { inherit pkgs; };
-    bat = configs.bat;
-    direnv = configs.direnv;
-    fd = configs.fd;
-    fuzzel = configs.fuzzel { inherit pkgs; };
-    gpg = configs.gpg;
-    home-manager = configs.home-manager;
-    lazygit = configs.lazygit;
-    lf = configs.lf { inherit pkgs; };
-    mpv = configs.mpv { inherit pkgs; };
-    nix-index = configs.nix-index;
-    ripgrep = configs.ripgrep;
+    inherit (configs)
+      ags
+      alacritty
+      bat
+      direnv
+      fd
+      fish
+      fuzzel
+      fzf
+      git
+      gpg
+      home-manager
+      lazygit
+      lf
+      mpv
+      nix-index
+      qutebrowser
+      ripgrep
+      starship
+      vivid
+      zathura
+      ;
   };
-
-  programs.alacritty =
-    {
-      enable = true;
-    }
-    // (configs.alacritty {
-      inherit config palette;
-      inherit (lib.lists) optionals;
-      inherit (lib.attrsets) optionalAttrs;
-      inherit isDarwin isLinux;
-      shell = {
-        program = "${pkgs.fish}/bin/fish";
-        args = [ "--interactive" ];
-      };
-    });
-
-  programs.fish =
-    {
-      enable = true;
-    }
-    // (configs.fish {
-      inherit pkgs colorscheme palette;
-      inherit (lib.strings) removePrefix;
-      cloudDir = config.home.homeDirectory + "/Documents";
-    });
-
-  programs.fzf =
-    {
-      enable = true;
-    }
-    // (configs.fzf {
-      inherit
-        pkgs
-        colorscheme
-        palette
-        hexlib
-        ;
-      inherit (lib) concatStringsSep;
-      inherit (lib.strings) removePrefix;
-    });
-
-  programs.git = {
-    enable = true;
-  } // (configs.git { inherit colorscheme; });
-
-  programs.qutebrowser =
-    {
-      enable = isLinux;
-    }
-    // (configs.qutebrowser {
-      inherit
-        config
-        pkgs
-        colorscheme
-        palette
-        hexlib
-        ;
-    });
-
-  programs.starship = {
-    enable = true;
-  } // (configs.starship { inherit (lib) concatStrings; });
-
-  programs.vivid =
-    {
-      enable = true;
-    }
-    // (configs.vivid {
-      inherit colorscheme palette;
-      inherit (lib.strings) removePrefix;
-    });
-
-  programs.zathura = (
-    {
-      enable = isLinux;
-    }
-    // (configs.zathura {
-      inherit
-        config
-        colorscheme
-        palette
-        hexlib
-        ;
-    })
-  );
 
   services = {
     bluetooth-autoconnect = {
       enable = isLinux;
     };
-    # dunst = {
-    #     enable = isLinux;
-    # };
-    fusuma = configs.fusuma { inherit pkgs; };
-    mpris-proxy = {
-      enable = isLinux;
-    };
-    gpg-agent = configs.gpg-agent { inherit pkgs; };
-    ssh-agent = {
-      enable = true;
-    };
-    udiskie = configs.udiskie { inherit pkgs; };
-    wlsunset = configs.wlsunset { inherit pkgs; };
+    inherit (configs)
+      fusuma
+      mpris-proxy
+      gpg-agent
+      ssh-agent
+      udiskie
+      wlsunset
+      ;
   };
 
   systemd.user.startServices = true;
 
-  wayland.windowManager.hyprland = configs.hyprland { inherit pkgs; };
+  wayland.windowManager.hyprland = configs.hyprland;
 
   xdg = {
     configFile = {

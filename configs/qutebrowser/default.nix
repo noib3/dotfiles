@@ -1,6 +1,6 @@
 {
-  pkgs,
   config,
+  pkgs,
   colorscheme,
   palette,
   hexlib,
@@ -18,6 +18,8 @@ let
   homePage = "https://google.com";
 in
 {
+  enable = pkgs.stdenv.isLinux;
+
   searchEngines = {
     "DEFAULT" = "https://google.com/search?q={}";
     "yt" = "https://youtube.com/results?search_query={}";

@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   colorscheme,
   palette,
   hexlib,
@@ -9,6 +10,8 @@ let
   colors = import ./colors.nix { inherit colorscheme palette hexlib; };
 in
 {
+  enable = pkgs.stdenv.isLinux;
+
   options = {
     font =
       let

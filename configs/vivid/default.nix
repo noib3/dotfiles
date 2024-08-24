@@ -1,15 +1,17 @@
-{ colorscheme
-, palette
-, removePrefix
+{
+  lib,
+  colorscheme,
+  palette,
 }:
 
 let
-  colors =
-    builtins.mapAttrs
-      (name: hex: removePrefix "#" hex)
-      (import ./colors.nix { inherit colorscheme palette; });
+  colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
+    import ./colors.nix { inherit colorscheme palette; }
+  );
 in
 {
+  enable = true;
+
   filetypes = {
     core = {
       regular_file = [ "$fi" ];
@@ -130,7 +132,10 @@ in
     };
 
     office = {
-      document = [ ".pdf" ".epub" ];
+      document = [
+        ".pdf"
+        ".epub"
+      ];
     };
 
     archives = {
