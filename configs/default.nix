@@ -50,6 +50,7 @@
   grub = import ./grub;
   home-manager = import ./home-manager;
   hyprland = import ./hyprland { inherit pkgs; };
+  kanshi = import ./kanshi { inherit config pkgs; };
   lazygit = import ./lazygit;
   lf = import ./lf { inherit pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };

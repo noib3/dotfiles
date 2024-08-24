@@ -193,8 +193,9 @@ in
     };
     inherit (configs)
       fusuma
-      mpris-proxy
       gpg-agent
+      kanshi
+      mpris-proxy
       ssh-agent
       udiskie
       wlsunset
