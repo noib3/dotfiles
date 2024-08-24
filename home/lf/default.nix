@@ -12,8 +12,11 @@ let
     "${pkg}/bin/${pkg.name}";
 
   preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
+in
+{
+  enable = true;
 
-  launcher = pkgs.hiPrio (
+  package = pkgs.hiPrio (
     pkgs.writeShellApplication {
       name = "lf";
       runtimeInputs = with pkgs; [
@@ -23,11 +26,6 @@ let
       text = builtins.readFile ./launcher.sh;
     }
   );
-in
-{
-  enable = true;
-
-  package = launcher;
 
   settings = {
     dircounts = true;
