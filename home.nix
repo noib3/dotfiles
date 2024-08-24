@@ -90,16 +90,17 @@ in
         wl-clipboard-rs
         xdg-utils
       ]
-      # Formatters.
+      # Lua.
       ++ [
-        nixfmt-rfc-style
         stylua
-      ]
-      # LSP servers.
-      ++ [
-        marksman
-        nil
         sumneko-lua-language-server
+      ]
+      # Markdown.
+      ++ [ marksman ]
+      # Nix.
+      ++ [
+        nil
+        nixfmt-rfc-style
       ]
       # Rust.
       ++ (
@@ -125,7 +126,13 @@ in
           cargo-fuzz
           cargo-llvm-cov
         ]
-      );
+      )
+      # Typescript.
+      ++ [
+        prettierd
+        typescript
+        typescript-language-server
+      ];
 
     pointerCursor = lib.mkIf isLinux {
       package = pkgs.vanilla-dmz;
