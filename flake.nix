@@ -56,19 +56,8 @@
         ];
       };
 
-      fonts =
-        let
-          fonts = import ./fonts;
-        in
-        {
-          serif = fonts.monospace.inconsolata { inherit pkgs; };
-          sansSerif = fonts.monospace.inconsolata { inherit pkgs; };
-          monospace = fonts.monospace.inconsolata { inherit pkgs; };
-          emoji = fonts.emoji.noto-color { inherit pkgs; };
-        };
-
+      fonts = (import ./fonts).schemes.fira pkgs;
       colorscheme = "tokyonight";
-
       username = "noib3";
     in
     {
