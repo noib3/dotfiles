@@ -63,8 +63,7 @@ in
     }
   ];
 
-  # See https://discourse.nixos.org/t/starting-kanshi-via-systemd-user-swaywm/27960
-  systemdTarget = "";
+  systemdTarget = "graphical-session.target";
 }
 
 # [1]: https://git.sr.ht/~emersion/kanshi/tree/master/item/doc/kanshi.5.scd#L68-80
