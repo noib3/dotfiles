@@ -1,26 +1,9 @@
-const time = Variable("", {
-    poll: [1000, function() {
-        return Date().toString();
-    }],
-})
-
-const Bar = (monitor: number) => Widget.Window({
-    monitor,
-    name: `bar${monitor}`,
-    anchor: ["top", "left", "right"],
-    exclusivity: "exclusive",
-    child: Widget.CenterBox({
-        start_widget: Widget.Label({
-            hpack: "center",
-            label: "Welcome to AGS!",
-        }),
-        end_widget: Widget.Label({
-            hpack: "center",
-            label: time.bind(),
-        }),
-    }),
-})
+import _Bar from './widgets/bar';
+import OSD from './widgets/osd';
+import { forMonitors } from './lib/utils';
 
 App.config({
-    windows: [Bar(0)],
+  windows: [
+    ...forMonitors(OSD),
+  ],
 })
