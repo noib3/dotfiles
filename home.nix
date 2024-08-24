@@ -11,7 +11,7 @@
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  configDir = ./home;
+  configDir = ./configs;
   configs = import "${configDir}";
   hexlib = import ./lib/hex.nix { inherit (pkgs) lib; };
   palette = import (./palettes + "/${colorscheme}.nix");
