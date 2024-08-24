@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ES2023",
+    "lib": [
+      "ES2023"
+    ],
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "baseUrl": "./",
+    "typeRoots": [
+      "./node_modules/@girs",
+      "./types"
+    ],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
