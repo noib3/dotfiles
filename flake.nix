@@ -91,7 +91,7 @@
         };
       };
 
-      homeConfigurations."noib3@skunk" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."skunk" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         modules = [
