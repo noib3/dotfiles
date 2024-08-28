@@ -11,8 +11,24 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    brew-api = {
+      url = "github:BatteredBunny/brew-api";
+      flake = false;
+    };
+
+    brew-nix = {
+      url = "github:BatteredBunny/brew-nix";
+      inputs.brew-api.follows = "brew-api";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -44,6 +60,7 @@
             ];
         };
         overlays = [
+          brew-nix.overlays.default
           neovim-nightly-overlay.overlays.default
           nur.overlay
           rust-overlay.overlays.default
@@ -84,7 +101,7 @@
           ./modules/programs/vivid.nix
           ./modules/services/bluetooth-autoconnect.nix
           ./modules/services/skhd.nix
-        ];
+        ] ++ pkgs.lib.lists.optionals pkgs.stdenv.isDarwin [ mac-app-util.homeManagerModules.default ];
 
         extraSpecialArgs = {
           inherit colorscheme fonts username;

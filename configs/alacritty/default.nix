@@ -12,6 +12,8 @@ in
 {
   enable = true;
 
+  package = if pkgs.stdenv.isDarwin then pkgs.brewCasks.alacritty else pkgs.alacritty;
+
   settings = {
     inherit colors;
 
