@@ -68,6 +68,7 @@ in
         zoom-us
       ]
       ++ lib.lists.optionals isDarwin [
+        brewCasks.protonvpn
         coreutils
         findutils
         gnused
@@ -126,9 +127,7 @@ in
           cargo-fuzz
         ]
         # cargo-llvm-cov is currently broken on macOS.
-        ++ lib.lists.optionals (!isDarwin) [
-          cargo-llvm-cov
-        ]
+        ++ lib.lists.optionals (!isDarwin) [ cargo-llvm-cov ]
       )
       # Typescript.
       ++ [
