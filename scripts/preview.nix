@@ -1,29 +1,35 @@
 { pkgs }:
 
+with pkgs.lib;
 pkgs.writeShellApplication {
   name = "preview";
 
-  runtimeInputs = with pkgs; [
-    # Contains `als`, used for archives.
-    atool
-    bat
-    # Contains `ebook-meta`, used for epubs.
-    calibre
-    chafa
-    ffmpegthumbnailer
-    file
-    # Used for SVGs.
-    inkscape
-    # Used for audios.
-    mediainfo
-    # Contains `convert`.
-    imagemagick_light
-    # Used for videos.
-    mkvtoolnix-cli
-    # Contains `pdftoppm`, used for PDFs.
-    poppler_utils
-    ueberzugpp
-  ];
+  runtimeInputs =
+    with pkgs;
+    [
+      # Contains `als`, used for archives.
+      atool
+      bat
+      chafa
+      ffmpegthumbnailer
+      file
+      # Used for SVGs.
+      inkscape
+      # Used for audios.
+      mediainfo
+      # Contains `convert`.
+      imagemagick_light
+      # Used for videos.
+      mkvtoolnix-cli
+      # Contains `pdftoppm`, used for PDFs.
+      poppler_utils
+      ueberzugpp
+    ]
+    # calibre is currently broken on macOS.
+    ++ lib.lists.optionals (!pkgs.stdenv.isDarwin) [
+      # Contains `ebook-meta`, used for epubs.
+      calibre
+    ];
 
   text = ''
     # if [ $# -ne 1 ]; then

@@ -124,6 +124,9 @@ in
           cargo-expand
           cargo-flamegraph
           cargo-fuzz
+        ]
+        # cargo-llvm-cov is currently broken on macOS.
+        ++ lib.lists.optionals (!isDarwin) [
           cargo-llvm-cov
         ]
       )
