@@ -55,6 +55,12 @@
 
   hardware.bluetooth = {
     enable = true;
+    settings = {
+      General = {
+        DiscoverableTimeout = 0;
+        FastConnectable = true;
+      };
+    };
   };
 
   hardware.graphics = {
@@ -70,6 +76,11 @@
     trusted-substituters = [
       "https://cache.soopy.moe"
       "https://nix-community.cachix.org"
+    ];
+
+    trusted-public-keys = [
+      "cache.soopy.moe-1:0RZVsQeR+GOh0VQI9rvnHz55nVXkFardDqfm4+afjPo="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
 
     warn-dirty = false;
@@ -122,28 +133,28 @@
 
   services.getty.autologinUser = username;
 
-  services.greetd =
-    let
-      hyprland = "${pkgs.hyprland}/bin/Hyprland";
-      tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-    in
-    {
-      enable = true;
-      settings = {
-        initial_session = {
-          command = "${hyprland}";
-          user = username;
-        };
-        default_session = {
-          command = ''
-            ${tuigreet} \
-              --greeting "Welcome to NixOS!" --asterisks --remember \
-              --remember-user-session --time -cmd ${hyprland}
-          '';
-          user = "greeter";
-        };
-      };
-    };
+  # services.greetd =
+  #   let
+  #     hyprland = "${pkgs.hyprland}/bin/Hyprland";
+  #     tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+  #   in
+  #   {
+  #     enable = true;
+  #     settings = {
+  #       initial_session = {
+  #         command = "${hyprland}";
+  #         user = username;
+  #       };
+  #       default_session = {
+  #         command = ''
+  #           ${tuigreet} \
+  #             --greeting "Welcome to NixOS!" --asterisks --remember \
+  #             --remember-user-session --time -cmd ${hyprland}
+  #         '';
+  #         user = "greeter";
+  #       };
+  #     };
+  #   };
 
   services.libinput = {
     enable = true;

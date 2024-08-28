@@ -7,7 +7,7 @@
 }:
 
 let
-  common = import ../common.nix {
+  common = import ../common {
     inherit
       config
       lib
