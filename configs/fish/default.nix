@@ -7,11 +7,10 @@
 }:
 
 let
-  inherit (pkgs.lib.attrsets) optionalAttrs;
+  inherit (pkgs) lib;
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  cloudDir = config.home.homeDirectory + "/Documents";
-
+  dotfilesDir = config.home.homeDirectory + "/Documents/dotfiles";
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
     import ./colors.nix { inherit colorscheme palette; }
   );
@@ -28,12 +27,12 @@ in
       ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
       wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
     }
-    // optionalAttrs isDarwin {
+    // lib.attrsets.optionalAttrs isDarwin {
+      ldd = "otool -L";
       reboot = ''osascript -e "tell app \"System Events\" to restart"'';
       shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
-      ldd = "otool -L";
     }
-    // optionalAttrs isLinux {
+    // lib.attrsets.optionalAttrs isLinux {
       reboot = "sudo shutdown -r now";
       shutdown = "sudo shutdown now";
       xclip = "xclip -selection c";
@@ -42,14 +41,17 @@ in
   shellAbbrs =
     {
       hmn = "home-manager news";
-      hms = "home-manager switch --flake ${cloudDir}/dotfiles";
-      ngc = "nix store gc";
+      hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
       ipy = "ipython";
       lg = "lazygit";
+      ngc = "nix store gc";
       t = "tdtd";
     }
-    // optionalAttrs isLinux {
-      nrs = "nixos-rebuild switch --flake ${cloudDir}/dotfiles --impure --use-remote-sudo";
+    // lib.attrsets.optionalAttrs config.machine.hasNixosConfiguration {
+      nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --use-remote-sudo";
+    }
+    // lib.attrsets.optionalAttrs config.machine.hasDarwinConfiguration {
+      drs = "darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
     };
 
   interactiveShellInit =

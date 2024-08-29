@@ -60,6 +60,7 @@ let
     { config, lib, ... }:
     {
       options.machine = {
+        name = lib.mkOption { type = lib.types.str; };
         hasNixosConfiguration = lib.mkOption { type = lib.types.bool; };
         hasDarwinConfiguration = lib.mkOption { type = lib.types.bool; };
       };
@@ -79,6 +80,7 @@ let
     { config, ... }:
     {
       config.machine = {
+        name = targetMachine.name;
         hasNixosConfiguration = targetMachine ? nixosConfiguration;
         hasDarwinConfiguration = targetMachine ? darwinConfiguration;
       };
