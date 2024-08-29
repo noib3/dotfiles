@@ -3,7 +3,7 @@
   lib,
   pkgs,
   colorscheme,
-  machine,
+  hostName,
   ...
 }:
 
@@ -28,9 +28,9 @@ in
   };
 
   networking = {
-    computerName = machine;
-    hostName = machine;
-    localHostName = machine;
+    computerName = hostName;
+    hostName = hostName;
+    localHostName = hostName;
   };
 
   # This is needed to have /run/current-system/sw/bin in PATH, which is where

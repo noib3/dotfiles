@@ -2,7 +2,8 @@
   config,
   lib,
   pkgs,
-  username,
+  hostName,
+  userName,
   ...
 }:
 
@@ -12,9 +13,9 @@ let
       config
       lib
       pkgs
-      username
+      hostName
+      userName
       ;
-    hostname = "skunk";
   };
 in
 {

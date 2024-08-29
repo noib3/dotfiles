@@ -4,7 +4,7 @@
   pkgs,
   colorscheme,
   fonts,
-  username,
+  userName,
   ...
 }:
 
@@ -28,13 +28,13 @@ in
   inherit fonts;
 
   home = {
-    inherit username;
+    username = userName;
 
     homeDirectory =
       if isDarwin then
-        "/Users/${username}"
+        "/Users/${userName}"
       else if isLinux then
-        "/home/${username}"
+        "/home/${userName}"
       else
         throw "What's the home directory for this OS?";
 

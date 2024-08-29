@@ -54,16 +54,16 @@
     let
       machines = import ./machines {
         inherit inputs;
-        fonts = pkgs: (import ./fonts).schemes.fira pkgs;
         colorscheme = "tokyonight";
-        username = "noib3";
+        fonts = pkgs: (import ./fonts).schemes.fira pkgs;
+        userName = "noib3";
       };
     in
-    {
-      nixosConfigurations.skunk = machines.skunk.nixosConfiguration;
-      darwinConfigurations.skunk = machines.skunk.darwinConfiguration;
-      homeConfigurations.skunk = machines.skunk.homeConfiguration;
-    };
+    machines.forEach (machine: {
+      nixosConfigurations.${machine.name} = machine.nixosConfiguration;
+      darwinConfigurations.${machine.name} = machine.darwinConfiguration;
+      homeConfigurations.${machine.name} = machine.homeConfiguration;
+    });
 
   nixConfig = {
     # Binary caches.

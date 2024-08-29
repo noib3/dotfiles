@@ -2,10 +2,17 @@
   inputs,
   fonts,
   colorscheme,
-  username,
-}:
+  userName,
+}@opts:
 
 let
+  machineSources = [
+    (import ./skunk).linux
+    (import ./skunk).darwin
+  ];
+
+  inherit (inputs.nixpkgs) lib;
+
   mkPkgs =
     system:
     import inputs.nixpkgs {
@@ -34,20 +41,31 @@ let
       ];
     };
 
-  mkNixosConfiguration =
-    { system, modules }:
-    inputs.nixpkgs.lib.nixosSystem rec {
-      inherit system modules;
-      pkgs = mkPkgs system;
-      specialArgs = {
-        inherit username;
-      };
+  # A home-manager module that defines `config.machine(s)`.
+  mkHomeManagerModule =
+    targetMachine:
+    { config, ... }:
+    # {
+    #   config.machine = targetMachine // {
+    #     hasNixosConfiguration = targetMachine ? nixosConfiguration;
+    #     hasDarwinConfiguration = targetMachine ? darwinConfiguration;
+    #   };
+    #   config.machines = builtins.listToAttrs (
+    #     map (machine: {
+    #       name = machine.name;
+    #       value = {
+    #         enable = machine.name == targetMachine.name;
+    #       };
+    #     }) machines
+    #   );
+    # };
+    {
     };
 
   mkHomeConfiguration =
-    { system }:
+    machine:
     inputs.home-manager.lib.homeManagerConfiguration rec {
-      pkgs = mkPkgs system;
+      pkgs = mkPkgs machine.system;
 
       modules =
         [
@@ -57,43 +75,81 @@ let
           ../modules/programs/vivid.nix
           ../modules/services/bluetooth-autoconnect.nix
           ../modules/services/skhd.nix
+          (mkHomeManagerModule machine)
         ]
-        ++ pkgs.lib.lists.optionals pkgs.stdenv.isDarwin [
+        ++ lib.lists.optionals pkgs.stdenv.isDarwin [
           #
           inputs.mac-app-util.homeManagerModules.default
         ];
 
       extraSpecialArgs = {
-        inherit colorscheme username;
+        inherit colorscheme userName;
         fonts = (fonts pkgs);
       };
     };
-in
-{
-  skunk =
+
+  machines = map (
+    m:
     let
-      name = "skunk";
-      system = "x86_64-darwin";
+      machine = m opts;
+      pkgs = mkPkgs machine;
     in
     {
-      nixosConfiguration = mkNixosConfiguration {
-        inherit system;
-        modules = [
-          ./skunk/configuration.nix
-          ../modules/block-domains.nix
-          inputs.nixos-hardware.nixosModules.apple-t2
-        ];
-      };
+      name = machine.name;
+      nixosConfiguration = machine.nixosConfiguration pkgs;
+      darwinConfiguration = machine.darwinConfiguration pkgs;
+      homeConfiguration = mkHomeConfiguration machine;
+    }
+  ) machineSources;
+in
+{
+  forEach = forMachine: (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
 
-      darwinConfiguration = inputs.nix-darwin.lib.darwinSystem {
-        inherit system;
-        specialArgs = {
-          inherit colorscheme;
-          machine = name;
+  /*
+    machines = [
+      skunk.linux
+      skunk.darwin
+    ];
+
+    =>
+
+    machines = [
+      {
+        name = "skunk@linux";
+        nixosConfiguration = {};
+      }
+      {
+        name = "skunk@darwin";
+        nixosConfiguration = {};
+      }
+    ];
+
+    =>
+
+    machines = [
+      {
+        nixosConfigurations."skunk@linux" = {};
+      }
+      {
+        nixosConfigurations."skunk@darwin" = {};
+      }
+    ];
+
+    machines = [
+      {
+        name = "skunk@linux";
+        value = {
+          name = "skunk@linux";
+          nixosConfiguration = {};
         };
-        modules = [ ./skunk/darwin-configuration.nix ];
-      };
-
-      homeConfiguration = mkHomeConfiguration { inherit system; };
-    };
+      {
+        name = "skunk@darwin";
+        value = {
+          name = "skunk@darwin";
+          nixosConfiguration = {};
+        };
+      }
+      }
+    ];
+  */
 }

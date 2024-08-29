@@ -4,8 +4,8 @@
   config,
   lib,
   pkgs,
-  username,
-  hostname ? "nixos",
+  userName,
+  hostName,
 }:
 
 {
@@ -87,7 +87,7 @@
   };
 
   networking = {
-    hostName = hostname;
+    hostName = hostName;
     networkmanager.enable = true;
   };
 
@@ -131,7 +131,7 @@
   #   enable = true;
   # };
 
-  services.getty.autologinUser = username;
+  services.getty.autologinUser = userName;
 
   # services.greetd =
   #   let
@@ -194,8 +194,8 @@
 
   time.timeZone = "Asia/Singapore";
 
-  users.users."${username}" = {
-    home = "/home/${username}";
+  users.users."${userName}" = {
+    home = "/home/${userName}";
     shell = pkgs.fish;
     isNormalUser = true;
     extraGroups = [
