@@ -88,6 +88,7 @@ in
       darwinConfiguration = inputs.nix-darwin.lib.darwinSystem {
         inherit system;
         specialArgs = {
+          inherit colorscheme;
           machine = name;
         };
         modules = [ ./skunk/darwin-configuration.nix ];

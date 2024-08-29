@@ -1,4 +1,8 @@
+{ pkgs }:
+
 {
+  enable = pkgs.stdenv.isDarwin;
+
   config = {
     layout = "bsp";
     focus_follows_mouse = "autofocus";

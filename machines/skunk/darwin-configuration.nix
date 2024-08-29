@@ -1,5 +1,26 @@
-{ pkgs, machine, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  colorscheme,
+  machine,
+  ...
+}:
 
+let
+  configDir = ../../configs;
+
+  configs = import "${configDir}" {
+    inherit
+      config
+      lib
+      pkgs
+      colorscheme
+      ;
+    hexlib = import ../../lib/hex.nix { inherit lib; };
+    palette = import (../../palettes + "/${colorscheme}.nix");
+  };
+in
 {
   environment = {
     loginShell = "${pkgs.fish}/bin/fish";
@@ -16,7 +37,10 @@
   # `darwin-rebuild` and other nix-darwin-related commands live.
   programs.fish.enable = true;
 
-  services.nix-daemon.enable = true;
+  services = {
+    nix-daemon.enable = true;
+    inherit (configs) yabai;
+  };
 
   system = {
     defaults = {

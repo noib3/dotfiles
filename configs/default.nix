@@ -81,7 +81,7 @@
     inherit colorscheme palette;
   };
   wlsunset = import ./wlsunset { inherit pkgs; };
-  yabai = import ./yabai;
+  yabai = import ./yabai { inherit pkgs; };
   zathura = import ./zathura {
     inherit
       config
