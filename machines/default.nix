@@ -41,53 +41,6 @@ let
       ];
     };
 
-  # A home-manager module that defines `config.machine(s)`.
-  mkHomeManagerModule =
-    targetMachine:
-    { config, ... }:
-    # {
-    #   config.machine = targetMachine // {
-    #     hasNixosConfiguration = targetMachine ? nixosConfiguration;
-    #     hasDarwinConfiguration = targetMachine ? darwinConfiguration;
-    #   };
-    #   config.machines = builtins.listToAttrs (
-    #     map (machine: {
-    #       name = machine.name;
-    #       value = {
-    #         enable = machine.name == targetMachine.name;
-    #       };
-    #     }) machines
-    #   );
-    # };
-    {
-    };
-
-  mkHomeConfiguration =
-    machine:
-    inputs.home-manager.lib.homeManagerConfiguration rec {
-      pkgs = mkPkgs machine.system;
-
-      modules =
-        [
-          inputs.ags.homeManagerModules.default
-          ../fonts/module.nix
-          ../home.nix
-          ../modules/programs/vivid.nix
-          ../modules/services/bluetooth-autoconnect.nix
-          ../modules/services/skhd.nix
-          (mkHomeManagerModule machine)
-        ]
-        ++ lib.lists.optionals pkgs.stdenv.isDarwin [
-          #
-          inputs.mac-app-util.homeManagerModules.default
-        ];
-
-      extraSpecialArgs = {
-        inherit colorscheme userName;
-        fonts = (fonts pkgs);
-      };
-    };
-
   machines = map (
     m:
     let
@@ -101,55 +54,71 @@ let
       homeConfiguration = mkHomeConfiguration machine;
     }
   ) machineSources;
+
+  # A home-manager module that defines `config.machine(s)`.
+  homeManagerModule =
+    { config, lib, ... }:
+    {
+      options.machine = {
+        hasNixosConfiguration = lib.mkOption { type = lib.types.bool; };
+        hasDarwinConfiguration = lib.mkOption { type = lib.types.bool; };
+      };
+
+      options.machines = builtins.listToAttrs (
+        map (machine: {
+          name = machine.name;
+          value = {
+            isCurrent = lib.mkOption { type = lib.types.bool; };
+          };
+        }) machines
+      );
+    };
+
+  mkHomeManagerModule =
+    targetMachine:
+    { config, ... }:
+    {
+      config.machine = {
+        hasNixosConfiguration = targetMachine ? nixosConfiguration;
+        hasDarwinConfiguration = targetMachine ? darwinConfiguration;
+      };
+      config.machines = builtins.listToAttrs (
+        map (machine: {
+          name = machine.name;
+          value = {
+            isCurrent = machine.name == targetMachine.name;
+          };
+        }) machines
+      );
+    };
+
+  mkHomeConfiguration =
+    machine:
+    inputs.home-manager.lib.homeManagerConfiguration rec {
+      pkgs = mkPkgs machine.system;
+
+      modules =
+        [
+          homeManagerModule
+          (mkHomeManagerModule machine)
+          inputs.ags.homeManagerModules.default
+          ../fonts/module.nix
+          ../home.nix
+          ../modules/programs/vivid.nix
+          ../modules/services/bluetooth-autoconnect.nix
+          ../modules/services/skhd.nix
+        ]
+        ++ lib.lists.optionals pkgs.stdenv.isDarwin [
+          #
+          inputs.mac-app-util.homeManagerModules.default
+        ];
+
+      extraSpecialArgs = {
+        inherit colorscheme userName;
+        fonts = (fonts pkgs);
+      };
+    };
 in
 {
   forEach = forMachine: (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
-
-  /*
-    machines = [
-      skunk.linux
-      skunk.darwin
-    ];
-
-    =>
-
-    machines = [
-      {
-        name = "skunk@linux";
-        nixosConfiguration = {};
-      }
-      {
-        name = "skunk@darwin";
-        nixosConfiguration = {};
-      }
-    ];
-
-    =>
-
-    machines = [
-      {
-        nixosConfigurations."skunk@linux" = {};
-      }
-      {
-        nixosConfigurations."skunk@darwin" = {};
-      }
-    ];
-
-    machines = [
-      {
-        name = "skunk@linux";
-        value = {
-          name = "skunk@linux";
-          nixosConfiguration = {};
-        };
-      {
-        name = "skunk@darwin";
-        value = {
-          name = "skunk@darwin";
-          nixosConfiguration = {};
-        };
-      }
-      }
-    ];
-  */
 }
