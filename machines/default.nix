@@ -72,6 +72,7 @@ in
 {
   skunk =
     let
+      name = "skunk";
       system = "x86_64-darwin";
     in
     {
@@ -82,6 +83,14 @@ in
           ../modules/block-domains.nix
           inputs.nixos-hardware.nixosModules.apple-t2
         ];
+      };
+
+      darwinConfiguration = inputs.nix-darwin.lib.darwinSystem {
+        inherit system;
+        specialArgs = {
+          machine = name;
+        };
+        modules = [ ./skunk/darwin-configuration.nix ];
       };
 
       homeConfiguration = mkHomeConfiguration { inherit system; };

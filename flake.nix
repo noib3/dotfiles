@@ -20,6 +20,7 @@
       url = "github:BatteredBunny/brew-nix";
       inputs.brew-api.follows = "brew-api";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nix-darwin.follows = "nix-darwin";
     };
 
     home-manager = {
@@ -29,6 +30,11 @@
 
     mac-app-util = {
       url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -55,6 +61,7 @@
     in
     {
       nixosConfigurations.skunk = machines.skunk.nixosConfiguration;
+      darwinConfigurations.skunk = machines.skunk.darwinConfiguration;
       homeConfigurations.skunk = machines.skunk.homeConfiguration;
     };
 
