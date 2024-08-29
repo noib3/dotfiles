@@ -1,14 +1,8 @@
 { pkgs }:
 
 {
-  configPath = pkgs.writeTextFile {
-    name = "skhdrc";
-    text = ''
-      cmd - return : alacritty
-      alt - f : skhd --key "ctrl + cmd - f"
-      # cmd - f : alacritty -e fish -c "lf $HOME/Downloads"
-    '';
-  };
+  enable = pkgs.stdenv.isDarwin;
+  skhdConfig = builtins.readFile ./skhdrc;
 }
 
 # { writeShellScriptBin }:

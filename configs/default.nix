@@ -69,7 +69,7 @@
       ;
   };
   ripgrep = import ./ripgrep;
-  skhd = import ./skhd;
+  skhd = import ./skhd { inherit pkgs; };
   ssh-agent = import ./ssh-agent { inherit pkgs; };
   starship = import ./starship { inherit (pkgs) lib; };
   sxhkd = import ./sxhkd;

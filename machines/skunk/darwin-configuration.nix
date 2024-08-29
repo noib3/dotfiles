@@ -39,7 +39,7 @@ in
 
   services = {
     nix-daemon.enable = true;
-    inherit (configs) yabai;
+    inherit (configs) skhd yabai;
   };
 
   system = {

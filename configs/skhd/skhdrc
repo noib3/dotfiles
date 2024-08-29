@@ -1,0 +1,2 @@
+cmd - return : alacritty
+alt - f: skhd --key "ctrl + cmd - f"
