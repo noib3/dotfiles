@@ -70,9 +70,7 @@ in
       ++ lib.lists.optionals isDarwin [
         brewCasks.protonvpn
         coreutils
-        findutils
         gnused
-        libtool
       ]
       ++ lib.lists.optionals isLinux [
         cameractrls
