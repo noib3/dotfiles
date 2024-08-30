@@ -46,6 +46,7 @@ in
         helix
         jq
         neovim
+        nixVersions.latest
         nodejs # Needed by Copilot.
         ookla-speedtest
         pfetch
@@ -159,7 +160,7 @@ in
   };
 
   nix = {
-    package = pkgs.nix;
+    package = pkgs.nixVersions.latest;
     settings = {
       experimental-features = [
         "nix-command"
