@@ -23,7 +23,7 @@
   direnv = import ./direnv;
   dmenu = import ./dmenu;
   dunst = import ./dunst;
-  fd = import ./fd;
+  fd = import ./fd { inherit lib pkgs; };
   fish = import ./fish {
     inherit
       config

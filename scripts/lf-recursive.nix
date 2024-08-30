@@ -1,6 +1,7 @@
-{ pkgs
-, hexlib
-, palette
+{
+  pkgs,
+  hexlib,
+  palette,
 }:
 
 let

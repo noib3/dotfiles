@@ -1,3 +1,5 @@
+{ lib, pkgs }:
+
 {
   enable = true;
 
@@ -20,5 +22,5 @@
     "*.synctex(busy)"
     "*.synctex.gz"
     "*.toc"
-  ];
+  ] ++ lib.lists.optionals pkgs.stdenv.isDarwin [ "/Library" ];
 }
