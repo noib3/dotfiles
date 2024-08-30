@@ -12,6 +12,8 @@ let
     "${pkg}/bin/${pkg.name}";
 
   preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
+
+  chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
 in
 {
   enable = true;
@@ -98,8 +100,8 @@ in
 
       touch = ''%touch "$@"; lf -remote "send $id select '$@'"'';
       mkdir = ''%mkdir -p "$@"; lf -remote "send $id select '$@'"'';
-      give-ex = ''%chmod +x $fx; lf -remote "send $id reload"'';
-      remove-ex = ''%chmod -x $fx; lf -remote "send $id reload"'';
+      make-ex = ''%${chmod} -R u+x $fx; lf -remote "send $id reload"'';
+      remove-ex = ''%${chmod} -R -x+X $fx; lf -remote "send $id reload"'';
 
       make-tarball = ''
         %{{
@@ -199,7 +201,7 @@ in
       k = "push :mkdir<space>";
       t = "push :touch<space>";
       x = "cut";
-      "+" = "give-ex";
+      "+" = "make-ex";
       "-" = "remove-ex";
       "<enter>" = "push $";
       "<c-x><c-d>" = "fuzzy-cd";
