@@ -52,7 +52,7 @@
   hyprland = import ./hyprland { inherit pkgs; };
   kanshi = import ./kanshi { inherit config pkgs; };
   lazygit = import ./lazygit;
-  lf = import ./lf { inherit pkgs; };
+  lf = import ./lf { inherit lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
   neovim = import ./neovim;
@@ -71,15 +71,12 @@
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
   ssh-agent = import ./ssh-agent { inherit pkgs; };
-  starship = import ./starship { inherit (pkgs) lib; };
+  starship = import ./starship { inherit lib; };
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
   tridactyl = import ./tridactyl;
   udiskie = import ./udiskie { inherit pkgs; };
-  vivid = import ./vivid {
-    inherit (pkgs) lib;
-    inherit colorscheme palette;
-  };
+  vivid = import ./vivid { inherit lib colorscheme palette; };
   wlsunset = import ./wlsunset { inherit pkgs; };
   yabai = import ./yabai { inherit pkgs; };
   zathura = import ./zathura {

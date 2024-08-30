@@ -1,12 +1,12 @@
-{ pkgs }:
+{ lib, pkgs }:
 
 let
   cleaner =
     let
       pkg = pkgs.writeShellApplication {
-        name = "lf-cleaner";
+        name = "lf-ueberzug-cleaner";
         runtimeInputs = with pkgs; [ ueberzugpp ];
-        text = builtins.readFile ./cleaner.sh;
+        text = builtins.readFile ./ueberzug-cleaner.sh;
       };
     in
     "${pkg}/bin/${pkg.name}";
@@ -18,15 +18,17 @@ in
 {
   enable = true;
 
-  package = pkgs.hiPrio (
-    pkgs.writeShellApplication {
-      name = "lf";
-      runtimeInputs = with pkgs; [
-        lf
-        ueberzugpp
-      ];
-      text = builtins.readFile ./launcher.sh;
-    }
+  package = lib.mkIf (!pkgs.stdenv.isDarwin) (
+    pkgs.hiPrio (
+      pkgs.writeShellApplication {
+        name = "lf";
+        runtimeInputs = with pkgs; [
+          lf
+          ueberzugpp
+        ];
+        text = builtins.readFile ./ueberzug-launcher.sh;
+      }
+    )
   );
 
   settings = {

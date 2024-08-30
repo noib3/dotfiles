@@ -23,12 +23,11 @@ pkgs.writeShellApplication {
       mkvtoolnix-cli
       # Contains `pdftoppm`, used for PDFs.
       poppler_utils
-      ueberzugpp
     ]
-    # calibre is currently broken on macOS.
     ++ lib.lists.optionals (!pkgs.stdenv.isDarwin) [
       # Contains `ebook-meta`, used for epubs.
       calibre
+      ueberzugpp
     ];
 
   text = ''
