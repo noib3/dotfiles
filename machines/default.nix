@@ -108,7 +108,6 @@ let
           ../home.nix
           ../modules/programs/vivid.nix
           ../modules/services/bluetooth-autoconnect.nix
-          ../modules/services/skhd.nix
         ]
         ++ lib.lists.optionals pkgs.stdenv.isDarwin [
           #
