@@ -74,7 +74,6 @@
   starship = import ./starship { inherit lib; };
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
-  tridactyl = import ./tridactyl;
   udiskie = import ./udiskie { inherit pkgs; };
   vivid = import ./vivid { inherit lib colorscheme palette; };
   wlsunset = import ./wlsunset { inherit pkgs; };
