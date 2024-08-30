@@ -28,8 +28,6 @@ in
   inherit fonts;
 
   home = {
-    username = userName;
-
     homeDirectory =
       if isDarwin then
         "/Users/${userName}"
@@ -156,6 +154,8 @@ in
     };
 
     stateVersion = "22.11";
+
+    username = userName;
   };
 
   nix = {
@@ -164,6 +164,10 @@ in
       experimental-features = [
         "nix-command"
         "flakes"
+      ];
+      trusted-substituters = [
+        "https://cache.soopy.moe"
+        "https://nix-community.cachix.org"
       ];
       warn-dirty = false;
     };
