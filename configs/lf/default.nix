@@ -1,6 +1,8 @@
 { lib, pkgs }:
 
 let
+  inherit (pkgs.stdenv) isDarwin isLinux;
+
   cleaner =
     let
       pkg = pkgs.writeShellApplication {
@@ -18,7 +20,7 @@ in
 {
   enable = true;
 
-  package = lib.mkIf (!pkgs.stdenv.isDarwin) (
+  package = lib.mkIf (!isDarwin) (
     pkgs.hiPrio (
       pkgs.writeShellApplication {
         name = "lf";
@@ -62,7 +64,7 @@ in
                   ;;
         ''
         + (
-          if pkgs.stdenv.isLinux then
+          if isLinux then
             ''
               video/*)
                 setsid -f mpv --no-terminal "$file"
@@ -80,7 +82,7 @@ in
                 unzip "$file"
                 ;;
             ''
-          else if pkgs.stdenv.isDarwin then
+          else if isDarwin then
             ''
               video/*)
                 open -n "$f"
@@ -92,13 +94,18 @@ in
           else
             ""
         )
-        + ''
-              esac
-            done
-            [[ ''${#text_files[@]} -eq 0 ]] || $EDITOR "''${text_files[@]}"
-            [[ ''${#image_files[@]} -eq 0 ]] || setsid -f feh "''${text_files[@]}"
-          }}
-        '';
+        + (
+          let
+            openImages = if isDarwin then "open" else "setsid -f feh";
+          in
+          ''
+                esac
+              done
+              [[ ''${#text_files[@]} -eq 0 ]] || $EDITOR "''${text_files[@]}"
+              [[ ''${#image_files[@]} -eq 0 ]] || ${openImages} "''${image_files[@]}"
+            }}
+          ''
+        );
 
       touch = ''%touch "$@"; lf -remote "send $id select '$@'"'';
       mkdir = ''%mkdir -p "$@"; lf -remote "send $id select '$@'"'';
@@ -138,14 +145,14 @@ in
       fuzzy-ripgrep = ''$clear; fuzzy-ripgrep'';
 
       unmount-device = (
-        if pkgs.stdenv.isLinux then
+        if isLinux then
           ''
             %{{
               udisksctl unmount -b "/dev/disk/by-label/''$(basename "$f")" \
                 && udisksctl power-off -b "/dev/disk/by-label/''$(basename "$f")"
             }}
           ''
-        else if pkgs.stdenv.isDarwin then
+        else if isDarwin then
           ''
             %{{
               space_left=$(\
@@ -169,9 +176,9 @@ in
       );
     }
     // (
-      if pkgs.stdenv.isLinux then
+      if isLinux then
         { drag-and-drop = "%${pkgs.xdragon}/bin/dragon -a -x $fx"; }
-      else if pkgs.stdenv.isDarwin then
+      else if isDarwin then
         {
           open-pdf-with-preview = ''
             ''${{
@@ -214,12 +221,12 @@ in
       unm = "unmount-device";
     }
     // (
-      if pkgs.stdenv.isLinux then
+      if isLinux then
         {
           ag = "drag-and-drop";
           gvl = "cd /run/media/noib3";
         }
-      else if pkgs.stdenv.isDarwin then
+      else if isDarwin then
         {
           P = "open-pdf-with-preview";
           s = "set-wallpaper";
