@@ -10,7 +10,7 @@ let
   inherit (pkgs) lib;
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  dotfilesDir = config.home.homeDirectory + "/Documents/dotfiles";
+  dotfilesDir = config.home.homeDirectory + "/Dropbox/dotfiles";
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
     import ./colors.nix { inherit colorscheme palette; }
   );
