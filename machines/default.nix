@@ -45,7 +45,7 @@ let
     m:
     let
       machine = m opts;
-      pkgs = mkPkgs machine;
+      pkgs = mkPkgs machine.system;
     in
     {
       name = machine.name;
