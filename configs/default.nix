@@ -3,7 +3,6 @@
   lib,
   pkgs,
   colorscheme,
-  hexlib,
   palette,
 }:
 
@@ -39,9 +38,9 @@
   fzf = import ./fzf {
     inherit
       config
+      lib
       pkgs
       colorscheme
-      hexlib
       palette
       ;
   };
@@ -63,10 +62,10 @@
   qutebrowser = import ./qutebrowser {
     inherit
       config
+      lib
       pkgs
       colorscheme
       palette
-      hexlib
       ;
   };
   ripgrep = import ./ripgrep;
@@ -78,14 +77,14 @@
   udiskie = import ./udiskie { inherit pkgs; };
   vivid = import ./vivid { inherit lib colorscheme palette; };
   wlsunset = import ./wlsunset { inherit pkgs; };
-  yabai = import ./yabai { inherit pkgs; };
+  yabai = import ./yabai { inherit lib colorscheme palette; };
   zathura = import ./zathura {
     inherit
       config
+      lib
       pkgs
       colorscheme
       palette
-      hexlib
       ;
   };
 }

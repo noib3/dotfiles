@@ -14,13 +14,8 @@ let
   configDir = ./configs;
 
   configs = import "${configDir}" {
-    inherit
-      config
-      lib
-      pkgs
-      colorscheme
-      ;
-    hexlib = import ./lib/hex.nix { inherit lib; };
+    inherit (pkgs) lib;
+    inherit colorscheme config pkgs;
     palette = import (./palettes + "/${colorscheme}.nix");
   };
 in

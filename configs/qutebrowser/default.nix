@@ -1,13 +1,13 @@
 {
   config,
+  lib,
   pkgs,
   colorscheme,
   palette,
-  hexlib,
 }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme palette hexlib; };
+  colors = import ./colors.nix { inherit colorscheme lib palette; };
 
   add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
 

@@ -1,15 +1,15 @@
 {
   config,
+  lib,
   pkgs,
   colorscheme,
   palette,
-  hexlib,
 }:
 
 let
-  colors = import ./colors.nix { inherit hexlib colorscheme palette; };
-  col-dirs = hexlib.toANSI colors.directories;
-  col-grayed-out-dirs = hexlib.toANSI colors.grayed-out-directories;
+  colors = import ./colors.nix { inherit colorscheme lib palette; };
+  col-dirs = lib.hex.toANSI colors.directories;
+  col-grayed-out-dirs = lib.hex.toANSI colors.grayed-out-directories;
   lf-recursive = "${pkgs.scripts.lf-recursive}/bin/${pkgs.scripts.lf-recursive.name}";
 in
 {

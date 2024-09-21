@@ -1,22 +1,22 @@
 {
   colorscheme,
+  lib,
   palette,
-  hexlib,
 }:
 
 let
   c = {
     "afterglow" = {
       tabs = {
-        unfocused.bg = hexlib.scale 1.5 palette.normal.black;
+        unfocused.bg = lib.hex.scale 1.5 palette.normal.black;
       };
       hints = {
         fg = palette.normal.white;
         match.fg = palette.normal.yellow;
       };
       completion = {
-        fg = hexlib.scale 0.95 palette.normal.white;
-        odd.bg = hexlib.scale 1.5 palette.normal.black;
+        fg = lib.hex.scale 0.95 palette.normal.white;
+        odd.bg = lib.hex.scale 1.5 palette.normal.black;
         even.bg = palette.normal.black;
         header.fg = palette.normal.magenta;
         match.fg = palette.normal.magenta;
@@ -25,10 +25,10 @@ let
       };
       statusbar = {
         bg = palette.normal.black;
-        fg = hexlib.scale 0.95 palette.normal.white;
+        fg = lib.hex.scale 0.95 palette.normal.white;
       };
       dmenu = {
-        normal.bg = hexlib.scale 1.5 palette.normal.black;
+        normal.bg = lib.hex.scale 1.5 palette.normal.black;
         prompt.fg = palette.normal.magenta;
         highlight.fg = palette.normal.magenta;
       };
@@ -36,9 +36,9 @@ let
     "gruvbox" = {
       tabs = {
         unfocused.fg = palette.bright.white;
-        focused.bg = hexlib.scale 1.3 palette.bright.white;
+        focused.bg = lib.hex.scale 1.3 palette.bright.white;
       };
-      statusbar.fg = hexlib.scale 1.3 palette.bright.white;
+      statusbar.fg = lib.hex.scale 1.3 palette.bright.white;
     };
     "tokyonight" = {
       tabs.unfocused.fg = palette.bright.white;
@@ -71,7 +71,7 @@ in
 
   completion = rec {
     fg = c.${colorscheme}.completion.fg or palette.normal.white;
-    odd.bg = c.${colorscheme}.completion.odd.bg or (hexlib.scale 1.2 palette.bright.black);
+    odd.bg = c.${colorscheme}.completion.odd.bg or (lib.hex.scale 1.2 palette.bright.black);
     even.bg = c.${colorscheme}.completion.odd.bg or palette.bright.black;
     header.bg = palette.normal.black;
     header.fg = c.${colorscheme}.completion.header.fg or palette.normal.blue;
@@ -126,7 +126,7 @@ in
     prompt.fg = c.${colorscheme}.dmenu.prompt.fg or palette.normal.blue;
     prompt.bg = normal.bg;
     selected.fg = palette.normal.white;
-    selected.bg = hexlib.scale 1.25 palette.normal.black;
+    selected.bg = lib.hex.scale 1.25 palette.normal.black;
     highlight.fg = c.${colorscheme}.dmenu.highlight.fg or palette.normal.yellow;
   };
 }

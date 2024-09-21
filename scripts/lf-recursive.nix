@@ -1,12 +1,11 @@
 {
   pkgs,
-  hexlib,
   palette,
 }:
 
 let
-  old-dirs-col = hexlib.toANSI palette.normal.blue;
-  new-dirs-col = hexlib.toANSI "#565f89";
+  old-dirs-col = pkgs.lib.hex.toANSI palette.normal.blue;
+  new-dirs-col = pkgs.lib.hex.toANSI "#565f89";
 in
 pkgs.writeShellApplication {
   name = "lf-recursive";

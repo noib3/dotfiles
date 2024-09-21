@@ -1,24 +1,25 @@
-{ hexlib
-, colorscheme
-, palette
+{
+  lib,
+  colorscheme,
+  palette,
 }:
 
 let
   c = {
     "afterglow" = {
-      current-line.bg = hexlib.scale 1.5 palette.normal.black;
-      grayed-out-directories = hexlib.scale 0.85 palette.bright.white;
+      current-line.bg = lib.hex.scale 1.5 palette.normal.black;
+      grayed-out-directories = lib.hex.scale 0.85 palette.bright.white;
     };
     "gruvbox" = {
-      current-line.bg = hexlib.scale 0.9 palette.bright.black;
-      grayed-out-directories = hexlib.scale 1.3 palette.bright.black;
+      current-line.bg = lib.hex.scale 0.9 palette.bright.black;
+      grayed-out-directories = lib.hex.scale 1.3 palette.bright.black;
     };
     "tokyonight" = {
-      current-line.bg = hexlib.scale 0.75 palette.bright.black;
+      current-line.bg = lib.hex.scale 0.75 palette.bright.black;
       grayed-out-directories = "#565f89";
     };
     "vscode" = {
-      current-line.bg = hexlib.scale 0.7 palette.bright.black;
+      current-line.bg = lib.hex.scale 0.7 palette.bright.black;
       grayed-out-directories = palette.bright.black;
     };
   };

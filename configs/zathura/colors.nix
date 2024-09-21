@@ -1,6 +1,7 @@
-{ colorscheme
-, palette
-, hexlib
+{
+  lib,
+  colorscheme,
+  palette,
 }:
 
 let
@@ -9,8 +10,8 @@ let
       inputbar.fg = palette.normal.white;
       highlight.bg = palette.normal.cyan;
     };
-    "gruvbox".inputbar.fg = hexlib.scale 1.3 palette.bright.white;
-    "tokyonight".inputbar.fg = hexlib.scale 1.3 palette.bright.white;
+    "gruvbox".inputbar.fg = lib.hex.scale 1.3 palette.bright.white;
+    "tokyonight".inputbar.fg = lib.hex.scale 1.3 palette.bright.white;
   };
 in
 {

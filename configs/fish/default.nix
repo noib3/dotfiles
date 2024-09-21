@@ -111,7 +111,7 @@ in
 
       ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
     ''
-    + pkgs.lib.strings.optionalString isDarwin ''
+    + lib.strings.optionalString isDarwin ''
       bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh 2>/dev/null \
         || true
     '';
@@ -128,7 +128,7 @@ in
         };
       }
     ]
-    ++ pkgs.lib.lists.optionals isDarwin [
+    ++ lib.lists.optionals isDarwin [
       {
         name = "bass";
         src = pkgs.fetchFromGitHub {

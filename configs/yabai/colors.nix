@@ -1,14 +1,15 @@
-{ colorscheme
-, palette
-, hexlib
+{
+  lib,
+  colorscheme,
+  palette,
 }:
 
 let
   c = {
     "afterglow" = {
       border = {
-        unfocused = hexlib.scale 220 palette.normal.black;
-        focused = hexlib.scale 95 palette.normal.white;
+        unfocused = lib.hex.scale 220 palette.normal.black;
+        focused = lib.hex.scale 95 palette.normal.white;
       };
     };
   };
@@ -16,8 +17,6 @@ in
 {
   border = {
     unfocused = c.${colorscheme}.border.unfocused or palette.bright.black;
-    focused =
-      c.${colorscheme}.border.unfocused
-        or (hexlib.scale 130 palette.bright.white);
+    focused = c.${colorscheme}.border.unfocused or (lib.hex.scale 130 palette.bright.white);
   };
 }

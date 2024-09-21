@@ -32,6 +32,7 @@ let
         inputs.neovim-nightly-overlay.overlays.default
         inputs.nur.overlay
         inputs.rust-overlay.overlays.default
+        (import ../lib).overlay
         (import ../scripts { inherit colorscheme; }).overlay
       ];
     };
