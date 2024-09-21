@@ -20,7 +20,7 @@ let
       config = {
         allowUnfreePredicate =
           pkg:
-          builtins.elem (inputs.nixpkgs.lib.getName pkg) [
+          builtins.elem (lib.getName pkg) [
             "megasync"
             "ookla-speedtest"
             "spotify"
@@ -32,12 +32,7 @@ let
         inputs.neovim-nightly-overlay.overlays.default
         inputs.nur.overlay
         inputs.rust-overlay.overlays.default
-        (final: prev: {
-          scripts = import ../scripts {
-            inherit colorscheme;
-            pkgs = prev;
-          };
-        })
+        (import ../scripts { inherit colorscheme; }).overlay
       ];
     };
 
