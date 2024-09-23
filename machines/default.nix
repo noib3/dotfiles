@@ -21,7 +21,7 @@ let
         allowUnfreePredicate =
           pkg:
           builtins.elem (lib.getName pkg) [
-            "megasync"
+            "dropbox"
             "ookla-speedtest"
             "spotify"
             "zoom"
