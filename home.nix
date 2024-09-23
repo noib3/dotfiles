@@ -155,6 +155,10 @@ in
     username = userName;
   };
 
+  imports = [
+    ./modules/home/all.nix
+  ];
+
   nix = {
     package = pkgs.nixVersions.latest;
     settings = {
@@ -172,7 +176,6 @@ in
 
   programs = {
     inherit (configs)
-      ags
       alacritty
       bat
       direnv

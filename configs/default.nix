@@ -7,7 +7,6 @@
 }:
 
 {
-  ags = import ./ags { inherit pkgs; };
   alacritty = import ./alacritty {
     inherit
       config
