@@ -25,6 +25,9 @@ in
       ))
     ];
 
-    programs.ags = import ./config.nix { inherit pkgs; };
+    programs.ags = {
+      enable = true;
+      configDir = ./.;
+    };
   });
 }

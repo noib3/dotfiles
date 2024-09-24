@@ -1,5 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 
+let
+  inherit (pkgs.stdenv) isLinux isDarwin;
+in
 {
   imports = [
     ./ags
@@ -7,7 +10,7 @@
   ];
 
   modules = {
-    ags.enable = true;
-    dropbox.enable = true;
+    ags.enable = isLinux;
+    dropbox.enable = isLinux;
   };
 }
