@@ -28,14 +28,8 @@ in
   };
 
   settings = {
-    fonts =
-      let
-        font = config.fonts.serif;
-      in
-      {
-        default_family = font.name;
-        default_size = toString (font.size config "qutebrowser") + "pt";
-      };
+    # https://qutebrowser.org/doc/help/settings.html#auto_save.session.
+    auto_save.session = true;
 
     colors = {
       tabs = {
@@ -174,6 +168,15 @@ in
         "{}"
       ];
     };
+
+    fonts =
+      let
+        font = config.fonts.serif;
+      in
+      {
+        default_family = font.name;
+        default_size = toString (font.size config "qutebrowser") + "pt";
+      };
 
     hints = {
       border = "none";
