@@ -5,8 +5,6 @@
 // const battery = await Service.import("battery")
 // const systemtray = await Service.import("systemtray")
 
-const hyprland_gaps_out = 20;
-
 const date = Variable("", {
   poll: [500, 'date +"%a %-d %b"'],
 })
@@ -18,10 +16,11 @@ const time = Variable("", {
 const Bar = (monitor: number) => Widget.Window({
   monitor,
   name: `bar${monitor}`,
+  class_name: "bar",
   anchor: ['top', 'left', 'right'],
   exclusivity: 'exclusive',
-  margins: [hyprland_gaps_out, hyprland_gaps_out, 0, hyprland_gaps_out],
   child: Widget.CenterBox({
+    "height-request": 28,
     start_widget: Widget.Label({
       class_name: "workspaces",
       label: "",
@@ -37,8 +36,8 @@ const Bar = (monitor: number) => Widget.Window({
 function Clock() {
   return Widget.Box({
     hpack: "end",
-    spacing: 6,
-    "margin-right": 10,
+    spacing: 8,
+    "margin-right": 16,
     children: [
       Date(),
       Time(),
