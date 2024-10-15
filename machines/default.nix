@@ -24,6 +24,7 @@ let
             "dropbox"
             "ookla-speedtest"
             "spotify"
+            "widevine-cdm"
             "zoom"
           ];
       };

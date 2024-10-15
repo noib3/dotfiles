@@ -20,6 +20,12 @@ in
 {
   enable = pkgs.stdenv.isLinux;
 
+  package = lib.mkIf pkgs.stdenv.isLinux (
+    pkgs.qutebrowser.override {
+      enableWideVine = true;
+    }
+  );
+
   searchEngines = {
     "DEFAULT" = "https://google.com/search?q={}";
     "yt" = "https://youtube.com/results?search_query={}";
