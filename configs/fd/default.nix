@@ -4,6 +4,7 @@
   enable = true;
 
   ignores = [
+    "**/.cache"
     "**/.direnv"
     "**/.dropbox.cache"
     "**/.git"
