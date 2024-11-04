@@ -15,7 +15,7 @@ let
     libraries = [ pkgs.python310Packages.tldextract ];
   } (builtins.readFile ./scripts/fill-bitwarden.py);
 
-  homePage = "https://google.com";
+  homePage = "https://start.duckduckgo.com";
 in
 {
   enable = pkgs.stdenv.isLinux;
@@ -27,7 +27,7 @@ in
   );
 
   searchEngines = {
-    "DEFAULT" = "https://google.com/search?q={}";
+    "DEFAULT" = "https://duckduckgo.com/{}";
     "yt" = "https://youtube.com/results?search_query={}";
     "nixo" = "https://search.nixos.org/options?channel=unstable&query={}";
     "nixp" = "https://search.nixos.org/packages?channel=unstable&query={}";
