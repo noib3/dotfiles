@@ -8,7 +8,6 @@ return {
     config = function()
       require("neotest").setup({
         adapters = {
-          require("rustaceanvim.neotest"),
         },
         output = {
           open_on_run = false,
