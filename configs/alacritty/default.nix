@@ -19,7 +19,7 @@ in
 
     font = import ./font.nix { inherit config; };
 
-    shell = {
+    terminal.shell = {
       program = "${pkgs.fish}/bin/fish";
       args = [ "--interactive" ];
     };
