@@ -11,6 +11,6 @@ in
 
   modules = {
     ags.enable = isLinux;
-    dropbox.enable = isLinux;
+    dropbox.enable = true;
   };
 }

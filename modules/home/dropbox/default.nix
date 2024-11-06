@@ -15,9 +15,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ pkgs.dropbox-cli ];
+    home.packages = lib.mkIf pkgs.stdenv.isLinux [ pkgs.dropbox-cli ];
 
-    systemd.user.services.dropbox = {
+    systemd.user.services.dropbox = lib.mkIf pkgs.stdenv.isLinux {
       Unit = {
         Description = "dropbox";
       };
