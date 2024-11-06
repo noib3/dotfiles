@@ -76,7 +76,7 @@
   udiskie = import ./udiskie { inherit pkgs; };
   vivid = import ./vivid { inherit lib colorscheme palette; };
   wlsunset = import ./wlsunset { inherit pkgs; };
-  yabai = import ./yabai { inherit lib colorscheme palette; };
+  yabai = import ./yabai { inherit pkgs; };
   zathura = import ./zathura {
     inherit
       config
