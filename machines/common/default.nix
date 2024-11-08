@@ -72,12 +72,15 @@
       "nix-command"
       "flakes"
     ];
-
+    trusted-users = [
+      "root"
+      userName
+    ];
     warn-dirty = false;
   };
 
   networking = {
-    hostName = hostName;
+    inherit hostName;
     networkmanager.enable = true;
   };
 
