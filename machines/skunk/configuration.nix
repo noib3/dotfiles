@@ -21,6 +21,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/nixos
     common
   ];
 
@@ -32,24 +33,25 @@ in
     };
   };
 
-  hardware.firmware = [
-    (pkgs.stdenvNoCC.mkDerivation (final: {
-      name = "broadcom-firmware";
-      # Contains the Broadcom Bluetooth and WiFi firmware, and can be
-      # downloaded by executing this script:
-      # https://wiki.t2linux.org/tools/firmware.sh
-      src = ./firmware.tar;
-      dontUnpack = true;
-      installPhase = ''
-        mkdir -p $out/lib/firmware/brcm
-        tar -xf ${final.src} -C $out/lib/firmware/brcm
-      '';
-    }))
-  ];
+  hardware = {
+    firmware = [
+      (pkgs.stdenvNoCC.mkDerivation (final: {
+        name = "broadcom-firmware";
+        # Contains the Broadcom Bluetooth and WiFi firmware, and can be
+        # downloaded by executing this script:
+        # https://wiki.t2linux.org/tools/firmware.sh
+        src = ./firmware.tar;
+        dontUnpack = true;
+        installPhase = ''
+          mkdir -p $out/lib/firmware/brcm
+          tar -xf ${final.src} -C $out/lib/firmware/brcm
+        '';
+      }))
+    ];
 
-  hardware.logitech.wireless = {
-    enable = true;
-    enableGraphical = true;
+    logitech.mx-master-3s-for-mac = {
+      enable = true;
+    };
   };
 
   # Setting these to "suspend", which is the default, causes the system to

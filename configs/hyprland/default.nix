@@ -4,8 +4,6 @@
   enable = pkgs.stdenv.isLinux;
 
   settings = {
-    exec-once = [ "${pkgs.solaar}/bin/solaar --window=hide" ];
-
     monitor = ",preferred,auto,auto";
 
     env = [
