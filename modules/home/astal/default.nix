@@ -8,16 +8,16 @@
 
 with lib;
 let
-  cfg = config.modules.ags;
+  cfg = config.modules.astal;
 in
 {
-  options.modules.ags = {
-    enable = mkEnableOption "Ags";
+  options.modules.astal = {
+    enable = mkEnableOption "Astal";
   };
 
   config = mkIf cfg.enable (
     let
-      packageName = "ags";
+      packageName = "astal";
 
       package = inputs.ags.lib.bundle {
         inherit pkgs;
@@ -30,10 +30,10 @@ in
       };
     in
     {
-      systemd.user.services.ags = {
+      systemd.user.services.astal = {
         Unit = {
-          Description = "AGS";
-          Documentation = "https://github.com/Aylur/ags";
+          Description = "Astal";
+          Documentation = "https://github.com/Aylur/astal";
           PartOf = [ "graphical-session.target" ];
           After = [ "graphical-session-pre.target" ];
         };

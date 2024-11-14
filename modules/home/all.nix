@@ -5,12 +5,12 @@ let
 in
 {
   imports = [
-    ./ags
+    ./astal
     ./dropbox
   ];
 
   modules = {
-    ags.enable = isLinux;
+    astal.enable = isLinux;
     dropbox.enable = true;
   };
 }

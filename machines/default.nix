@@ -100,7 +100,6 @@ let
         [
           homeManagerModule
           (mkHomeManagerModule machine)
-          inputs.ags.homeManagerModules.default
           ../fonts/module.nix
           ../home.nix
           ../modules/programs/vivid.nix
