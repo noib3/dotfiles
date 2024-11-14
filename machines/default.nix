@@ -112,7 +112,7 @@ let
         ];
 
       extraSpecialArgs = {
-        inherit colorscheme userName;
+        inherit colorscheme inputs userName;
         fonts = (fonts pkgs);
       };
     };

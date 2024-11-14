@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -16,30 +17,19 @@ in
 
   config = mkIf cfg.enable (
     let
-      package = (
-        pkgs.hiPrio (
-          pkgs.writeShellApplication {
-            name = "ags";
-            runtimeInputs = [ pkgs.bun ];
-            text = "${pkgs.ags}/bin/ags";
-          }
-        )
-      );
+      packageName = "ags";
+
+      package = inputs.ags.lib.bundle {
+        inherit pkgs;
+        src = ./.;
+        name = packageName;
+        entry = "app.ts";
+        extraPackages =
+          [
+          ];
+      };
     in
     {
-      # TODO: remove after https://github.com/Aylur/ags/issues/541 is fixed.
-      home.packages = [
-        package
-      ];
-
-      programs.ags = {
-        enable = true;
-        configDir = ./.;
-        # TODO: enable after https://github.com/Aylur/ags/issues/541 is fixed.
-        systemd.enable = false;
-      };
-
-      # TODO: remove after https://github.com/Aylur/ags/issues/541 is fixed.
       systemd.user.services.ags = {
         Unit = {
           Description = "AGS";
@@ -49,7 +39,7 @@ in
         };
 
         Service = {
-          ExecStart = "${package}/bin/ags -b hypr";
+          ExecStart = "${package}/bin/${packageName}";
           Restart = "on-failure";
           KillMode = "mixed";
         };
