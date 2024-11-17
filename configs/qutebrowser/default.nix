@@ -245,7 +245,7 @@ in
       "<Super-Right>" = "forward";
 
       "<Super-n>" = "open -w";
-      "<Super-Shift-p>" = "open -p";
+      "<Super-Shift-n>" = "open -p";
 
       "<Super-w>" = "tab-close";
       "<Super-1>" = "tab-focus 1";
