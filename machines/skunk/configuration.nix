@@ -38,6 +38,7 @@ in
   hardware = {
     apple.macbook-pro-15-1.enable = true;
     logitech.mx-master-3s-for-mac.enable = true;
+    remarkable.remarkable2.enable = true;
   };
 
   # This option defines the first version of NixOS installed on this particular
