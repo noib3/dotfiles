@@ -12,7 +12,7 @@ local on_attach = function(client, bufnr)
       group = lsp_group,
       buffer = bufnr,
       desc = "Formats the buffer before saving it to disk",
-      callback = function() vim.lsp.buf.format({}, 1000) end,
+      callback = function() vim.lsp.buf.format({ async = true }) end,
     })
   end
 
