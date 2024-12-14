@@ -31,7 +31,7 @@ local on_attach = function(client, bufnr)
 
   -- Selects a code action available at the current cursor position.
   if client.supports_method(methods.textDocument_codeAction) then
-    keymap.set("n", "gca", vim.lsp.buf.code_action, opts)
+    keymap.set("n", "A", vim.lsp.buf.code_action, opts)
   end
 
   -- Jumps to the definition of the symbol under the cursor.
