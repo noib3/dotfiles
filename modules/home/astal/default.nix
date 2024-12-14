@@ -24,9 +24,9 @@ in
         src = ./.;
         name = packageName;
         entry = "app.ts";
-        extraPackages =
-          [
-          ];
+        extraPackages = [
+          inputs.ags.packages.${pkgs.system}.hyprland
+        ];
       };
     in
     {
