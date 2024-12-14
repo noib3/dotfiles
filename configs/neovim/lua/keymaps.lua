@@ -109,8 +109,8 @@ keymap.set("n", "<S-Right>", "<C-w>l", { noremap = true })
 keymap.set("c", "<C-a>", "<C-b>")
 
 -- Navigate to the next/previous diagnostic.
-keymap.set("n", "dn", vim.diagnostic.goto_prev)
-keymap.set("n", "dN", vim.diagnostic.goto_next)
+keymap.set("n", "dn", vim.diagnostic.goto_next)
+keymap.set("n", "dN", vim.diagnostic.goto_prev)
 
 --·Clear·the current search·result¬.
 keymap.set("n", "<Esc>", "<Cmd>noh<Cr>")

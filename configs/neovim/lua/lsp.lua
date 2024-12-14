@@ -12,7 +12,15 @@ local on_attach = function(client, bufnr)
       group = lsp_group,
       buffer = bufnr,
       desc = "Formats the buffer before saving it to disk",
-      callback = function() vim.lsp.buf.format({ async = true }) end,
+      callback = function()
+        -- LuaLS doesn't send the response fast enough for it to be applied
+        -- before the buffer is written to disk.
+        local opts =
+            client.name == "lua_ls"
+            and { timeout_ms = 1000 }
+            or { async = true }
+        vim.lsp.buf.format(opts)
+      end,
     })
   end
 
