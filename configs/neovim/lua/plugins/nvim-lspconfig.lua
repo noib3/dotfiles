@@ -1,91 +1,80 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    config = function()
-      local lspconfig = require("lspconfig")
-
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        vim.lsp.protocol.make_client_capabilities(),
-        require("cmp_nvim_lsp").default_capabilities()
-      )
-
-      -- Lua.
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = {
-              globals = { "vim" },
-              neededFileStatus = {
-                ["codestyle-check"] = "Any",
+    dependencies = { "saghen/blink.cmp" },
+    opts = {
+      servers = {
+        -- Lua.
+        lua_ls = {
+          settings = {
+            Lua = {
+              diagnostics = {
+                globals = { "vim" },
+                neededFileStatus = {
+                  ["codestyle-check"] = "Any",
+                },
               },
-            },
-            -- https://github.com/LuaLS/lua-language-server/wiki/Formatter#lua
-            format = {
-              enable = true,
-              defaultConfig = {
-                indent_style = "space",
-                indent_size = "2",
+              -- https://github.com/LuaLS/lua-language-server/wiki/Formatter#lua
+              format = {
+                enable = true,
+                defaultConfig = {
+                  indent_style = "space",
+                  indent_size = "2",
+                },
               },
-            },
-            runtime = {
-              version = "LuaJIT",
-            },
-            telemetry = {
-              enable = false,
+              runtime = {
+                version = "LuaJIT",
+              },
+              telemetry = {
+                enable = false,
+              },
             },
           },
         },
-      })
-
-      -- Markdown.
-      lspconfig.marksman.setup({
-        capabilities = capabilities,
-      })
-
-      -- Nix.
-      lspconfig.nil_ls.setup({
-        capabilities = capabilities,
-        settings = {
-          ["nil"] = {
-            formatting = {
-              command = { "nixfmt" },
-            },
+        -- Markdown.
+        marksman = {},
+        nil_ls = {
+          settings = {
+            ["nil"] = {
+              formatting = {
+                command = { "nixfmt" },
+              },
+            }
           }
-        }
-      })
-
-      -- Rust.
-      lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
-        settings = {
-          ["rust-analyzer"] = {
-            check = {
-              command = "clippy",
-            },
-            completion = {
-              limit = 69,
-              privateEditable = {
+        },
+        rust_analyzer = {
+          settings = {
+            ["rust-analyzer"] = {
+              check = {
+                command = "clippy",
+              },
+              completion = {
+                limit = 69,
+                privateEditable = {
+                  enable = true,
+                },
+              },
+              imports = {
+                merge = {
+                  blob = false,
+                },
+              },
+              procMacro = {
                 enable = true,
               },
             },
-            imports = {
-              merge = {
-                blob = false,
-              },
-            },
-            procMacro = {
-              enable = true,
-            },
           },
         },
-      })
-
-      -- Typescript.
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-      })
+        ts_ls = {},
+      },
+    },
+    config = function(_, opts)
+      local lspconfig = require("lspconfig")
+      local blink = require("blink.cmp")
+      for server, config in pairs(opts.servers) do
+        config.capabilities = blink.get_lsp_capabilities(config.capabilities)
+        lspconfig[server].setup(config)
+      end
     end,
   }
 }
