@@ -1,6 +1,7 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import Battery from "gi://AstalBattery"
+import Bluetooth from "gi://AstalBluetooth"
 import Hyprland from "gi://AstalHyprland"
 import Network from "gi://AstalNetwork"
 
@@ -19,6 +20,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       </box>
       <box className="media" />
       <box halign={Gtk.Align.END} marginRight={16}>
+        <BluetoothStatus />
         <Wifi />
         <BatteryStatus />
         <Clock />
@@ -44,6 +46,32 @@ function Workspaces() {
           </button>
         ))
     ))}
+  </box>
+}
+
+function BluetoothStatus() {
+  const bluetooth = Bluetooth.get_default()
+  const isPowered = bind(bluetooth, "isPowered")
+  const devices = bind(bluetooth, "devices")
+  const numDevices = Variable.derive(
+    [isPowered, devices],
+    (isPowered, devices) => (
+      isPowered && devices.filter(device => device.connected).length
+    )
+  )
+
+  // Can't get mouse and keyboard to auto-connect after idle w/o these.
+  bluetooth.adapter.start_discovery()
+  bluetooth.adapter.set_discoverable(true)
+  bluetooth.adapter.set_pairable(true)
+
+  return <box className="bluetooth">
+    <icon
+      icon={isPowered.as(isPowered => (
+        `bluetooth-${isPowered ? "active" : "disabled" }-symbolic`
+      ))}
+    />
+    <label label={bind(numDevices).as(String)} />
   </box>
 }
 
