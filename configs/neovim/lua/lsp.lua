@@ -1,12 +1,12 @@
 local keymap = vim.keymap
 local methods = vim.lsp.protocol.Methods
 
-local lsp_group = vim.api.nvim_create_augroup("noib3/format-buffer", {})
+local lsp_group = vim.api.nvim_create_augroup("noib3/lsp", {})
 
 local on_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
 
-  -- Format buffer on save w/ a 1s timeout.
+  -- Format buffer on save.
   if client.supports_method(methods.textDocument_formatting) then
     vim.api.nvim_create_autocmd("BufWritePre", {
       group = lsp_group,
@@ -45,11 +45,31 @@ local on_attach = function(client, bufnr)
   end
 end
 
+local on_detach = function(client, bufnr)
+  -- Remove the autocommand that formats the buffer on save.
+  if client.supports_method(methods.textDocument_formatting) then
+    vim.api.nvim_clear_autocmds({
+      event = "BufWritePre",
+      group = lsp_group,
+      buffer = bufnr,
+    })
+  end
+end
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
   desc = "Set up LSP environment on a buffer",
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    on_attach(client, args.buffer)
+    on_attach(client, args.buf)
+  end,
+})
+
+vim.api.nvim_create_autocmd("LspDetach", {
+  group = lsp_group,
+  desc = "Remove LSP autocommands/keymaps on a buffer",
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    on_detach(client, args.buf)
   end,
 })
