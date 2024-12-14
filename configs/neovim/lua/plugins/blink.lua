@@ -9,6 +9,18 @@ return {
       sources = {
         default = { "lsp", "path" },
       },
+      completion = {
+        list = {
+          selection = "manual",
+        },
+        menu = {
+          auto_show = true,
+          max_height = 7,
+        },
+        documentation = {
+          auto_show = true,
+        },
+      },
     }
   }
 }
