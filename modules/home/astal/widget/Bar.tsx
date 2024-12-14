@@ -19,7 +19,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <Workspaces />
       </box>
       <box className="media" />
-      <box halign={Gtk.Align.END} marginRight={16}>
+      <box halign={Gtk.Align.END}>
         <BluetoothStatus />
         <WiFi />
         <BatteryStatus />
@@ -32,7 +32,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 function Workspaces() {
   const hypr = Hyprland.get_default()
 
-  return <box className="workspaces">
+  return <box className="Workspaces">
     {bind(hypr, "workspaces").as(workspaces => (
       workspaces
         .sort((w1, w2) => w1.id - w2.id)
@@ -65,7 +65,7 @@ function BluetoothStatus() {
   bluetooth.adapter.set_discoverable(true)
   bluetooth.adapter.set_pairable(true)
 
-  return <box className="bluetooth">
+  return <box className="BluetoothStatus">
     <icon
       className="bluetoothIcon"
       icon={isPowered.as(isPowered => (
@@ -79,9 +79,9 @@ function BluetoothStatus() {
 function WiFi() {
   const { wifi } = Network.get_default()
 
-  return <box className="wifi">
+  return <box className="WiFi">
     <icon
-      className="wifiIcon"
+      className="WiFiIcon"
       icon={bind(wifi, "iconName")}
     />
     <label
@@ -95,9 +95,8 @@ function BatteryStatus() {
   const battery = Battery.get_default()
 
   return <box
-    className="battery"
+    className="BatteryStatus"
     visible={bind(battery, "isPresent")}
-    marginRight={16}
   >
     <icon icon={bind(battery, "batteryIconName")} />
     <label
@@ -109,10 +108,7 @@ function BatteryStatus() {
 }
 
 function Clock() {
-  return <box
-    className="clock"
-    spacing={8}
-  >
+  return <box className="Clock">
     <Date />
     <Time />
   </box>
@@ -122,7 +118,7 @@ function Date() {
   const date = Variable("").poll(1000, "date +'%a %-d %b'")
 
   return <label
-    className="date"
+    className="Date"
     label={date()}
   />
 }
@@ -131,7 +127,7 @@ function Time() {
   const time = Variable("").poll(1000, "date +'%-H:%M'")
 
   return <label
-    className="time"
+    className="Time"
     label={time()}
   />
 }
