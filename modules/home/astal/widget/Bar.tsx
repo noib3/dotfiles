@@ -14,6 +14,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
     <centerbox heightRequest={28}>
       <box halign={Gtk.Align.START}>
         <Workspaces />
+        <FocusedClient />
       </box>
       <box className="media" />
       <box halign={Gtk.Align.END} marginRight={16}>
@@ -38,6 +39,19 @@ function Workspaces() {
             {workspace.id}
           </button>
         ))
+    ))}
+  </box>
+}
+
+function FocusedClient() {
+  const hypr = Hyprland.get_default()
+  const focused = bind(hypr, "focusedClient")
+  return <box
+    className="focusedClient"
+    visible={focused.as(Boolean)}
+  >
+    {focused.as(client => (
+      client && <label label={bind(client, "title").as(String)} />
     ))}
   </box>
 }
