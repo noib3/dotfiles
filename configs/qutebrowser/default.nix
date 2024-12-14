@@ -31,6 +31,7 @@ in
     "yt" = "https://youtube.com/results?search_query={}";
     "nixo" = "https://search.nixos.org/options?channel=unstable&query={}";
     "nixp" = "https://search.nixos.org/packages?channel=unstable&query={}";
+    "std" = "https://doc.rust-lang.org/nightly/std/?search={}";
   };
 
   settings = {
