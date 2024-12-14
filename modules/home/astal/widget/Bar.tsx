@@ -21,7 +21,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       <box className="media" />
       <box halign={Gtk.Align.END} marginRight={16}>
         <BluetoothStatus />
-        <Wifi />
+        <WiFi />
         <BatteryStatus />
         <Clock />
       </box>
@@ -67,6 +67,7 @@ function BluetoothStatus() {
 
   return <box className="bluetooth">
     <icon
+      className="bluetoothIcon"
       icon={isPowered.as(isPowered => (
         `bluetooth-${isPowered ? "active" : "disabled" }-symbolic`
       ))}
@@ -75,14 +76,19 @@ function BluetoothStatus() {
   </box>
 }
 
-function Wifi() {
+function WiFi() {
   const { wifi } = Network.get_default()
 
-  return <icon
-    className="wifi"
-    toolTipText={bind(wifi, "ssid").as(String)}
-    icon={bind(wifi, "iconName")}
-  />
+  return <box className="wifi">
+    <icon
+      className="wifiIcon"
+      icon={bind(wifi, "iconName")}
+    />
+    <label
+      visible={bind(wifi, "enabled")}
+      label={bind(wifi, "ssid")}
+    />
+  </box>
 }
 
 function BatteryStatus() {
