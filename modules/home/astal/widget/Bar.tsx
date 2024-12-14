@@ -1,5 +1,6 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3"
 import { Variable, bind } from "astal"
+import Battery from "gi://AstalBattery"
 import Hyprland from "gi://AstalHyprland"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
@@ -11,13 +12,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       | Astal.WindowAnchor.LEFT
       | Astal.WindowAnchor.RIGHT}
     application={App}>
-    <centerbox heightRequest={28}>
+    <centerbox heightRequest={32}>
       <box halign={Gtk.Align.START}>
         <Workspaces />
-        <FocusedClient />
       </box>
       <box className="media" />
       <box halign={Gtk.Align.END} marginRight={16}>
+        <BatteryStatus />
         <Clock />
       </box>
     </centerbox>
@@ -26,6 +27,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 
 function Workspaces() {
   const hypr = Hyprland.get_default()
+
   return <box className="workspaces">
     {bind(hypr, "workspaces").as(workspaces => (
       workspaces
@@ -43,16 +45,19 @@ function Workspaces() {
   </box>
 }
 
-function FocusedClient() {
-  const hypr = Hyprland.get_default()
-  const focused = bind(hypr, "focusedClient")
+function BatteryStatus() {
+  const battery = Battery.get_default()
+
   return <box
-    className="focusedClient"
-    visible={focused.as(Boolean)}
+    className="battery"
+    visible={bind(battery, "isPresent")}
+    marginRight={16}
   >
-    {focused.as(client => (
-      client && <label label={bind(client, "title").as(String)} />
-    ))}
+    <label
+      label={bind(battery, "percentage").as(percentage => (
+        `${Math.round(percentage * 100)}%`
+      ))}
+    />
   </box>
 }
 
@@ -68,6 +73,7 @@ function Clock() {
 
 function Date() {
   const date = Variable("").poll(1000, "date +'%a %-d %b'")
+
   return <label
     className="date"
     label={date()}
@@ -76,6 +82,7 @@ function Date() {
 
 function Time() {
   const time = Variable("").poll(1000, "date +'%-H:%M'")
+
   return <label
     className="time"
     label={time()}

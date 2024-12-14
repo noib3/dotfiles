@@ -25,6 +25,7 @@ in
         name = packageName;
         entry = "app.ts";
         extraPackages = [
+          inputs.ags.packages.${pkgs.system}.battery
           inputs.ags.packages.${pkgs.system}.hyprland
         ];
       };
