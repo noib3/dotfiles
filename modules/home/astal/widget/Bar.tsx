@@ -2,6 +2,7 @@ import { App, Astal, Gtk, Gdk } from "astal/gtk3"
 import { Variable, bind } from "astal"
 import Battery from "gi://AstalBattery"
 import Hyprland from "gi://AstalHyprland"
+import Network from "gi://AstalNetwork"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return <window
@@ -18,6 +19,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       </box>
       <box className="media" />
       <box halign={Gtk.Align.END} marginRight={16}>
+        <Wifi />
         <BatteryStatus />
         <Clock />
       </box>
@@ -45,6 +47,16 @@ function Workspaces() {
   </box>
 }
 
+function Wifi() {
+  const { wifi } = Network.get_default()
+
+  return <icon
+    className="wifi"
+    toolTipText={bind(wifi, "ssid").as(String)}
+    icon={bind(wifi, "iconName")}
+  />
+}
+
 function BatteryStatus() {
   const battery = Battery.get_default()
 
@@ -53,6 +65,7 @@ function BatteryStatus() {
     visible={bind(battery, "isPresent")}
     marginRight={16}
   >
+    <icon icon={bind(battery, "batteryIconName")} />
     <label
       label={bind(battery, "percentage").as(percentage => (
         `${Math.round(percentage * 100)}%`

@@ -27,10 +27,15 @@ in
         extraPackages = [
           inputs.ags.packages.${pkgs.system}.battery
           inputs.ags.packages.${pkgs.system}.hyprland
+          inputs.ags.packages.${pkgs.system}.network
         ];
       };
     in
     {
+      home.packages = with pkgs; [
+        adwaita-icon-theme
+      ];
+
       systemd.user.services.astal = {
         Unit = {
           Description = "Astal";
