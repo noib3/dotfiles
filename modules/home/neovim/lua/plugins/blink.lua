@@ -19,7 +19,7 @@ return {
           auto_show = true,
           max_height = 7,
           draw = {
-            columns = { { "kind_icon" }, { "label" } },
+            columns = { { "label" } },
             treesitter = { "lsp" },
           }
         },
@@ -41,6 +41,10 @@ return {
           }
         },
       },
-    }
+    },
+    config = function(_, opts)
+      vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
+      require("blink.cmp").setup(opts)
+    end,
   }
 }
