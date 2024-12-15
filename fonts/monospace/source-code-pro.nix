@@ -2,6 +2,6 @@
 
 {
   name = "SourceCodePro Nerd Font";
-  package = pkgs.nerdfonts.override { fonts = [ "SourceCodePro" ]; };
+  package = pkgs.nerd-fonts.sauce-code-pro;
   size = _config: _program: 16.5;
 }

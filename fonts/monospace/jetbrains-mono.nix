@@ -2,7 +2,7 @@
 
 {
   name = "JetBrainsMono Nerd Font";
-  package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
+  package = pkgs.nerd-fonts.jetbrains-mono;
   size = _config: _program: 16.5;
   bold = {
     name = "Extra Bold";

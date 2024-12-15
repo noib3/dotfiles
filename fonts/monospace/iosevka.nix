@@ -2,6 +2,6 @@
 
 {
   name = "Iosevka Nerd Font";
-  package = pkgs.nerdfonts.override { fonts = [ "Iosevka" ]; };
+  package = pkgs.nerd-fonts.iosevka;
   size = _config: _program: 16.5;
 }
