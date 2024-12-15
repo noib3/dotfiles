@@ -55,7 +55,7 @@
       machines = import ./machines {
         inherit inputs;
         colorscheme = "tokyonight";
-        fonts = pkgs: (import ./fonts).schemes.fira pkgs;
+        fonts = pkgs: (import ./fonts).schemes.iosevka pkgs;
         userName = "noib3";
       };
     in

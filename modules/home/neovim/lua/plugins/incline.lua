@@ -18,7 +18,7 @@ return {
 
           return {
             dirty and { " *", guifg = "#e0af68", gui = "bold" } or "",
-            ft_icon and { " ", ft_icon, " ", guifg = ft_color } or "",
+            ft_icon and { " ", ft_icon, "  ", guifg = ft_color } or "",
             filename,
           }
         end,
