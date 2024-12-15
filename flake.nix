@@ -54,7 +54,7 @@
     let
       machines = import ./machines {
         inherit inputs;
-        colorscheme = "tokyonight";
+        colorscheme = "gruvbox";
         fonts = pkgs: (import ./fonts).schemes.iosevka pkgs;
         userName = "noib3";
       };

@@ -1,7 +1,7 @@
 {
   primary = {
     background = "#282828";
-    foreground = "#ebdbb2";
+    foreground = "#d4be98";
   };
 
   normal = {
@@ -12,7 +12,7 @@
     blue = "#458588";
     magenta = "#b16286";
     cyan = "#689d6a";
-    white = "#ebdbb2";
+    white = "#d4be98";
   };
 
   bright = {
