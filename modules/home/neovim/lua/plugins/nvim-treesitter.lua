@@ -17,6 +17,15 @@ return {
         highlight = {
           enable = true,
         },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "T",
+            node_incremental = "grn",
+            scope_incremental = "grc",
+            node_decremental = "grm",
+          },
+        },
         playground = {
           enable = true
         },

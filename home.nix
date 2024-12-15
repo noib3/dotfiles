@@ -40,7 +40,6 @@ in
         gh
         helix
         jq
-        neovim
         nixVersions.latest
         nodejs # Needed by Copilot.
         ookla-speedtest
@@ -68,7 +67,6 @@ in
       ]
       ++ lib.lists.optionals isLinux [
         cameractrls
-        clang # Needed by Neovim to compile Tree-sitter grammars.
         feh
         glxinfo
         grimblast
@@ -156,7 +154,7 @@ in
   };
 
   imports = [
-    ./modules/home/all.nix
+    ./modules/home
   ];
 
   nix = {
@@ -218,13 +216,6 @@ in
   wayland.windowManager.hyprland = configs.hyprland;
 
   xdg = {
-    configFile = {
-      "nvim" = {
-        source = "${configDir}/neovim";
-        recursive = true;
-      };
-    };
-
     dataFile = {
       "cargo/config.toml" = {
         text = configs.cargo.configDotToml;

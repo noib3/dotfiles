@@ -4,7 +4,7 @@
   "bufdelete.nvim": { "branch": "master", "commit": "f6bcea78afb3060b198125256f897040538bcb81" },
   "copilot.lua": { "branch": "master", "commit": "d3783b9283a7c35940ed8d71549030d5f5f9f980" },
   "crates.nvim": { "branch": "main", "commit": "8bf8358ee326d5d8c11dcd7ac0bcc9ff97dbc785" },
-  "fzf-lua": { "branch": "main", "commit": "3359cb193dcb76a211752216b096bc404f79fb8b" },
+  "fzf-lua": { "branch": "main", "commit": "8330321fa135f7fa9e4855099026c4ad622a0c85" },
   "gitsigns.nvim": { "branch": "main", "commit": "5f808b5e4fef30bd8aca1b803b4e555da07fc412" },
   "hop.nvim": { "branch": "v2", "commit": "90db1b2c61b820e230599a04fedcd2679e64bd07" },
   "inc-rename.nvim": { "branch": "main", "commit": "1871ca49ae6ee3e9ebee37955ba10c7b1425974f" },

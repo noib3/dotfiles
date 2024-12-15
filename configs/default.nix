@@ -52,7 +52,6 @@
   lf = import ./lf { inherit config lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
-  neovim = import ./neovim;
   nix-index = import ./nix-index;
   picom = import ./picom;
   polybar = import ./polybar;
