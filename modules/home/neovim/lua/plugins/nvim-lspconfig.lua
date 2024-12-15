@@ -1,7 +1,7 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    dependencies = { "saghen/blink.cmp" },
+    dependencies = { "Saghen/blink.cmp" },
     opts = {
       servers = {
         lua_ls = {

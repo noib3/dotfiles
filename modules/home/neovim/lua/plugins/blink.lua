@@ -8,19 +8,37 @@ return {
         ["<Tab>"] = { "snippet_forward", "select_next", "fallback" },
         ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
       },
-      sources = {
-        default = { "lsp", "path" },
-      },
       completion = {
+        keyword = {
+          range = "prefix",
+        },
         list = {
           selection = "manual",
         },
         menu = {
           auto_show = true,
           max_height = 7,
+          draw = {
+            columns = { { "kind_icon" }, { "label" } },
+            treesitter = { "lsp" },
+          }
         },
         documentation = {
           auto_show = true,
+          auto_show_delay_ms = 50,
+        },
+      },
+      sources = {
+        default = { "lsp", "path" },
+        providers = {
+          lsp = {
+            fallbacks = {},
+            min_keyword_length = 3,
+          },
+          path = {
+            fallbacks = {},
+            min_keyword_length = 3,
+          }
         },
       },
     }
