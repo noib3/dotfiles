@@ -53,9 +53,14 @@ return {
                 },
               },
               imports = {
-                merge = {
-                  blob = false,
+                granularity = {
+                  enforce = true,
+                  group = "module",
                 },
+                merge = {
+                  glob = false,
+                },
+                preferNoStd = true,
               },
               procMacro = {
                 enable = true,
