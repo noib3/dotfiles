@@ -1,13 +1,12 @@
 {
   config,
-  lib,
   pkgs,
   colorscheme,
   palette,
 }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme lib palette; };
+  colors = import ./colors.nix { inherit config colorscheme palette; };
 in
 {
   enable = pkgs.stdenv.isLinux;

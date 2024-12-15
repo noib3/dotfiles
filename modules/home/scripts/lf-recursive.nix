@@ -1,11 +1,13 @@
 {
+  config,
   pkgs,
   palette,
 }:
 
 let
-  old-dirs-col = pkgs.lib.hex.toANSI palette.normal.blue;
-  new-dirs-col = pkgs.lib.hex.toANSI "#565f89";
+  inherit (config.lib.mine) hex;
+  old-dirs-col = hex.toANSI palette.normal.blue;
+  new-dirs-col = hex.toANSI "#565f89";
 in
 pkgs.writeShellApplication {
   name = "lf-recursive";

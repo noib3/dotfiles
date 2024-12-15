@@ -37,8 +37,6 @@
   fzf = import ./fzf {
     inherit
       config
-      lib
-      pkgs
       colorscheme
       palette
       ;
@@ -51,7 +49,7 @@
   hyprland = import ./hyprland { inherit pkgs; };
   kanshi = import ./kanshi { inherit config pkgs; };
   lazygit = import ./lazygit;
-  lf = import ./lf { inherit lib pkgs; };
+  lf = import ./lf { inherit config lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
   neovim = import ./neovim;
@@ -80,7 +78,6 @@
   zathura = import ./zathura {
     inherit
       config
-      lib
       pkgs
       colorscheme
       palette

@@ -1,17 +1,18 @@
 {
-  lib,
+  config,
   colorscheme,
   palette,
 }:
 
 let
+  inherit (config.lib.mine) hex;
   c = {
     "afterglow" = {
       inputbar.fg = palette.normal.white;
       highlight.bg = palette.normal.cyan;
     };
-    "gruvbox".inputbar.fg = lib.hex.scale 1.3 palette.bright.white;
-    "tokyonight".inputbar.fg = lib.hex.scale 1.3 palette.bright.white;
+    "gruvbox".inputbar.fg = hex.scale 1.3 palette.bright.white;
+    "tokyonight".inputbar.fg = hex.scale 1.3 palette.bright.white;
   };
 in
 {

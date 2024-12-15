@@ -13,7 +13,6 @@ in
           inherit system pkgs;
           modules = [
             ./configuration.nix
-            ../../modules/block-domains.nix
             inputs.nixos-hardware.nixosModules.apple-t2
           ];
           specialArgs = {

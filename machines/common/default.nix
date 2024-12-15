@@ -48,7 +48,7 @@
     git
     home-manager
     neovim
-    scripts.website-blocker
+    config.scripts.website-blocker
   ];
 
   i18n.defaultLocale = "en_US.UTF-8";

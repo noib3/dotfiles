@@ -7,7 +7,7 @@
 }:
 
 let
-  colors = import ./colors.nix { inherit colorscheme lib palette; };
+  colors = import ./colors.nix { inherit config colorscheme palette; };
 
   add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
 

@@ -1,4 +1,8 @@
-{ lib, pkgs }:
+{
+  config,
+  lib,
+  pkgs,
+}:
 
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
@@ -13,7 +17,7 @@ let
     in
     "${pkg}/bin/${pkg.name}";
 
-  preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
+  preview = "${config.scripts.preview}/bin/${config.scripts.preview.name}";
 
   chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
 in

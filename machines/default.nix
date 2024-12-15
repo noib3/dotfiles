@@ -33,8 +33,6 @@ let
         inputs.neovim-nightly-overlay.overlays.default
         inputs.nur.overlay
         inputs.rust-overlay.overlays.default
-        (import ../lib).overlay
-        (import ../scripts { inherit colorscheme; }).overlay
       ];
     };
 
@@ -106,7 +104,6 @@ let
           ../modules/services/bluetooth-autoconnect.nix
         ]
         ++ lib.lists.optionals pkgs.stdenv.isDarwin [
-          #
           inputs.mac-app-util.homeManagerModules.default
         ];
 

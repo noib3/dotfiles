@@ -47,11 +47,11 @@ in
         pfetch
         python312Packages.ipython
         ripgrep
-        scripts.fuzzy-ripgrep
-        scripts.lf-recursive
-        scripts.preview
-        scripts.rg-pattern
-        scripts.rg-preview
+        config.scripts.fuzzy-ripgrep
+        config.scripts.lf-recursive
+        config.scripts.preview
+        config.scripts.rg-pattern
+        config.scripts.rg-preview
         spotify
         texliveConTeXt
         tokei

@@ -7,6 +7,8 @@ in
   imports = [
     ./astal
     ./dropbox
+    ./lib
+    ./scripts
     ./ssh
   ];
 
