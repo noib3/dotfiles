@@ -1,6 +1,6 @@
 return {
   {
-    "saghen/blink.cmp",
+    "Saghen/blink.cmp",
     version = "v0.7.6",
     opts = {
       keymap = {

@@ -1,6 +1,16 @@
 local keymap = vim.keymap
 local methods = vim.lsp.protocol.Methods
 
+-- When asynchronously formatting on save, if the server doesn't send the
+-- response before the buffer is written to disk, it'll permanently remain in a
+-- dirty state.
+--
+-- For these LSPs, we'll do it synchronously to avoid this issue.
+local slow_lsps = {
+  "lua_ls",
+  "taplo",
+}
+
 local lsp_group = vim.api.nvim_create_augroup("noib3/lsp", {})
 
 local on_attach = function(client, bufnr)
@@ -13,10 +23,8 @@ local on_attach = function(client, bufnr)
       buffer = bufnr,
       desc = "Formats the buffer before saving it to disk",
       callback = function()
-        -- LuaLS doesn't send the response fast enough for it to be applied
-        -- before the buffer is written to disk.
         local opts =
-            client.name == "lua_ls"
+            vim.list_contains(slow_lsps, client.name)
             and { timeout_ms = 1000 }
             or { async = true }
         vim.lsp.buf.format(opts)

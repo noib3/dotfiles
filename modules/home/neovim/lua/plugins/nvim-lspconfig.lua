@@ -4,7 +4,6 @@ return {
     dependencies = { "saghen/blink.cmp" },
     opts = {
       servers = {
-        -- Lua.
         lua_ls = {
           settings = {
             Lua = {
@@ -31,7 +30,6 @@ return {
             },
           },
         },
-        -- Markdown.
         marksman = {},
         nil_ls = {
           settings = {
@@ -65,6 +63,7 @@ return {
             },
           },
         },
+        taplo = {},
         ts_ls = {},
       },
     },
