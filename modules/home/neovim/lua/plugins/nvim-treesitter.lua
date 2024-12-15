@@ -13,6 +13,15 @@ return {
       highlight = {
         enable = true,
       },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<S-Up>",
+          scope_incremental = "<S-Right>",
+          node_incremental = "<S-Up>",
+          node_decremental = "<S-Down>",
+        }
+      },
       playground = {
         enable = true
       },
