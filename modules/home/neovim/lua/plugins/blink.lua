@@ -43,8 +43,8 @@ return {
       },
     },
     config = function(_, opts)
-      vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
       require("blink.cmp").setup(opts)
+      vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
     end,
   }
 }
