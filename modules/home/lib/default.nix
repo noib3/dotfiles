@@ -20,7 +20,8 @@
 
       # Transforms the given relative path to a file/directory in this
       # repository to an absolute path.
-      mkAbsolute = path: dotfilesDir + lib.removePrefix (toString inputs.self) (toString path);
+      mkAbsolute =
+        path: dotfilesDir + lib.removePrefix (toString inputs.self) (toString path);
 
     };
   };

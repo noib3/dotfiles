@@ -65,7 +65,8 @@ in
     "ctrl + {Up,Down,Left,Right}" = "bspc node -s {north,south,west,east}";
 
     # Warp windows
-    "super + shift + {Up,Down,Left,Right}" = "bspc node -n {north,south,west,east}";
+    "super + shift + {Up,Down,Left,Right}" =
+      "bspc node -n {north,south,west,east}";
 
     # Kill windows
     "super + q" = "bspc node -k";
@@ -74,10 +75,12 @@ in
     "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
     # Make windows larger
-    "alt + {h,j,k,l}" = "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
+    "alt + {h,j,k,l}" =
+      "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
 
     # Make windows smaller
-    "ctrl + {h,j,k,l}" = "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
+    "ctrl + {h,j,k,l}" =
+      "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
 
     # Balance and mirror desktops
     "alt + {b,y,x}" = "bspc node @/ {-B,-F vertical,-F horizontal}";

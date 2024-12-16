@@ -6,7 +6,8 @@
 }:
 
 let
-  colors = (import ../../qutebrowser/colors.nix { inherit colorscheme palette; }).dmenu;
+  colors =
+    (import ../../qutebrowser/colors.nix { inherit colorscheme palette; }).dmenu;
   font = (import ../../qutebrowser/font.nix { family = font-family; }).dmenu;
 in
 ''

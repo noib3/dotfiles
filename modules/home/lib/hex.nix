@@ -8,7 +8,10 @@ rec {
   # Example:
   #   splitEveryTwo "61afef" => [ "61" "af" "ef" ]
   splitEveryTwo =
-    string: lists.flatten (builtins.filter builtins.isList (builtins.split "(.{2})" string));
+    string:
+    lists.flatten (
+      builtins.filter builtins.isList (builtins.split "(.{2})" string)
+    );
 
   # Returns <base> ** <exponent>.
   # Taken from https://gist.github.com/corpix/f761c82c9d6fdbc1b3846b37e1020e11
@@ -38,7 +41,9 @@ rec {
     color:
     "1;38;2;"
     + (concatStringsSep ";" (
-      builtins.map (x: builtins.toString (toDec x)) (splitEveryTwo (removePrefix "#" color))
+      builtins.map (x: builtins.toString (toDec x)) (
+        splitEveryTwo (removePrefix "#" color)
+      )
     ));
 
   # Converts a two character string from hexadecimal into decimal.
@@ -99,9 +104,12 @@ rec {
         "e"
         "f"
       ];
-      toHex' = q: a: if q > 0 then (toHex' (q / 16) ((elemAt intToHex (mod q 16)) + a)) else a;
+      toHex' =
+        q: a:
+        if q > 0 then (toHex' (q / 16) ((elemAt intToHex (mod q 16)) + a)) else a;
 
-      append_zero_if_needed = str: if (builtins.stringLength str) == 1 then "0" + str else str;
+      append_zero_if_needed =
+        str: if (builtins.stringLength str) == 1 then "0" + str else str;
     in
     append_zero_if_needed (toHex' dec "");
 

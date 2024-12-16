@@ -28,5 +28,6 @@ in
   current-line.bg = c.${name}.current-line.bg or palette.bright.black;
   border = palette.bright.black;
   directories = palette.normal.blue;
-  grayed-out-directories = c.${name}.grayed-out-directories or palette.bright.white;
+  grayed-out-directories =
+    c.${name}.grayed-out-directories or palette.bright.white;
 }

@@ -2,7 +2,10 @@
 
 let
   delta-syntax-theme = (
-    if config.modules.colorscheme.name == "gruvbox" then "gruvbox-dark" else "TwoDark"
+    if config.modules.colorscheme.name == "gruvbox" then
+      "gruvbox-dark"
+    else
+      "TwoDark"
   );
 in
 {

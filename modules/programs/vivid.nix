@@ -76,7 +76,9 @@ in
       }
       // mapAttrs' (
         name: value:
-        nameValuePair ("vivid/themes/${name}.yml") ({ source = yaml.generate "${name}.yml" value; })
+        nameValuePair ("vivid/themes/${name}.yml") ({
+          source = yaml.generate "${name}.yml" value;
+        })
       ) cfg.themes;
   };
 

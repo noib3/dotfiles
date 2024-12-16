@@ -18,6 +18,7 @@ in
 {
   border = {
     unfocused = c.${colorscheme}.border.unfocused or palette.bright.black;
-    focused = c.${colorscheme}.border.unfocused or (hex.scale 130 palette.bright.white);
+    focused =
+      c.${colorscheme}.border.unfocused or (hex.scale 130 palette.bright.white);
   };
 }

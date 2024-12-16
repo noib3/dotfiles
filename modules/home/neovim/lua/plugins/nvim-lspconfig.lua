@@ -35,7 +35,7 @@ return {
           settings = {
             ["nil"] = {
               formatting = {
-                command = { "nixfmt" },
+                command = { "nixfmt", "--width", "79" },
               },
             }
           }

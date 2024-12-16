@@ -129,5 +129,7 @@ let
     };
 in
 {
-  forEach = forMachine: (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
+  forEach =
+    forMachine:
+    (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
 }
