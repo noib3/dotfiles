@@ -33,12 +33,11 @@ in
     // lib.attrsets.optionalAttrs isLinux {
       reboot = "sudo shutdown -r now";
       shutdown = "sudo shutdown now";
-      xclip = "xclip -selection c";
     };
 
   shellAbbrs =
     {
-      hmn = "home-manager news";
+      hmn = "home-manager news --flake ${dotfilesDir}#${config.machine.name}";
       hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
       ipy = "ipython";
       lg = "lazygit";
