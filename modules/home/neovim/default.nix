@@ -26,6 +26,11 @@ in
         clang
       ];
 
+    home.sessionVariables = {
+      EDITOR = "nvim";
+      MANPAGER = "nvim +Man! -";
+    };
+
     xdg.configFile.nvim = {
       source = config.lib.file.mkOutOfStoreSymlink (config.lib.mine.mkAbsolute ./.);
     };

@@ -137,8 +137,6 @@ in
 
     sessionVariables = {
       CARGO_HOME = "${config.xdg.dataHome}/cargo";
-      EDITOR = "nvim";
-      MANPAGER = "nvim +Man! -";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
