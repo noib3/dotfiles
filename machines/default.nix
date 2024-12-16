@@ -30,7 +30,7 @@ let
       };
       overlays = [
         inputs.brew-nix.overlays.default
-        inputs.nur.overlay
+        inputs.nur.overlays.default
         inputs.rust-overlay.overlays.default
       ];
     };

@@ -20,7 +20,6 @@ in
     caches.apple-t2.enable = true;
 
     hardware = {
-      apple-t2.enableTinyDfr = false;
       apple.touchBar = {
         enable = true;
         settings = {
