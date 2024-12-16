@@ -38,7 +38,9 @@ let
     |> map (lib.removeSuffix ".nix");
 
   colorschemeOptions =
-    colorschemeNames |> map (name: nameValuePair name (mkColorschemeOption name)) |> listToAttrs;
+    colorschemeNames
+    |> map (name: lib.nameValuePair name (mkColorschemeOption name))
+    |> builtins.listToAttrs;
 in
 {
   options.modules.colorscheme = colorschemeOptions // {
