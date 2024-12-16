@@ -1,8 +1,9 @@
-{ colorscheme
-, font-family
-, palette
-, hexlib
-, hicolor-icon-theme
+{
+  colorscheme,
+  font-family,
+  palette,
+  hexlib,
+  hicolor-icon-theme,
 }:
 
 let

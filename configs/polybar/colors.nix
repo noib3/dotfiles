@@ -1,6 +1,7 @@
-{ colorscheme
-, palette
-, hexlib
+{
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
@@ -23,14 +24,10 @@ rec {
   power.icon = bar.fg;
 
   workspaces = rec {
-    focused.bg =
-      overrides.${colorscheme}.workspaces.focused.bg
-        or palette.normal.black;
+    focused.bg = overrides.${colorscheme}.workspaces.focused.bg or palette.normal.black;
     focused.fg = occupied.fg;
     occupied.fg = bar.fg;
-    empty.fg =
-      overrides.${colorscheme}.workspaces.empty.fg
-        or (hexlib.scale 0.7 palette.bright.white);
+    empty.fg = overrides.${colorscheme}.workspaces.empty.fg or (hexlib.scale 0.7 palette.bright.white);
   };
 
   bluetooth = {

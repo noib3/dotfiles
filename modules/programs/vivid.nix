@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 let
@@ -65,16 +70,14 @@ in
   config = mkIf cfg.enable {
     home.packages = [ cfg.package ];
 
-    xdg.configFile = {
-      "vivid/filetypes.yml".source =
-        yaml.generate "filetypes.yml" cfg.filetypes;
-    } // mapAttrs'
-      (
-        name: value: nameValuePair
-          ("vivid/themes/${name}.yml")
-          ({ source = yaml.generate "${name}.yml" value; })
-      )
-      cfg.themes;
+    xdg.configFile =
+      {
+        "vivid/filetypes.yml".source = yaml.generate "filetypes.yml" cfg.filetypes;
+      }
+      // mapAttrs' (
+        name: value:
+        nameValuePair ("vivid/themes/${name}.yml") ({ source = yaml.generate "${name}.yml" value; })
+      ) cfg.themes;
   };
 
   meta.maintainers = with lib.maintainers; [

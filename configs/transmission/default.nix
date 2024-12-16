@@ -1,11 +1,13 @@
-{ pkgs
-, username
-, homeDirectory
+{
+  pkgs,
+  username,
+  homeDirectory,
 }:
 
 let
-  notify-done = pkgs.writeShellScriptBin "notify-done"
-    (import ./notify-done.sh.nix { inherit pkgs; });
+  notify-done = pkgs.writeShellScriptBin "notify-done" (
+    import ./notify-done.sh.nix { inherit pkgs; }
+  );
 in
 {
   user = username;

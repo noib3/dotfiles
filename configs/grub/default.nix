@@ -1,8 +1,9 @@
-{ pkgs
-, machine
-, colorscheme
-, palette
-, hexlib
+{
+  pkgs,
+  machine,
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let

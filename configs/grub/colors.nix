@@ -1,6 +1,7 @@
-{ colorscheme
-, palette
-, hexlib
+{
+  colorscheme,
+  palette,
+  hexlib,
 }:
 
 let
@@ -14,9 +15,7 @@ rec {
   bg = hexlib.scale 0.75 palette.primary.background;
   boot-entry = {
     fg = palette.normal.white;
-    selected.bg =
-      c.${colorscheme}.boot-entry.selected.bg
-        or palette.normal.blue;
+    selected.bg = c.${colorscheme}.boot-entry.selected.bg or palette.normal.blue;
     selected.fg = palette.normal.black;
   };
   countdown-message.fg = boot-entry.selected.bg;

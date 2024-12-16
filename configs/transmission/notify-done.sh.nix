@@ -19,7 +19,8 @@ let
           -subtitle "Torrent complete" \
           -message "$TR_TORRENT_NAME has finished downloading"
       ''
-    else "";
+    else
+      "";
 in
 ''
   function notify_done() { ${notify-done} }

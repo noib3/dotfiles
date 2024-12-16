@@ -1,7 +1,8 @@
-{ colorscheme
-, font-family
-, palette
-, pkgs ? import <nixpkgs> { }
+{
+  colorscheme,
+  font-family,
+  palette,
+  pkgs ? import <nixpkgs> { },
 }:
 
 let

@@ -1,5 +1,6 @@
-{ font
-, colors
+{
+  font,
+  colors,
 }:
 
 ''

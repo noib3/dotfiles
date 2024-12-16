@@ -5,7 +5,7 @@
 }:
 
 let
-  colors = import ./colors.nix { inherit config ; };
+  colors = import ./colors.nix { inherit config; };
 
   add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
 

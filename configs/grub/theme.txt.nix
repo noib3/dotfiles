@@ -1,5 +1,6 @@
-{ colors
-, backgroundImageFilename
+{
+  colors,
+  backgroundImageFilename,
 }:
 
 ''

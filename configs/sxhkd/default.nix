@@ -1,25 +1,31 @@
-{ configDir
-, writeShellScriptBin
-, writePython3Bin
+{
+  configDir,
+  writeShellScriptBin,
+  writePython3Bin,
 }:
 
 let
-  dmenu-bluetooth = writePython3Bin "dmenu-bluetooth" { }
-    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-bluetooth.py");
+  dmenu-bluetooth = writePython3Bin "dmenu-bluetooth" { } (
+    builtins.readFile "${configDir}/dmenu/scripts/dmenu-bluetooth.py"
+  );
 
-  dmenu-open = writeShellScriptBin "dmenu-open"
-    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-open.sh");
+  dmenu-open = writeShellScriptBin "dmenu-open" (
+    builtins.readFile "${configDir}/dmenu/scripts/dmenu-open.sh"
+  );
 
-  dmenu-pulseaudio = writePython3Bin "dmenu-pulseaudio" { }
-    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-pulseaudio.py");
+  dmenu-pulseaudio = writePython3Bin "dmenu-pulseaudio" { } (
+    builtins.readFile "${configDir}/dmenu/scripts/dmenu-pulseaudio.py"
+  );
 
   dmenu-run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
 
-  dmenu-wifi = writePython3Bin "dmenu-wifi" { }
-    (builtins.readFile "${configDir}/dmenu/scripts/dmenu-wifi.py");
+  dmenu-wifi = writePython3Bin "dmenu-wifi" { } (
+    builtins.readFile "${configDir}/dmenu/scripts/dmenu-wifi.py"
+  );
 
-  toggle-gaps = writeShellScriptBin "toggle-gaps"
-    (builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh");
+  toggle-gaps = writeShellScriptBin "toggle-gaps" (
+    builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh"
+  );
 in
 {
   keybindings = {
@@ -68,12 +74,10 @@ in
     "alt + {_,shift + }r" = "bspc node @/ -R {90,-90}";
 
     # Make windows larger
-    "alt + {h,j,k,l}" =
-      "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
+    "alt + {h,j,k,l}" = "bspc node -z {left -25 0,bottom 0 25,top 0 -25,right 25 0}";
 
     # Make windows smaller
-    "ctrl + {h,j,k,l}" =
-      "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
+    "ctrl + {h,j,k,l}" = "bspc node -z {right -25 0,top 0 25,bottom 0 -25,left 25 0}";
 
     # Balance and mirror desktops
     "alt + {b,y,x}" = "bspc node @/ {-B,-F vertical,-F horizontal}";
@@ -90,7 +94,6 @@ in
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
-    "super + shift + {3,4}" =
-      "flameshot {full, gui} -p ~/screenshots";
+    "super + shift + {3,4}" = "flameshot {full, gui} -p ~/screenshots";
   };
 }

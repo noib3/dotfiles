@@ -38,9 +38,7 @@ let
     |> map (lib.removeSuffix ".nix");
 
   colorschemeOptions =
-    colorschemeNames
-    |> map (name: nameValuePair name (mkColorschemeOption name))
-    |> listToAttrs;
+    colorschemeNames |> map (name: nameValuePair name (mkColorschemeOption name)) |> listToAttrs;
 in
 {
   options.modules.colorscheme = colorschemeOptions // {
@@ -60,7 +58,10 @@ in
   config =
     let
       enabledSchemes =
-        removeAttrs cfg ["name" "palette"]
+        removeAttrs cfg [
+          "name"
+          "palette"
+        ]
         |> mapAttrsToList (_: value: value)
         |> filter (scheme: scheme.enable);
 

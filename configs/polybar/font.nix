@@ -67,9 +67,7 @@ in
     };
     videos = default // {
       size = f.${family}.icons.videos.size or 18;
-      padding-top =
-        f.${family}.icons.videos.padding-top
-          or default.padding-top;
+      padding-top = f.${family}.icons.videos.padding-top or default.padding-top;
     };
     bluetooth = default // {
       size = 16;
@@ -77,9 +75,7 @@ in
     };
     wifi = default // {
       size = f.${family}.icons.wifi.size or 21;
-      padding-top =
-        f.${family}.icons.wifi.padding-top
-          or default.padding-top;
+      padding-top = f.${family}.icons.wifi.padding-top or default.padding-top;
     };
     battery = default // {
       size = f.${family}.icons.battery.size or 12;
