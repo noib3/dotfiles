@@ -31,6 +31,10 @@ in
       MANPAGER = "nvim +Man! -";
     };
 
+    nixpkgs.overlays = [
+      inputs.neovim-nightly-overlay.overlays.default
+    ];
+
     xdg.configFile.nvim = {
       source = config.lib.file.mkOutOfStoreSymlink (config.lib.mine.mkAbsolute ./.);
     };
