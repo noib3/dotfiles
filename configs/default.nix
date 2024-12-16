@@ -36,6 +36,7 @@
   fuzzel = import ./fuzzel { inherit pkgs; };
   fzf = import ./fzf {
     inherit
+      pkgs
       config
       colorscheme
       palette
@@ -49,7 +50,7 @@
   hyprland = import ./hyprland { inherit pkgs; };
   kanshi = import ./kanshi { inherit config pkgs; };
   lazygit = import ./lazygit;
-  lf = import ./lf { inherit config lib pkgs; };
+  lf = import ./lf { inherit lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
   nix-index = import ./nix-index;

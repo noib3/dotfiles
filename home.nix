@@ -46,11 +46,11 @@ in
         pfetch
         python312Packages.ipython
         ripgrep
-        config.scripts.fuzzy-ripgrep
-        config.scripts.lf-recursive
-        config.scripts.preview
-        config.scripts.rg-pattern
-        config.scripts.rg-preview
+        scripts.fuzzy-ripgrep
+        scripts.lf-recursive
+        scripts.preview
+        scripts.rg-pattern
+        scripts.rg-preview
         spotify
         tokei
         tree

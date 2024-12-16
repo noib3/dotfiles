@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   colorscheme,
   palette,
 }:
@@ -9,7 +10,7 @@ let
   colors = import ./colors.nix { inherit config colorscheme palette; };
   col-dirs = hex.toANSI colors.directories;
   col-grayed-out-dirs = hex.toANSI colors.grayed-out-directories;
-  lf-recursive = "${config.scripts.lf-recursive}/bin/${config.scripts.lf-recursive.name}";
+  lf-recursive = "${pkgs.scripts.lf-recursive}/bin/${pkgs.scripts.lf-recursive.name}";
 in
 {
   enable = true;

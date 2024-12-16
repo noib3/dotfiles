@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
 }:
@@ -17,7 +16,7 @@ let
     in
     "${pkg}/bin/${pkg.name}";
 
-  preview = "${config.scripts.preview}/bin/${config.scripts.preview.name}";
+  preview = "${pkgs.scripts.preview}/bin/${pkgs.scripts.preview.name}";
 
   chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
 in
