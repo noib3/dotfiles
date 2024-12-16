@@ -14,12 +14,14 @@ let
   configDir = ./configs;
 
   configs = import "${configDir}" {
-    inherit (pkgs) lib;
-    inherit colorscheme config pkgs;
-    palette = import (./palettes + "/${colorscheme}.nix");
+    inherit config lib pkgs;
   };
 in
 {
+  imports = [
+    ./modules/home
+  ];
+
   inherit fonts;
 
   home = {
@@ -154,16 +156,21 @@ in
     username = userName;
   };
 
-  imports = [
-    ./modules/home
-  ];
+  modules = {
+    astal.enable = isLinux;
+    colorscheme.${colorscheme}.enable = true;
+    dropbox.enable = true;
+    neovim.enable = true;
+    ssh.enable = true;
+  };
 
   nix = {
     package = pkgs.nixVersions.latest;
     settings = {
       experimental-features = [
-        "nix-command"
         "flakes"
+        "nix-command"
+        "pipe-operators"
       ];
       trusted-substituters = [
         "https://cache.soopy.moe"

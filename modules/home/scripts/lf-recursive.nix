@@ -1,12 +1,11 @@
 {
   config,
   pkgs,
-  palette,
 }:
 
 let
   inherit (config.lib.mine) hex;
-  old-dirs-col = hex.toANSI palette.normal.blue;
+  old-dirs-col = hex.toANSI config.modules.colorscheme.palette.normal.blue;
   new-dirs-col = hex.toANSI "#565f89";
 in
 pkgs.writeShellApplication {

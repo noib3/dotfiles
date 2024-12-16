@@ -2,12 +2,11 @@
   config,
   lib,
   pkgs,
-  palette,
 }:
 
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
-  colors = import ./colors.nix { inherit palette; };
+  colors = import ./colors.nix { inherit config; };
 in
 {
   enable = true;

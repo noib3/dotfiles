@@ -1,7 +1,9 @@
-{ colorscheme }:
+{ config }:
 
 let
-  delta-syntax-theme = (if colorscheme == "gruvbox" then "gruvbox-dark" else "TwoDark");
+  delta-syntax-theme = (
+    if config.modules.colorscheme.name == "gruvbox" then "gruvbox-dark" else "TwoDark"
+  );
 in
 {
   enable = true;

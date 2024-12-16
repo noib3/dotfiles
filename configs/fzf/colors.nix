@@ -1,11 +1,10 @@
 {
   config,
-  colorscheme,
-  palette,
 }:
 
 let
   inherit (config.lib.mine) hex;
+  inherit (config.modules.colorscheme) name palette;
   c = {
     "afterglow" = {
       current-line.bg = hex.scale 1.5 palette.normal.black;
@@ -26,8 +25,8 @@ let
   };
 in
 {
-  current-line.bg = c.${colorscheme}.current-line.bg or palette.bright.black;
+  current-line.bg = c.${name}.current-line.bg or palette.bright.black;
   border = palette.bright.black;
   directories = palette.normal.blue;
-  grayed-out-directories = c.${colorscheme}.grayed-out-directories or palette.bright.white;
+  grayed-out-directories = c.${name}.grayed-out-directories or palette.bright.white;
 }

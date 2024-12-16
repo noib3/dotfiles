@@ -1,11 +1,8 @@
-{
-  config,
-  colorscheme,
-  palette,
-}:
+{ config }:
 
 let
   inherit (config.lib.mine) hex;
+  inherit (config.modules.colorscheme) name palette;
   c = {
     "afterglow" = {
       inputbar.fg = palette.normal.white;
@@ -23,8 +20,8 @@ in
 
   inputbar = {
     bg = palette.bright.black;
-    fg = c.${colorscheme}.inputbar.fg or palette.bright.white;
+    fg = c.${name}.inputbar.fg or palette.bright.white;
   };
 
-  highlight.bg = c.${colorscheme}.highlight.bg or palette.normal.blue;
+  highlight.bg = c.${name}.highlight.bg or palette.normal.blue;
 }

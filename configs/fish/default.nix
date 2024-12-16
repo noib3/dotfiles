@@ -2,8 +2,6 @@
   config,
   lib,
   pkgs,
-  colorscheme,
-  palette,
 }:
 
 let
@@ -12,7 +10,7 @@ let
   inherit (config.lib.mine) dotfilesDir;
 
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
-    import ./colors.nix { inherit colorscheme palette; }
+    import ./colors.nix { inherit config; }
   );
 in
 {

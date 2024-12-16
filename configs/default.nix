@@ -2,19 +2,10 @@
   config,
   lib,
   pkgs,
-  colorscheme,
-  palette,
 }:
 
 {
-  alacritty = import ./alacritty {
-    inherit
-      config
-      lib
-      pkgs
-      palette
-      ;
-  };
+  alacritty = import ./alacritty { inherit config lib pkgs; };
   bat = import ./bat;
   bspwm = import ./bspwm;
   calcurse = import ./calcurse;
@@ -23,26 +14,11 @@
   dmenu = import ./dmenu;
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
-  fish = import ./fish {
-    inherit
-      config
-      pkgs
-      lib
-      colorscheme
-      palette
-      ;
-  };
+  fish = import ./fish { inherit config pkgs lib; };
   fusuma = import ./fusuma { inherit pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };
-  fzf = import ./fzf {
-    inherit
-      pkgs
-      config
-      colorscheme
-      palette
-      ;
-  };
-  git = import ./git { inherit colorscheme; };
+  fzf = import ./fzf { inherit config pkgs; };
+  git = import ./git { inherit config; };
   gpg = import ./gpg;
   gpg-agent = import ./gpg-agent { inherit pkgs; };
   grub = import ./grub;
@@ -56,15 +32,7 @@
   nix-index = import ./nix-index;
   picom = import ./picom;
   polybar = import ./polybar;
-  qutebrowser = import ./qutebrowser {
-    inherit
-      config
-      lib
-      pkgs
-      colorscheme
-      palette
-      ;
-  };
+  qutebrowser = import ./qutebrowser { inherit config lib pkgs; };
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
   ssh-agent = import ./ssh-agent { inherit pkgs; };
@@ -72,15 +40,8 @@
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
   udiskie = import ./udiskie { inherit pkgs; };
-  vivid = import ./vivid { inherit lib colorscheme palette; };
+  vivid = import ./vivid { inherit config lib; };
   wlsunset = import ./wlsunset { inherit pkgs; };
   yabai = import ./yabai { inherit pkgs; };
-  zathura = import ./zathura {
-    inherit
-      config
-      pkgs
-      colorscheme
-      palette
-      ;
-  };
+  zathura = import ./zathura { inherit config pkgs; };
 }

@@ -1,5 +1,8 @@
-{ palette }:
+{ config }:
 
+let
+  inherit (config.modules.colorscheme) palette;
+in
 {
   inherit (palette) normal bright;
 

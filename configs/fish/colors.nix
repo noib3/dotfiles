@@ -1,7 +1,8 @@
-{ colorscheme
-, palette
-}:
+{ config }:
 
+let
+  inherit (config.modules.colorscheme) palette;
+in
 {
   autosuggestion = palette.bright.white;
   comment = palette.bright.white;

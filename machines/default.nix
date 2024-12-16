@@ -94,11 +94,30 @@ let
       pkgs = mkPkgs machine.system;
 
       modules =
+        let
+          home =
+            {
+              config,
+              lib,
+              pkgs,
+              ...
+            }:
+            import ../home.nix {
+              inherit
+                config
+                lib
+                pkgs
+                colorscheme
+                userName
+                ;
+              fonts = fonts pkgs;
+            };
+        in
         [
+          home
           homeManagerModule
           (mkHomeManagerModule machine)
           ../fonts/module.nix
-          ../home.nix
           ../modules/programs/vivid.nix
           ../modules/services/bluetooth-autoconnect.nix
         ]
@@ -106,10 +125,7 @@ let
           inputs.mac-app-util.homeManagerModules.default
         ];
 
-      extraSpecialArgs = {
-        inherit colorscheme inputs userName;
-        fonts = (fonts pkgs);
-      };
+      extraSpecialArgs = { inherit inputs; };
     };
 in
 {

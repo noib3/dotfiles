@@ -1,8 +1,7 @@
-{ colorscheme
-, palette
-}:
+{ config }:
 
 let
+  inherit (config.modules.colorscheme) name palette;
   overrides = {
     tokyonight = {
       orange = "#ff9e64";
@@ -15,7 +14,15 @@ let
   };
 in
 {
-  inherit (palette.normal) black red green yellow blue magenta cyan;
-  orange = overrides.${colorscheme}.orange or palette.bright.yellow;
-  gray = overrides.${colorscheme}.gray or palette.bright.white;
+  inherit (palette.normal)
+    black
+    red
+    green
+    yellow
+    blue
+    magenta
+    cyan
+    ;
+  orange = overrides.${name}.orange or palette.bright.yellow;
+  gray = overrides.${name}.gray or palette.bright.white;
 }
