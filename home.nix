@@ -94,32 +94,6 @@ in
         nil
         nixfmt-rfc-style
       ]
-      # Rust.
-      ++ (
-        let
-          components = [
-            "clippy"
-            # Needed by `cargo-llvm-cov`.
-            "llvm-tools"
-            "rust-analyzer"
-            # Needed by `rust-analyzer` to index `std`.
-            "rust-src"
-            "rustfmt"
-          ];
-        in
-        [
-          (rust-bin.selectLatestNightlyWith (
-            toolchain: toolchain.minimal.override { extensions = components; }
-          ))
-          cargo-criterion
-          cargo-deny
-          cargo-expand
-          cargo-flamegraph
-          cargo-fuzz
-        ]
-        # cargo-llvm-cov is currently broken on macOS.
-        ++ lib.lists.optionals (!isDarwin) [ cargo-llvm-cov ]
-      )
       # TOML.
       ++ [
         (taplo.override { withLsp = true; })
@@ -138,7 +112,6 @@ in
     };
 
     sessionVariables = {
-      CARGO_HOME = "${config.xdg.dataHome}/cargo";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
@@ -161,6 +134,7 @@ in
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
     neovim.enable = true;
+    rust.enable = true;
     ssh.enable = true;
   };
 
@@ -224,12 +198,6 @@ in
   wayland.windowManager.hyprland = configs.hyprland;
 
   xdg = {
-    dataFile = {
-      "cargo/config.toml" = {
-        text = configs.cargo.configDotToml;
-      };
-    };
-
     mimeApps = {
       enable = isLinux;
       defaultApplications = {

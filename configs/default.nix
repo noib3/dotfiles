@@ -9,7 +9,6 @@
   bat = import ./bat;
   bspwm = import ./bspwm;
   calcurse = import ./calcurse;
-  cargo = import ./cargo { inherit config; };
   direnv = import ./direnv;
   dmenu = import ./dmenu;
   dunst = import ./dunst;
