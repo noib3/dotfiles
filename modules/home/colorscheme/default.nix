@@ -35,11 +35,11 @@ let
     builtins.readDir ./.
     |> builtins.attrNames
     |> builtins.filter (name: name != "default.nix")
-    |> map (lib.removeSuffix ".nix");
+    |> builtins.map (lib.removeSuffix ".nix");
 
   colorschemeOptions =
     colorschemeNames
-    |> map (name: lib.nameValuePair name (mkColorschemeOption name))
+    |> builtins.map (name: lib.nameValuePair name (mkColorschemeOption name))
     |> builtins.listToAttrs;
 in
 {

@@ -42,7 +42,6 @@ in
         gh
         helix
         jq
-        nixVersions.latest
         nodejs # Needed by Copilot.
         ookla-speedtest
         pfetch
@@ -89,11 +88,6 @@ in
       ]
       # Markdown.
       ++ [ marksman ]
-      # Nix.
-      ++ [
-        nil
-        nixfmt-rfc-style
-      ]
       # TOML.
       ++ [
         (taplo.override { withLsp = true; })
@@ -136,22 +130,6 @@ in
     neovim.enable = true;
     rust.enable = true;
     ssh.enable = true;
-  };
-
-  nix = {
-    package = pkgs.nixVersions.latest;
-    settings = {
-      experimental-features = [
-        "flakes"
-        "nix-command"
-        "pipe-operators"
-      ];
-      trusted-substituters = [
-        "https://cache.soopy.moe"
-        "https://nix-community.cachix.org"
-      ];
-      warn-dirty = false;
-    };
   };
 
   programs = {

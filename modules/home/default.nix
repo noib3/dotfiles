@@ -5,6 +5,7 @@
     ./dropbox
     ./lib
     ./neovim
+    ./nix
     ./rust
     ./scripts
     ./ssh
