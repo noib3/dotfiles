@@ -3,6 +3,7 @@ return {
     "b0o/incline.nvim",
     config = function()
       local devicons = require("nvim-web-devicons")
+      local palette = require("generated.palette")
 
       require("incline").setup({
         render = function(props)
@@ -17,7 +18,7 @@ return {
           local dirty = vim.bo[props.buf].modified
 
           return {
-            dirty and { " *", guifg = "#e0af68", gui = "bold" } or "",
+            dirty and { " •", guifg = palette.bright.green, gui = "bold" } or "",
             ft_icon and { " ", ft_icon, "  ", guifg = ft_color } or "",
             filename,
           }
@@ -32,8 +33,18 @@ return {
             vertical = 0,
           },
           winhighlight = {
-            active = { Normal = "QuickFixLine" },
-            inactive = { Normal = "LspInlayHint" },
+            active = {
+              Normal = {
+                guifg = "#ddc7a1",
+                guibg = "#3a3735",
+              },
+            },
+            inactive = {
+              Normal = {
+                guifg = "#928374",
+                guibg = "#3a3735",
+              },
+            },
           }
         }
       })
