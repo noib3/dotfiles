@@ -10,6 +10,13 @@ local is_inactive_code = function(diagnostic)
   return diagnostic.code == "inactive-code"
 end
 
+--- Opposite of `is_inactive_code`.
+---@param diagnostic vim.Diagnostic
+---@return boolean
+local is_active_code = function(diagnostic)
+  return not is_inactive_code(diagnostic)
+end
+
 --- Fades out a range of text by blending the fg color with 25% of the bg
 --- color.
 local fade_out = function(namespace, bufnr, lnum, col, end_lnum, end_col)
@@ -58,7 +65,7 @@ M.handlers.underline = {
     -- remove the corresponding tag.
     for _, diagnostic in ipairs(rest) do
       if diagnostic._tags then
-        diagnostic._tags.unnecessary = false
+        diagnostic._tags.unnecessary = nil
       end
     end
 
@@ -75,19 +82,22 @@ M.handlers.underline = {
 
 M.handlers.virtual_text = {
   show = function(namespace, bufnr, diagnostics, opts)
+    -- Don't display virtual text for inactive code.
+    local active_diagnostics = vim.tbl_filter(is_active_code, diagnostics)
+
     -- Save the original messages. We'll restore them after displaying the
     -- virtual text to let the other handlers operate on the original messages.
     local orig_messages = {}
 
     -- Only display the first line of the diagnostic message in the virtual
     -- text to reduce clutter. The rest can be read by opening the float.
-    for idx, diagnostic in ipairs(diagnostics) do
+    for idx, diagnostic in ipairs(active_diagnostics) do
       orig_messages[idx] = diagnostic.message
       diagnostic.message = diagnostic.message:match("^[^\n]*")
     end
-    default_virtual_text_handler.show(namespace, bufnr, diagnostics, opts)
+    default_virtual_text_handler.show(namespace, bufnr, active_diagnostics, opts)
 
-    for idx, diagnostic in ipairs(diagnostics) do
+    for idx, diagnostic in ipairs(active_diagnostics) do
       diagnostic.message = orig_messages[idx]
     end
   end,
