@@ -31,14 +31,17 @@ return {
       sources = {
         default = { "lsp", "path" },
         providers = {
+          buffer = {
+            enabled = false,
+          },
           lsp = {
             fallbacks = {},
             min_keyword_length = 3,
           },
           path = {
             fallbacks = {},
-            min_keyword_length = 3,
-          }
+            min_keyword_length = 1,
+          },
         },
       },
     },
