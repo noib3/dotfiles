@@ -1,6 +1,7 @@
 local utils = require("utils")
 
 local default_underline_handler = vim.diagnostic.handlers.underline
+local default_virtual_text_handler = vim.diagnostic.handlers.virtual_text
 
 --- Returns whether the diagnostic is about inactive code.
 ---@param diagnostic vim.Diagnostic
@@ -40,7 +41,8 @@ local M = {}
 ---@param diagnostic vim.Diagnostic
 ---@return boolean
 M.is_about = function(diagnostic)
-  return diagnostic.source == "rustc" or diagnostic.source == "rust-analyzer"
+  local rust_sources = { "clippy", "rustc", "rust-analyzer" }
+  return vim.tbl_contains(rust_sources, diagnostic.source)
 end
 
 M.handlers = {}
@@ -68,6 +70,29 @@ M.handlers.underline = {
   end,
   hide = function(namespace, bufnr)
     default_underline_handler.hide(namespace, bufnr)
+  end,
+}
+
+M.handlers.virtual_text = {
+  show = function(namespace, bufnr, diagnostics, opts)
+    -- Save the original messages. We'll restore them after displaying the
+    -- virtual text to let the other handlers operate on the original messages.
+    local orig_messages = {}
+
+    -- Only display the first line of the diagnostic message in the virtual
+    -- text to reduce clutter. The rest can be read by opening the float.
+    for idx, diagnostic in ipairs(diagnostics) do
+      orig_messages[idx] = diagnostic.message
+      diagnostic.message = diagnostic.message:match("^[^\n]*")
+    end
+    default_virtual_text_handler.show(namespace, bufnr, diagnostics, opts)
+
+    for idx, diagnostic in ipairs(diagnostics) do
+      diagnostic.message = orig_messages[idx]
+    end
+  end,
+  hide = function(namespace, bufnr)
+    default_virtual_text_handler.hide(namespace, bufnr)
   end,
 }
 
