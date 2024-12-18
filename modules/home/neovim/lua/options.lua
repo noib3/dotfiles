@@ -9,6 +9,9 @@ opt.background = "dark"
 -- Use the system clipboard.
 opt.clipboard = "unnamedplus"
 
+-- Only show the command line when in command mode.
+opt.cmdheight = 0
+
 -- Display a vertical column after `textwidth`.
 opt.colorcolumn = "+1"
 
