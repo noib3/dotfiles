@@ -16,10 +16,9 @@ return {
       incremental_selection = {
         enable = true,
         keymaps = {
-          init_selection = "<S-Up>",
-          scope_incremental = "<S-Right>",
-          node_incremental = "<S-Up>",
-          node_decremental = "<S-Down>",
+          init_selection = "<Tab>",
+          node_incremental = "<Tab>",
+          node_decremental = "<S-Tab>",
         }
       },
       playground = {
