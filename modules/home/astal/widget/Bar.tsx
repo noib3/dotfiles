@@ -60,16 +60,11 @@ function BluetoothStatus() {
     )
   )
 
-  // Can't get mouse and keyboard to auto-connect after idle w/o these.
-  bluetooth.adapter.start_discovery()
-  bluetooth.adapter.set_discoverable(true)
-  bluetooth.adapter.set_pairable(true)
-
   return <box className="BluetoothStatus">
     <icon
       className="bluetoothIcon"
       icon={isPowered.as(isPowered => (
-        `bluetooth-${isPowered ? "active" : "disabled" }-symbolic`
+        `bluetooth-${isPowered ? "active" : "disabled"}-symbolic`
       ))}
     />
     <label label={bind(numDevices).as(String)} />
