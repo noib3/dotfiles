@@ -4,7 +4,7 @@ return {
     build = ":TSUpdate",
     dependencies = {
       "nvim-treesitter/playground",
-      "RRethy/nvim-treesitter-endwise",
+      "metiulekm/nvim-treesitter-endwise",
     },
     opts = {
       endwise = {
