@@ -36,11 +36,9 @@ return {
           },
           lsp = {
             fallbacks = {},
-            min_keyword_length = 3,
           },
           path = {
             fallbacks = {},
-            min_keyword_length = 1,
           },
         },
       },
