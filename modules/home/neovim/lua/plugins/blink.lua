@@ -1,7 +1,7 @@
 return {
   {
     "Saghen/blink.cmp",
-    version = "v0.7.6",
+    build = "cargo build --release --target-dir ./target",
     opts = {
       keymap = {
         preset = "enter",
@@ -27,6 +27,9 @@ return {
           auto_show = true,
           auto_show_delay_ms = 50,
         },
+      },
+      fuzzy = {
+        prebuilt_binaries = { download = false },
       },
       sources = {
         default = { "lsp", "path" },
