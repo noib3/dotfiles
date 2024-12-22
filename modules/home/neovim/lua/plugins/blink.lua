@@ -49,6 +49,8 @@ return {
     config = function(_, opts)
       require("blink.cmp").setup(opts)
       vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
+      vim.api.nvim_set_hl(0, "BlinkCmpMenuSelection", { background = "#7c6f64" })
+      vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { foreground = "#a89984" })
     end,
   }
 }
