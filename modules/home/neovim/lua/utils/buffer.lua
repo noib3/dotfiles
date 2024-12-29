@@ -10,7 +10,7 @@ local check_modified_augroup_id = vim.api.nvim_create_augroup(
   { clear = true }
 )
 
----Save a buffer, optionally formatting it via LSP first
+---Save a buffer, optionally formatting it via LSP first.
 ---@param opts? BufferSaveOptions
 M.save = function(opts)
   opts = opts or {}
@@ -40,8 +40,6 @@ M.save = function(opts)
     return
   end
 
-  local format_params = vim.lsp.util.make_formatting_params()
-
   local buffer_was_modified = false
 
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" },
@@ -57,7 +55,7 @@ M.save = function(opts)
   -- Request formatting.
   local did_send_request = formatting_client.request(
     "textDocument/formatting",
-    format_params,
+    vim.api.nvim_buf_call(bufnr, vim.lsp.util.make_formatting_params),
     function(_, result, _)
       -- Server was too slow.
       if buffer_was_modified then
