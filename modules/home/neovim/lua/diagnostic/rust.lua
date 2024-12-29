@@ -56,7 +56,7 @@ M.handlers = {}
 
 M.handlers.underline = {
   show = function(namespace, bufnr, diagnostics, opts)
-    local inactives, rest = utils.split_table(diagnostics, is_inactive_code)
+    local inactives, rest = utils.lua.split_table(diagnostics, is_inactive_code)
 
     -- rust-analyzer marks unused code as unnecessary, which causes Neovim to
     -- highlight it as `DiagnosticUnnecessary`.

@@ -6,7 +6,7 @@ local default_virtual_text_handler = vim.diagnostic.handlers.virtual_text
 
 vim.diagnostic.handlers.underline = {
   show = function(namespace, bufnr, diagnostics, opts)
-    local from_rust, rest = utils.split_table(diagnostics, rust.is_about)
+    local from_rust, rest = utils.lua.split_table(diagnostics, rust.is_about)
     rust.handlers.underline.show(namespace, bufnr, from_rust, opts)
     default_underline_handler.show(namespace, bufnr, rest, opts)
   end,
@@ -18,7 +18,7 @@ vim.diagnostic.handlers.underline = {
 
 vim.diagnostic.handlers.virtual_text = {
   show = function(namespace, bufnr, diagnostics, opts)
-    local from_rust, rest = utils.split_table(diagnostics, rust.is_about)
+    local from_rust, rest = utils.lua.split_table(diagnostics, rust.is_about)
     rust.handlers.virtual_text.show(namespace, bufnr, from_rust, opts)
     default_virtual_text_handler.show(namespace, bufnr, rest, opts)
   end,

@@ -2,6 +2,8 @@ return {
   {
     "Saghen/blink.cmp",
     build = "cargo build --release --target-dir ./target",
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
     opts = {
       keymap = {
         preset = "enter",

@@ -1,6 +1,7 @@
 local fzf_lua = require("fzf-lua")
 local neotest = require("neotest")
 local trouble = require("trouble")
+local utils = require("utils")
 
 local keymap = vim.keymap
 
@@ -73,7 +74,7 @@ keymap.del("n", "<C-w>d")
 keymap.del("n", "<C-w><C-d>")
 
 -- Save the file.
-keymap.set("n", "<C-s>", "<Cmd>w<CR>")
+keymap.set("n", "<C-s>", utils.buffer.save)
 
 -- Close the current buffer/window.
 keymap.set("n", "<C-w>", close)
@@ -277,7 +278,8 @@ end
 vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
   desc = "Fuzzy find files in the current git repo",
   callback = function()
-    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+    local git_root = vim.fn.systemlist(
+      "git rev-parse --show-toplevel 2>/dev/null")[1]
     fzf_files(git_root or vim.env.HOME)
   end,
 })
@@ -338,7 +340,8 @@ end
 vim.api.nvim_set_keymap("n", "<C-x><C-r>", "", {
   desc = "Execute a live ripgrep search in the current git repo",
   callback = function()
-    local git_root = vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
+    local git_root = vim.fn.systemlist(
+      "git rev-parse --show-toplevel 2>/dev/null")[1]
     fzf_live_ripgrep(git_root or vim.env.HOME)
   end,
 })
