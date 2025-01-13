@@ -2,7 +2,7 @@ return {
   {
     "Saghen/blink.cmp",
     build = "cargo build --release --target-dir ./target",
-    ---@module 'blink.cmp'
+    ---@module "blink.cmp"
     ---@type blink.cmp.Config
     opts = {
       keymap = {
@@ -15,7 +15,10 @@ return {
           range = "prefix",
         },
         list = {
-          selection = "manual",
+          selection = {
+            preselect = false,
+            auto_insert = false,
+          },
         },
         menu = {
           auto_show = true,
