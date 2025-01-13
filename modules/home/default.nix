@@ -9,5 +9,6 @@
     ./rust
     ./scripts
     ./ssh
+    ./udiskie
   ];
 }

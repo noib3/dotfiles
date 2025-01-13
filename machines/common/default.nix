@@ -171,9 +171,8 @@
   #   inherit pkgs username homeDirectory;
   # });
 
-  # services.udisks2 = {
-  #   enable = true;
-  # };
+  # Needed by `udiskie`.
+  services.udisks2.enable = true;
 
   # services.udev = {
   #   extraHwdb = ''

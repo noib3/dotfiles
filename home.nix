@@ -130,6 +130,7 @@ in
     neovim.enable = true;
     rust.enable = true;
     ssh.enable = true;
+    udiskie.enable = isLinux;
   };
 
   programs = {
@@ -166,7 +167,6 @@ in
       kanshi
       mpris-proxy
       ssh-agent
-      udiskie
       wlsunset
       ;
   };
