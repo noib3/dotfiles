@@ -1,5 +1,14 @@
 local M = {}
 
+---Iterates over lines in a string.
+---
+---@param str string The string to iterate over
+---@return function lines Iterator over the string's lines
+M.iter_lines = function(str)
+  if not str then return function() return nil end end
+  return str:gmatch("[^\r\n]+")
+end
+
 --- Split a table into two tables based on a predicate.
 ---
 ---@generic T

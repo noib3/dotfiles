@@ -9,7 +9,6 @@
   "hop.nvim": { "branch": "v2", "commit": "90db1b2c61b820e230599a04fedcd2679e64bd07" },
   "inc-rename.nvim": { "branch": "main", "commit": "4d00cd5029e99f176128bc37ef245e2dd348191d" },
   "incline.nvim": { "branch": "main", "commit": "16fc9c073e3ea4175b66ad94375df6d73fc114c0" },
-  "lf.nvim": { "branch": "master", "commit": "69ab1efcffee6928bf68ac9bd0c016464d9b2c8b" },
   "lsp-progress.nvim": { "branch": "main", "commit": "f3df1df8f5ea33d082db047b5d2d2b83cc01cd8a" },
   "neotab.nvim": { "branch": "master", "commit": "f6ed1ef49f32586f5db95edae5d6f264c8180d85" },
   "neotest": { "branch": "master", "commit": "d66cf4e05a116957f0d3a7755a24291c7d1e1f72" },

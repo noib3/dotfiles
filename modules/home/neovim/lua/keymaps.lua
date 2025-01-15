@@ -166,13 +166,6 @@ vim.api.nvim_set_keymap("n", "<D-t>", "", {
   end,
 })
 
-vim.api.nvim_set_keymap("n", "ll", "", {
-  desc = "Open lf in a new floating terminal window",
-  callback = function()
-    require("lf").start()
-  end,
-})
-
 vim.api.nvim_set_keymap("n", "q", "", {
   desc = "Close the quickfix window with 'q'",
   callback = function()
