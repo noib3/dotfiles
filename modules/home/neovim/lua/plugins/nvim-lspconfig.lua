@@ -8,6 +8,9 @@ return {
           settings = {
             Lua = {
               diagnostics = {
+                disable = {
+                  ["undefined-field"] = { "vim.uv" },
+                },
                 globals = { "vim" },
                 neededFileStatus = {
                   ["codestyle-check"] = "Any",

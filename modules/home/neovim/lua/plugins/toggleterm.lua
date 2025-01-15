@@ -20,15 +20,15 @@ local setup_lf = function()
     callback = function() os.remove(temp_file) end
   })
 
-  -- The focused window at the time lf was launched.
-  local window = nil
-
   local cmd = function()
-    window = vim.api.nvim_get_current_win()
     local buf_name = vim.api.nvim_buf_get_name(0)
     local buf_path = vim.uv.fs_stat(buf_name) and buf_name or ""
     return ("lf -selection-path %s %s"):format(temp_file, buf_path)
   end
+
+  -- The focused window at the time lf was opened.
+  ---@type integer|nil
+  local window = nil
 
   local lf = Terminal:new({
     hidden = true,
@@ -43,6 +43,7 @@ local setup_lf = function()
       -- * if text file is first one, open it in current window;
       -- * if text file is not first one, add it to the qf list;
       for path in utils.lua.iter_lines(selected_paths) do
+        ---@cast window integer
         vim.api.nvim_win_call(window, function()
           vim.cmd.edit(vim.fn.fnameescape(path))
         end)
@@ -51,6 +52,7 @@ local setup_lf = function()
   })
 
   local open_lf = function()
+    window = vim.api.nvim_get_current_win()
     lf.cmd = cmd()
     lf:toggle()
   end
