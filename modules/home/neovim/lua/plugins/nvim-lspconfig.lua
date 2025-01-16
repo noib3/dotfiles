@@ -52,7 +52,6 @@ return {
                 command = "clippy",
               },
               completion = {
-                limit = 69,
                 privateEditable = {
                   enable = true,
                 },
