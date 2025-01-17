@@ -51,11 +51,6 @@ return {
               check = {
                 command = "clippy",
               },
-              completion = {
-                privateEditable = {
-                  enable = true,
-                },
-              },
               imports = {
                 granularity = {
                   enforce = true,
