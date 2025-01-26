@@ -13,20 +13,24 @@ end
 local setup_lf = function()
   local Terminal = require("toggleterm.terminal").Terminal
 
-  -- A file to write the selected files and dirs to on exit.
+  ---A file to write the selected files and dirs to on exit.
   local temp_file = os.tmpname()
+
+  ---The mtime of the temp file.
+  local temp_mtime = nil
 
   vim.api.nvim_create_autocmd("VimLeave", {
     callback = function() os.remove(temp_file) end
   })
 
   local cmd = function()
+    temp_mtime = vim.uv.fs_stat(temp_file).mtime.sec
     local buf_name = vim.api.nvim_buf_get_name(0)
     local buf_path = vim.uv.fs_stat(buf_name) and buf_name or ""
     return ("lf -selection-path %s %s"):format(temp_file, buf_path)
   end
 
-  -- The focused window at the time lf was opened.
+  ---The focused window at the time lf was opened.
   ---@type integer|nil
   local window = nil
 
@@ -34,6 +38,11 @@ local setup_lf = function()
     hidden = true,
     on_exit = function()
       if not temp_file then return end
+
+      -- Check the mtime to tell if lf was quit without selecting anything.
+      local stat = vim.uv.fs_stat(temp_file)
+      if not stat or stat.mtime.sec <= temp_mtime then return end
+
       local selected_paths = utils.fs.read_file(temp_file)
       if not selected_paths then return end
       -- TODO:
