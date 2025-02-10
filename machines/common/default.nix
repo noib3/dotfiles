@@ -120,10 +120,6 @@
   #   enable = true;
   # };
 
-  # services.geoclue2 = {
-  #   enable = true;
-  # };
-
   services.getty.autologinUser = userName;
 
   # services.greetd =
@@ -157,6 +153,10 @@
     };
   };
 
+  services.automatic-timezoned = {
+    enable = true;
+  };
+
   services.mullvad-vpn = {
     enable = true;
   };
@@ -187,8 +187,6 @@
     enable = true;
     pulse.enable = true;
   };
-
-  time.timeZone = "Asia/Singapore";
 
   users.users."${userName}" = {
     home = "/home/${userName}";
