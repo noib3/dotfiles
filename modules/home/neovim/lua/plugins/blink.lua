@@ -6,9 +6,12 @@ return {
     ---@type blink.cmp.Config
     opts = {
       keymap = {
-        preset = "enter",
-        ["<Tab>"] = { "snippet_forward", "select_next", "fallback" },
-        ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+        preset = "none",
+        ["<CR>"] = { "accept", "fallback" },
+        ["<Up>"] = { "select_next", "fallback" },
+        ["<Down>"] = { "select_prev", "fallback" },
+        ["<Tab>"] = { "select_next", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "fallback" },
       },
       completion = {
         keyword = {
