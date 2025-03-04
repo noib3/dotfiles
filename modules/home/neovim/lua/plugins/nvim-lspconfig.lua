@@ -36,7 +36,7 @@ return {
           },
         },
         marksman = {},
-        nil_ls = {
+        nixd = {
           settings = {
             ["nil"] = {
               formatting = {
