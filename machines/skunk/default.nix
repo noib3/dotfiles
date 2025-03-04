@@ -22,7 +22,7 @@ in
     };
 
   darwin =
-    { inputs, colorscheme, ... }:
+    { inputs, colorscheme, userName, ... }:
     rec {
       name = "skunk@darwin";
       system = "x86_64-darwin";
@@ -32,7 +32,7 @@ in
           inherit system;
           modules = [ ./darwin-configuration.nix ];
           specialArgs = {
-            inherit colorscheme hostName;
+            inherit colorscheme hostName userName;
           };
         };
     };
