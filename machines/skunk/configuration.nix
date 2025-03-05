@@ -7,22 +7,10 @@
   ...
 }:
 
-let
-  common = import ../common {
-    inherit
-      config
-      lib
-      pkgs
-      hostName
-      userName
-      ;
-  };
-in
 {
   imports = [
     ./hardware-configuration.nix
     ../../modules/nixos
-    common
   ];
 
   boot = {
@@ -39,6 +27,11 @@ in
     apple.macbook-pro-15-1.enable = true;
     logitech.mx-master-3s-for-mac.enable = true;
     remarkable.remarkable2.enable = true;
+  };
+
+  modules.desktop = {
+    enable = true;
+    inherit hostName userName;
   };
 
   # This option defines the first version of NixOS installed on this particular
