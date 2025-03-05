@@ -6,12 +6,12 @@
 
 {
   imports = [
-    ../../modules/darwin/desktop.nix
+    ../../modules/darwin
   ];
 
   modules.desktop = {
     enable = true;
-    inherit hostName;
+    inherit hostName userName;
   };
 
   nix.settings = {

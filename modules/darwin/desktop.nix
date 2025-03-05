@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -10,6 +9,8 @@ let
   cfg = config.modules.desktop;
 in
 {
+  imports = [ ./fish.nix ];
+
   options.modules.desktop = {
     enable = mkEnableOption "Desktop config";
     hostName = mkOption {
@@ -17,22 +18,19 @@ in
       example = "macbook-pro";
       description = "The hostname of the machine";
     };
+    userName = mkOption {
+      type = types.str;
+    };
   };
 
   config = mkIf cfg.enable {
-    environment = {
-      shells = [ pkgs.fish ];
-    };
+    modules.fish.userName = cfg.userName;
 
     networking = with cfg; {
       computerName = hostName;
       hostName = hostName;
       localHostName = hostName;
     };
-
-    # This is needed to have /run/current-system/sw/bin in PATH, which is where
-    # `darwin-rebuild` and other nix-darwin-related commands live.
-    programs.fish.enable = true;
 
     services = {
       nix-daemon.enable = true;

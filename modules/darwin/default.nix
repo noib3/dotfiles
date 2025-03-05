@@ -1,0 +1,5 @@
+{
+  imports = [
+    ./desktop.nix
+  ];
+}
