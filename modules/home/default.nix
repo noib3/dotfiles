@@ -1,6 +1,7 @@
 {
   imports = [
     ./astal
+    ./brave
     ./colorscheme
     ./dropbox
     ./lib
