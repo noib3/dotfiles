@@ -177,27 +177,6 @@ vim.api.nvim_set_keymap("n", "q", "", {
   end,
 })
 
-vim.api.nvim_set_keymap("n", "<S-d>", "", {
-  desc = "Open a trouble.nvim window with diagnostics for the current project",
-  callback = function()
-    local diagostics = trouble.get_items("diagnostics")
-
-    if not diagostics or not next(diagostics) then
-      vim.notify(
-        "No diagnostic to jump to",
-        vim.log.levels.WARN,
-        { title = "trouble.nvim" }
-      )
-      return
-    end
-
-    trouble.open({
-      mode = "diagnostics",
-      new = true,
-    })
-  end,
-})
-
 local fzf_opts = {
   ["--multi"] = true,
   ["--reverse"] = true,
