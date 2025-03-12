@@ -54,11 +54,6 @@ in
           chars = "\\u0018\\u0006"; # C-x C-f
         }
         {
-          key = "R";
-          mods = "Super";
-          chars = "\\u0018\\u0012"; # C-x C-r
-        }
-        {
           key = "K";
           mods = "Super";
           chars = "\\u0018\\u0007"; # C-x C-g
@@ -69,14 +64,29 @@ in
           chars = "\\u0007"; # C-g
         }
         {
+          key = "R";
+          mods = "Super";
+          chars = "\\u0018\\u0012"; # C-x C-r
+        }
+        {
           key = "S";
           mods = "Super";
           chars = "\\u0013"; # C-s
         }
         {
+          key = "T";
+          mods = "Super";
+          chars = "\\u0018\\u0014"; # C-x C-t
+        }
+        {
           key = "W";
           mods = "Super";
           chars = "\\u0017"; # C-w
+        }
+        {
+          key = "X";
+          mods = "Super";
+          chars = "\\u0018\\u0018"; # C-x C-x
         }
         {
           key = "Up";

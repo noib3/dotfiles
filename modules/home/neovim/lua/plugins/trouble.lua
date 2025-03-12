@@ -5,10 +5,29 @@ return {
     config = function(_, opts)
       local trouble = require("trouble")
 
-      vim.keymap.set("n", "<S-d>", function()
-        trouble.open({
+      vim.keymap.set("n", "<C-x><C-t>", function()
+        trouble.toggle({
+          focus = true,
           mode = "diagnostics",
-          new = true,
+          win = {
+            type = "split",
+            size = {
+              height = 12,
+            },
+          },
+        })
+      end)
+
+      vim.keymap.set("n", "<C-x><C-x>", function()
+        trouble.toggle({
+          focus = true,
+          mode = "lsp_references",
+          win = {
+            type = "split",
+            size = {
+              height = 14,
+            },
+          },
         })
       end)
 
