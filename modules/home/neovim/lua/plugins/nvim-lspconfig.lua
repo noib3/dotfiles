@@ -71,7 +71,7 @@ return {
           },
         },
         taplo = {},
-        tsserver = {},
+        ts_ls = {},
       },
     },
     config = function(_, opts)
