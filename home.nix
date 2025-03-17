@@ -131,6 +131,7 @@ in
     neovim.enable = true;
     rust.enable = true;
     ssh.enable = true;
+    terminfo.enable = true;
     udiskie.enable = isLinux;
   };
 

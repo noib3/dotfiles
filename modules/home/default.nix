@@ -10,6 +10,7 @@
     ./rust
     ./scripts
     ./ssh
+    ./terminfo
     ./udiskie
   ];
 }
