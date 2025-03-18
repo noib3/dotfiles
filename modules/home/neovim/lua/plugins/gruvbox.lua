@@ -39,9 +39,7 @@ return {
           ["@lsp.type.method"] = { fg = palette.bright.green },
 
           -- Blink.
-          BlinkCmpLabelMatch = vim.api.nvim_get_hl(0, {
-            name = "BlinkCmpLabelMatch"
-          }),
+          BlinkCmpLabelMatch = { default = true },
         }
       })
 

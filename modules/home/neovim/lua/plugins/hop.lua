@@ -1,10 +1,10 @@
 return {
   {
-    "phaazon/hop.nvim",
-    branch = "v2",
+    "smoka7/hop.nvim",
     config = function()
-      require("hop").setup({})
-      vim.keymap.set("n", "f", "<Cmd>HopWord<CR>")
+      local hop = require("hop")
+      hop.setup({})
+      vim.keymap.set("n", "f", hop.hint_words)
     end,
   }
 }
