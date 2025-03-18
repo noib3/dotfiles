@@ -6,7 +6,7 @@ end
 
 set -l filenames (
   lf-recursive "$ROOT" \
-    | fzf --multi --prompt='Edit> ' --preview='preview ~/{}' \
+    | fzf --multi --prompt='Edit> ' --preview='preview {}' \
     | sed "s/\ /\\\ /g;s!^!$ROOT/!" \
     | tr '\n' ' ' \
     | sed 's/[[:space:]]*$//'
