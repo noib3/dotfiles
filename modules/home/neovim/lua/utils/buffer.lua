@@ -17,7 +17,7 @@ M.save = function(opts)
   local bufnr = opts.bufnr or vim.api.nvim_get_current_buf()
 
   local save_buf = function()
-    vim.api.nvim_buf_call(bufnr, function() vim.cmd("write") end)
+    vim.api.nvim_buf_call(bufnr, function() vim.cmd("silent write") end)
   end
 
   -- Find first LSP client that supports formatting.
