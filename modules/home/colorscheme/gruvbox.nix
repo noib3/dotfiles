@@ -25,4 +25,8 @@
     cyan = "#8ec07c";
     white = "#a89984";
   };
+
+  selection = {
+    background = "#374141";
+  };
 }
