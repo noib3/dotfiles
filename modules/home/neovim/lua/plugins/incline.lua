@@ -1,7 +1,11 @@
 return {
   {
     "b0o/incline.nvim",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function()
+      local incline = require("incline")
       local devicons = require("nvim-web-devicons")
       local palette = require("generated.palette")
 
@@ -44,7 +48,7 @@ return {
         return icon and { padding, icon, "  ", guifg = color } or ""
       end
 
-      require("incline").setup({
+      incline.setup({
         render = function(props)
           return {
             " ",
@@ -78,6 +82,16 @@ return {
             },
           }
         }
+      })
+
+      local group = vim.api.nvim_create_augroup("noib3/refresh-incline", {
+        clear = true
+      })
+
+      vim.api.nvim_create_autocmd("DiagnosticChanged", {
+        group = group,
+        desc = "Re-render incline",
+        callback = incline.refresh,
       })
     end,
   }
