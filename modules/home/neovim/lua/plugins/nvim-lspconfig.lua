@@ -52,7 +52,15 @@ return {
                 features = "all",
               },
               check = {
-                command = "clippy",
+                overrideCommand = {
+                  "cargo",
+                  "clippy",
+                  "--workspace",
+                  "--tests",
+                  "--all-features",
+                  "--all-targets",
+                  "--message-format=json",
+                },
               },
               imports = {
                 granularity = {
