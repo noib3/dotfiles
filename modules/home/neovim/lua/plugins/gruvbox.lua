@@ -37,11 +37,16 @@ return {
           ["@function.call"] = { fg = palette.bright.green },
           ["@lsp.type.function"] = { fg = palette.bright.green },
           ["@lsp.type.method"] = { fg = palette.bright.green },
+
+          -- Blink.
+          BlinkCmpLabelMatch = vim.api.nvim_get_hl(0, {
+            name = "BlinkCmpLabelMatch"
+          }),
         }
       })
 
       vim.o.background = "dark"
-      vim.cmd("colorscheme gruvbox")
+      gruvbox.load()
     end,
   }
 }
