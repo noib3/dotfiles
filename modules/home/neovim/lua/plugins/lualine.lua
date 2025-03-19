@@ -12,7 +12,10 @@ return {
         options = {
           component_separators = "",
           globalstatus = true,
-          ignore_focus = { "help", "toggleterm", "trouble", },
+          ignore_focus = function(win)
+            local buf = vim.api.nvim_win_get_buf(win)
+            return vim.bo[buf].buftype ~= ""
+          end,
           section_separators = "",
           theme = {
             normal = mode,
