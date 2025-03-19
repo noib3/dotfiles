@@ -35,6 +35,10 @@ return {
               "diagnostics",
               sources = { "nvim_workspace_diagnostic" },
               sections = { "error", "warn" },
+              diagnostics_color = {
+                error = "DiagnosticError",
+                warn  = "DiagnosticWarn",
+              },
             }
           },
           lualine_c = {},
