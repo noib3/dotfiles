@@ -36,12 +36,13 @@ return {
           lualine_b = {
             {
               "diagnostics",
-              sources = { "nvim_workspace_diagnostic" },
-              sections = { "error", "warn" },
               diagnostics_color = {
                 error = "DiagnosticError",
                 warn  = "DiagnosticWarn",
               },
+              sections = { "error", "warn" },
+              sources = { "nvim_workspace_diagnostic" },
+              symbols = { error = " ", warn = " " },
             }
           },
           lualine_c = {},

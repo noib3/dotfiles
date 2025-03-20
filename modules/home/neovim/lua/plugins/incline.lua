@@ -16,16 +16,18 @@ return {
       end
 
       local diagnostics = function(bufnr)
-        local icons = { Error = "󰅚", Warn = "󰀪" }
         local ret = {}
-        for severity, icon in pairs(icons) do
+        local add_diagnostic = function(severity, icon)
           local opts = { severity = vim.diagnostic.severity[severity:upper()] }
           local count = #vim.diagnostic.get(bufnr, opts)
           if count > 0 then
-            local group = "DiagnosticSign" .. severity
-            table.insert(ret, { icon .. " " .. count, group = group })
+            local maybe_padding = vim.tbl_count(ret) > 0 and " " or ""
+            local label = maybe_padding .. icon .. " " .. count
+            table.insert(ret, { label, group = "DiagnosticSign" .. severity })
           end
         end
+        add_diagnostic("Error", "")
+        add_diagnostic("Warn", "")
         if #ret > 0 then
           table.insert(ret, { " ︳", guifg = "#928374" })
         end
