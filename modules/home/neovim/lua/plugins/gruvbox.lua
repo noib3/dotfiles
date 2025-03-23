@@ -19,6 +19,7 @@ return {
           bright_orange = "#e78a4e",
         },
         overrides = {
+          LspReferenceTarget = { bold = true },
           MsgArea = { bg = "#3a3735", fg = "#d4be98" },
 
           -- Selections.
