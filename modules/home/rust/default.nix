@@ -24,6 +24,7 @@ in
           toolchain.minimal.override {
             extensions = [
               "clippy"
+              "miri"
               # Needed by `cargo-llvm-cov`.
               "llvm-tools"
               "rust-analyzer"
