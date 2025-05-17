@@ -6,6 +6,14 @@ local lsp_group = vim.api.nvim_create_augroup("noib3/lsp", {})
 local on_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
 
+  -- Don't fuck with "gq".
+  --
+  -- The `:h lsp-defaults` docs suggest setting formatexpr="" on LspAttach to
+  -- opt out of LSP-enabled formatting, but that doesn't work for dynamically
+  -- set capabilities. See https://github.com/neovim/neovim/issues/31430 for
+  -- more infos.
+  vim.keymap.set({ "n", "v" }, "gq", "gw", { buffer = bufnr })
+
   -- Display infos about the symbol under the cursor in a floating window.
   if client.supports_method(methods.textDocument_hover) then
     keymap.set("n", "K", vim.lsp.buf.hover, opts)
