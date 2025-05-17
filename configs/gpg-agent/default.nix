@@ -9,5 +9,5 @@ in
   maxCacheTtl = seven_days;
   defaultCacheTtlSsh = seven_days;
   maxCacheTtlSsh = seven_days;
-  pinentryPackage = pkgs.pinentry-qt;
+  pinentry.package = pkgs.pinentry-qt;
 }
