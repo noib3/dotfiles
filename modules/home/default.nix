@@ -4,6 +4,7 @@
     ./brave
     ./colorscheme
     ./dropbox
+    ./duckduckgo
     ./lib
     ./neovim
     ./nix
