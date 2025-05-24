@@ -74,7 +74,7 @@ keymap.del("n", "<C-w>d")
 keymap.del("n", "<C-w><C-d>")
 
 -- Save the file.
-keymap.set("n", "<C-s>", utils.buffer.save)
+keymap.set({ "n", "v" }, "<C-s>", utils.buffer.save)
 
 -- Close the current buffer/window.
 keymap.set("n", "<C-w>", close)
@@ -101,17 +101,21 @@ keymap.set("n", "s<Left>", open_split(direction.Left))
 keymap.set("n", "s<Right>", open_split(direction.Right))
 
 -- Navigate window splits.
-keymap.set("n", "<S-Up>", "<C-w>k", { noremap = true })
-keymap.set("n", "<S-Down>", "<C-w>j", { noremap = true })
-keymap.set("n", "<S-Left>", "<C-w>h", { noremap = true })
-keymap.set("n", "<S-Right>", "<C-w>l", { noremap = true })
+keymap.set({ "n", "v" }, "<S-Up>", "<C-w>k", { noremap = true })
+keymap.set({ "n", "v" }, "<S-Down>", "<C-w>j", { noremap = true })
+keymap.set({ "n", "v" }, "<S-Left>", "<C-w>h", { noremap = true })
+keymap.set({ "n", "v" }, "<S-Right>", "<C-w>l", { noremap = true })
 
 -- Jump to the beginning of the line in command mode.
 keymap.set("c", "<C-a>", "<C-b>")
 
 -- Navigate to the next/previous diagnostic.
-keymap.set("n", "dn", vim.diagnostic.goto_next)
-keymap.set("n", "dN", vim.diagnostic.goto_prev)
+keymap.set("n", "dn", function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end)
+keymap.set("n", "dN", function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end)
 
 --·Clear·the current search·result¬.
 keymap.set("n", "<Esc>", "<Cmd>noh<Cr>")

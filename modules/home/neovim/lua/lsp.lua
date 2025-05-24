@@ -13,6 +13,7 @@ local on_attach = function(client, bufnr)
   -- set capabilities. See https://github.com/neovim/neovim/issues/31430 for
   -- more infos.
   vim.keymap.set({ "n", "v" }, "gq", "gw", { buffer = bufnr })
+  vim.keymap.set({ "n", "v" }, "gqq", "gww", { buffer = bufnr })
 
   -- Display infos about the symbol under the cursor in a floating window.
   if client.supports_method(methods.textDocument_hover) then
