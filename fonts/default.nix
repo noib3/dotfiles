@@ -4,6 +4,7 @@ rec {
   };
 
   monospace = {
+    blex-mono = import ./monospace/blex-mono.nix;
     fira-code = import ./monospace/fira-code.nix;
     inconsolata = import ./monospace/inconsolata.nix;
     iosevka-term = import ./monospace/iosevka-term.nix;
@@ -17,6 +18,17 @@ rec {
   };
 
   schemes = {
+    blex =
+      pkgs:
+      let
+        blex-mono = monospace.blex-mono { inherit pkgs; };
+      in
+      {
+        sansSerif = blex-mono;
+        serif = blex-mono;
+        monospace = blex-mono;
+        emoji = emoji.noto-color { inherit pkgs; };
+      };
     fira =
       pkgs:
       let
