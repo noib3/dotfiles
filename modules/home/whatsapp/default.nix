@@ -11,19 +11,20 @@ let
 
   # Nixpkgs' WhatsApp version is outdated, causing fetching to fail.
   #
-  # See https://github.com/NixOS/nixpkgs/issues/364195 for more infos.
+  # See https://github.com/NixOS/nixpkgs/issues/364195 for more infos, and
+  # https://formulae.brew.sh/cask/whatsapp to get the latest version.
   whatsapp-for-mac-latest =
     let
       version = "2.25.16.81";
-      url = "https://web.whatsapp.com/desktop/mac_native/release/?version=${version}&extension=zip&configuration=Release&branch=relbranch";
+      hash = "sha256-CZcMYWyBpusM+NUlMC2du01cq3uqXvMiIdOienLn/nM=";
     in
     pkgs.whatsapp-for-mac.overrideAttrs (_oldAttrs: {
       inherit version;
       src = pkgs.fetchzip {
-        inherit url;
+        inherit hash;
         extension = "zip";
         name = "WhatsApp.app";
-        hash = "sha256-CZcMYWyBpusM+NUlMC2du01cq3uqXvMiIdOienLn/nM=";
+        url = "https://web.whatsapp.com/desktop/mac_native/release/?version=${version}&extension=zip&configuration=Release&branch=relbranch";
       };
     });
 in
