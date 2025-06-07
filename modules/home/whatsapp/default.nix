@@ -30,6 +30,12 @@ in
 {
   options.modules.whatsapp = {
     enable = mkEnableOption "WhatsApp desktop client";
+
+    package = mkOption {
+      type = types.package;
+      default = whatsapp-for-mac-latest;
+      description = "The WhatsApp package to use";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -41,11 +47,11 @@ in
     ];
 
     home.packages = lib.mkIf pkgs.stdenv.isDarwin [
-      whatsapp-for-mac-latest
+      cfg.package
     ];
 
     modules.nixpkgs.allowUnfreePackages = [
-      "whatsapp-for-mac"
+      (lib.getName cfg.package)
     ];
   };
 }
