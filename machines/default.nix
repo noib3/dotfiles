@@ -17,17 +17,6 @@ let
     system:
     import inputs.nixpkgs {
       inherit system;
-      config = {
-        allowUnfreePredicate =
-          pkg:
-          builtins.elem (lib.getName pkg) [
-            "dropbox"
-            "ookla-speedtest"
-            "spotify"
-            "widevine-cdm"
-            "zoom"
-          ];
-      };
       overlays = [
         inputs.brew-nix.overlays.default
         inputs.nur.overlays.default
@@ -128,7 +117,5 @@ let
     };
 in
 {
-  forEach =
-    forMachine:
-    (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
+  forEach = forMachine: (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
 }

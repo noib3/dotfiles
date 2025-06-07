@@ -8,6 +8,7 @@
     ./lib
     ./neovim
     ./nix
+    ./nixpkgs
     ./rust
     ./scripts
     ./ssh
