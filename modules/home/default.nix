@@ -14,5 +14,6 @@
     ./ssh
     ./terminfo
     ./udiskie
+    ./whatsapp
   ];
 }

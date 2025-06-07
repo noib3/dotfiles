@@ -133,6 +133,7 @@ in
     ssh.enable = true;
     terminfo.enable = true;
     udiskie.enable = isLinux;
+    whatsapp.enable = isDarwin;
   };
 
   programs = {
