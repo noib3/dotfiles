@@ -11,6 +11,7 @@
     ./nixpkgs
     ./rust
     ./scripts
+    ./signal
     ./ssh
     ./terminfo
     ./udiskie

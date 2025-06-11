@@ -77,7 +77,6 @@ in
         playerctl
         proton-pass
         protonvpn-cli_2
-        signal-desktop
         wl-clipboard-rs
         xdg-utils
       ]
@@ -130,6 +129,7 @@ in
     dropbox.enable = true;
     neovim.enable = true;
     rust.enable = true;
+    signal.enable = true;
     ssh.enable = true;
     terminfo.enable = true;
     udiskie.enable = isLinux;
