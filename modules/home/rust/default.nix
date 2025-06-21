@@ -50,16 +50,5 @@ in
     nixpkgs.overlays = [
       inputs.rust-overlay.overlays.default
     ];
-
-    xdg.dataFile = {
-      # Use a global target dir to avoid rebuilding dependencies and save disk
-      # space.
-      "cargo/config.toml" = {
-        text = ''
-          [build]
-          target-dir = "${config.xdg.cacheHome}/cargo"
-        '';
-      };
-    };
   };
 }
