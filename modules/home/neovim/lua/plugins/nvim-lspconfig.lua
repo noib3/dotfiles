@@ -55,10 +55,10 @@ return {
                 overrideCommand = {
                   "cargo",
                   "clippy",
-                  "--workspace",
-                  "--tests",
                   "--all-features",
                   "--all-targets",
+                  "--no-deps",
+                  "--workspace",
                   "--message-format=json",
                 },
               },
