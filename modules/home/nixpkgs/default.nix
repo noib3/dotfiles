@@ -16,7 +16,6 @@ in
 
   config = {
     modules.nixpkgs.allowUnfreePackages = [
-      "claude-code"
       "dropbox"
       "ookla-speedtest"
       "spotify"
