@@ -103,8 +103,6 @@ in
     # active.
     source ~/.config/fish/conf.d/plugin-pisces.fish
 
-    direnv hook fish | source
-
     ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
   '';
 

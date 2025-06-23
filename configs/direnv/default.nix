@@ -7,4 +7,6 @@
       warn_timeout = "5m";
     };
   };
+
+  nix-direnv.enable = true;
 }
