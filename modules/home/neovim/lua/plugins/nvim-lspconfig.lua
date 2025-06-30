@@ -38,6 +38,7 @@ return {
                     enable = false,
                   },
                   workspace = {
+                    ignoreDir = { ".git", "node_modules", "target", },
                     library = vim.api.nvim_get_runtime_file("", true),
                   },
                 },
