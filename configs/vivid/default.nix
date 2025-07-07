@@ -37,8 +37,9 @@ in
       configuration = [
         ".conf"
         ".json"
-        ".yml"
         ".toml"
+        ".yaml"
+        ".yml"
       ];
       bibtex = [ ".bib" ];
       other = [ ".txt" ];
