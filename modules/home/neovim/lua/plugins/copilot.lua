@@ -6,25 +6,30 @@ end
 
 return {
   {
-    "supermaven-inc/supermaven-nvim",
+    "zbirenbaum/copilot.lua",
     opts = {
-      disable_keymaps = true,
+      suggestion = {
+        auto_trigger = true,
+      },
+      filetypes = {
+        markdown = true,
+      },
     },
     config = function(_, opts)
-      local preview = require("supermaven-nvim.completion_preview")
+      local suggestion = require("copilot.suggestion")
 
       vim.api.nvim_set_keymap("i", "<Right>", "", {
-        desc = "Select the entire Supermaven suggestion or fallback",
+        desc = "Select the entire Copilot suggestion or fallback",
         callback = function()
-          if preview.has_suggestion() then
-            preview.on_accept_suggestion()
+          if suggestion.is_visible() then
+            suggestion.accept()
           else
             fallback("<Right>")
           end
         end,
       })
 
-      require("supermaven-nvim").setup(opts)
+      require("copilot").setup(opts)
     end
   }
 }
