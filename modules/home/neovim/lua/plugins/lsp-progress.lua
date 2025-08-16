@@ -71,7 +71,7 @@ return {
         end,
 
         format = function(client_messages)
-          local lsp_clients = vim.lsp.get_clients()
+          local lsp_clients = vim.lsp.get_clients({ bufnr = 0 })
           if #lsp_clients == 0 then return "" end
           table.sort(lsp_clients, function(lhs, rhs)
             return lhs.name < rhs.name
