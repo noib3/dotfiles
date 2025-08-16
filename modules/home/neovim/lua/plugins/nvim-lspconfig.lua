@@ -14,6 +14,7 @@ return {
                 Lua = {
                   diagnostics = {
                     disable = {
+                      ["redefined-local"] = true,
                       ["undefined-field"] = { "vim.uv" },
                     },
                     globals = { "vim" },
