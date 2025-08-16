@@ -1,7 +1,11 @@
 return {
   {
     "nvim-lualine/lualine.nvim",
+    dependencies = {
+      "linrongbin16/lsp-progress.nvim",
+    },
     opts = function()
+      local lsp_progress = require("lsp-progress")
       local colors = { bg = "#3a3735", fg = "#d4be98" }
       local mode = {
         a = colors,
@@ -28,10 +32,7 @@ return {
         },
         sections = {
           lualine_a = {
-            {
-              "lsp_status",
-              icons_enabled = false,
-            }
+            lsp_progress.progress,
           },
           lualine_b = {
             {
@@ -60,5 +61,21 @@ return {
         },
       }
     end,
+    config = function(_, opts)
+      local lualine = require("lualine")
+
+      lualine.setup(opts)
+
+      local group_id = vim.api.nvim_create_augroup(
+        "noib3/refresh-statusline-on-lsp-progress",
+        { clear = true }
+      )
+
+      vim.api.nvim_create_autocmd("User", {
+        group = group_id,
+        pattern = "LspProgressStatusUpdated",
+        callback = lualine.refresh,
+      })
+    end
   }
 }
