@@ -28,7 +28,7 @@ M.save = function(opts)
   })
 
   for _, client in ipairs(clients) do
-    if client.supports_method(methods.textDocument_formatting) then
+    if client:supports_method(methods.textDocument_formatting) then
       formatting_client = client
       break
     end
