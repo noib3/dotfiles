@@ -1,8 +1,6 @@
-local home = vim.env.HOME
+local utils = require("utils")
 
-local starts_with = function(str, start)
-  return str:sub(1, #start) == start
-end
+local home = vim.env.HOME
 
 return {
   {
@@ -24,7 +22,7 @@ return {
             return vim.tbl_filter(function(item)
               return
                   item.severity <= vim.diagnostic.severity.WARN
-                  and starts_with(item.filename, home)
+                  and utils.lua.starts_with(item.filename, home)
             end, items)
           end,
           win = {

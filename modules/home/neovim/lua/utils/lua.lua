@@ -29,4 +29,13 @@ M.split_table = function(tbl, predicate)
   return matches, non_matches
 end
 
+---Returns whether a string starts with a given prefix.
+---
+---@param str string
+---@param prefix string
+---@return boolean
+M.starts_with = function(str, prefix)
+  return str:sub(1, #prefix) == prefix
+end
+
 return M

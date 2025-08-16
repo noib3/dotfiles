@@ -53,7 +53,7 @@ M.save = function(opts)
   local offset_encoding = formatting_client.offset_encoding
 
   -- Request formatting.
-  local did_send_request = formatting_client.request(
+  local did_send_request = formatting_client:request(
     "textDocument/formatting",
     vim.api.nvim_buf_call(bufnr, vim.lsp.util.make_formatting_params),
     function(_, result, _)
