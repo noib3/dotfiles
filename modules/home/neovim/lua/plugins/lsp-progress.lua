@@ -16,6 +16,8 @@ return {
     "linrongbin16/lsp-progress.nvim",
     config = function()
       require("lsp-progress").setup({
+        spin_update_time = 100,
+
         series_format = function(title, message, percentage, _)
           local components = {}
           local has_title = false
