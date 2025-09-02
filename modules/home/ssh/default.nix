@@ -18,10 +18,14 @@ in
       enable = true;
 
       matchBlocks = {
+        auth-canada = {
+          hostname = "148.113.207.61";
+          user = "nomad";
+          identityFile = "${config.home.homeDirectory}/.ssh/skunk";
+        };
         remarkable2 = {
           hostname = "10.11.99.1";
           user = "root";
-          port = 22;
           identityFile = "${config.home.homeDirectory}/.ssh/id_rsa_remarkable2";
         };
       };
