@@ -16,40 +16,38 @@ in
 {
   enable = true;
 
-  shellAliases =
-    {
-      cat = "bat";
-      gcl = "git clone";
-      grep = "rg";
-      ipython = "ipython --no-confirm-exit";
-      ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
-      wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
-    }
-    // lib.attrsets.optionalAttrs isDarwin {
-      ldd = "otool -L";
-      reboot = ''osascript -e "tell app \"System Events\" to restart"'';
-      shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
-    }
-    // lib.attrsets.optionalAttrs isLinux {
-      reboot = "sudo shutdown -r now";
-      shutdown = "sudo shutdown now";
-    };
+  shellAliases = {
+    cat = "bat";
+    gcl = "git clone";
+    grep = "rg";
+    ipython = "ipython --no-confirm-exit";
+    ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
+    wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
+  }
+  // lib.attrsets.optionalAttrs isDarwin {
+    ldd = "otool -L";
+    reboot = ''osascript -e "tell app \"System Events\" to restart"'';
+    shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
+  }
+  // lib.attrsets.optionalAttrs isLinux {
+    reboot = "sudo shutdown -r now";
+    shutdown = "sudo shutdown now";
+  };
 
-  shellAbbrs =
-    {
-      hmn = "home-manager news --flake ${dotfilesDir}#${config.machine.name}";
-      hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
-      ipy = "ipython";
-      lg = "lazygit";
-      ngc = "nix store gc";
-      t = "tdtd";
-    }
-    // lib.attrsets.optionalAttrs config.machine.hasNixosConfiguration {
-      nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --use-remote-sudo";
-    }
-    // lib.attrsets.optionalAttrs config.machine.hasDarwinConfiguration {
-      drs = "darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
-    };
+  shellAbbrs = {
+    hmn = "home-manager news --flake ${dotfilesDir}#${config.machine.name}";
+    hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
+    ipy = "ipython";
+    lg = "lazygit";
+    ngc = "nix store gc";
+    t = "tdtd";
+  }
+  // lib.attrsets.optionalAttrs config.machine.hasNixosConfiguration {
+    nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --sudo";
+  }
+  // lib.attrsets.optionalAttrs config.machine.hasDarwinConfiguration {
+    drs = "darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
+  };
 
   interactiveShellInit = ''
     set fish_greeting ""
