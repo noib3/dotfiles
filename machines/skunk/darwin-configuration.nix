@@ -14,8 +14,11 @@
     inherit hostName userName;
   };
 
-  nix.settings = {
-    trusted-users = [
+  ids.gids.nixbld = 30000;
+
+  nix = {
+    linux-builder.enable = true;
+    settings.trusted-users = [
       "root"
       userName
     ];

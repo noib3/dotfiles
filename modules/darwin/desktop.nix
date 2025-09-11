@@ -32,11 +32,9 @@ in
       localHostName = hostName;
     };
 
-    services = {
-      nix-daemon.enable = true;
-    };
-
     system = {
+      primaryUser = cfg.userName;
+
       defaults = {
         CustomUserPreferences = {
           "com.apple.desktopservices" = {
