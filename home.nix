@@ -37,6 +37,7 @@ in
       with pkgs;
       [
         asciinema
+        cachix
         delta
         dua
         gh
