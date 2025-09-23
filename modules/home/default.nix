@@ -15,6 +15,7 @@
     ./ssh
     ./terminfo
     ./udiskie
+    ./vivid
     ./whatsapp
   ];
 }

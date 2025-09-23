@@ -109,7 +109,6 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       COLORTERM = "truecolor";
-      LS_COLORS = "$(vivid generate current)";
       LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
@@ -156,7 +155,6 @@ in
       qutebrowser
       ripgrep
       starship
-      vivid
       zathura
       ;
   };

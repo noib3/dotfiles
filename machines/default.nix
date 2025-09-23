@@ -106,7 +106,6 @@ let
           homeManagerModule
           (mkHomeManagerModule machine)
           ../fonts/module.nix
-          ../modules/programs/vivid.nix
           ../modules/services/bluetooth-autoconnect.nix
         ]
         ++ lib.lists.optionals pkgs.stdenv.isDarwin [

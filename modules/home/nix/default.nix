@@ -22,9 +22,9 @@
           "pipe-operators"
         ];
         trusted-substituters = [
-          "https://cache.soopy.moe"
           "https://nix-community.cachix.org"
-        ];
+        ]
+        ++ (lib.optional config.machines."skunk@linux".isCurrent "https://cache.soopy.moe");
         warn-dirty = false;
       };
     };

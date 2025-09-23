@@ -38,7 +38,6 @@
   starship = import ./starship { inherit lib; };
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
-  vivid = import ./vivid { inherit config lib; };
   wlsunset = import ./wlsunset { inherit pkgs; };
   yabai = import ./yabai { inherit pkgs; };
   zathura = import ./zathura { inherit config pkgs; };

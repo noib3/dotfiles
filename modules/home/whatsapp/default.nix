@@ -16,12 +16,11 @@ let
   whatsapp-for-mac-latest =
     let
       version = "2.25.16.81";
-      hash = "sha256-CZcMYWyBpusM+NUlMC2du01cq3uqXvMiIdOienLn/nM=";
     in
     pkgs.whatsapp-for-mac.overrideAttrs (_oldAttrs: {
       inherit version;
       src = pkgs.fetchzip {
-        inherit hash;
+        hash = "sha256-CZcMYWyBpusM+NUlMC2du01cq3uqXvMiIdOienLn/nM=";
         extension = "zip";
         name = "WhatsApp.app";
         url = "https://web.whatsapp.com/desktop/mac_native/release/?version=${version}&extension=zip&configuration=Release&branch=relbranch";
@@ -34,7 +33,8 @@ in
 
     package = mkOption {
       type = types.package;
-      default = whatsapp-for-mac-latest;
+      # default = whatsapp-for-mac-latest;
+      default = pkgs.whatsapp-for-mac;
       description = "The WhatsApp package to use";
     };
   };
