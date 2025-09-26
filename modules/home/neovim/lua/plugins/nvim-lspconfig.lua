@@ -102,13 +102,13 @@ return {
       },
     },
     config = function(_, opts)
-      local lspconfig = require("lspconfig")
       local blink = require("blink.cmp")
 
       local setup_lsp = function(server_name)
         return function(config)
           config.capabilities = blink.get_lsp_capabilities(config.capabilities)
-          lspconfig[server_name].setup(config)
+          vim.lsp.enable(server_name)
+          vim.lsp.config(server_name, config)
         end
       end
 
