@@ -1,7 +1,6 @@
 return {
   {
     dir = "~/Dropbox/dev/nomad/nomad",
-    version = "0.1.0",
     build = function()
       ---@type nomad.neovim.build
       local build = require("nomad.neovim.build")
@@ -13,7 +12,7 @@ return {
     end,
     opts = {
       collab = {
-        server_address = "localhost:1337",
+        server_address = "localhost:3000",
       },
     },
   }
