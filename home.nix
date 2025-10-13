@@ -127,6 +127,7 @@ in
     brave.enable = isDarwin;
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
+    ghostty.enable = true;
     kubectl.enable = true;
     neovim.enable = true;
     rust.enable = true;

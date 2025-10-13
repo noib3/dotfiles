@@ -5,6 +5,7 @@
     ./colorscheme
     ./dropbox
     ./duckduckgo
+    ./ghostty
     ./kubectl
     ./lib
     ./neovim
