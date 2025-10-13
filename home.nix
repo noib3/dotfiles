@@ -33,6 +33,9 @@ in
       else
         throw "What's the home directory for this OS?";
 
+    # Disable the "Last login: ..." message when opening terminals.
+    file.".hushlogin".text = "";
+
     packages =
       with pkgs;
       [
