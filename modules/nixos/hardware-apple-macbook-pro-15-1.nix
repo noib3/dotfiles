@@ -47,8 +47,8 @@ in
     # Leaving these set to "suspend" (the default) causes the system to remain
     # in an unresponsive state when the lid is re-opened.
     services.logind = {
-      lidSwitch = "lock";
-      lidSwitchExternalPower = "lock";
+      settings.Login.HandleLidSwitch = "lock";
+      settings.Login.HandleLidSwitchExternalPower = "lock";
     };
   };
 }

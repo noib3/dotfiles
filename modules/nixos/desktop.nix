@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -82,8 +83,9 @@ in
 
     nix.settings = {
       experimental-features = [
-        "nix-command"
+	"pipe-operators"
         "flakes"
+        "nix-command"
       ];
       trusted-users = [
         "root"

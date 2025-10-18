@@ -17,6 +17,15 @@ in
   config = mkIf cfg.enable {
     home.packages = lib.mkIf pkgs.stdenv.isLinux [ pkgs.dropbox-cli ];
 
+    modules.nixpkgs.allowUnfreePackages = [
+      "dropbox"
+    ]
+    # Not sure why Dropbox pulls in Firefox on Linux, but it does.
+    ++ lib.lists.optionals pkgs.stdenv.isLinux [
+      "firefox-bin"
+      "firefox-bin-unwrapped"
+    ];
+
     systemd.user.services.dropbox = lib.mkIf pkgs.stdenv.isLinux {
       Unit = {
         Description = "dropbox";

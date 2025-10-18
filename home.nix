@@ -169,7 +169,6 @@ in
       enable = isLinux;
     };
     inherit (configs)
-      fusuma
       gpg-agent
       kanshi
       mpris-proxy

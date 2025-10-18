@@ -14,7 +14,6 @@
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
   fish = import ./fish { inherit config pkgs lib; };
-  fusuma = import ./fusuma { inherit pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };
   fzf = import ./fzf { inherit config pkgs; };
   git = import ./git { inherit config; };

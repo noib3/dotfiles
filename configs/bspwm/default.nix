@@ -65,7 +65,6 @@ in
   };
 
   startupPrograms = [
-    "${pkgs.fusuma}/bin/fusuma"
     "${pkgs.unclutter-xfixes}/bin/unclutter -idle 5"
     "${pkgs.xbanish}/bin/xbanish"
     "${mpv-focus-prev}/bin/mpv-focus-prev"
