@@ -25,6 +25,7 @@
   "super+seven=text:\\x1b\\x5b\\x31\\x38\\x7e" # F7
   "super+eight=text:\\x1b\\x5b\\x31\\x39\\x7e" # F8
   "super+nine=text:\\x1b\\x5b\\x32\\x30\\x7e" # F9
+  "super+escape=reload_config"
 ]
 ++ lib.lists.optionals isLinux [
   "super+equal=increase_font_size:1"
