@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   ...
 }:
@@ -11,8 +10,6 @@ let
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
     import ./colors.nix { inherit config; }
   );
-
-  yaml = pkgs.formats.yaml { };
 in
 {
   programs.vivid = {
@@ -186,7 +183,7 @@ in
     };
 
     themes = {
-      ${activeTheme} = yaml.generate "${activeTheme}.yml" {
+      ${activeTheme} = {
         inherit colors;
 
         core = {
