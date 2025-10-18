@@ -130,6 +130,7 @@ in
     brave.enable = isDarwin;
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
+    fish.enable = true;
     ghostty.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
@@ -148,7 +149,6 @@ in
       bat
       direnv
       fd
-      fish
       fuzzel
       fzf
       git

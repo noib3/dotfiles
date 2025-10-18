@@ -6,6 +6,7 @@
     ./colorscheme
     ./dropbox
     ./duckduckgo
+    ./fish
     ./ghostty
     ./hyprland
     ./kubectl

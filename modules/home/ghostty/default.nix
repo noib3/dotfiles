@@ -33,6 +33,9 @@ in
         window-padding-x = 10;
         window-padding-y = 5;
       }
+      // lib.attrsets.optionalAttrs isLinux {
+        mouse-scroll-multiplier = 2;
+      }
       // (import ./colors.nix { inherit config; })
       // (import ./font.nix { inherit config lib isDarwin; });
     };
