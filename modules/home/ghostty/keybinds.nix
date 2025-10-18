@@ -27,9 +27,9 @@
   "super+nine=text:\\x1b\\x5b\\x32\\x30\\x7e" # F9
 ]
 ++ lib.lists.optionals isLinux [
-  "super+equal=increase_font_size"
-  "super+minus=decrease_font_size"
+  "super+equal=increase_font_size:1"
+  "super+minus=decrease_font_size:1"
   "super+zero=reset_font_size"
-  "super+c=copy"
-  "super+v=paste"
+  "super+c=copy_to_clipboard"
+  "super+v=paste_from_clipboard"
 ]

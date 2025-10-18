@@ -1,4 +1,8 @@
-{ config, isDarwin }:
+{
+  config,
+  lib,
+  isDarwin,
+}:
 
 let
   font = config.fonts.monospace;
@@ -10,5 +14,7 @@ in
   font-style-bold = font.bold;
   font-style-italic = font.italic;
   font-style-bold-italic = font.bold_italic;
-  font-thicken = isDarwin;
+}
+// lib.optionalAttrs isDarwin {
+  font-thicken = true;
 }

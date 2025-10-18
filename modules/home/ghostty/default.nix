@@ -34,7 +34,7 @@ in
         window-padding-y = 5;
       }
       // (import ./colors.nix { inherit config; })
-      // (import ./font.nix { inherit config isDarwin; });
+      // (import ./font.nix { inherit config lib isDarwin; });
     };
   };
 }
