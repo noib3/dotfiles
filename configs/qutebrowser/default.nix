@@ -130,7 +130,7 @@ in
     };
 
     completion = {
-      height = "21%";
+      height = "22%";
       open_categories = [ "history" ];
       scrollbar = {
         padding = 0;
@@ -256,7 +256,10 @@ in
       "<Super-7>" = "tab-focus 7";
       "<Super-8>" = "tab-focus 8";
       "<Super-9>" = "tab-focus 9";
-      "<Super-0>" = "tab-focus 10";
+
+      "<Super-=>" = "zoom-in";
+      "<Super-->" = "zoom-out";
+      "<Super-0>" = "zoom";
 
       ",f" = "spawn --userscript ${fill-bitwarden}/bin/fill-bitwarden";
       ",t" = "hint links userscript ${add-torrent}/bin/add-torrent";

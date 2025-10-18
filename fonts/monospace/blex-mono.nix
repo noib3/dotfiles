@@ -3,5 +3,12 @@
 {
   name = "BlexMono Nerd Font";
   package = pkgs.nerd-fonts.blex-mono;
-  size = _config: _program: 18.5;
+  size =
+    config: program:
+    if program == "ghostty" && config.machines."skunk@linux".isCurrent then
+      14.0
+    else if program == "qutebrowser" && config.machines."skunk@linux".isCurrent then
+      14.0
+    else
+      18.5;
 }
