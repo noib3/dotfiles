@@ -131,6 +131,7 @@ in
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
     ghostty.enable = true;
+    hyprland.enable = isLinux;
     kubectl.enable = true;
     neovim.enable = true;
     rust.enable = true;
@@ -178,8 +179,6 @@ in
   };
 
   systemd.user.startServices = true;
-
-  wayland.windowManager.hyprland = configs.hyprland;
 
   xdg = {
     mimeApps = {

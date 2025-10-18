@@ -7,9 +7,7 @@
 let
   colors = import ./colors.nix { inherit config; };
 
-  add-torrent = pkgs.writeShellScriptBin "add-torrent" (
-    builtins.readFile ./scripts/add-torrent.sh
-  );
+  add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
 
   fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden" {
     libraries = [ pkgs.python310Packages.tldextract ];
@@ -338,6 +336,9 @@ in
     config.unbind("gb")
     config.unbind("tl")
     config.unbind("gt")
+
+    config.set("content.headers.user_agent", "Mozilla/5.0 ({os_info}; rv:135.0) Gecko/20100101 Firefox/135", "https://accounts.google.com/*")
+
     config.load_autoconfig(True)
   '';
 }

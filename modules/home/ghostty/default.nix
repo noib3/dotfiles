@@ -36,5 +36,7 @@ in
       // (import ./colors.nix { inherit config; })
       // (import ./font.nix { inherit config lib isDarwin; });
     };
+
+    modules.terminal.package = config.programs.ghostty.package;
   };
 }

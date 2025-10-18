@@ -2,10 +2,12 @@
   imports = [
     ./astal
     ./brave
+    ./browser
     ./colorscheme
     ./dropbox
     ./duckduckgo
     ./ghostty
+    ./hyprland
     ./kubectl
     ./lib
     ./neovim
@@ -15,6 +17,7 @@
     ./scripts
     ./signal
     ./ssh
+    ./terminal
     ./terminfo
     ./udiskie
     ./vivid
