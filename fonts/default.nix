@@ -3,6 +3,7 @@ let
     emoji = import ./emoji;
     monospace = import ./monospace;
     sansSerif = import ./sans-serif;
+    serif = import ./serif;
   };
 in
 {
@@ -10,6 +11,13 @@ in
     sansSerif = monospace;
     serif = monospace;
     monospace = fonts.monospace.blex-mono { inherit pkgs; };
+    emoji = fonts.emoji.noto-color { inherit pkgs; };
+  };
+
+  docsrs = pkgs: {
+    sansSerif = fonts.sansSerif.fira-sans { inherit pkgs; };
+    serif = fonts.serif.source-serif { inherit pkgs; };
+    monospace = fonts.monospace.source-code-pro { inherit pkgs; };
     emoji = fonts.emoji.noto-color { inherit pkgs; };
   };
 

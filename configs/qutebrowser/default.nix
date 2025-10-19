@@ -176,7 +176,7 @@ in
 
     fonts =
       let
-        font = config.fonts.serif;
+        font = config.fonts.sansSerif;
       in
       {
         default_family = font.name;

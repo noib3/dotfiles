@@ -47,7 +47,7 @@
       machines = import ./machines {
         inherit inputs;
         colorscheme = "gruvbox";
-        fonts = (import ./fonts).blex;
+        fonts = (import ./fonts).docsrs;
         userName = "noib3";
       };
     in
