@@ -109,12 +109,13 @@ in
     };
 
     sessionVariables = {
+      COLORTERM = "truecolor";
+      HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
+      IPYTHONDIR = "${config.xdg.configHome}/ipython";
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
-      COLORTERM = "truecolor";
-      LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
-      HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
+      LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
       OSFONTDIR = lib.strings.optionalString isLinux (
         config.home.homeDirectory + "/.nix-profile/share/fonts/truetype/NerdFonts"
       );

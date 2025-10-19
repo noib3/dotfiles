@@ -21,7 +21,10 @@ in
       pkgs.kubectl
     ];
 
-    home.sessionVariables.KUBECONFIG = "${configDir}/${configFile}";
+    home.sessionVariables = {
+      KUBECACHEDIR = "${config.xdg.cacheHome}/kube";
+      KUBECONFIG = "${configDir}/${configFile}";
+    };
 
     programs.kubecolor.enable = true;
 
