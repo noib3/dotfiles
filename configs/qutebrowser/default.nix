@@ -327,6 +327,10 @@ in
       "<Super-8>" = "tab-focus 8";
       "<Super-9>" = "tab-focus 9";
       "<Super-0>" = "tab-focus 10";
+
+      # Unfocus the current input field when going back to normal mode. See
+      # https://github.com/qutebrowser/qutebrowser/issues/2668 for more infos.
+      "<Escape>" = "mode-leave ;; jseval -q document.activeElement.blur()";
     };
   };
 
