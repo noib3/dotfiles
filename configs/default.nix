@@ -16,8 +16,6 @@
   fuzzel = import ./fuzzel { inherit pkgs; };
   fzf = import ./fzf { inherit config pkgs; };
   git = import ./git { inherit config; };
-  gpg = import ./gpg;
-  gpg-agent = import ./gpg-agent { inherit pkgs; };
   grub = import ./grub;
   home-manager = import ./home-manager;
   kanshi = import ./kanshi { inherit config pkgs; };

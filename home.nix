@@ -133,6 +133,7 @@ in
     dropbox.enable = true;
     fish.enable = true;
     ghostty.enable = true;
+    gnupg.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
     neovim.enable = true;
@@ -153,7 +154,6 @@ in
       fuzzel
       fzf
       git
-      gpg
       home-manager
       lazygit
       lf
@@ -171,7 +171,6 @@ in
       enable = isLinux;
     };
     inherit (configs)
-      gpg-agent
       kanshi
       mpris-proxy
       ssh-agent

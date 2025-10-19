@@ -8,6 +8,7 @@
     ./duckduckgo
     ./fish
     ./ghostty
+    ./gnupg
     ./hyprland
     ./kubectl
     ./lib
