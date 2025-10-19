@@ -83,9 +83,9 @@ in
 
     nix.settings = {
       experimental-features = [
-	"pipe-operators"
         "flakes"
         "nix-command"
+        "pipe-operators"
       ];
       trusted-users = [
         "root"
