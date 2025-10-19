@@ -103,9 +103,10 @@ in
       ];
 
     pointerCursor = lib.mkIf isLinux {
-      package = pkgs.vanilla-dmz;
-      name = "Vanilla-DMZ";
-      size = 16;
+      package = pkgs.adwaita-icon-theme;
+      name = "Adwaita";
+      size = 18;
+      dotIcons.enable = false;
     };
 
     sessionVariables = {

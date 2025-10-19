@@ -15,6 +15,11 @@ in
   };
 
   config = mkIf cfg.enable {
+    home.pointerCursor.hyprcursor = {
+      enable = true;
+      size = config.home.pointerCursor.size;
+    };
+
     wayland.windowManager.hyprland = {
       enable = true;
 
