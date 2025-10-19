@@ -159,6 +159,8 @@ in
       pulse.enable = true;
     };
 
+    services.gnome.gnome-keyring.enable = true;
+
     users.users."${cfg.userName}" = {
       home = "/home/${cfg.userName}";
       shell = pkgs.fish;
