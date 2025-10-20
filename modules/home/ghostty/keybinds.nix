@@ -28,9 +28,10 @@
   "super+escape=reload_config"
 ]
 ++ lib.lists.optionals isLinux [
+  "super+c=copy_to_clipboard"
+  "super+v=paste_from_clipboard"
+  "super+n=new_window"
   "super+equal=increase_font_size:1"
   "super+minus=decrease_font_size:1"
   "super+zero=reset_font_size"
-  "super+c=copy_to_clipboard"
-  "super+v=paste_from_clipboard"
 ]

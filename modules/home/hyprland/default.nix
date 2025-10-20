@@ -129,7 +129,7 @@ in
         "$launcher" = "fuzzel";
         # "$browser" = "${lib.getExe config.modules.browser.package}";
         "$browser" = "qutebrowser";
-        "$terminal" = "${lib.getExe config.modules.terminal.package}";
+        "$terminal" = "${config.modules.terminal.launchCommand}";
 
         bind = [
           # Launch programs.

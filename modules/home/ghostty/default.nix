@@ -40,6 +40,9 @@ in
       // (import ./font.nix { inherit config lib isDarwin; });
     };
 
-    modules.terminal.package = config.programs.ghostty.package;
+    modules.terminal = rec {
+      package = config.programs.ghostty.package;
+      launchCommand = "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
+    };
   };
 }
