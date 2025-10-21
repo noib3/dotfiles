@@ -134,6 +134,7 @@ in
     dropbox.enable = true;
     fish.enable = true;
     ghostty.enable = true;
+    git.enable = true;
     gnupg.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
@@ -154,7 +155,6 @@ in
       fd
       fuzzel
       fzf
-      git
       home-manager
       lazygit
       lf

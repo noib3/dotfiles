@@ -15,7 +15,6 @@
   fd = import ./fd { inherit lib pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };
   fzf = import ./fzf { inherit config pkgs; };
-  git = import ./git { inherit config; };
   grub = import ./grub;
   home-manager = import ./home-manager;
   kanshi = import ./kanshi { inherit config pkgs; };
