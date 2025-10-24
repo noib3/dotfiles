@@ -1,5 +1,4 @@
 local fzf_lua = require("fzf-lua")
-local neotest = require("neotest")
 local trouble = require("trouble")
 local utils = require("utils")
 
@@ -156,19 +155,6 @@ local fallback = function(key)
   local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
   vim.api.nvim_feedkeys(keys, "n", false)
 end
-
-vim.api.nvim_set_keymap("n", "<D-t>", "", {
-  desc = "Open a terminal window with the output of the current test",
-  callback = function()
-    neotest.output.open({ enter = true })
-
-    -- Scroll to the bottom of the terminal window, which is usually where the
-    -- error message is.
-    --
-    -- TODO: this is hacky, do it w/o a timer.
-    vim.defer_fn(function() vim.cmd("normal! G") end, 20)
-  end,
-})
 
 vim.api.nvim_set_keymap("n", "q", "", {
   desc = "Close the quickfix window with 'q'",

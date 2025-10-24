@@ -45,7 +45,7 @@ return {
       })
 
       vim.o.background = "dark"
-      gruvbox.load()
+      vim.cmd.colorscheme("gruvbox")
     end,
   }
 }

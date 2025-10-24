@@ -12,6 +12,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:append(lazypath)
 
+require("autocmds")
+require("diagnostic")
+require("lsp")
+require("options")
+
 -- These have to be set before loading the plugins or lazy will complain.
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
@@ -28,8 +33,5 @@ require("lazy").setup("plugins", {
   },
 })
 
-require("autocmds")
-require("diagnostic")
+-- Some keymaps depend on plugins being loaded, so load them last.
 require("keymaps")
-require("lsp")
-require("options")

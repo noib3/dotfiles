@@ -28,27 +28,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = create_augroup("noib3/rust-rerun-tests-on-save"),
-  pattern = "*.rs",
-  desc = "In Rust files, reruns all the tests on save",
-  callback = function()
-    local neotest = require("neotest")
-    neotest.run.run(vim.fn.expand("%:p"))
-  end,
-})
-
--- TODO: this doesnt' work. The callback is executed but the tests are not run.
-vim.api.nvim_create_autocmd("BufAdd", {
-  group = create_augroup("noib3/rust-run-tests-on-open"),
-  pattern = "*.rs",
-  desc = "In Rust files, runs all the tests when a file is opened for the 1st time",
-  callback = function()
-    local neotest = require("neotest")
-    neotest.run.run(vim.fn.expand("%:p"))
-  end,
-})
-
 vim.api.nvim_create_autocmd("TermOpen", {
   group = create_augroup("noib3/setup-terminal"),
   desc = "Disables line numbers and enters insert mode in terminals",
@@ -68,5 +47,17 @@ vim.api.nvim_create_autocmd("BufAdd", {
   desc = "Disable soft wrapping in lock files",
   callback = function()
     vim.wo.wrap = false
+  end,
+})
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = create_augroup("noib3/set-cursor-hl-group"),
+  desc = "Sets the Cursor highlight group to be the opposite of Normal",
+  callback = function()
+    local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+    vim.api.nvim_set_hl(0, "Cursor", {
+      fg = normal.bg,
+      bg = normal.fg,
+    })
   end,
 })

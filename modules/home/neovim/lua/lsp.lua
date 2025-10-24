@@ -57,7 +57,7 @@ end
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_group,
-  desc = "Set up LSP environment on a buffer",
+  desc = "Sets up the LSP environment on a buffer",
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     on_attach(client, args.buf)
@@ -66,7 +66,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 vim.api.nvim_create_autocmd("LspDetach", {
   group = lsp_group,
-  desc = "Remove LSP autocommands/keymaps on a buffer",
+  desc = "Removes LSP-related autocommands/keymaps on a buffer",
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     on_detach(client, args.buf)
