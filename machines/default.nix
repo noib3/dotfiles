@@ -9,6 +9,7 @@ let
   machineSources = [
     (import ./skunk).linux
     (import ./skunk).darwin
+    (import ./stolen-bride)
   ];
 
   inherit (inputs.nixpkgs) lib;

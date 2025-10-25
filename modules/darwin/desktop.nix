@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -24,12 +25,30 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      home-manager
+      neovim
+    ];
+
     modules.fish.userName = cfg.userName;
 
     networking = with cfg; {
       computerName = hostName;
       hostName = hostName;
       localHostName = hostName;
+    };
+
+    nix.settings = {
+      experimental-features = [
+        "flakes"
+        "nix-command"
+        "pipe-operators"
+      ];
+      trusted-users = [
+        "root"
+        cfg.userName
+      ];
+      warn-dirty = false;
     };
 
     system = {
