@@ -8,6 +8,7 @@
 with lib;
 let
   cfg = config.modules.brave;
+  inherit (pkgs.stdenv) isDarwin isLinux;
 in
 {
   options.modules.brave = {
@@ -15,15 +16,21 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ pkgs.brave ];
+    programs.brave = {
+      enable = true;
+      package = pkgs.brave;
+      extensions = [
+        { id = "ghmbeldphafepmbegfdlkpapadhbakde"; } # Proton Pass
+      ];
+    };
 
-    home.activation = lib.mkIf pkgs.stdenv.isDarwin {
+    home.activation = lib.mkIf isDarwin {
       setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         $DRY_RUN_CMD ${pkgs.defaultbrowser}/bin/defaultbrowser browser
       '';
     };
 
-    xdg.mimeApps = lib.mkIf pkgs.stdenv.isLinux {
+    xdg.mimeApps = lib.mkIf isLinux {
       enable = true;
       defaultApplications = {
         "text/html" = [ "brave.desktop" ];
