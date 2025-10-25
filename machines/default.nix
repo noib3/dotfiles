@@ -40,7 +40,7 @@ let
 
   # A home-manager module that defines `config.machine(s)`.
   homeManagerModule =
-    { config, lib, ... }:
+    { lib, ... }:
     {
       options.machine = {
         name = lib.mkOption { type = lib.types.str; };
@@ -60,7 +60,7 @@ let
 
   mkHomeManagerModule =
     targetMachine:
-    { config, ... }:
+    { ... }:
     {
       config.machine = {
         name = targetMachine.name;

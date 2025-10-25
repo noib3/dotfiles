@@ -9,9 +9,13 @@
     ../../modules/darwin
   ];
 
-  modules.desktop = {
-    enable = true;
-    inherit hostName userName;
+  modules = {
+    brave-policies.enable = true;
+    desktop = {
+      enable = true;
+      inherit hostName userName;
+    };
+    fish.enable = true;
   };
 
   nix = {

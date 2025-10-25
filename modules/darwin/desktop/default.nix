@@ -10,8 +10,6 @@ let
   cfg = config.modules.desktop;
 in
 {
-  imports = [ ./fish.nix ];
-
   options.modules.desktop = {
     enable = mkEnableOption "Desktop config";
     hostName = mkOption {
@@ -29,8 +27,6 @@ in
       home-manager
       neovim
     ];
-
-    modules.fish.userName = cfg.userName;
 
     networking = with cfg; {
       computerName = hostName;

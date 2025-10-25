@@ -1,5 +1,7 @@
 {
   imports = [
-    ./desktop.nix
+    ./brave-policies
+    ./desktop
+    ./fish
   ];
 }
