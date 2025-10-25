@@ -56,12 +56,6 @@ in
       };
     in
     {
-      system.defaults.CustomUserPreferences."com.brave.Browser" = policies;
-
-      # See https://github.com/brave/brave-browser/issues/45106 for why this is
-      # needed. That issue seems to imply that this is only needed for
-      # "managed" preferences (whatever that means), but it doesn't seem to
-      # hurt to add them all.
       system.activationScripts.extraActivation.text =
         let
           managedPrefsPlistFile = mkPlist policies "brave-policies.plist";
