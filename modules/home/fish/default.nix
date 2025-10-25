@@ -53,7 +53,7 @@ in
         nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --sudo";
       }
       // lib.attrsets.optionalAttrs config.machine.hasDarwinConfiguration {
-        drs = "darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
+        drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
       };
 
       interactiveShellInit = ''
