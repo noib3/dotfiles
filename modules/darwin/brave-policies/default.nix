@@ -8,6 +8,22 @@
 with lib;
 let
   cfg = config.modules.brave-policies;
+
+  mkPlist =
+    attrs: name:
+    pkgs.runCommand name
+      {
+        nativeBuildInputs = [ pkgs.python3 ];
+      }
+      ''
+        python3 << EOF
+        import plistlib
+        import json
+        policies = json.loads('${builtins.toJSON attrs}')
+        with open('$out', 'wb') as f:
+            plistlib.dump(policies, f)
+        EOF
+      '';
 in
 {
   options.modules.brave-policies = {
@@ -46,20 +62,7 @@ in
       # hurt to add them all.
       system.activationScripts.extraActivation.text =
         let
-          managedPrefsPlistFile =
-            pkgs.runCommand "brave-policies.plist"
-              {
-                nativeBuildInputs = [ pkgs.python3 ];
-              }
-              ''
-                python3 << EOF
-                import plistlib
-                import json
-                policies = json.loads('${builtins.toJSON policies}')
-                with open('$out', 'wb') as f:
-                    plistlib.dump(policies, f)
-                EOF
-              '';
+          managedPrefsPlistFile = mkPlist policies "brave-policies.plist";
           managedPrefsDirPath = "/Library/Managed Preferences";
           managedPrefsPlistPath = "${managedPrefsDirPath}/com.brave.Browser.plist";
         in
