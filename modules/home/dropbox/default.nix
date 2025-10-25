@@ -8,6 +8,7 @@
 with lib;
 let
   cfg = config.modules.dropbox;
+  inherit (pkgs.stdenv) isDarwin isLinux;
 in
 {
   options.modules.dropbox = {
@@ -15,7 +16,8 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = lib.mkIf pkgs.stdenv.isLinux [ pkgs.dropbox-cli ];
+    home.packages =
+      (lib.optional isDarwin pkgs.brewCasks.dropbox) ++ (lib.optional isLinux pkgs.dropbox-cli);
 
     modules.nixpkgs.allowUnfreePackages = [
       "dropbox"
