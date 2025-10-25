@@ -36,19 +36,21 @@ in
       # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
       # for the available policies.
       policies = {
-        BraveRewardsDisabled = true;
-        BraveWalletDisabled = true;
+        BookmarkBarEnabled = false;
         BraveAIChatEnabled = false;
         BraveNewsDisabled = true;
+        BraveRewardsDisabled = true;
+        BraveStatsPingEnabled = false;
         BraveTalkDisabled = true;
         BraveVPNDisabled = true;
-        BraveStatsPingEnabled = false;
+        BraveWalletDisabled = true;
         BrowserSignin = 0;
         DefaultSearchProviderEnabled = true;
         DefaultSearchProviderName = "DuckDuckGo";
         DefaultSearchProviderSearchURL = "https://duckduckgo.com/?q={searchTerms}";
         DefaultSearchProviderSuggestURL = "https://duckduckgo.com/ac/?q={searchTerms}&type=list";
         HomepageIsNewTabPage = true;
+        NewTabPageLocation = "about:blank";
         PasswordManagerEnabled = false;
         SyncDisabled = true;
       };
