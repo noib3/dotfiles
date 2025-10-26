@@ -77,17 +77,18 @@ return {
     config = function(_, opts)
       local lualine = require("lualine")
 
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "LspProgressStatusUpdated",
-        callback = lualine.refresh,
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function() lualine.setup(config()) end,
       })
 
       vim.api.nvim_create_autocmd("OptionSet", {
         pattern = "background",
-        callback = function()
-          lualine.setup(config())
-          lualine.refresh()
-        end
+        callback = function() lualine.setup(config()) end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "LspProgressStatusUpdated",
+        callback = lualine.refresh,
       })
 
       lualine.setup(opts)
