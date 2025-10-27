@@ -33,6 +33,5 @@
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
   wlsunset = import ./wlsunset { inherit pkgs; };
-  yabai = import ./yabai { inherit pkgs; };
   zathura = import ./zathura { inherit config pkgs; };
 }

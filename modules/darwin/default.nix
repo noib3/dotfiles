@@ -4,5 +4,6 @@
     ./brave-search-engines
     ./desktop
     ./fish
+    ./yabai
   ];
 }

@@ -17,6 +17,7 @@
       inherit hostName userName;
     };
     fish.enable = true;
+    yabai.enable = true;
   };
 
   nix = {
