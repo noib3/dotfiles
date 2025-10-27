@@ -13,8 +13,6 @@
 # - press cmd-shift-g to open "Go to folder";
 # - paste "/run/current-system/sw/bin";
 # - select the Yabai binary;
-#
-# You may need to restart yabai w/ `yabai --restart-service` after.
 with lib;
 let
   cfg = config.modules.yabai;
@@ -42,7 +40,7 @@ in
 
       extraConfig = ''
         yabai -m rule --add app="Digital Colour Meter" manage=off
-        yabai -m rule --add app="System Preferences" manage=off
+        yabai -m rule --add app="System Settings" manage=off
         yabai -m rule --add app="Activity Monitor" manage=off
         yabai -m rule --add app="Font Book" manage=off
         yabai -m rule --add app="App Store" manage=off
