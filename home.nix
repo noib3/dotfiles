@@ -65,8 +65,10 @@ in
         zoom-us
       ]
       ++ lib.lists.optionals isDarwin [
+        brewCasks.obs
         brewCasks.protonvpn
         coreutils
+        iina
         gnused
       ]
       ++ lib.lists.optionals isLinux [
