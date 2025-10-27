@@ -19,6 +19,7 @@
     ./rust
     ./scripts
     ./signal
+    ./skhd
     ./ssh
     ./terminal
     ./terminfo

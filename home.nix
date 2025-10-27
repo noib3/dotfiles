@@ -141,6 +141,7 @@ in
     neovim.enable = true;
     rust.enable = true;
     signal.enable = true;
+    skhd.enable = true;
     ssh.enable = true;
     terminfo.enable = true;
     udiskie.enable = isLinux;
