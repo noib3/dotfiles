@@ -13,6 +13,10 @@ return {
         height = 8,
         width = 1.0,
       },
+      fzf_colors = {
+        ["bg+"] = { "bg", "ColorColumn" },
+        ["border"] = { "fg", "WinSeparator" },
+      },
     },
   }
 }

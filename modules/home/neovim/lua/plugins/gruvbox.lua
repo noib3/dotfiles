@@ -14,6 +14,13 @@ local overrides = {
       bright_orange = "#e78a4e",
     },
     hl_groups = {
+      -- Line numbers.
+      LineNr = { fg = "#7c6f64" },
+
+      -- Listchars.
+      NonText = { fg = "#504945" },
+      Whitespace = { fg = "#504945" },
+
       -- Selections.
       Visual = { bg = "#374141" },
 
@@ -22,6 +29,9 @@ local overrides = {
       WinSeparator = { fg = "#3a3735" },
       MsgArea = { bg = "#3a3735", fg = "#d4be98" },
       ColorColumn = { bg = "#3a3735" },
+
+      -- Floating windows.
+      NormalFloat = { fg = "#d4be98", bg = "#3c3836" },
 
       -- Hovered symbol.
       LspReferenceTarget = { bold = true },
@@ -42,6 +52,16 @@ local overrides = {
 
       -- Blink.
       BlinkCmpLabelMatch = { default = true },
+
+      -- Hop.
+      HopNextKey = { fg = "#ee2a89", bold = true },
+      HopNextKey1 = { fg = "#1fd2ee", bold = true },
+      HopNextKey2 = { fg = "#2d8db3" },
+      HopUnmatched = { fg = "#666666" },
+
+      -- Incline.
+      InclineNormal = { fg = "#ddc7a1", bg = "#3a3735" },
+      InclineNormalNC = { fg = "#928374", bg = "#3a3735" },
     },
   },
   light = {
@@ -86,10 +106,14 @@ local overrides = {
       Visual = { bg = "#d9e0be" },
 
       -- Statusline + split delimiters.
-      StatusLine = { bg = "#dac9a5", fg = "#50504a", reverse = false },
-      WinSeparator = { fg = "#dac9a5" },
-      MsgArea = { bg = "#dac9a5", fg = "#50504a" },
-      ColorColumn = { bg = "#dac9a5" },
+      StatusLine = { bg = "#dac9a0", fg = "#494944", reverse = false },
+      MsgArea = { bg = "#dac9a0", fg = "#3d3d39" },
+      ColorColumn = { link = "StatusLine" },
+      WinSeparator = { fg = "#dac9a0" },
+
+      -- Floating windows.
+      NormalFloat = { bg = "#dac9a5" },
+      FloatBorder = { fg = "#c3ac8a" },
 
       -- Hovered symbol.
       LspReferenceTarget = { bold = true },
@@ -110,6 +134,19 @@ local overrides = {
 
       -- Blink.
       BlinkCmpLabelMatch = { default = true },
+
+      -- Fzf.
+      FzfLuaBorder = { link = "FloatBorder" },
+
+      -- Hop.
+      HopNextKey = { fg = "#c8569f", bold = true },
+      HopNextKey1 = { fg = "#2fa2bb", bold = true },
+      HopNextKey2 = { fg = "#55b3c8" },
+      HopUnmatched = { fg = "#9f9f95" },
+
+      -- Incline.
+      InclineNormal = { fg = "#50504a", bg = "#dac9a5" },
+      InclineNormalNC = { fg = "#8b8b81", bg = "#dac9a5" },
     },
   },
 }

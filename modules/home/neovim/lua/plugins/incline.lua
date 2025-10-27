@@ -23,7 +23,7 @@ return {
           if count > 0 then
             local maybe_padding = vim.tbl_count(ret) > 0 and " " or ""
             local label = maybe_padding .. icon .. " " .. count
-            table.insert(ret, { label, group = "DiagnosticSign" .. severity })
+            table.insert(ret, { label, group = "Diagnostic" .. severity })
           end
         end
         add_diagnostic("Error", "")
@@ -69,20 +69,6 @@ return {
             horizontal = 0,
             vertical = 0,
           },
-          winhighlight = {
-            active = {
-              Normal = {
-                guifg = "#ddc7a1",
-                guibg = "#3a3735",
-              },
-            },
-            inactive = {
-              Normal = {
-                guifg = "#928374",
-                guibg = "#3a3735",
-              },
-            },
-          }
         }
       })
 
