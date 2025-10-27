@@ -1,9 +1,9 @@
-local palette = require("generated.palette")
-
 -- https://github.com/sainnhe/gruvbox-material (soft variant).
 local overrides = {
   dark = {
     palette = {
+      dark0 = "#282828",
+      dark0_soft = "#282828",
       light1 = "#d4be98",
       bright_red = "#ea6962",
       bright_green = "#a9b665",
@@ -14,26 +14,31 @@ local overrides = {
       bright_orange = "#e78a4e",
     },
     hl_groups = {
-      LspReferenceTarget = { bold = true },
-      MsgArea = { bg = "#3a3735", fg = "#d4be98" },
-      ColorColumn = { bg = "#3a3735" },
-
       -- Selections.
       Visual = { bg = "#374141" },
 
       -- Statusline + split delimiters.
       StatusLine = { bg = "#3a3735", fg = "#d4be98", reverse = false },
       WinSeparator = { fg = "#3a3735" },
+      MsgArea = { bg = "#3a3735", fg = "#d4be98" },
+      ColorColumn = { bg = "#3a3735" },
+
+      -- Hovered symbol.
+      LspReferenceTarget = { bold = true },
 
       -- Punctuation.
       ["@punctuation.delimiter"] = { fg = "#928374" },
       ["@punctuation.bracket"] = { fg = "#a89984" },
 
       -- Functions and function calls.
-      ["@function"] = { fg = palette.bright.green },
-      ["@function.call"] = { fg = palette.bright.green },
-      ["@lsp.type.function"] = { fg = palette.bright.green },
-      ["@lsp.type.method"] = { fg = palette.bright.green },
+      ["@function"] = { fg = "#b8bb26" },
+      ["@function.call"] = { link = "@function" },
+      ["@function.method"] = { link = "@function" },
+      ["@lsp.type.function"] = { link = "@function" },
+      ["@lsp.type.method"] = { link = "@function" },
+
+      -- Square brackets in Lua.
+      ["@constructor.lua"] = { link = "@punctuation.bracket" },
 
       -- Blink.
       BlinkCmpLabelMatch = { default = true },
@@ -41,38 +46,67 @@ local overrides = {
   },
   light = {
     palette = {
-      light0 = "#f2e5bc",
-      light1 = "#654735",
-      dark1 = "#654735",
-      bright_red = "#ae5858",
-      bright_green = "#6c782e",
-      bright_yellow = "#b47109",
-      bright_blue = "#45707A",
-      bright_purple = "#945e80",
-      bright_aqua = "#4c7a5d",
-      bright_orange = "#c35e0a",
+      light0 = "#f1e3b6",
+      light1 = "#eddeb5",
+      light2 = "#ebdbb2",
+      light3 = "#e6d5ae",
+      light4 = "#dac9a5",
+      dark0 = "#42423c",
+      dark1 = "#42423c",
+      dark2 = "#42423c",
+      dark3 = "#42423c",
+      dark4 = "#42423c",
+      faded_red = "#ae5858",
+      faded_green = "#6c782e",
+      faded_yellow = "#b47109",
+      faded_blue = "#45707A",
+      faded_purple = "#945e80",
+      faded_aqua = "#4c7a5d",
+      faded_orange = "#c35e0a",
+      neutral_red = "#ae5858",
+      neutral_green = "#6c782e",
+      neutral_yellow = "#b47109",
+      neutral_blue = "#45707A",
+      neutral_purple = "#945e80",
+      neutral_aqua = "#4c7a5d",
+      light_red = "#ae5858",
+      light_green = "#6c782e",
+      light_aqua = "#4c7a5d",
+      gray = "#928374",
     },
     hl_groups = {
-      LspReferenceTarget = { bold = true },
-      MsgArea = { bg = "#dac9a5", fg = "#654735" },
-      ColorColumn = { bg = "#dac9a5" },
+      -- Line numbers.
+      LineNr = { fg = "#c3ac8a" },
+
+      -- Listchars.
+      NonText = { fg = "#d0c0a0" },
+      Whitespace = { fg = "#d0c0a0" },
 
       -- Selections.
-      Visual = { bg = "#c2cfb4" },
+      Visual = { bg = "#d9e0be" },
 
       -- Statusline + split delimiters.
-      StatusLine = { bg = "#dac9a5", fg = "#654735", reverse = false },
+      StatusLine = { bg = "#dac9a5", fg = "#50504a", reverse = false },
       WinSeparator = { fg = "#dac9a5" },
+      MsgArea = { bg = "#dac9a5", fg = "#50504a" },
+      ColorColumn = { bg = "#dac9a5" },
+
+      -- Hovered symbol.
+      LspReferenceTarget = { bold = true },
 
       -- Punctuation.
-      ["@punctuation.delimiter"] = { fg = "#928374" },
-      ["@punctuation.bracket"] = { fg = "#a89984" },
+      ["@punctuation.delimiter"] = { fg = "#504b47" },
+      ["@punctuation.bracket"] = { fg = "#756a61" },
 
       -- Functions and function calls.
-      ["@function"] = { fg = palette.bright.green },
-      ["@function.call"] = { fg = palette.bright.green },
-      ["@lsp.type.function"] = { fg = palette.bright.green },
-      ["@lsp.type.method"] = { fg = palette.bright.green },
+      ["@function"] = { fg = "#809a00" },
+      ["@function.call"] = { link = "@function" },
+      ["@function.method"] = { link = "@function" },
+      ["@lsp.type.function"] = { link = "@function" },
+      ["@lsp.type.method"] = { link = "@function" },
+
+      -- Square brackets in Lua.
+      ["@constructor.lua"] = { link = "@punctuation.bracket" },
 
       -- Blink.
       BlinkCmpLabelMatch = { default = true },
