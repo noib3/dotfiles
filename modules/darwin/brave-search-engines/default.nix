@@ -18,6 +18,11 @@ in
   config = mkIf cfg.enable (
     let
       searchEngines = {
+        hm = {
+          short_name = "Home Manager Options";
+          url = "https://home-manager-options.extranix.com/?query={searchTerms}";
+          favicon_url = "https://nixos.org/favicon.ico";
+        };
         nixp = {
           short_name = "Nix packages";
           url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
