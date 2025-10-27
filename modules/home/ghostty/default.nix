@@ -25,6 +25,7 @@ in
         cursor-style = "bar";
         cursor-style-blink = false;
         keybind = import ./keybinds.nix { inherit lib isDarwin isLinux; };
+        quit-after-last-window-closed = true;
         # Without this the cursor will still blink, even if cursor-style-blink
         # is set to false. See [1] for more infos.
         #
