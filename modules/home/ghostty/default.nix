@@ -33,6 +33,7 @@ in
         shell-integration-features = "no-cursor";
         window-padding-x = 10;
         window-padding-y = 5;
+        unfocused-split-opacity = 1.0;
       }
       // lib.attrsets.optionalAttrs isLinux {
         mouse-scroll-multiplier = 1.25;

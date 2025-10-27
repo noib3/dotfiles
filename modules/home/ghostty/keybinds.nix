@@ -26,6 +26,18 @@
   "super+eight=text:\\x1b\\x5b\\x31\\x39\\x7e" # F8
   "super+nine=text:\\x1b\\x5b\\x32\\x30\\x7e" # F9
   "super+escape=reload_config"
+
+  # Create splits.
+  "g>left=new_split:left"
+  "g>right=new_split:right"
+  "g>up=new_split:up"
+  "g>down=new_split:down"
+
+  # Navigate splits (only if one exists in the given direction).
+  "performable:shift+left=goto_split:left"
+  "performable:shift+right=goto_split:right"
+  "performable:shift+up=goto_split:up"
+  "performable:shift+down=goto_split:down"
 ]
 ++ lib.lists.optionals isLinux [
   "super+c=copy_to_clipboard"
