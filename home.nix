@@ -130,7 +130,6 @@ in
   };
 
   modules = {
-    astal.enable = isLinux;
     brave.enable = isDarwin;
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;

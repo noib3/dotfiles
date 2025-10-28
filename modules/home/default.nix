@@ -1,6 +1,5 @@
 {
   imports = [
-    ./astal
     ./brave
     ./browser
     ./colorscheme
