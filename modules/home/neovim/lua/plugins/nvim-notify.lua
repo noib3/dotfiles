@@ -6,7 +6,7 @@ return {
       notify.setup({
         fps = 60,
         render = "default",
-        stages = "slide",
+        stages = "static",
         timeout = 2500,
       })
       vim.notify = notify

@@ -22,7 +22,7 @@ local overrides = {
       Whitespace = { fg = "#504945" },
 
       -- Selections.
-      Visual = { bg = "#374141" },
+      Visual = { bg = "#46413e" },
 
       -- Statusline + split delimiters.
       StatusLine = { bg = "#3a3735", fg = "#d4be98", reverse = false },
@@ -62,6 +62,39 @@ local overrides = {
       -- Incline.
       InclineNormal = { fg = "#ddc7a1", bg = "#3a3735" },
       InclineNormalNC = { fg = "#928374", bg = "#3a3735" },
+
+      -- Nomad.
+      NomadCollabPeerCursor1 = { fg = "#ebdbb2", bg = "#83a598" },
+      NomadCollabPeerHandle1 = { fg = "#ebdbb2", bg = "#83a598" },
+      NomadCollabPeerSelection1 = { bg = "#4c5753" },
+
+      NomadCollabPeerCursor2 = { fg = "#ebdbb2", bg = "#b8bb26" },
+      NomadCollabPeerHandle2 = { fg = "#ebdbb2", bg = "#b8bb26" },
+      NomadCollabPeerSelection2 = { bg = "#575d14" },
+
+      NomadCollabPeerCursor3 = { fg = "#ebdbb2", bg = "#6a1f47" },
+      NomadCollabPeerHandle3 = { fg = "#ebdbb2", bg = "#6a1f47" },
+      NomadCollabPeerSelection3 = { bg = "#4b3e45" },
+
+      NomadCollabPeerCursor4 = { fg = "#ebdbb2", bg = "#e09e05" },
+      NomadCollabPeerHandle4 = { fg = "#ebdbb2", bg = "#e09e05" },
+      NomadCollabPeerSelection4 = { bg = "#785702" },
+
+      NomadCollabPeerCursor5 = { link = "NomadCollabPeerCursor1" },
+      NomadCollabPeerHandle5 = { link = "NomadCollabPeerHandle1" },
+      NomadCollabPeerSelection5 = { link = "NomadCollabPeerSelection1" },
+
+      NomadCollabPeerCursor6 = { link = "NomadCollabPeerCursor2" },
+      NomadCollabPeerHandle6 = { link = "NomadCollabPeerHandle2" },
+      NomadCollabPeerSelection6 = { link = "NomadCollabPeerSelection2" },
+
+      NomadCollabPeerCursor7 = { link = "NomadCollabPeerCursor3" },
+      NomadCollabPeerHandle7 = { link = "NomadCollabPeerHandle3" },
+      NomadCollabPeerSelection7 = { link = "NomadCollabPeerSelection3" },
+
+      NomadCollabPeerCursor8 = { link = "NomadCollabPeerCursor4" },
+      NomadCollabPeerHandle8 = { link = "NomadCollabPeerHandle4" },
+      NomadCollabPeerSelection8 = { link = "NomadCollabPeerSelection4" },
     },
   },
   light = {
@@ -103,7 +136,7 @@ local overrides = {
       Whitespace = { fg = "#d0c0a0" },
 
       -- Selections.
-      Visual = { bg = "#d9e0be" },
+      Visual = { bg = "#dac9a5" },
 
       -- Statusline + split delimiters.
       StatusLine = { bg = "#dac9a0", fg = "#494944", reverse = false },
@@ -147,6 +180,39 @@ local overrides = {
       -- Incline.
       InclineNormal = { fg = "#50504a", bg = "#dac9a5" },
       InclineNormalNC = { fg = "#8b8b81", bg = "#dac9a5" },
+
+      -- Nomad.
+      NomadCollabPeerCursor1 = { fg = "#ebdbb2", bg = "#83a598" },
+      NomadCollabPeerHandle1 = { fg = "#ebdbb2", bg = "#83a598" },
+      NomadCollabPeerSelection1 = { bg = "#d3d5b8" },
+
+      NomadCollabPeerCursor2 = { fg = "#ebdbb2", bg = "#b8bb26" },
+      NomadCollabPeerHandle2 = { fg = "#ebdbb2", bg = "#b8bb26" },
+      NomadCollabPeerSelection2 = { bg = "#e8e995" },
+
+      NomadCollabPeerCursor3 = { fg = "#ebdbb2", bg = "#c25773" },
+      NomadCollabPeerHandle3 = { fg = "#ebdbb2", bg = "#c25773" },
+      NomadCollabPeerSelection3 = { bg = "#e8d4ba" },
+
+      NomadCollabPeerCursor4 = { fg = "#ebdbb2", bg = "#fabd2f" },
+      NomadCollabPeerHandle4 = { fg = "#ebdbb2", bg = "#fabd2f" },
+      NomadCollabPeerSelection4 = { bg = "#f1d798" },
+
+      NomadCollabPeerCursor5 = { link = "NomadCollabPeerCursor1" },
+      NomadCollabPeerHandle5 = { link = "NomadCollabPeerHandle1" },
+      NomadCollabPeerSelection5 = { link = "NomadCollabPeerSelection1" },
+
+      NomadCollabPeerCursor6 = { link = "NomadCollabPeerCursor2" },
+      NomadCollabPeerHandle6 = { link = "NomadCollabPeerHandle2" },
+      NomadCollabPeerSelection6 = { link = "NomadCollabPeerSelection2" },
+
+      NomadCollabPeerCursor7 = { link = "NomadCollabPeerCursor3" },
+      NomadCollabPeerHandle7 = { link = "NomadCollabPeerHandle3" },
+      NomadCollabPeerSelection7 = { link = "NomadCollabPeerSelection3" },
+
+      NomadCollabPeerCursor8 = { link = "NomadCollabPeerCursor4" },
+      NomadCollabPeerHandle8 = { link = "NomadCollabPeerHandle4" },
+      NomadCollabPeerSelection8 = { link = "NomadCollabPeerSelection4" },
     },
   },
 }
