@@ -16,16 +16,7 @@ in
     programs.git = {
       enable = true;
 
-      userName = "Riccardo Mazzarini";
-
-      userEmail = "me@noib3.dev";
-
-      signing = {
-        key = "me@noib3.dev";
-        signByDefault = true;
-      };
-
-      extraConfig = {
+      settings = {
         init.defaultBranch = "main";
 
         pull.rebase = false;
@@ -51,6 +42,16 @@ in
         };
 
         merge.tool = "nvimdiff";
+
+        user = {
+          name = "Riccardo Mazzarini";
+          email = "me@noib3.dev";
+        };
+      };
+
+      signing = {
+        key = "me@noib3.dev";
+        signByDefault = true;
       };
 
       ignores = [

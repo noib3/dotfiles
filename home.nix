@@ -89,7 +89,7 @@ in
       # Lua.
       ++ [
         stylua
-        sumneko-lua-language-server
+        lua-language-server
       ]
       # Markdown.
       ++ [ marksman ]

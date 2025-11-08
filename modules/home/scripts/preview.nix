@@ -22,7 +22,7 @@ pkgs.writeShellApplication {
       # Used for videos.
       mkvtoolnix-cli
       # Contains `pdftoppm`, used for PDFs.
-      poppler_utils
+      poppler-utils
     ]
     ++ lib.lists.optionals (!pkgs.stdenv.isDarwin) [
       # Contains `ebook-meta`, used for epubs.
