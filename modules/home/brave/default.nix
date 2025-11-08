@@ -25,12 +25,12 @@ in
     };
 
     home.activation = lib.mkIf isDarwin {
-      addBraveSearchEngines = import ./add-search-engines.nix {
-        inherit config pkgs lib;
-      };
       setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         $DRY_RUN_CMD ${pkgs.defaultbrowser}/bin/defaultbrowser browser
       '';
+      setBraveSearchEngines = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+        import ./set-search-engines.nix { inherit config pkgs lib; }
+      );
     };
 
     xdg.mimeApps = lib.mkIf isLinux {

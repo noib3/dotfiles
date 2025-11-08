@@ -2,10 +2,8 @@
   config,
   pkgs,
   lib,
-  ...
 }:
 
-with lib;
 let
   searchEngines = {
     hm = {
@@ -43,20 +41,21 @@ let
 
   sqlScript =
     let
-      nix2Sql = v: if isString v then "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'" else toString v;
+      nix2Sql =
+        v: if builtins.isString v then "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'" else toString v;
     in
     ''
       -- Remove all policy-managed search engines.
       DELETE FROM keywords WHERE created_by_policy = 1;
 
       -- Insert the configured search engines.
-      ${concatMapStringsSep "\n" (
+      ${lib.concatMapStringsSep "\n" (
         engine:
         let
           columns = builtins.attrNames engine;
           values = map (column: nix2Sql engine.${column}) columns;
-          columnsStr = concatStringsSep ", " columns;
-          valuesStr = concatStringsSep ", " values;
+          columnsStr = lib.concatStringsSep ", " columns;
+          valuesStr = lib.concatStringsSep ", " values;
         in
         "INSERT INTO keywords (${columnsStr}) VALUES (${valuesStr});"
       ) searchEnginesList}
@@ -66,13 +65,23 @@ let
 
   dbPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/Default/Web Data";
 in
-lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+''
   is_brave_running() {
     /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
   }
 
   # Exit early if Brave hasn't yet created the DB.
   [[ -f "${dbPath}" ]] || exit 0
+
+  # Generate the checksum of the SQL script.
+  script_hash=$(${pkgs.openssl}/bin/openssl dgst -sha256 ${sqlScriptFile} | cut -d' ' -f2)
+  hash_file="${config.xdg.cacheHome}/home-manager/brave-search-engines.hash"
+
+  # Exit early if the search engines haven't changed.
+  if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$script_hash" ]]; then
+    echo "Brave search engines already up to date"
+    exit 0
+  fi
 
   # Check if Brave is running.
   brave_was_running=0
@@ -87,6 +96,10 @@ lib.hm.dag.entryAfter [ "writeBoundary" ] ''
 
   # Restart Brave if it was running.
   if [[ "$brave_was_running" -eq 1 ]]; then
-    $DRY_RUN_CMD /usr/bin/open -a "Brave Browser" &
+    $DRY_RUN_CMD /usr/bin/open -a "Brave Browser"
   fi
+
+  # Store the hash
+  $DRY_RUN_CMD mkdir -p "$(dirname "$hash_file")"
+  $DRY_RUN_CMD echo "$script_hash" > "$hash_file"
 ''
