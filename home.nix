@@ -131,6 +131,7 @@ in
 
   modules = {
     brave.enable = isDarwin;
+    claude.enable = true;
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
     fish.enable = true;

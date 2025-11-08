@@ -2,6 +2,7 @@
   imports = [
     ./brave
     ./browser
+    ./claude
     ./colorscheme
     ./dropbox
     ./duckduckgo
