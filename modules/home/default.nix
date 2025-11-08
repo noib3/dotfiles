@@ -12,6 +12,7 @@
     ./hyprland
     ./kubectl
     ./lib
+    ./macos-defaults
     ./neovim
     ./nix
     ./nixpkgs
