@@ -34,6 +34,9 @@ in
           userKnownHostsFile = "${config.xdg.stateHome}/ssh/known_hosts";
         };
       };
+      extraConfig = ''
+        ${lib.optionalString pkgs.stdenv.isDarwin "UseKeychain yes"}
+      '';
     };
 
     services.ssh-agent.enable = pkgs.stdenv.isLinux;
