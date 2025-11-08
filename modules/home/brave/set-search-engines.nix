@@ -83,7 +83,7 @@ in
     exit 0
   fi
 
-  # Check if Brave is running.
+  # The database is locked while Brave is running, so we need to quit it first.
   brave_was_running=0
   if is_brave_running; then
     brave_was_running=1
@@ -99,7 +99,7 @@ in
     $DRY_RUN_CMD /usr/bin/open -a "Brave Browser"
   fi
 
-  # Store the hash
+  # Store the hash.
   $DRY_RUN_CMD mkdir -p "$(dirname "$hash_file")"
   $DRY_RUN_CMD echo "$script_hash" > "$hash_file"
 ''
