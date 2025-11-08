@@ -18,6 +18,7 @@
     ./nixpkgs
     ./rust
     ./scripts
+    ./selfcontrol
     ./signal
     ./skhd
     ./ssh

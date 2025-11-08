@@ -141,6 +141,7 @@ in
     kubectl.enable = true;
     neovim.enable = true;
     rust.enable = true;
+    selfcontrol.enable = isDarwin;
     signal.enable = true;
     skhd.enable = isDarwin;
     ssh.enable = true;
