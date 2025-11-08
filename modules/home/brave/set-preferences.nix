@@ -7,10 +7,20 @@
 let
   # None of these settings are documented anywhere AFAIK. They were found by
   # copying the current Preferences file, manually changing settings in Brave
-  # via the UI, and then diffing the new Preferences files against the old one.
+  # via the UI, and then diffing the copied file against the latest version.
   preferences = {
-    brave.new_tab_page = {
-      show_stats = false;
+    brave = {
+      # Hide the Brave search box in the new tab page.
+      brave_search.show-ntp-search = false;
+      new_tab_page = {
+        background = {
+          random = false;
+          selected_value = config.modules.colorscheme.palette.primary.background;
+          show_background_image = true;
+          type = "color";
+        };
+        show_stats = false;
+      };
     };
     # Hide the top sites in the new tab page (yes, there's a typo in the key).
     ntp.shortcust_visible = false;
