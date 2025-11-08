@@ -56,24 +56,31 @@ in
       };
     in
     {
-      system.activationScripts.extraActivation.text =
+      launchd.daemons.brave-policies =
         let
           managedPrefsPlistFile = mkPlist policies "brave-policies.plist";
           managedPrefsDirPath = "/Library/Managed Preferences";
           managedPrefsPlistPath = "${managedPrefsDirPath}/com.brave.Browser.plist";
         in
-        ''
-          mkdir -p "${managedPrefsDirPath}"
-          chown root:wheel "${managedPrefsDirPath}"
-          chmod 755 "${managedPrefsDirPath}"
+        {
+          script = ''
+            mkdir -p "${managedPrefsDirPath}"
+            chown root:wheel "${managedPrefsDirPath}"
+            chmod 755 "${managedPrefsDirPath}"
 
-          cp -f "${managedPrefsPlistFile}" "${managedPrefsPlistPath}"
-          chown root:wheel "${managedPrefsPlistPath}"
-          chmod 644 "${managedPrefsPlistPath}"
+            cp -f "${managedPrefsPlistFile}" "${managedPrefsPlistPath}"
+            chown root:wheel "${managedPrefsPlistPath}"
+            chmod 644 "${managedPrefsPlistPath}"
 
-          # See https://github.com/brave/brave-browser/issues/45106#issuecomment-3089894139
-          killall cfprefsd || true
-        '';
+            # See https://github.com/brave/brave-browser/issues/45106#issuecomment-3089894139
+            killall cfprefsd || true
+          '';
+
+          serviceConfig = {
+            RunAtLoad = true;
+            KeepAlive = false;
+          };
+        };
     }
   );
 }

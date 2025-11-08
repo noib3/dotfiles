@@ -11,7 +11,6 @@
 
   modules = {
     brave-policies.enable = true;
-    brave-search-engines.enable = true;
     desktop = {
       enable = true;
       inherit hostName userName;
