@@ -32,7 +32,7 @@ let
       # Escape single quotes for shell.
       escapedPlist = strings.escape [ "'" ] plistValue;
     in
-    "$DRY_RUN_CMD /usr/bin/defaults write ${domain} '${key}' $'${escapedPlist}'";
+    "run /usr/bin/defaults write ${domain} '${key}' $'${escapedPlist}'";
 
   defaultsToList =
     domain: attrs: mapAttrsToList (writeDefault domain) (filterAttrs (n: v: v != null) attrs);

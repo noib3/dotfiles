@@ -26,7 +26,7 @@ in
 
     home.activation = lib.mkIf isDarwin {
       setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        $DRY_RUN_CMD ${pkgs.defaultbrowser}/bin/defaultbrowser browser
+        run ${pkgs.defaultbrowser}/bin/defaultbrowser browser
       '';
       setBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] (
         import ./set-preferences.nix { inherit config pkgs lib; }

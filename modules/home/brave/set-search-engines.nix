@@ -87,19 +87,19 @@ in
   brave_was_running=0
   if is_brave_running; then
     brave_was_running=1
-    $DRY_RUN_CMD /usr/bin/osascript -e 'quit app "Brave Browser"'
+    run /usr/bin/osascript -e 'quit app "Brave Browser"'
     while is_brave_running; do /bin/sleep 0.5; done
   fi
 
   # Apply SQL changes.
-  $DRY_RUN_CMD ${pkgs.sqlite}/bin/sqlite3 "${dbPath}" < ${sqlScriptFile}
+  run ${pkgs.sqlite}/bin/sqlite3 "${dbPath}" < ${sqlScriptFile}
 
   # Restart Brave if it was running.
   if [[ "$brave_was_running" -eq 1 ]]; then
-    $DRY_RUN_CMD /usr/bin/open -a "Brave Browser"
+    run /usr/bin/open -a "Brave Browser"
   fi
 
   # Store the hash.
-  $DRY_RUN_CMD mkdir -p "$(dirname "$hash_file")"
-  $DRY_RUN_CMD echo "$script_hash" > "$hash_file"
+  run mkdir -p "$(dirname "$hash_file")"
+  run echo "$script_hash" > "$hash_file"
 ''

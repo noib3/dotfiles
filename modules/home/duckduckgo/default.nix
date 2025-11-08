@@ -28,7 +28,7 @@ in
 
     # home.activation = lib.mkIf pkgs.stdenv.isDarwin {
     #   setDuckDuckGoAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    #     $DRY_RUN_CMD ${pkgs.defaultbrowser}/bin/defaultbrowser duckduckgo
+    #     run ${pkgs.defaultbrowser}/bin/defaultbrowser duckduckgo
     #   '';
     # };
   };

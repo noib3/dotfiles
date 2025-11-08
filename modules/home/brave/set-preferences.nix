@@ -75,24 +75,24 @@ in
   brave_was_running=0
   if is_brave_running; then
     brave_was_running=1
-    $DRY_RUN_CMD /usr/bin/osascript -e 'quit app "Brave Browser"'
+    run /usr/bin/osascript -e 'quit app "Brave Browser"'
     while is_brave_running; do /bin/sleep 0.5; done
   fi
 
   # Apply each preference update.
-  $DRY_RUN_CMD ${pkgs.jq}/bin/jq \
+  run ${pkgs.jq}/bin/jq \
     --argjson updates '${prefUpdates}' \
     'reduce $updates[] as $update (.; setpath($update.path; $update.value))' \
     "${preferencesPath}" > "${preferencesPath}.tmp"
 
-  $DRY_RUN_CMD mv "${preferencesPath}.tmp" "${preferencesPath}"
+  run mv "${preferencesPath}.tmp" "${preferencesPath}"
 
   # Restart Brave if it was running.
   if [[ "$brave_was_running" -eq 1 ]]; then
-    $DRY_RUN_CMD /usr/bin/open -a "Brave Browser"
+    run /usr/bin/open -a "Brave Browser"
   fi
 
   # Store the hash.
-  $DRY_RUN_CMD mkdir -p "$(dirname "$hash_file")"
-  $DRY_RUN_CMD echo "$pref_hash" > "$hash_file"
+  run mkdir -p "$(dirname "$hash_file")"
+  run echo "$pref_hash" > "$hash_file"
 ''
