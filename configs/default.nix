@@ -28,7 +28,6 @@
   qutebrowser = import ./qutebrowser { inherit config lib pkgs; };
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
-  ssh-agent = import ./ssh-agent { inherit pkgs; };
   starship = import ./starship { inherit lib; };
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;

@@ -177,7 +177,6 @@ in
     inherit (configs)
       kanshi
       mpris-proxy
-      ssh-agent
       wlsunset
       ;
   };
