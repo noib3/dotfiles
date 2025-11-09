@@ -8,7 +8,6 @@
 with lib;
 let
   cfg = config.modules.claude;
-  pkg = pkgs.claude-code;
 in
 {
   options.modules.claude = {
@@ -16,7 +15,11 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ pkg ];
-    modules.nixpkgs.allowUnfreePackages = [ (lib.getName pkg) ];
+    home.packages = [
+      pkgs.claude-code
+      (import ./claude-code-acp.nix { inherit pkgs; })
+    ];
+
+    modules.nixpkgs.allowUnfreePackages = [ (lib.getName pkgs.claude-code) ];
   };
 }
