@@ -129,6 +129,20 @@ in
                 ];
               };
             };
+            rust-analyzer.initialization_options = {
+              highlightRelated.references.enable = false;
+              imports = {
+                granularity = {
+                  enforce = true;
+                  group = "module";
+                };
+                merge = {
+                  glob = false;
+                };
+                preferNoStd = true;
+              };
+              procMacro.enable = true;
+            };
           };
           on_last_window_closed = "quit_app";
           inherit preferred_line_length;
