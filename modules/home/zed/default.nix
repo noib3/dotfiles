@@ -17,6 +17,7 @@ in
   config = mkIf cfg.enable {
     programs.zed-editor = {
       enable = true;
+      extensions = [ "nix" ];
       mutableUserKeymaps = false;
       mutableUserSettings = false;
       themes = import ./themes;
@@ -93,7 +94,24 @@ in
             min_line_number_digits = 2;
           };
           indent_guides.enabled = false;
+          languages = {
+            Nix.language_servers = [
+              "nixd"
+              "!nil"
+            ];
+          };
           load_direnv = "shell_hook";
+          lsp = {
+            nixd.initialization_options = {
+              formatting = {
+                command = [
+                  "nixfmt"
+                  "--width"
+                  "79"
+                ];
+              };
+            };
+          };
           on_last_window_closed = "quit_app";
           inherit preferred_line_length;
           preview_tabs.enabled = false;
@@ -128,6 +146,8 @@ in
           use_smartcase_search = true;
           use_system_path_prompts = false;
           use_system_prompts = false;
+          # Equivalent of Vim's 'scrolloff'.
+          vertical_scroll_margin = 1;
           vim_mode = true;
           wrap_guides = [ preferred_line_length ];
         }
