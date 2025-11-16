@@ -28,5 +28,6 @@
     ./udiskie
     ./vivid
     ./whatsapp
+    ./zed
   ];
 }

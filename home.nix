@@ -149,6 +149,7 @@ in
     terminfo.enable = true;
     udiskie.enable = isLinux;
     whatsapp.enable = isDarwin;
+    zed.enable = true;
   };
 
   programs = {
