@@ -18,6 +18,7 @@ in
     programs.zed-editor = {
       enable = true;
       mutableUserSettings = false;
+      themes = import ./themes;
       userKeymaps = {
 
       };
@@ -55,9 +56,12 @@ in
           scrollbar = {
             cursors = false;
             git_diff = false;
+            selected_symbols = false;
+            selected_text = false;
           };
           search.button = false;
           seed_search_query_from_cursor = "selection";
+          selection_highlight = false;
           show_whitespaces = "all";
           soft_wrap = "editor_width";
           status_bar = {
@@ -73,6 +77,7 @@ in
             diagnostics = false;
             metrics = false;
           };
+          theme = "Gruvbox Material Dark";
           toolbar.quick_actions = false;
           use_smartcase_search = true;
           use_system_path_prompts = false;
