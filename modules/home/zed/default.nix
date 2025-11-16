@@ -61,14 +61,10 @@ in
               "Right"
             ];
 
-            # Go to the type definition.
+            "cmd-x" = "editor::FindAllReferences";
             "g t d" = "editor::GoToTypeDefinition";
-
-            # Rename symbol under cursor.
-            "shift-r" = "editor::Rename";
-
-            # Show code actions.
             "shift-a" = "editor::ToggleCodeActions";
+            "shift-r" = "editor::Rename";
           };
         }
         {
