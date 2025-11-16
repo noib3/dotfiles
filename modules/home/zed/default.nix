@@ -60,6 +60,24 @@ in
               "workspace::ActivatePaneInDirection"
               "Right"
             ];
+
+            # Go to the type definition.
+            "g t d" = "editor::GoToTypeDefinition";
+
+            # Rename symbol under cursor.
+            "shift-r" = "editor::Rename";
+
+            # Show code actions.
+            "shift-a" = "editor::ToggleCodeActions";
+          };
+        }
+        {
+          context = "Editor && vim_mode == normal && menu";
+          bindings = {
+            # Select/accept code action.
+            "up" = "editor::ContextMenuPrevious";
+            "down" = "editor::ContextMenuNext";
+            "return" = "editor::ConfirmCodeAction";
           };
         }
         {
@@ -120,7 +138,7 @@ in
           scrollbar = {
             cursors = false;
             git_diff = false;
-            selected_symbols = false;
+            selected_symbol = false;
             selected_text = false;
           };
           search.button = false;
@@ -137,12 +155,24 @@ in
             show_nav_history_buttons = false;
             show_tab_bar_buttons = false;
           };
+          tabs = {
+            file_icons = true;
+            show_close_button = "hidden";
+            show_diagnostics = "all";
+          };
           telemetry = {
             diagnostics = false;
             metrics = false;
           };
+          title_bar = {
+            show_menus = false;
+            show_onboarding_banner = false;
+          };
           theme = "Gruvbox Material Dark";
-          toolbar.quick_actions = false;
+          toolbar = {
+            breadcrumbs = false;
+            quick_actions = false;
+          };
           use_smartcase_search = true;
           use_system_path_prompts = false;
           use_system_prompts = false;
