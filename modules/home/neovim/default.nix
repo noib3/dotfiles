@@ -19,7 +19,7 @@ in
     home.packages =
       with pkgs;
       [
-        neovim
+        inputs.neovim-nightly-overlay.packages.${stdenv.system}.default
       ]
       ++ lib.lists.optionals stdenv.isLinux [
         # Needed to compile Tree-sitter grammars.
@@ -30,10 +30,6 @@ in
       EDITOR = "nvim";
       MANPAGER = "nvim +Man! -";
     };
-
-    nixpkgs.overlays = [
-      inputs.neovim-nightly-overlay.overlays.default
-    ];
 
     xdg.configFile.nvim = {
       source = config.lib.file.mkOutOfStoreSymlink (config.lib.mine.mkAbsolute ./.);
