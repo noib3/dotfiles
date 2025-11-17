@@ -22,7 +22,7 @@ in
       mutableUserSettings = false;
       themes = import ./themes;
       userKeymaps = import ./keymaps.nix;
-      userSettings = import ./settings.nix { inherit lib pkgs config; };
+      userSettings = import ./settings.nix { inherit config lib pkgs; };
     };
   };
 }

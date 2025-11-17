@@ -67,6 +67,7 @@ in
   scroll_beyond_last_line = "off";
   scrollbar = {
     cursors = false;
+    diagnostics = "warning";
     git_diff = false;
     selected_symbol = false;
     selected_text = false;
