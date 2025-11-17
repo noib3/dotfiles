@@ -57,7 +57,7 @@ return {
         marksman = {},
         nixd = {
           settings = {
-            ["nil"] = {
+            nixd = {
               formatting = {
                 command = { "nixfmt", "--width", "79" },
               },
