@@ -63,7 +63,7 @@ in
   on_last_window_closed = "quit_app";
   inherit preferred_line_length;
   preview_tabs.enabled = false;
-  relative_line_numbers = true;
+  relative_line_numbers = "enabled";
   scroll_beyond_last_line = "off";
   scrollbar = {
     cursors = false;
