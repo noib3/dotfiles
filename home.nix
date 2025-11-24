@@ -57,6 +57,7 @@ in
         scripts.rg-pattern
         scripts.rg-preview
         spotify
+        texliveConTeXt
         tokei
         tree
         unzip

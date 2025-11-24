@@ -41,6 +41,7 @@ return {
           claude_code = function()
             return require("codecompanion.adapters").extend("claude_code", {
               env = {
+                -- Run `claude setup-token` to generate an OAuth token.
                 CLAUDE_CODE_OAUTH_TOKEN = ("cmd:%s"):format(
                   retrieve_keychain_secret_command("claude-code-oauth-token")
                 ),
