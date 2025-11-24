@@ -3,7 +3,7 @@ vim.opt_local.shiftwidth = 2
 vim.opt_local.spelllang = { "en_us", "it" }
 vim.opt_local.tabstop = 2
 
-vim.keymap.set("n", "<C-t>", "<Cmd>!context --purge %<CR>", {
+vim.keymap.set("n", "<D-c>", "<Cmd>!context --purge %<CR>", {
   silent = true,
   buffer = true,
 })
