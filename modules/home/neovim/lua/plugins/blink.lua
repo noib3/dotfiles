@@ -17,6 +17,7 @@ return {
           range = "prefix",
         },
         list = {
+          max_items = 7,
           selection = {
             preselect = false,
             auto_insert = false,
@@ -24,7 +25,6 @@ return {
         },
         menu = {
           auto_show = true,
-          max_height = 7,
           draw = {
             columns = { { "label" } },
             treesitter = { "lsp" },
