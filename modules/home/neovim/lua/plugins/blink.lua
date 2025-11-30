@@ -2,6 +2,12 @@ return {
   {
     "Saghen/blink.cmp",
     build = "cargo build --release --target-dir ./target",
+    dependencies = {
+      {
+        "noib3/colorful-menu.nvim",
+        branch = "noib3",
+      }
+    },
     ---@type blink.cmp.Config
     opts = {
       keymap = {
@@ -26,8 +32,7 @@ return {
         menu = {
           auto_show = true,
           draw = {
-            columns = { { "label" } },
-            treesitter = { "lsp" },
+            columns = { { "label" }, { "label_detail" } },
           }
         },
         documentation = {
@@ -60,7 +65,22 @@ return {
       },
     },
     config = function(_, opts)
-      require("blink.cmp").setup(opts)
+      local blink = require("blink.cmp")
+      local colorful_menu = require("colorful-menu")
+
+      -- Highlight the completion labels with Tree-sitter.
+      opts.completion.menu.draw.components = {
+        label = {
+          text = colorful_menu.blink_components_label_text,
+          highlight = colorful_menu.blink_components_label_highlight,
+        },
+        label_detail = {
+          text = colorful_menu.blink_components_detail_text,
+          highlight = colorful_menu.blink_components_detail_highlight,
+        }
+      }
+
+      blink.setup(opts)
       vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
       vim.api.nvim_set_hl(0, "BlinkCmpMenuSelection", { background = "#7c6f64" })
       vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { foreground = "#a89984" })

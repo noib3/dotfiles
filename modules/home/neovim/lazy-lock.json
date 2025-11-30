@@ -3,6 +3,7 @@
   "blink.cmp": { "branch": "main", "commit": "30e7dc521ac261b93eada2a8655817f6b7c6609d" },
   "bufdelete.nvim": { "branch": "master", "commit": "f6bcea78afb3060b198125256f897040538bcb81" },
   "codecompanion.nvim": { "branch": "main", "commit": "ca87f13b7559257f5aa91e4fcd1326a61311be13" },
+  "colorful-menu.nvim": { "branch": "noib3", "commit": "4729add5a1320535a9e721f1abe0c2cd26e2521a" },
   "copilot.lua": { "branch": "master", "commit": "5bde2cfe01f049f522eeb8b52c5c723407db8bdf" },
   "crates.nvim": { "branch": "main", "commit": "ac9fa498a9edb96dc3056724ff69d5f40b898453" },
   "fzf-lua": { "branch": "main", "commit": "996b2366489324983ac1a555cf4d156fe3786fa0" },
