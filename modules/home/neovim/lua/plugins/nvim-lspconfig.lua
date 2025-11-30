@@ -12,6 +12,10 @@ return {
             return {
               settings = {
                 Lua = {
+                  completion = {
+                    callSnippet = "Disable",
+                    keywordSnippet = "Disable",
+                  },
                   diagnostics = {
                     disable = {
                       ["redefined-local"] = true,
@@ -81,6 +85,11 @@ return {
                   "--message-format=json",
                 },
               },
+              completion = {
+                callable = {
+                  snippets = "add_parentheses",
+                },
+              },
               imports = {
                 granularity = {
                   enforce = true,
@@ -106,7 +115,7 @@ return {
 
       local setup_lsp = function(server_name)
         return function(config)
-          config.capabilities = blink.get_lsp_capabilities(config.capabilities)
+          config.capabilities = blink.get_lsp_capabilities()
           vim.lsp.enable(server_name)
           vim.lsp.config(server_name, config)
         end
