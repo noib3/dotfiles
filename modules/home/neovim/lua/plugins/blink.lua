@@ -38,6 +38,12 @@ return {
       fuzzy = {
         prebuilt_binaries = { download = false },
       },
+      signature = {
+        enabled = true,
+        window = {
+          show_documentation = false,
+        }
+      },
       sources = {
         default = { "lsp", "path" },
         providers = {

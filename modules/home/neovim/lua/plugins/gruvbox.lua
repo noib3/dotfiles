@@ -36,6 +36,9 @@ local overrides = {
       -- Hovered symbol.
       LspReferenceTarget = { bold = true },
 
+      -- Active parameter in signature help.
+      LspSignatureActiveParameter = { underline = true, sp = "#d4be98" },
+
       -- Punctuation.
       ["@punctuation.delimiter"] = { fg = "#928374" },
       ["@punctuation.bracket"] = { fg = "#a89984" },
