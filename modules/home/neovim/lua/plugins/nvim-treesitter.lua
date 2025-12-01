@@ -3,27 +3,6 @@ local get_language = function(buf)
   return vim.treesitter.language.get_lang(filetype) or filetype
 end
 
-local initial_cursor = {}
-
-local save_initial_cursor = function(buf)
-  initial_cursor[buf] = vim.api.nvim_win_get_cursor(0)
-end
-
-local restore_initial_cursor = function(buf)
-  local cursor = initial_cursor[buf]
-
-  if not cursor then return end
-
-  vim.cmd.normal({
-    vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
-    bang = true
-  })
-
-  vim.api.nvim_win_set_cursor(0, cursor)
-
-  initial_cursor[buf] = nil
-end
-
 local install_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter"
 
 local languages = {
@@ -47,7 +26,6 @@ return {
       "RRethy/nvim-treesitter-endwise",
       {
         "MeanderingProgrammer/treesitter-modules.nvim",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
         opts = {
           ensure_installed = languages,
           highlight = { enable = true },
@@ -70,17 +48,17 @@ return {
       install_dir = install_dir,
     },
     config = function(_, opts)
-      local treesitter = require("nvim-treesitter")
-      local selection = require("treesitter-modules.lib.selection")
+      require("nvim-treesitter").setup(opts)
 
-      treesitter.setup(opts)
+      local selection = require("treesitter-modules.lib.selection")
+      local initial_cursor = nil
 
       vim.keymap.set({ "n", "x" }, "<Tab>", function()
           local buf = vim.api.nvim_get_current_buf()
           local lang = get_language(buf)
 
-          if vim.api.nvim_get_mode().mode == "n" or not initial_cursor[buf] then
-            save_initial_cursor(buf)
+          if vim.api.nvim_get_mode().mode == "n" or not initial_cursor then
+            initial_cursor = vim.api.nvim_win_get_cursor(0)
             ---@diagnostic disable-next-line: invisible
             selection.nodes:clear(buf)
             selection.init_selection(buf, lang)
@@ -93,21 +71,29 @@ return {
 
       vim.keymap.set("x", "<S-Tab>", function()
           local buf = vim.api.nvim_get_current_buf()
-          local lang = get_language(buf)
+          if not initial_cursor then return end
 
           local _, start_row, start_col = unpack(vim.fn.getpos("v"))
           local _, end_row, end_col = unpack(vim.fn.getpos("."))
           local old_pos = { start_row, start_col, end_row, end_col }
 
-          selection.node_decremental(buf, lang)
+          selection.node_decremental(buf, get_language(buf))
 
           local _, start_row, start_col = unpack(vim.fn.getpos("v"))
           local _, end_row, end_col = unpack(vim.fn.getpos("."))
           local new_pos = { start_row, start_col, end_row, end_col }
 
           if vim.deep_equal(old_pos, new_pos) then
-            -- Selection didn't change, restore initial cursor.
-            restore_initial_cursor(buf)
+            -- If the selection didn't change it means we're at the smallest
+            -- node, so we restore the initial cursor position and exit visual
+            -- mode.
+            vim.api.nvim_win_set_cursor(0, initial_cursor)
+            initial_cursor = nil
+
+            vim.cmd.normal({
+              vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+              bang = true
+            })
           end
         end,
         { desc = "Select smaller syntax node or restore initial cursor position" }
