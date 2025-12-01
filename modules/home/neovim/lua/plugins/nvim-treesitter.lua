@@ -7,7 +7,7 @@ local install_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter"
 
 local languages = {
   "c",
-  "javascript",
+  "cpp",
   "lua",
   "markdown",
   "nix",
@@ -70,13 +70,13 @@ return {
       )
 
       vim.keymap.set("x", "<S-Tab>", function()
-          local buf = vim.api.nvim_get_current_buf()
           if not initial_cursor then return end
 
           local _, start_row, start_col = unpack(vim.fn.getpos("v"))
           local _, end_row, end_col = unpack(vim.fn.getpos("."))
           local old_pos = { start_row, start_col, end_row, end_col }
 
+          local buf = vim.api.nvim_get_current_buf()
           selection.node_decremental(buf, get_language(buf))
 
           local _, start_row, start_col = unpack(vim.fn.getpos("v"))
