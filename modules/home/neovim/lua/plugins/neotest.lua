@@ -4,7 +4,12 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-neotest/nvim-nio",
-      "mrcjkb/rustaceanvim",
+      {
+        "mrcjkb/rustaceanvim",
+        init = function()
+          vim.g.rustaceanvim = { server = { auto_attach = false } }
+        end,
+      }
     },
     config = function()
       local neotest = require("neotest")
