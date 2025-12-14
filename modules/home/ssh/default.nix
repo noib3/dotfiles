@@ -8,6 +8,7 @@
 with lib;
 let
   cfg = config.modules.ssh;
+  knownHostsFile = "${config.xdg.stateHome}/ssh/known_hosts";
 in
 {
   options.modules.ssh = {
@@ -31,7 +32,7 @@ in
           addKeysToAgent = "yes";
           compression = true;
           hashKnownHosts = true;
-          userKnownHostsFile = "${config.xdg.stateHome}/ssh/known_hosts";
+          userKnownHostsFile = knownHostsFile;
         };
       };
       extraConfig = ''
@@ -40,5 +41,13 @@ in
     };
 
     services.ssh-agent.enable = pkgs.stdenv.isLinux;
+
+    home.activation.createSshKnownHostsFile =
+      lib.hm.dag.entryAfter [ "writeBoundary" ]
+        ''
+          run mkdir -p "$(dirname "${knownHostsFile}")"
+          run touch "${knownHostsFile}"
+          run chmod 644 "${knownHostsFile}"
+        '';
   };
 }
