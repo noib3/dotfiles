@@ -108,14 +108,13 @@ let
           (mkHomeManagerModule machine)
           ../fonts/module.nix
           ../modules/services/bluetooth-autoconnect.nix
-        ]
-        ++ lib.lists.optionals pkgs.stdenv.isDarwin [
-          inputs.mac-app-util.homeManagerModules.default
         ];
 
       extraSpecialArgs = { inherit inputs; };
     };
 in
 {
-  forEach = forMachine: (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
+  forEach =
+    forMachine:
+    (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));
 }

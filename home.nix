@@ -41,6 +41,7 @@ in
       [
         asciinema
         cachix
+        codex
         delta
         dua
         gh
@@ -69,8 +70,9 @@ in
         brewCasks.obs
         brewCasks.protonvpn
         coreutils
-        iina
         gnused
+        iina
+        keycastr
       ]
       ++ lib.lists.optionals isLinux [
         cameractrls
@@ -150,7 +152,7 @@ in
     terminfo.enable = true;
     udiskie.enable = isLinux;
     whatsapp.enable = isDarwin;
-    zed.enable = true;
+    zed.enable = false;
   };
 
   programs = {

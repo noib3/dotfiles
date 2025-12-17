@@ -2,10 +2,15 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
 {
+  imports = [
+    inputs.nix-jettison.homeManagerModules.default
+  ];
+
   config = {
     home.packages = with pkgs; [
       nixd
@@ -15,6 +20,7 @@
 
     nix = {
       package = pkgs.nixVersions.latest;
+      plugins.jettison.enable = false;
       settings = {
         experimental-features = [
           "flakes"
@@ -24,7 +30,9 @@
         trusted-substituters = [
           "https://nix-community.cachix.org"
         ]
-        ++ (lib.optional config.machines."skunk@linux".isCurrent "https://cache.soopy.moe");
+        ++ (lib.optional config.machines."skunk@linux".isCurrent
+          "https://cache.soopy.moe"
+        );
         warn-dirty = false;
       };
     };

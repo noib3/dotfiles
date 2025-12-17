@@ -19,18 +19,15 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    mac-app-util = {
-      url = "github:hraban/mac-app-util";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
+    nix-jettison = {
+      url = "github:noib3/nix-jettison";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
