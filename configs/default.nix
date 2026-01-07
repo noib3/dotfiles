@@ -5,7 +5,6 @@
 }:
 
 {
-  alacritty = import ./alacritty { inherit config lib pkgs; };
   bat = import ./bat;
   bspwm = import ./bspwm;
   calcurse = import ./calcurse;

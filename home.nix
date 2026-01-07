@@ -157,7 +157,6 @@ in
 
   programs = {
     inherit (configs)
-      alacritty
       bat
       direnv
       fd
