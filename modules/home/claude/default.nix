@@ -15,10 +15,21 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
-      pkgs.claude-code
-      (import ./claude-code-acp.nix { inherit pkgs; })
-    ];
+    home = {
+      packages = [
+        pkgs.claude-code
+        (import ./claude-code-acp.nix { inherit pkgs; })
+      ];
+
+      sessionVariables = {
+        CLAUDE_CONFIG_DIR = "${config.xdg.configHome}/claude";
+      };
+    };
+
+    xdg.configFile."claude/commands" = {
+      source = ./commands;
+      recursive = true;
+    };
 
     modules.nixpkgs.allowUnfreePackages = [ (lib.getName pkgs.claude-code) ];
   };
