@@ -24,7 +24,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-jettison = {
-      url = "github:noib3/nix-jettison";
+      url = "git+ssh://git@github.com/noib3/nix-jettison";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
