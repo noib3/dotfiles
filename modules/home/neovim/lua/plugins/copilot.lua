@@ -12,7 +12,10 @@ return {
         auto_trigger = true,
       },
       filetypes = {
-        markdown = true,
+        markdown = function()
+          local bufname = vim.api.nvim_buf_get_name(0)
+          return not string.match(bufname, "claude%-prompt%-.*%.md$")
+        end,
       },
     },
     config = function(_, opts)
