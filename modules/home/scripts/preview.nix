@@ -19,8 +19,6 @@ pkgs.writeShellApplication {
       mediainfo
       # Contains `convert`.
       imagemagick_light
-      # Used for videos.
-      mkvtoolnix-cli
       # Contains `pdftoppm`, used for PDFs.
       poppler-utils
     ]
