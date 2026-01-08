@@ -13,9 +13,9 @@
 
   config = {
     home.packages = with pkgs; [
-      nixd
       nixVersions.latest
-      nixfmt-rfc-style
+      nixd
+      nixfmt
     ];
 
     nix = {
