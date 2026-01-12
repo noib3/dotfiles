@@ -1,5 +1,25 @@
 local utils = require("utils")
 
+local is_text_file = function(path)
+  local output = vim.fn.systemlist({ "file", "-Lb", "--mime-type", path })
+  if vim.v.shell_error ~= 0 or not output or not output[1] then
+    return false
+  end
+  local mime = output[1]
+  return vim.startswith(mime, "text/")
+      or mime == "application/csv"
+      or mime == "application/javascript"
+      or mime == "application/json"
+      or mime == "application/x-pem-file"
+      or mime == "inode/x-empty"
+end
+
+local open = function(path)
+  local is_macos = vim.fn.has("macunix") == 1 or vim.fn.has("mac") == 1
+  local opener = is_macos and "open" or "xdg-open"
+  vim.fn.jobstart({ opener, path }, { detach = true })
+end
+
 local setup_lazygit = function()
   local Terminal = require("toggleterm.terminal").Terminal
   local lazygit = Terminal:new({
@@ -46,16 +66,22 @@ local setup_lf = function()
       local selected_paths = utils.fs.read_file(temp_file)
       if not selected_paths then return end
       -- TODO:
-      -- * ignore directories;
-      -- * if file is not text file, shell out to `open`;
       -- * if text file is currently focused, skip it;
       -- * if text file is first one, open it in current window;
       -- * if text file is not first one, add it to the qf list;
       for path in utils.lua.iter_lines(selected_paths) do
-        ---@cast window integer
-        vim.api.nvim_win_call(window, function()
-          vim.cmd.edit(vim.fn.fnameescape(path))
-        end)
+        if vim.fn.isdirectory(path) == 1 then
+          goto continue
+        end
+        if is_text_file(path) then
+          ---@cast window integer
+          vim.api.nvim_win_call(window, function()
+            vim.cmd.edit(vim.fn.fnameescape(path))
+          end)
+        else
+          open(path)
+        end
+        ::continue::
       end
     end
   })
