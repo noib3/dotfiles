@@ -52,15 +52,13 @@ in
 
       defaults = {
         CustomUserPreferences = {
+          "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
+          "com.apple.ImageCapture".disableHotPlug = true;
+          # Don't create .DS_Store files on network and USB volumes.
           "com.apple.desktopservices" = {
-            # Don't create .DS_Store files on network and USB volumes.
             DSDontWriteNetworkStores = true;
             DSDontWriteUSBStores = true;
           };
-          "com.apple.AdLib" = {
-            allowApplePersonalizedAdvertising = false;
-          };
-          "com.apple.ImageCapture".disableHotPlug = true;
         };
 
         dock = {
@@ -103,13 +101,10 @@ in
           AppleShowScrollBars = "WhenScrolling";
           InitialKeyRepeat = 10;
           KeyRepeat = 2;
-          NSAutomaticWindowAnimationsEnabled = false;
           NSWindowShouldDragOnGesture = true;
         };
 
         trackpad.Clicking = true;
-
-        universalaccess.reduceMotion = true;
       };
 
       keyboard = {
