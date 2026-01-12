@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -17,7 +18,11 @@ in
   config = mkIf cfg.enable {
     home = {
       packages = [
-        pkgs.claude-code
+        (inputs.claude-code-nix.packages.${pkgs.stdenv.system}.claude-code-bun.override
+          {
+            bunBinName = "claude";
+          }
+        )
         (import ./claude-code-acp.nix { inherit pkgs; })
       ];
 
@@ -26,11 +31,17 @@ in
       };
     };
 
+    xdg.configFile."claude/settings.json" = {
+      text = builtins.toJSON {
+        enabledPlugins = {
+          "rust-analyzer-lsp@claude-plugins-official" = true;
+        };
+      };
+    };
+
     xdg.configFile."claude/commands" = {
       source = ./commands;
       recursive = true;
     };
-
-    modules.nixpkgs.allowUnfreePackages = [ (lib.getName pkgs.claude-code) ];
   };
 }
