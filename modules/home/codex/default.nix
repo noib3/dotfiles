@@ -15,12 +15,19 @@ in
   };
 
   config = mkIf cfg.enable {
-    home = {
-      packages = [ pkgs.codex ];
-
-      sessionVariables = {
-        CODEX_HOME = "${config.xdg.configHome}/codex";
+    home =
+      let
+        codexHome = "${config.xdg.configHome}/codex";
+      in
+      {
+        packages = [ pkgs.codex ];
+        sessionVariables.CODEX_HOME = codexHome;
+        # When setting a custom CODEX_HOME, Codex will refuse to start if the
+        # directory doesn't exist instead of creating it automatically, so let's
+        # make sure it exists.
+        activation.createCodexHome = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run mkdir -p "${codexHome}"
+        '';
       };
-    };
   };
 }
