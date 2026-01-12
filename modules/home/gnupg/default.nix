@@ -20,7 +20,7 @@ in
       homedir = "${config.xdg.dataHome}/gnupg";
     };
 
-    services.gpg-agent = mkIf pkgs.stdenv.isLinux (
+    services.gpg-agent =
       let
         seven_days = 604800;
       in
@@ -30,8 +30,8 @@ in
         maxCacheTtl = seven_days;
         defaultCacheTtlSsh = seven_days;
         maxCacheTtlSsh = seven_days;
-        pinentry.package = pkgs.pinentry-qt;
-      }
-    );
+        pinentry.package =
+          if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-qt;
+      };
   };
 }
