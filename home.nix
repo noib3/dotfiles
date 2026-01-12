@@ -41,7 +41,6 @@ in
       [
         asciinema
         cachix
-        codex
         delta
         dua
         gh
@@ -135,6 +134,7 @@ in
   modules = {
     brave.enable = isDarwin;
     claude.enable = true;
+    codex.enable = true;
     colorscheme.${colorscheme}.enable = true;
     dropbox.enable = true;
     fish.enable = true;

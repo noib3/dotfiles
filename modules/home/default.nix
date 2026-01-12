@@ -3,6 +3,7 @@
     ./brave
     ./browser
     ./claude
+    ./codex
     ./colorscheme
     ./dropbox
     ./duckduckgo
