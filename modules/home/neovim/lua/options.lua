@@ -71,7 +71,7 @@ opt.tabstop = 4
 opt.termguicolors = true
 
 -- Automatically insert a newline after this many characters.
-opt.textwidth = 79
+opt.textwidth = 80
 
 -- Save the undo history in a file.
 opt.undofile = true

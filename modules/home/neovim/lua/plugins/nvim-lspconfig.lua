@@ -33,7 +33,7 @@ return {
                       indent_style = "space",
                       indent_size = "2",
                       quote_style = "double",
-                      max_line_length = "79",
+                      max_line_length = "80",
                     },
                   },
                   runtime = {
@@ -63,7 +63,7 @@ return {
           settings = {
             nixd = {
               formatting = {
-                command = { "nixfmt", "--width", "79" },
+                command = { "nixfmt", "--width", "80" },
               },
             }
           }

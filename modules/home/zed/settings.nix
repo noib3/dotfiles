@@ -6,7 +6,7 @@
 
 let
   buffer_font = config.fonts.monospace;
-  preferred_line_length = 79;
+  preferred_line_length = 80;
 in
 {
   auto_update = false;
@@ -41,7 +41,7 @@ in
         command = [
           "nixfmt"
           "--width"
-          "79"
+          (toString preferred_line_length)
         ];
       };
     };
