@@ -16,7 +16,7 @@
       inputs.nix-darwin.follows = "nix-darwin";
     };
     claude-code-nix = {
-      url = "github:noib3/claude-code-nix/custom-bun-bin-name";
+      url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {

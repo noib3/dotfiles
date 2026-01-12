@@ -50,16 +50,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1768214703,
-        "narHash": "sha256-7t+/bhTf5Kj6PiHF61yC3MCmZ07T9GKnb+PgnCZH/6w=",
-        "owner": "noib3",
+        "lastModified": 1768229056,
+        "narHash": "sha256-HjVtg6p8CUS8xea8TrxRruVBZFEPAfcA35DDI58cd0Y=",
+        "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "914dfb0271187b6d1e4264eb9d0f5dab8a2fe394",
+        "rev": "bd037734656d1822d3a6201d8d7c325db8e00963",
         "type": "github"
       },
       "original": {
-        "owner": "noib3",
-        "ref": "custom-bun-bin-name",
+        "owner": "sadjow",
         "repo": "claude-code-nix",
         "type": "github"
       }
