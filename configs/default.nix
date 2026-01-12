@@ -27,7 +27,6 @@
   qutebrowser = import ./qutebrowser { inherit config lib pkgs; };
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
-  starship = import ./starship { inherit lib; };
   sxhkd = import ./sxhkd;
   transmission = import ./transmission;
   wlsunset = import ./wlsunset { inherit pkgs; };

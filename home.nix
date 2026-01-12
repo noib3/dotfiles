@@ -149,6 +149,7 @@ in
     signal.enable = true;
     skhd.enable = isDarwin;
     ssh.enable = true;
+    starship.enable = true;
     terminfo.enable = true;
     udiskie.enable = isLinux;
     whatsapp.enable = isDarwin;
@@ -169,7 +170,6 @@ in
       nix-index
       qutebrowser
       ripgrep
-      starship
       zathura
       ;
   };

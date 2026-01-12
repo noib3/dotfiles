@@ -23,6 +23,7 @@
     ./signal
     ./skhd
     ./ssh
+    ./starship
     ./terminal
     ./terminfo
     ./udiskie
