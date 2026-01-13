@@ -1,5 +1,6 @@
 {
   imports = [
+    ./bettermouse
     ./brave
     ./browser
     ./claude

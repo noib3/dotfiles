@@ -22,14 +22,14 @@ in
 
     services.gpg-agent =
       let
-        seven_days = 604800;
+        sevenDays = 604800;
       in
       {
         enable = true;
-        defaultCacheTtl = seven_days;
-        maxCacheTtl = seven_days;
-        defaultCacheTtlSsh = seven_days;
-        maxCacheTtlSsh = seven_days;
+        defaultCacheTtl = sevenDays;
+        maxCacheTtl = sevenDays;
+        defaultCacheTtlSsh = sevenDays;
+        maxCacheTtlSsh = sevenDays;
         pinentry.package =
           if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-qt;
       };

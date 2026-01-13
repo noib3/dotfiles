@@ -132,6 +132,7 @@ in
   };
 
   modules = {
+    bettermouse.enable = isDarwin;
     brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;

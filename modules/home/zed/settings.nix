@@ -5,14 +5,14 @@
 }:
 
 let
-  buffer_font = config.fonts.monospace;
-  preferred_line_length = 80;
+  bufferFont = config.fonts.monospace;
+  preferredLineLength = 80;
 in
 {
   auto_update = false;
   autosave = "on_focus_change";
-  buffer_font_family = buffer_font.name;
-  buffer_font_size = buffer_font.size config "zed";
+  buffer_font_family = bufferFont.name;
+  buffer_font_size = bufferFont.size config "zed";
   current_line_highlight = "none";
   cursor_blink = false;
   diagnostics.inline.enabled = true;
@@ -41,7 +41,7 @@ in
         command = [
           "nixfmt"
           "--width"
-          (toString preferred_line_length)
+          (toString preferredLineLength)
         ];
       };
     };
@@ -61,7 +61,7 @@ in
     };
   };
   on_last_window_closed = "quit_app";
-  inherit preferred_line_length;
+  preferred_line_length = preferredLineLength;
   preview_tabs.enabled = false;
   relative_line_numbers = "enabled";
   scroll_beyond_last_line = "off";
@@ -110,7 +110,7 @@ in
   # Equivalent of Vim's 'scrolloff'.
   vertical_scroll_margin = 1;
   vim_mode = true;
-  wrap_guides = [ preferred_line_length ];
+  wrap_guides = [ preferredLineLength ];
 }
 // lib.optionalAttrs pkgs.stdenv.isDarwin {
   ui_font_family = ".SystemUIFont";
