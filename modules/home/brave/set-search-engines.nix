@@ -42,7 +42,11 @@ let
   sqlScript =
     let
       nix2Sql =
-        v: if builtins.isString v then "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'" else toString v;
+        v:
+        if builtins.isString v then
+          "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'"
+        else
+          toString v;
     in
     ''
       -- Remove all policy-managed search engines.
@@ -70,36 +74,40 @@ in
     /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
   }
 
-  # Exit early if Brave hasn't yet created the DB.
-  [[ -f "${dbPath}" ]] || exit 0
+  apply_brave_search_engines() {
+    # Exit early if Brave hasn't yet created the DB.
+    [[ -f "${dbPath}" ]] || return 0
 
-  # Generate the checksum of the SQL script.
-  script_hash=$(${pkgs.openssl}/bin/openssl dgst -sha256 ${sqlScriptFile} | cut -d' ' -f2)
-  hash_file="${config.xdg.cacheHome}/home-manager/brave-search-engines.hash"
+    # Generate the checksum of the SQL script.
+    script_hash=$(${pkgs.openssl}/bin/openssl dgst -sha256 ${sqlScriptFile} | cut -d' ' -f2)
+    hash_file="${config.xdg.cacheHome}/home-manager/brave-search-engines.hash"
 
-  # Exit early if the search engines haven't changed.
-  if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$script_hash" ]]; then
-    echo "Brave search engines already up to date"
-    exit 0
-  fi
+    # Exit early if the search engines haven't changed.
+    if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$script_hash" ]]; then
+      echo "Brave search engines already up to date"
+      return 0
+    fi
 
-  # The database is locked while Brave is running, so we need to quit it first.
-  brave_was_running=0
-  if is_brave_running; then
-    brave_was_running=1
-    run /usr/bin/osascript -e 'quit app "Brave Browser"'
-    while is_brave_running; do /bin/sleep 0.5; done
-  fi
+    # The database is locked while Brave is running, so we need to quit it first.
+    brave_was_running=0
+    if is_brave_running; then
+      brave_was_running=1
+      run /usr/bin/osascript -e 'quit app "Brave Browser"'
+      while is_brave_running; do /bin/sleep 0.5; done
+    fi
 
-  # Apply SQL changes.
-  run ${pkgs.sqlite}/bin/sqlite3 "${dbPath}" < ${sqlScriptFile}
+    # Apply SQL changes.
+    run ${pkgs.sqlite}/bin/sqlite3 "${dbPath}" < ${sqlScriptFile}
 
-  # Restart Brave if it was running.
-  if [[ "$brave_was_running" -eq 1 ]]; then
-    run /usr/bin/open -a "Brave Browser"
-  fi
+    # Restart Brave if it was running.
+    if [[ "$brave_was_running" -eq 1 ]]; then
+      run /usr/bin/open -a "Brave Browser"
+    fi
 
-  # Store the hash.
-  run mkdir -p "$(dirname "$hash_file")"
-  run echo "$script_hash" > "$hash_file"
+    # Store the hash.
+    run mkdir -p "$(dirname "$hash_file")"
+    run echo "$script_hash" > "$hash_file"
+  }
+
+  apply_brave_search_engines
 ''
