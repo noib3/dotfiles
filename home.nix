@@ -143,6 +143,15 @@ in
     gnupg.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
+    macOSPreferences = {
+      enable = isDarwin;
+      identifier = "dev.noib3.NixPreferences";
+    };
+    macOSProfile = {
+      enable = isDarwin;
+      identifier = "dev.noib3.NixProfile";
+      displayName = "Profile managed by home-manager";
+    };
     neovim.enable = true;
     rust.enable = true;
     selfcontrol.enable = isDarwin;

@@ -26,7 +26,7 @@ in
       pkgs.brewCasks.selfcontrol
     ];
 
-    modules.defaults.CustomUserPreferences."org.eyebeam.SelfControl" =
+    modules.macOSPreferences.domains."org.eyebeam.SelfControl" =
       let
         oneDayInMinutes = 24 * 60;
       in

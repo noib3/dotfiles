@@ -15,6 +15,7 @@
     ./kubectl
     ./lib
     ./macos-defaults
+    ./macos-profile
     ./neovim
     ./nix
     ./nixpkgs
