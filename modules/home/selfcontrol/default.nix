@@ -26,15 +26,13 @@ in
       pkgs.brewCasks.selfcontrol
     ];
 
-    modules.defaults.CustomUserPreferences = {
-      "org.eyebeam.SelfControl" =
-        let
-          oneDayInMinutes = 24 * 60;
-        in
-        {
-          BlockLengthInterval = oneDayInMinutes;
-          MaxBlockLength = oneDayInMinutes * 30;
-        };
-    };
+    modules.defaults.CustomUserPreferences."org.eyebeam.SelfControl" =
+      let
+        oneDayInMinutes = 24 * 60;
+      in
+      {
+        BlockLengthInterval = oneDayInMinutes;
+        MaxBlockLength = oneDayInMinutes * 30;
+      };
   };
 }
