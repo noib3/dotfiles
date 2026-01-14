@@ -27,6 +27,8 @@ in
   }
   // (mkPayloadOptions {
     type = "Configuration";
+    defaultIdentifier = "dev.noib3.NixProfile";
+    defaultDisplayName = "Profile managed by Home-manager";
     contentType = mkOption {
       type = types.listOf types.attrs;
       description = "List of payloads to include in the profile";
@@ -51,30 +53,28 @@ in
     ];
 
     home.activation.setMacOSProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      profile_exists() {
-        /usr/bin/profiles show -identifier "$1" 2>/dev/null | /usr/bin/grep -q "$1"
+      install_macos_profile() {
+        PROFILE_ID="${cfg.identifier}"
+        PROFILE_PATH="${cfg.generatedProfile}"
+        STATE_DIR="${config.xdg.stateHome}/macos-profile"
+        CURRENT_PROFILE="$STATE_DIR/current.mobileconfig"
+
+        # Return early if the profile hasn't changed.
+        if [[ -L "$CURRENT_PROFILE" ]] && /usr/bin/cmp -s "$CURRENT_PROFILE" "$PROFILE_PATH"; then
+          return 0
+        fi
+
+        # Update the current profile and open System Settings to let the user
+        # install it (unfortunately `profiles install` no longer works, and
+        # I don't think there's another non-interactive way of installing
+        # profiles).
+        run mkdir -p "$STATE_DIR"
+        run ln -sfn "$PROFILE_PATH" "$CURRENT_PROFILE"
+        run /usr/bin/open "$PROFILE_PATH"
+        run /usr/bin/open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
       }
 
-      # `profiles install` no longer works, and I don't think there's
-      # a non-interactive way to install profiles, so we use `open` to open the
-      # profile in System Preferences (but only if it's new or changed).
-
-      if profile_exists "${cfg.identifier}"; then
-        old_hash="$(/usr/bin/profiles show -identifier "${cfg.identifier}" -output stdout-xml 2>/dev/null \
-          | /usr/bin/plutil -convert xml1 -o - - 2>/dev/null \
-          | /usr/bin/shasum -a 256 \
-          | /usr/bin/awk '{print $1}')"
-
-        new_hash="$(/usr/bin/plutil -convert xml1 -o - "${cfg.generatedProfile}" 2>/dev/null \
-          | /usr/bin/shasum -a 256 \
-          | /usr/bin/awk '{print $1}')"
-
-        if [ "$new_hash" != "$old_hash" ]; then
-          run /usr/bin/open "${cfg.generatedProfile}"
-        fi
-      else
-        run /usr/bin/open "${cfg.generatedProfile}"
-      fi
+      install_macos_profile
     '';
   };
 }

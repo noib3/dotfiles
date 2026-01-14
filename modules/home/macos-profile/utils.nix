@@ -10,6 +10,7 @@ in
   mkPayloadOptions =
     {
       type,
+      defaultIdentifier,
       defaultDisplayName ? null,
       contentType ? mkOption {
         type = types.any;
@@ -37,6 +38,7 @@ in
           A reverse-DNS style identifier for this payload.
           Must be unique within the profile.
         '';
+        default = defaultIdentifier;
         example = "com.example.nix-managed";
       };
 

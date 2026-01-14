@@ -37,7 +37,8 @@ in
   }
   // (mkPayloadOptions {
     type = "com.apple.ManagedClient.preferences";
-    defaultDisplayName = "Managed Preferences";
+    defaultIdentifier = "dev.noib3.NixPreferences";
+    defaultDisplayName = "Preferences managed by home-manager";
     contentType = mkOption {
       type = types.attrsOf types.attrs;
       default = builtins.mapAttrs (_bundleId: appSettings: {
