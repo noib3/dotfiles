@@ -31,7 +31,7 @@
       url = "git+ssh://git@github.com/noib3/nix-jettison";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";

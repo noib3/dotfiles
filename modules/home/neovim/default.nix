@@ -19,25 +19,21 @@ in
     home.packages =
       let
         # The Tree-sitter CLI needs a C compiler to build parsers.
-        tree-sitter-wrapped = (
-          pkgs.symlinkJoin {
-            name = "tree-sitter-wrapped";
-            paths = [ pkgs.tree-sitter ];
-            buildInputs = [ pkgs.makeWrapper ];
-            postBuild = ''
-              wrapProgram $out/bin/tree-sitter \
-                --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
-            '';
-          }
-        );
+        tree-sitter-wrapped = pkgs.symlinkJoin {
+          name = "tree-sitter-wrapped";
+          paths = [ pkgs.tree-sitter ];
+          buildInputs = [ pkgs.makeWrapper ];
+          postBuild = ''
+            wrapProgram $out/bin/tree-sitter \
+            --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
+          '';
+        };
 
         # Wrap Neovim to add a bunch of runtime dependencies needed for various
         # plugins to work properly.
         neovim-wrapped = pkgs.symlinkJoin {
           name = "neovim-nightly-wrapped";
-          paths = [
-            inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.system}.default
-          ];
+          paths = [ inputs.neovim-nightly.packages.${pkgs.stdenv.system}.default ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/nvim \
