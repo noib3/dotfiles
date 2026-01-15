@@ -25,7 +25,7 @@ in
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/tree-sitter \
-            --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
+              --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
           '';
         };
 

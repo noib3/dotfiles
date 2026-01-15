@@ -12,6 +12,12 @@ in
 {
   options.modules.bettermouse = {
     enable = mkEnableOption "BetterMouse";
+
+    autoUpdate = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Whether to automatically check for updates";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -26,7 +32,8 @@ in
       pkgs.brewCasks.bettermouse
     ];
 
-    # modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
-    # };
+    modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
+      SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
+    };
   };
 }
