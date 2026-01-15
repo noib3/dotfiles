@@ -46,7 +46,6 @@ in
         gh
         helix
         jq
-        nodejs # Needed by Copilot.
         ookla-speedtest
         pfetch
         python312Packages.ipython

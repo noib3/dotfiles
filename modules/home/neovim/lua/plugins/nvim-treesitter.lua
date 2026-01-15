@@ -1,21 +1,3 @@
-local get_language = function(buf)
-  local filetype = vim.bo[buf].filetype
-  return vim.treesitter.language.get_lang(filetype) or filetype
-end
-
-local install_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter"
-
-local languages = {
-  "c",
-  "cpp",
-  "lua",
-  "markdown",
-  "nix",
-  "rust",
-  "toml",
-  "vimdoc",
-}
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -24,31 +6,40 @@ return {
     lazy = false,
     dependencies = {
       "RRethy/nvim-treesitter-endwise",
-      {
-        "MeanderingProgrammer/treesitter-modules.nvim",
-        opts = {
-          ensure_installed = languages,
-          highlight = { enable = true },
-          indent = { enable = true },
-          incremental_selection = {
-            enable = true,
-            keymaps = {
-              init_selection = false,
-              node_incremental = false,
-              node_decremental = false,
-            },
-          },
-        },
-      }
     },
-    init = function()
-      vim.opt.runtimepath:prepend(install_dir .. "/runtime")
-    end,
+  },
+  {
+    "MeanderingProgrammer/treesitter-modules.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {
-      install_dir = install_dir,
+      ensure_installed = {
+        "c",
+        "cpp",
+        "lua",
+        "markdown",
+        "nix",
+        "rust",
+        "toml",
+        "vimdoc",
+      },
+      highlight = { enable = true },
+      indent = { enable = true },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = false,
+          node_incremental = false,
+          node_decremental = false,
+        },
+      },
     },
     config = function(_, opts)
-      require("nvim-treesitter").setup(opts)
+      require("treesitter-modules").setup(opts)
+
+      local get_language = function(buf)
+        local filetype = vim.bo[buf].filetype
+        return vim.treesitter.language.get_lang(filetype) or filetype
+      end
 
       local selection = require("treesitter-modules.lib.selection")
       local initial_cursor = nil
@@ -99,5 +90,5 @@ return {
         { desc = "Select smaller syntax node or restore initial cursor position" }
       )
     end,
-  },
+  }
 }
