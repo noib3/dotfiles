@@ -75,15 +75,7 @@ return {
                 features = "all",
               },
               check = {
-                overrideCommand = {
-                  "cargo",
-                  "clippy",
-                  "--all-features",
-                  "--all-targets",
-                  "--no-deps",
-                  "--workspace",
-                  "--message-format=json",
-                },
+                command = "clippy",
               },
               completion = {
                 callable = {

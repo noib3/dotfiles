@@ -19,23 +19,25 @@ in
     home.packages =
       let
         # The Tree-sitter CLI needs a C compiler to build parsers.
-        wrappedTreeSitter = pkgs.tree-sitter.overrideAttrs (oldAttrs: {
-          nativeBuildInputs = (oldAttrs.nativeBuildInputs or [ ]) ++ [ pkgs.makeWrapper ];
-          postFixup = (oldAttrs.postFixup or "") + ''
-            wrapProgram $out/bin/tree-sitter \
-              --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
-          '';
-        });
+        tree-sitter-wrapped = (
+          pkgs.symlinkJoin {
+            name = "tree-sitter-wrapped";
+            paths = [ pkgs.tree-sitter ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/tree-sitter \
+                --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
+            '';
+          }
+        );
 
-        unwrappedNeovim =
-          inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.system}.default;
-      in
-      [
         # Wrap Neovim to add a bunch of runtime dependencies needed for various
         # plugins to work properly.
-        (pkgs.symlinkJoin {
+        neovim-wrapped = pkgs.symlinkJoin {
           name = "neovim-nightly-wrapped";
-          paths = [ unwrappedNeovim ];
+          paths = [
+            inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.system}.default
+          ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/nvim \
@@ -44,12 +46,13 @@ in
                   # Needed by Copilot.
                   pkgs.nodejs
                   # Needed by nvim-treesitter to compile parsers.
-                  wrappedTreeSitter
+                  tree-sitter-wrapped
                 ]
               }
           '';
-        })
-      ];
+        };
+      in
+      [ neovim-wrapped ];
 
     home.sessionVariables = {
       EDITOR = "nvim";
@@ -72,12 +75,10 @@ in
           else if builtins.isString value then
             "'${value}'"
           else
-            builtins.toString value;
-
-        inherit (config.modules) colorscheme;
+            toString value;
       in
       {
-        text = "return ${toLua colorscheme.palette}";
+        text = "return ${toLua config.modules.colorscheme.palette}";
       };
   };
 }

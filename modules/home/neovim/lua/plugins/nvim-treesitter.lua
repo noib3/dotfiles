@@ -4,9 +4,6 @@ return {
     branch = "main",
     build = ":TSUpdate",
     lazy = false,
-    dependencies = {
-      "RRethy/nvim-treesitter-endwise",
-    },
   },
   {
     "MeanderingProgrammer/treesitter-modules.nvim",
@@ -90,5 +87,9 @@ return {
         { desc = "Select smaller syntax node or restore initial cursor position" }
       )
     end,
+  },
+  {
+    "RRethy/nvim-treesitter-endwise",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
   }
 }

@@ -6,14 +6,14 @@ return {
       local build = require("nomad.neovim.build")
 
       build.builders.cargo()
-          :fallback(build.builders.download_prebuilt())
           :fallback(build.builders.nix())
+          :fallback(build.builders.download_prebuilt())
           :build(build.contexts.lazy())
     end,
     opts = {
-      collab = {
-        server_address = "localhost:3000",
-      },
+      -- collab = {
+      --   server_address = "localhost:3000",
+      -- }
     },
   }
 }
