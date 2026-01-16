@@ -41,15 +41,7 @@ in
     defaultDisplayName = "Preferences managed by home-manager";
     contentType = mkOption {
       type = types.attrsOf types.attrs;
-      default = builtins.mapAttrs (_bundleId: appSettings: {
-        # We place all the settings in the `Forced` array to prevent apps from
-        # overriding them via the `defaults write` command.
-        Forced = [
-          {
-            mcx_preference_settings = appSettings;
-          }
-        ];
-      }) cfg.domains;
+      default = { };
       readOnly = true;
     };
   });
@@ -74,6 +66,26 @@ in
       }
     ];
 
-    modules.macOSProfile.content = [ (payload2Plist cfg) ];
+    modules.macOSProfile.content = mapAttrsToList (
+      bundleId: appSettings:
+      payload2Plist (
+        cfg
+        // {
+          identifier = "${cfg.identifier}.${bundleId}";
+          displayName = "${cfg.displayName} (${bundleId})";
+          content = {
+            "${bundleId}" = {
+              # We place all the settings in the `Forced` array to prevent apps
+              # from overriding them via the `defaults write` command.
+              Forced = [
+                {
+                  mcx_preference_settings = appSettings;
+                }
+              ];
+            };
+          };
+        }
+      )
+    ) cfg.domains;
   };
 }
