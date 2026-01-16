@@ -125,7 +125,7 @@ in
       );
     };
 
-    stateVersion = "22.11";
+    stateVersion = "25.11";
 
     username = userName;
   };
