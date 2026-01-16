@@ -4,7 +4,10 @@ with lib;
 let
   cfg = config.modules.git;
   delta-syntax-theme = (
-    if config.modules.colorscheme.name == "gruvbox" then "gruvbox-dark" else "TwoDark"
+    if config.modules.colorscheme.name == "gruvbox" then
+      "gruvbox-dark"
+    else
+      "TwoDark"
   );
 in
 {
@@ -57,6 +60,16 @@ in
       ignores = [
         ".direnv"
         ".envrc"
+      ];
+
+      includes = [
+        {
+          condition = "gitdir:**/snowstorm/**";
+          contents.user = {
+            email = "riccardo@snowstorm.net";
+            signingkey = "F37C362AF715BC43";
+          };
+        }
       ];
     };
   };
