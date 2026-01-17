@@ -6,25 +6,25 @@
 }:
 
 {
-  config = {
-    lib.mine = rec {
-      # The absolute path to the root of this repository.
-      documentsDir =
-        if config.modules.dropbox.enable then
-          "${config.home.homeDirectory}/Dropbox"
-        else
-          throw "Where are the documents stored?";
+  config.lib.mine = rec {
+    base64Encode = import ./base64-encode.nix lib;
 
-      # The absolute path to the root of this repository.
-      dotfilesDir = "${documentsDir}/dotfiles";
+    # The absolute path to the root of this repository.
+    documentsDir =
+      if config.modules.dropbox.enable then
+        "${config.home.homeDirectory}/Dropbox"
+      else
+        throw "Where are the documents stored?";
 
-      # Utility functions to work with colors in hex format.
-      hex = import ./hex.nix { inherit lib; };
+    # The absolute path to the root of this repository.
+    dotfilesDir = "${documentsDir}/dotfiles";
 
-      # Transforms the given relative path to a file/directory in this
-      # repository to an absolute path.
-      mkAbsolute = path: dotfilesDir + lib.removePrefix (toString inputs.self) (toString path);
+    # Utility functions to work with colors in hex format.
+    hex = import ./hex.nix { inherit lib; };
 
-    };
+    # Transforms the given relative path to a file/directory in this
+    # repository to an absolute path.
+    mkAbsolute =
+      path: dotfilesDir + lib.removePrefix (toString inputs.self) (toString path);
   };
 }
