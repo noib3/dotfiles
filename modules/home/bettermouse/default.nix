@@ -218,6 +218,75 @@ in
           option = 8;
           cmd = 16;
         };
+
+    actions = mkOption {
+      type =
+        let
+          actionType = types.submodule {
+            options = {
+              actionSel = mkOption {
+                type = types.int;
+                description = "The action ID used by BetterMouse";
+              };
+              hotkeyName = mkOption {
+                type = types.str;
+                default = "";
+                description = "Name of the hotkey (if isHotkey is true)";
+              };
+              isHotkey = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Whether this action sends a hotkey";
+              };
+              hotkeyMod = mkOption {
+                type = types.int;
+                default = 0;
+                description = "Modifier flags for the hotkey";
+              };
+              hotkeyKey = mkOption {
+                type = types.int;
+                default = 0;
+                description = "Key code for the hotkey";
+              };
+              clickTh = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Click threshold";
+              };
+              clickThEn = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Click threshold enabled";
+              };
+              multiShot = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Whether to repeat the action while held";
+              };
+              appName = mkOption {
+                type = types.str;
+                default = "";
+                description = "Application name (for app-specific actions)";
+              };
+              enabled = mkOption {
+                type = types.bool;
+                default = true;
+                description = "Whether this action is enabled";
+              };
+            };
+          };
+        in
+        types.attrsOf actionType;
+      description = "Available actions for key bindings";
+      default = {
+        # Keyboard action for 3-finger swipe right (actionSel = 22)
+        # Note: Mouse gesture uses actionSel = 8 for the same logical action
+        threeFingerSwipeRight = {
+          actionSel = 22;
+        };
+      };
+      readOnly = true;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -231,6 +300,15 @@ in
     home.packages = [
       pkgs.brewCasks.bettermouse
     ];
+
+    modules.bettermouse = {
+      keybindings.global = [
+        {
+          key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
+          action = cfg.actions.threeFingerSwipeRight;
+        }
+      ];
+    };
 
     modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
       SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
