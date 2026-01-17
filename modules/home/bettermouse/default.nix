@@ -218,6 +218,58 @@ let
       ]
     )
     |> concatLists;
+
+  # Default settings for each app entry in appitems.apps.
+  # BetterMouse requires all these fields to be present.
+  appDefaults = {
+    enabled = true;
+    url = {
+      relative = "./";
+      base.relative = "file:///";
+    };
+    scl = {
+      smoothEn = true;
+      sclThrough = false;
+      duration = 12;
+      brake = 4;
+      speed = [
+        3
+        8
+      ];
+      acc = [
+        32.0
+        1.0
+      ];
+      panelLpf = 0;
+      lpfDura = 12;
+      vertInvEn = false;
+      horiInvEn = false;
+      horiSpeed = 5.0;
+      shiftSclMod = 131072;
+      shiftSclInv = false;
+      ctrlSclMod = 262144;
+      ctrlSclInv = false;
+      cmdSclMod = 1048576;
+      cmdSclGain = 3.162;
+      vSclSliderEn = false;
+      vSclSliderInv = false;
+      hSclSliderEn = false;
+      hSclSliderInv = false;
+    };
+    leftCTEn = false;
+    rightCTEn = true;
+    panInertia = true;
+    panInvert = false;
+    panCT = true;
+    panBtn = 1;
+    panMod = 0;
+    sclEn = true;
+    btnLock = false;
+    keyLock = false;
+    cursorMod = 0;
+    cursorGain = 1.0;
+    cursorModifiedRes = 26214400;
+  };
 in
 {
   options.modules.bettermouse = {
@@ -270,6 +322,15 @@ in
       default = { };
     };
 
+    mouseBindings = mkOption {
+      type = types.attrsOf types.anything;
+      description = ''
+        Mouse button bindings per application. Use "global" for bindings that
+        apply to all apps, or a bundle ID for app-specific bindings.
+      '';
+      default = { };
+    };
+
     keys = mkOption {
       type = types.attrsOf keyType;
       default =
@@ -305,11 +366,8 @@ in
       type = types.attrsOf actionType;
       description = "Available actions for key bindings";
       default = {
-        # Keyboard action for 3-finger swipe right (actionSel = 22)
-        # Note: Mouse gesture uses actionSel = 8 for the same logical action
-        threeFingerSwipeRight = {
-          actionSel = 22;
-        };
+        threeFingerSwipeLeft.actionSel = 22;
+        threeFingerSwipeRight.actionSel = 23;
       };
       readOnly = true;
     };
@@ -333,20 +391,32 @@ in
           key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
           action = cfg.actions.threeFingerSwipeRight;
         }
+        {
+          key = cfg.keys.right.plus cfg.keyModifiers.ctrl;
+          action = cfg.actions.threeFingerSwipeLeft;
+        }
       ];
     };
 
     modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
       SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
+
       appitems = mkBetterMouseConfig {
-        apps = lib.attrsets.mapAttrs' (bundleId: appBindings: {
-          name = if bundleId == "global" then "" else bundleId;
-          value = {
-            enabled = true;
-            key = bindingsToKeyArray appBindings;
-          };
-        }) cfg.keyBindings;
+        apps =
+          # Collect all bundle IDs that have any bindings (key or mouse).
+          (lib.attrNames cfg.keyBindings) ++ (lib.attrNames cfg.mouseBindings)
+          # Remove duplicates.
+          |> lib.unique
+          |> map (bundleId: {
+            name = if bundleId == "global" then "" else bundleId;
+            value = appDefaults // {
+              key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
+              btn = cfg.mouseBindings.${bundleId} or [ ];
+            };
+          })
+          |> lib.listToAttrs;
       };
+
       config = mkBetterMouseConfig {
         cursorHold = false;
         hideIcon = false;
