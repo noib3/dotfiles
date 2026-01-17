@@ -131,11 +131,93 @@ let
     x:
     x ? code
     && builtins.isInt x.code
-    && x ? modifier
-    && builtins.isInt x.modifier
+    && x ? modifiers
+    && builtins.isInt x.modifiers
     && x ? plus
     && builtins.isFunction x.plus
   );
+
+  actionType = types.submodule {
+    options = {
+      actionSel = mkOption {
+        type = types.int;
+        description = "The action ID used by BetterMouse";
+      };
+      hotkeyName = mkOption {
+        type = types.str;
+        default = "";
+        description = "Name of the hotkey (if isHotkey is true)";
+      };
+      isHotkey = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether this action sends a hotkey";
+      };
+      hotkeyMod = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Modifier flags for the hotkey";
+      };
+      hotkeyKey = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Key code for the hotkey";
+      };
+      clickTh = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Click threshold";
+      };
+      clickThEn = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Click threshold enabled";
+      };
+      multiShot = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to repeat the action while held";
+      };
+      appName = mkOption {
+        type = types.str;
+        default = "";
+        description = "Application name (for app-specific actions)";
+      };
+      enabled = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether this action is enabled";
+      };
+    };
+  };
+
+  # Convert a list of key bindings to BetterMouse's key array format.
+  # Bindings with the same base key code are merged together.
+  #
+  # Input:  [ { key = { code = 124; modifiers = 4; }; action = ...; }
+  #           { key = { code = 124; modifiers = 8; }; action = ...; }
+  #           { key = { code = 123; modifiers = 4; }; action = ...; } ]
+  #
+  # Output: [ 124 [ 4 <action> 8 <action> ]
+  #           123 [ 4 <action> ] ]
+  bindingsToKeyArray =
+    bindings:
+    bindings
+    |> groupBy (b: toString b.key.code)
+    |> mapAttrsToList (
+      codeStr: bs: [
+        (toInt codeStr)
+        (
+          bs
+          |> map (b: [
+            b.key.modifiers
+            b.action
+          ])
+          |> concatLists
+        )
+      ]
+    )
+    |> concatLists;
 in
 {
   options.modules.bettermouse = {
@@ -157,7 +239,7 @@ in
                 description = "The key (with optional modifiers) that triggers this binding";
               };
               action = mkOption {
-                type = types.any;
+                type = actionType;
                 description = "The action to perform when the key is pressed";
               };
             };
@@ -220,63 +302,7 @@ in
         };
 
     actions = mkOption {
-      type =
-        let
-          actionType = types.submodule {
-            options = {
-              actionSel = mkOption {
-                type = types.int;
-                description = "The action ID used by BetterMouse";
-              };
-              hotkeyName = mkOption {
-                type = types.str;
-                default = "";
-                description = "Name of the hotkey (if isHotkey is true)";
-              };
-              isHotkey = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Whether this action sends a hotkey";
-              };
-              hotkeyMod = mkOption {
-                type = types.int;
-                default = 0;
-                description = "Modifier flags for the hotkey";
-              };
-              hotkeyKey = mkOption {
-                type = types.int;
-                default = 0;
-                description = "Key code for the hotkey";
-              };
-              clickTh = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Click threshold";
-              };
-              clickThEn = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Click threshold enabled";
-              };
-              multiShot = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Whether to repeat the action while held";
-              };
-              appName = mkOption {
-                type = types.str;
-                default = "";
-                description = "Application name (for app-specific actions)";
-              };
-              enabled = mkOption {
-                type = types.bool;
-                default = true;
-                description = "Whether this action is enabled";
-              };
-            };
-          };
-        in
-        types.attrsOf actionType;
+      type = types.attrsOf actionType;
       description = "Available actions for key bindings";
       default = {
         # Keyboard action for 3-finger swipe right (actionSel = 22)
@@ -302,7 +328,7 @@ in
     ];
 
     modules.bettermouse = {
-      keybindings.global = [
+      keyBindings.global = [
         {
           key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
           action = cfg.actions.threeFingerSwipeRight;
@@ -312,6 +338,15 @@ in
 
     modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
       SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
+      appitems = mkBetterMouseConfig {
+        apps = lib.attrsets.mapAttrs' (bundleId: appBindings: {
+          name = if bundleId == "global" then "" else bundleId;
+          value = {
+            enabled = true;
+            key = bindingsToKeyArray appBindings;
+          };
+        }) cfg.keyBindings;
+      };
       config = mkBetterMouseConfig {
         cursorHold = false;
         hideIcon = false;
