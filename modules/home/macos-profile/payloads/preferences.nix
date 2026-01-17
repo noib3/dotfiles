@@ -8,7 +8,7 @@
 with lib;
 let
   cfg = config.modules.macOSPreferences;
-  inherit (import ../utils.nix { inherit lib; }) mkPayloadOptions payload2Plist;
+  utils = import ../utils.nix { inherit config lib; };
 in
 {
   options.modules.macOSPreferences = {
@@ -35,7 +35,7 @@ in
       '';
     };
   }
-  // (mkPayloadOptions {
+  // (utils.mkPayloadOptions {
     type = "com.apple.ManagedClient.preferences";
     defaultIdentifier = "dev.noib3.NixPreferences";
     defaultDisplayName = "Preferences managed by home-manager";
@@ -68,7 +68,7 @@ in
 
     modules.macOSProfile.content = mapAttrsToList (
       bundleId: appSettings:
-      payload2Plist (
+      utils.payload2Plist (
         cfg
         // {
           identifier = "${cfg.identifier}.${bundleId}";

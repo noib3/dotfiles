@@ -8,7 +8,7 @@
 with lib;
 let
   cfg = config.modules.macOSProfile;
-  inherit (import ./utils.nix { inherit lib; }) mkPayloadOptions payload2Plist;
+  utils = import ./utils.nix { inherit config lib; };
 in
 {
   imports = [ ./payloads ];
@@ -21,11 +21,11 @@ in
       description = "Path to the generated .mobileconfig profile file";
       readOnly = true;
       default = pkgs.writeText "${cfg.identifier}.mobileconfig" (
-        generators.toPlist { escape = true; } (payload2Plist cfg)
+        utils.mkPlist (utils.payload2Plist cfg)
       );
     };
   }
-  // (mkPayloadOptions {
+  // (utils.mkPayloadOptions {
     type = "Configuration";
     defaultIdentifier = "dev.noib3.NixProfile";
     defaultDisplayName = "Profile managed by Home-manager";
