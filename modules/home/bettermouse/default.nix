@@ -191,6 +191,172 @@ let
     };
   };
 
+  # Helper to validate a direction against allowed values and return it.
+  requireDirection =
+    allowed: direction:
+    let
+      validOptions = builtins.concatStringsSep ", " (builtins.attrNames allowed);
+    in
+    if allowed ? ${direction} then
+      allowed.${direction}
+    else
+      throw "Invalid direction '${direction}'. Must be one of: ${validOptions}";
+
+  # Creates a mouse button definition with click, drag, longPress, and
+  # holdAndScroll actions.
+  #
+  # Input:  { buttonId = 5; }
+  # Output: {
+  #   buttonId = 5;
+  #   click = { buttonId = 5; gestureType = { Click = {}; }; clickSubtype = 2; };
+  #   drag = { direction }: { buttonId = 5; gestureType = { Move = {}; }; direction = ...; };
+  #   longPress = { ... }: { ... };  # TODO
+  #   holdAndScroll = { ... }: { ... };  # TODO
+  # }
+  mkMouseButton =
+    { buttonId }:
+    {
+      inherit buttonId;
+
+      click = {
+        inherit buttonId;
+        gestureType = {
+          Click = { };
+        };
+        # TODO: discover other click subtypes (double click, etc.)
+        clickSubtype = 2; # single click
+      };
+
+      drag =
+        { direction }:
+        {
+          inherit buttonId;
+          gestureType = {
+            Move = { };
+          };
+          direction = requireDirection {
+            up = 0;
+            left = 1;
+            down = 2;
+            right = 3;
+          } direction;
+        };
+
+      # TODO: implement once we have examples of the schema
+      longPress =
+        {
+          triggerDelayMillisecs,
+          repeatIntervalMillisecs,
+        }:
+        {
+          inherit buttonId;
+          gestureType = {
+            LongPress = { };
+          }; # placeholder
+          inherit triggerDelayMillisecs repeatIntervalMillisecs;
+        };
+
+      # TODO: implement once we have examples of the schema
+      holdAndScroll =
+        { direction }:
+        {
+          inherit buttonId;
+          gestureType = {
+            HoldAndScroll = { };
+          }; # placeholder
+          direction = requireDirection {
+            up = 0;
+            down = 2;
+          } direction;
+        };
+    };
+
+  # Type for a mouse action (click, drag, etc.)
+  mouseActionType = types.addCheck types.attrs (
+    x:
+    x ? buttonId
+    && builtins.isInt x.buttonId
+    && x ? gestureType
+    && builtins.isAttrs x.gestureType
+  );
+
+  # Convert a list of mouse bindings to BetterMouse's btn array format.
+  # Bindings are grouped by button ID, then by modifier, then by gesture type.
+  #
+  # Input:  [ { mouseAction = { buttonId = 5; gestureType = { Click = {}; }; clickSubtype = 2; };
+  #             targetAction = { actionSel = 43; ... }; }
+  #           { mouseAction = { buttonId = 2; gestureType = { Move = {}; }; direction = 1; };
+  #             targetAction = { actionSel = 22; ... }; } ]
+  #
+  # Output: [ 5 [ 0 [ { Click = {}; } [ 2 <action> ] ] ]
+  #           2 [ 0 [ { Move = {}; } [ 1 <action> ] ] ] ]
+  bindingsToButtonArray =
+    bindings:
+    let
+      # Group bindings by button ID
+      byButton = groupBy (b: toString b.mouseAction.buttonId) bindings;
+
+      # Detect if a binding is a click (has clickSubtype) or drag (has direction)
+      isClick = b: b.mouseAction ? clickSubtype;
+      isDrag = b: b.mouseAction ? direction && !(b.mouseAction ? clickSubtype);
+
+      # Convert bindings for a single button
+      mkButtonConfig =
+        buttonBindings:
+        let
+          # For now, all bindings use modifier 0 (no modifier)
+          modifier = 0;
+
+          # Separate click and drag bindings
+          clickBindings = filter isClick buttonBindings;
+          dragBindings = filter isDrag buttonBindings;
+
+          # Convert click bindings: [clickSubtype, action, ...]
+          clickActions =
+            clickBindings
+            |> map (b: [
+              b.mouseAction.clickSubtype
+              b.targetAction
+            ])
+            |> concatLists;
+
+          # Convert drag bindings: [direction, action, ...]
+          dragActions =
+            dragBindings
+            |> map (b: [
+              b.mouseAction.direction
+              b.targetAction
+            ])
+            |> concatLists;
+
+          # Build gesture configs using gestureType from the first binding of each type
+          gestureConfigs =
+            (optional (clickBindings != [ ]) [
+              (head clickBindings).mouseAction.gestureType
+              clickActions
+            ])
+            ++ (optional (dragBindings != [ ]) [
+              (head dragBindings).mouseAction.gestureType
+              dragActions
+            ]);
+        in
+        # BetterMouse expects [modifier, gestureConfig] pairs
+        gestureConfigs
+        |> map (gc: [
+          modifier
+          gc
+        ])
+        |> concatLists;
+    in
+    byButton
+    |> mapAttrsToList (
+      buttonIdStr: buttonBindings: [
+        (toInt buttonIdStr)
+        (mkButtonConfig buttonBindings)
+      ]
+    )
+    |> concatLists;
+
   # Convert a list of key bindings to BetterMouse's key array format.
   # Bindings with the same base key code are merged together.
   #
@@ -323,12 +489,62 @@ in
     };
 
     mouseBindings = mkOption {
-      type = types.attrsOf types.anything;
+      type =
+        let
+          mouseBindingType = types.submodule {
+            options = {
+              mouseAction = mkOption {
+                type = mouseActionType;
+                description = "The mouse action (click, drag, etc.) that triggers this binding";
+              };
+              targetAction = mkOption {
+                type = actionType;
+                description = "The action to perform when the mouse action occurs";
+              };
+            };
+          };
+        in
+        types.attrsOf (types.listOf mouseBindingType);
       description = ''
         Mouse button bindings per application. Use "global" for bindings that
         apply to all apps, or a bundle ID for app-specific bindings.
       '';
+      example = literalExpression ''
+        {
+          global =
+            let
+              inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
+            in
+            [
+              {
+                mouseAction = buttons.thumb.click;
+                targetAction = cfg.actions.missionControl;
+              }
+              {
+                mouseAction = buttons.wheel.drag { direction = "left"; };
+                targetAction = cfg.actions.threeFingerSwipeLeft;
+              }
+            ];
+        }
+      '';
       default = { };
+    };
+
+    mice = mkOption {
+      type = types.attrs;
+      description = "Available mouse definitions by vendor and model";
+      default = {
+        logitech = {
+          MXMaster3SForMac = {
+            buttons = {
+              wheel = mkMouseButton { buttonId = 2; };
+              thumb = mkMouseButton { buttonId = 5; };
+              # TODO: add other buttons as we discover their IDs
+            };
+          };
+        };
+      };
+      readOnly = true;
     };
 
     keys = mkOption {
@@ -364,10 +580,24 @@ in
 
     actions = mkOption {
       type = types.attrsOf actionType;
-      description = "Available actions for key bindings";
+      description = "Available actions for key and mouse bindings";
       default = {
-        threeFingerSwipeLeft.actionSel = 22;
-        threeFingerSwipeRight.actionSel = 23;
+        # The 3-finger-swipe actions use different selectors depending on
+        # whether the action is meant to be performed with a mouse or with
+        # a keyboard. AFAICT, the only difference is that the mouse swipes are
+        # proportional (the space transition tracks the mouse movement), while
+        # the keyboard swipes are discrete (the space switch happens immediately
+        # when the binding is triggered). Also, from my testing the keyboard
+        # swipes can be used as mouse actions, but the mouse swipes can't be
+        # used as keyboard actions.
+        threeFingerSwipeLeftWithMouse.actionSel = 7;
+        threeFingerSwipeRightWithMouse.actionSel = 8;
+        threeFingerSwipeLeftWithKeyboard.actionSel = 22;
+        threeFingerSwipeRightWithKeyboard.actionSel = 23;
+        missionControl = {
+          actionSel = 43;
+          appName = "Mission Control";
+        };
       };
       readOnly = true;
     };
@@ -386,14 +616,33 @@ in
     ];
 
     modules.bettermouse = {
+      mouseBindings.global =
+        let
+          inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
+        in
+        [
+          {
+            mouseAction = buttons.thumb.click;
+            targetAction = cfg.actions.missionControl;
+          }
+          {
+            mouseAction = buttons.wheel.drag { direction = "left"; };
+            targetAction = cfg.actions.threeFingerSwipeLeftWithMouse;
+          }
+          {
+            mouseAction = buttons.wheel.drag { direction = "right"; };
+            targetAction = cfg.actions.threeFingerSwipeRightWithMouse;
+          }
+        ];
+
       keyBindings.global = [
         {
           key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
-          action = cfg.actions.threeFingerSwipeRight;
+          action = cfg.actions.threeFingerSwipeRightWithKeyboard;
         }
         {
           key = cfg.keys.right.plus cfg.keyModifiers.ctrl;
-          action = cfg.actions.threeFingerSwipeLeft;
+          action = cfg.actions.threeFingerSwipeLeftWithKeyboard;
         }
       ];
     };
@@ -412,7 +661,7 @@ in
               name = if bundleId == "global" then "" else bundleId;
               value = appDefaults // {
                 key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
-                btn = cfg.mouseBindings.${bundleId} or [ ];
+                btn = bindingsToButtonArray (cfg.mouseBindings.${bundleId} or [ ]);
               };
             })
             |> lib.listToAttrs;
