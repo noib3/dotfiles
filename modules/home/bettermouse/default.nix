@@ -375,35 +375,6 @@ let
       relative = "./";
       base.relative = "file:///";
     };
-    scl = {
-      smoothEn = true;
-      sclThrough = false;
-      duration = 12;
-      brake = 4;
-      speed = [
-        3
-        8
-      ];
-      acc = [
-        32.0
-        1.0
-      ];
-      panelLpf = 0;
-      lpfDura = 12;
-      vertInvEn = false;
-      horiInvEn = false;
-      horiSpeed = 5.0;
-      shiftSclMod = 131072;
-      shiftSclInv = false;
-      ctrlSclMod = 262144;
-      ctrlSclInv = false;
-      cmdSclMod = 1048576;
-      cmdSclGain = 3.162;
-      vSclSliderEn = false;
-      vSclSliderInv = false;
-      hSclSliderEn = false;
-      hSclSliderInv = false;
-    };
     leftCTEn = false;
     rightCTEn = true;
     panInertia = true;
@@ -511,6 +482,8 @@ in
       '';
       default = { };
     };
+
+    scroll = import ./scroll.nix { inherit lib; };
 
     mice = mkOption {
       type = types.attrs;
@@ -635,8 +608,10 @@ in
 
         appitems = mkBetterMouseConfig {
           apps =
-            # Collect all bundle IDs that have any bindings (key or mouse).
-            (lib.attrNames cfg.keyBindings) ++ (lib.attrNames cfg.mouseBindings)
+            # Collect all bundle IDs that have any settings defined.
+            (lib.attrNames cfg.keyBindings)
+            ++ (lib.attrNames cfg.mouseBindings)
+            ++ (lib.attrNames cfg.scroll)
             # Remove duplicates.
             |> lib.unique
             |> map (bundleId: {
@@ -644,6 +619,9 @@ in
               value = appDefaults // {
                 key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
                 btn = bindingsToButtonArray (cfg.mouseBindings.${bundleId} or [ ]);
+                scl = lib.attrsets.optionalAttrs (
+                  cfg.scroll ? ${bundleId}
+                ) cfg.scroll.${bundleId}.asBetterMouseFormat;
               };
             })
             |> lib.listToAttrs;
