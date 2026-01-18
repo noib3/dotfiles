@@ -26,13 +26,15 @@ in
       pkgs.brewCasks.selfcontrol
     ];
 
-    modules.macOSPreferences.domains."org.eyebeam.SelfControl" =
-      let
-        oneDayInMinutes = 24 * 60;
-      in
-      {
-        BlockLengthInterval = oneDayInMinutes;
-        MaxBlockLength = oneDayInMinutes * 30;
-      };
+    modules.macOSPreferences.apps."org.eyebeam.SelfControl" = {
+      forced =
+        let
+          oneDayInMinutes = 24 * 60;
+        in
+        {
+          BlockLengthInterval = oneDayInMinutes;
+          MaxBlockLength = oneDayInMinutes * 30;
+        };
+    };
   };
 }

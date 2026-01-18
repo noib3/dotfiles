@@ -9,27 +9,69 @@ with lib;
 let
   cfg = config.modules.macOSPreferences;
   utils = import ../utils.nix { inherit config lib; };
+
+  appType = types.submodule {
+    options = {
+      forced = mkOption {
+        type = types.attrs;
+        default = { };
+        description = ''
+          Preferences that are always enforced. The values are locked and
+          cannot be changed by the user or application. Reapplied on every
+          login and profile refresh.
+        '';
+      };
+
+      often = mkOption {
+        type = types.attrs;
+        default = { };
+        description = ''
+          Preferences that are applied when the profile is first installed
+          and again at each login. User/app changes are allowed during the
+          session, but the managed values are restored on the next login.
+        '';
+      };
+
+      setOnce = mkOption {
+        type = types.attrs;
+        default = { };
+        description = ''
+          Preferences that are applied only once when the profile is first
+          installed (or when the key doesn't exist). After that, the user
+          or application can modify them freely.
+        '';
+      };
+    };
+  };
 in
 {
   options.modules.macOSPreferences = {
     enable = mkEnableOption "macOS configuration profile management";
 
-    domains = mkOption {
-      type = types.attrsOf types.attrs;
+    apps = mkOption {
+      type = types.attrsOf appType;
       default = { };
       description = ''
-        Preference domains to manage. Keys are domain identifiers
-        (e.g., "com.apple.finder"), values specify the settings.
+        App preferences to manage. Keys are bundle IDs (e.g.,
+        "com.apple.finder"), values specify settings grouped by management state
+        (forced, often, setOnce).
       '';
       example = literalExpression ''
         {
           "com.apple.finder" = {
-            ShowPathbar = true;
-            ShowStatusBar = true;
+            forced = {
+              ShowPathbar = true;
+              ShowStatusBar = true;
+            };
+            setOnce = {
+              NSNavLastRootDirectory = "~/Documents";
+            };
           };
           "com.apple.dock" = {
-            autohide = true;
-            tilesize = 36;
+            forced = {
+              autohide = true;
+              tilesize = 36;
+            };
           };
         }
       '';
@@ -74,18 +116,22 @@ in
           identifier = "${cfg.identifier}.${bundleId}";
           displayName = "${cfg.displayName} (${bundleId})";
           content = {
-            "${bundleId}" = {
-              # We place all the settings in the `Forced` array to prevent apps
-              # from overriding them via the `defaults write` command.
-              Forced = [
-                {
-                  mcx_preference_settings = appSettings;
-                }
-              ];
-            };
+            "${bundleId}" =
+              let
+                mkEntry =
+                  state: settings:
+                  optional (settings != { }) {
+                    mcx_preference_settings = settings;
+                  };
+              in
+              filterAttrs (_: v: v != [ ]) {
+                Forced = mkEntry "Forced" appSettings.forced;
+                Often = mkEntry "Often" appSettings.often;
+                Set-Once = mkEntry "Set-Once" appSettings.setOnce;
+              };
           };
         }
       )
-    ) cfg.domains;
+    ) cfg.apps;
   };
 }

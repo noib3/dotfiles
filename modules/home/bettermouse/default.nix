@@ -398,46 +398,58 @@ in
       ];
     };
 
-    modules.macOSPreferences.domains."com.naotanhaocan.BetterMouse" = {
-      SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
+    modules.macOSPreferences.apps."com.naotanhaocan.BetterMouse" = {
+      forced = {
+        SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
 
-      appitems = mkBetterMouseConfig {
-        apps =
-          # Collect all bundle IDs that have any bindings (key or mouse).
-          (lib.attrNames cfg.keyBindings) ++ (lib.attrNames cfg.mouseBindings)
-          # Remove duplicates.
-          |> lib.unique
-          |> map (bundleId: {
-            name = if bundleId == "global" then "" else bundleId;
-            value = appDefaults // {
-              key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
-              btn = cfg.mouseBindings.${bundleId} or [ ];
-            };
-          })
-          |> lib.listToAttrs;
+        appitems = mkBetterMouseConfig {
+          apps =
+            # Collect all bundle IDs that have any bindings (key or mouse).
+            (lib.attrNames cfg.keyBindings) ++ (lib.attrNames cfg.mouseBindings)
+            # Remove duplicates.
+            |> lib.unique
+            |> map (bundleId: {
+              name = if bundleId == "global" then "" else bundleId;
+              value = appDefaults // {
+                key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
+                btn = cfg.mouseBindings.${bundleId} or [ ];
+              };
+            })
+            |> lib.listToAttrs;
+        };
       };
 
-      config = mkBetterMouseConfig {
-        cursorHold = false;
-        hideIcon = false;
-        leftDragLimit = true;
-        leftDragLimitRange = 10.0;
-        longPressPeriod = 0.5;
-        longPressRepeatInterval = 0.1;
-        registered = 0.0;
-        showDescription = true;
-        tabSelection = 5;
-        trialLeft = 7.0;
-        optCsr = {
-          en = false;
-          acc = [
-            68.75
-            68.75
-          ];
-          res = [
-            5.0
-            5.0
-          ];
+      # For `config`, we use `often` instead of `forced` because when it's
+      # forced, keyboard bindings aren't applied until the "Keyboard" pane in
+      # the UI is manually focused once.
+      #
+      # My best guess is that BetterMouse needs to write some internal state to
+      # `config` during startup, and when it can't (because the preference is
+      # locked), it skips initialization of other systems like keyboard
+      # bindings.
+      often = {
+        config = mkBetterMouseConfig {
+          cursorHold = false;
+          hideIcon = false;
+          leftDragLimit = true;
+          leftDragLimitRange = 10.0;
+          longPressPeriod = 0.5;
+          longPressRepeatInterval = 0.1;
+          registered = 0.0;
+          showDescription = true;
+          tabSelection = 5;
+          trialLeft = 7.0;
+          optCsr = {
+            en = false;
+            acc = [
+              68.75
+              68.75
+            ];
+            res = [
+              5.0
+              5.0
+            ];
+          };
         };
       };
     };
