@@ -191,84 +191,12 @@ let
     };
   };
 
-  # Helper to validate a direction against allowed values and return it.
-  requireDirection =
-    allowed: direction:
-    let
-      validOptions = builtins.concatStringsSep ", " (builtins.attrNames allowed);
-    in
-    if allowed ? ${direction} then
-      allowed.${direction}
-    else
-      throw "Invalid direction '${direction}'. Must be one of: ${validOptions}";
-
   mouseActionKinds = {
     click = 0;
     drag = 1;
     longPress = 2;
     holdAndScroll = 3;
   };
-
-  # Creates a mouse button definition with click, drag, longPress, and
-  # holdAndScroll actions.
-  #
-  # Input:  { buttonId = 5; }
-  # Output: {
-  #   buttonId = 5;
-  #   click = { buttonId = 5; clickSubtype = 2; };
-  #   drag = { direction }: { buttonId = 5; direction = ...; };
-  #   longPress = { ... }: { ... };  # TODO
-  #   holdAndScroll = { ... }: { ... };  # TODO
-  # }
-  mkMouseButton =
-    { buttonId }:
-    {
-      inherit buttonId;
-
-      click = {
-        kind = mouseActionKinds.click;
-        inherit buttonId;
-        # TODO: discover other click subtypes (double click, etc.)
-        clickSubtype = 2; # single click
-      };
-
-      drag =
-        { direction }:
-        {
-          kind = mouseActionKinds.drag;
-          inherit buttonId;
-          direction = requireDirection {
-            up = 0;
-            left = 1;
-            down = 2;
-            right = 3;
-          } direction;
-        };
-
-      # TODO: implement once we have examples of the schema.
-      longPress =
-        {
-          triggerDelayMillisecs,
-          repeatIntervalMillisecs,
-        }:
-        {
-          kind = mouseActionKinds.longPress;
-          inherit buttonId;
-          inherit triggerDelayMillisecs repeatIntervalMillisecs;
-        };
-
-      # TODO: implement once we have examples of the schema.
-      holdAndScroll =
-        { direction }:
-        {
-          kind = mouseActionKinds.holdAndScroll;
-          inherit buttonId;
-          direction = requireDirection {
-            up = 0;
-            down = 2;
-          } direction;
-        };
-    };
 
   # Type for a mouse action (click, drag, etc.)
   mouseActionType = types.addCheck types.attrs (
@@ -485,22 +413,7 @@ in
 
     scroll = import ./scroll.nix { inherit lib; };
 
-    mice = mkOption {
-      type = types.attrs;
-      description = "Available mouse definitions by vendor and model";
-      default = {
-        logitech = {
-          MXMaster3SForMac = {
-            buttons = {
-              wheel = mkMouseButton { buttonId = 2; };
-              thumb = mkMouseButton { buttonId = 5; };
-              # TODO: add other buttons as we discover their IDs
-            };
-          };
-        };
-      };
-      readOnly = true;
-    };
+    mice = import ./mice { inherit lib mouseActionKinds; };
 
     keys = mkOption {
       type = types.attrsOf keyType;
@@ -571,6 +484,8 @@ in
     ];
 
     modules.bettermouse = {
+      mice.logitech.MXMaster3SForMac.enable = true;
+
       mouseBindings.global =
         let
           inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
@@ -604,8 +519,6 @@ in
 
     modules.macOSPreferences.apps."com.naotanhaocan.BetterMouse" = {
       forced = {
-        SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
-
         appitems = mkBetterMouseConfig {
           apps =
             # Collect all bundle IDs that have any settings defined.
@@ -617,15 +530,32 @@ in
             |> map (bundleId: {
               name = if bundleId == "global" then "" else bundleId;
               value = appDefaults // {
-                key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
-                btn = bindingsToButtonArray (cfg.mouseBindings.${bundleId} or [ ]);
                 scl = lib.attrsets.optionalAttrs (
                   cfg.scroll ? ${bundleId}
                 ) cfg.scroll.${bundleId}.asBetterMouseFormat;
+                btn = bindingsToButtonArray (cfg.mouseBindings.${bundleId} or [ ]);
+                key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
               };
             })
             |> lib.listToAttrs;
         };
+
+        mice = mkBetterMouseConfig {
+          mice =
+            cfg.mice
+            |> mapAttrsToList (
+              _vendor: products:
+              products
+              |> mapAttrsToList (
+                _product: mouseConfig:
+                if mouseConfig.enable then mouseConfig.asBetterMouseFormat else null
+              )
+              |> filter (mouseConfig: mouseConfig != null)
+            )
+            |> concatLists;
+        };
+
+        SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
       };
 
       # For `config`, we use `often` instead of `forced` because when it's
