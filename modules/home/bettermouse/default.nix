@@ -202,14 +202,21 @@ let
     else
       throw "Invalid direction '${direction}'. Must be one of: ${validOptions}";
 
+  mouseActionKinds = {
+    click = 0;
+    drag = 1;
+    longPress = 2;
+    holdAndScroll = 3;
+  };
+
   # Creates a mouse button definition with click, drag, longPress, and
   # holdAndScroll actions.
   #
   # Input:  { buttonId = 5; }
   # Output: {
   #   buttonId = 5;
-  #   click = { buttonId = 5; gestureType = { Click = {}; }; clickSubtype = 2; };
-  #   drag = { direction }: { buttonId = 5; gestureType = { Move = {}; }; direction = ...; };
+  #   click = { buttonId = 5; clickSubtype = 2; };
+  #   drag = { direction }: { buttonId = 5; direction = ...; };
   #   longPress = { ... }: { ... };  # TODO
   #   holdAndScroll = { ... }: { ... };  # TODO
   # }
@@ -219,10 +226,8 @@ let
       inherit buttonId;
 
       click = {
+        kind = mouseActionKinds.click;
         inherit buttonId;
-        gestureType = {
-          Click = { };
-        };
         # TODO: discover other click subtypes (double click, etc.)
         clickSubtype = 2; # single click
       };
@@ -230,10 +235,8 @@ let
       drag =
         { direction }:
         {
+          kind = mouseActionKinds.drag;
           inherit buttonId;
-          gestureType = {
-            Move = { };
-          };
           direction = requireDirection {
             up = 0;
             left = 1;
@@ -242,28 +245,24 @@ let
           } direction;
         };
 
-      # TODO: implement once we have examples of the schema
+      # TODO: implement once we have examples of the schema.
       longPress =
         {
           triggerDelayMillisecs,
           repeatIntervalMillisecs,
         }:
         {
+          kind = mouseActionKinds.longPress;
           inherit buttonId;
-          gestureType = {
-            LongPress = { };
-          }; # placeholder
           inherit triggerDelayMillisecs repeatIntervalMillisecs;
         };
 
-      # TODO: implement once we have examples of the schema
+      # TODO: implement once we have examples of the schema.
       holdAndScroll =
         { direction }:
         {
+          kind = mouseActionKinds.holdAndScroll;
           inherit buttonId;
-          gestureType = {
-            HoldAndScroll = { };
-          }; # placeholder
           direction = requireDirection {
             up = 0;
             down = 2;
@@ -273,82 +272,66 @@ let
 
   # Type for a mouse action (click, drag, etc.)
   mouseActionType = types.addCheck types.attrs (
-    x:
-    x ? buttonId
-    && builtins.isInt x.buttonId
-    && x ? gestureType
-    && builtins.isAttrs x.gestureType
+    x: x ? buttonId && builtins.isInt x.buttonId
   );
 
   # Convert a list of mouse bindings to BetterMouse's btn array format.
   # Bindings are grouped by button ID, then by modifier, then by gesture type.
   #
-  # Input:  [ { mouseAction = { buttonId = 5; gestureType = { Click = {}; }; clickSubtype = 2; };
+  # Input:  [ { mouseAction = { buttonId = 5; clickSubtype = 2; };
   #             targetAction = { actionSel = 43; ... }; }
-  #           { mouseAction = { buttonId = 2; gestureType = { Move = {}; }; direction = 1; };
+  #           { mouseAction = { buttonId = 2; direction = 1; };
   #             targetAction = { actionSel = 22; ... }; } ]
   #
   # Output: [ 5 [ 0 [ { Click = {}; } [ 2 <action> ] ] ]
   #           2 [ 0 [ { Move = {}; } [ 1 <action> ] ] ] ]
   bindingsToButtonArray =
-    bindings:
     let
-      # Group bindings by button ID
-      byButton = groupBy (b: toString b.mouseAction.buttonId) bindings;
-
-      # Detect if a binding is a click (has clickSubtype) or drag (has direction)
-      isClick = b: b.mouseAction ? clickSubtype;
-      isDrag = b: b.mouseAction ? direction && !(b.mouseAction ? clickSubtype);
-
       # Convert bindings for a single button
       mkButtonConfig =
         buttonBindings:
         let
-          # For now, all bindings use modifier 0 (no modifier)
-          modifier = 0;
-
-          # Separate click and drag bindings
-          clickBindings = filter isClick buttonBindings;
-          dragBindings = filter isDrag buttonBindings;
-
           # Convert click bindings: [clickSubtype, action, ...]
           clickActions =
-            clickBindings
-            |> map (b: [
-              b.mouseAction.clickSubtype
-              b.targetAction
+            buttonBindings
+            |> filter (binding: binding.mouseAction.kind == mouseActionKinds.click)
+            |> map (binding: [
+              binding.mouseAction.clickSubtype
+              binding.targetAction
             ])
             |> concatLists;
 
           # Convert drag bindings: [direction, action, ...]
           dragActions =
-            dragBindings
-            |> map (b: [
-              b.mouseAction.direction
-              b.targetAction
+            buttonBindings
+            |> filter (binding: binding.mouseAction.kind == mouseActionKinds.drag)
+            |> map (binding: [
+              binding.mouseAction.direction
+              binding.targetAction
             ])
             |> concatLists;
 
-          # Build gesture configs using gestureType from the first binding of each type
           gestureConfigs =
-            (optional (clickBindings != [ ]) [
-              (head clickBindings).mouseAction.gestureType
+            (optional (clickActions != [ ]) [
+              { Click = { }; }
               clickActions
             ])
-            ++ (optional (dragBindings != [ ]) [
-              (head dragBindings).mouseAction.gestureType
+            ++ (optional (dragActions != [ ]) [
+              { Move = { }; }
               dragActions
             ]);
         in
-        # BetterMouse expects [modifier, gestureConfig] pairs
+        # BetterMouse expects [modifier, gestureConfig] pairs. For now, all
+        # bindings use modifier 0 (no modifier).
         gestureConfigs
-        |> map (gc: [
-          modifier
-          gc
+        |> map (gestureConfig: [
+          0
+          gestureConfig
         ])
         |> concatLists;
     in
-    byButton
+    bindings:
+    groupBy (binding: toString binding.mouseAction.buttonId) bindings
     |> mapAttrsToList (
       buttonIdStr: buttonBindings: [
         (toInt buttonIdStr)
@@ -368,16 +351,15 @@ let
   #           123 [ 4 <action> ] ]
   bindingsToKeyArray =
     bindings:
-    bindings
-    |> groupBy (b: toString b.key.code)
+    groupBy (binding: toString binding.key.code) bindings
     |> mapAttrsToList (
-      codeStr: bs: [
+      codeStr: bindings: [
         (toInt codeStr)
         (
-          bs
-          |> map (b: [
-            b.key.modifiers
-            b.action
+          bindings
+          |> map (binding: [
+            binding.key.modifiers
+            binding.action
           ])
           |> concatLists
         )
