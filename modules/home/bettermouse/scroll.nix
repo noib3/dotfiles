@@ -61,7 +61,7 @@ mkOption {
               hSclSliderEn = config.horizontal.scrollSliders;
               hSclSliderInv = false;
               horiInvEn = config.horizontal.invertDirection;
-              horiSpeed = config.horizontal.speed;
+              horiSpeed = (config.horizontal.speed) * 1.0; # convert to float
               lpfDura = 12;
               panelLpf = 0;
               sclThrough = false;
@@ -88,5 +88,9 @@ mkOption {
     all apps, or a bundle ID for app-specific settings.
   '';
 
-  default = { };
+  default = {
+    # There must always be a "global" entry or the entire config will be
+    # invalid.
+    global = { };
+  };
 }
