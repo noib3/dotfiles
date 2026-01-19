@@ -33,6 +33,7 @@
         ++ (lib.optional config.machines."skunk@linux".isCurrent
           "https://cache.soopy.moe"
         );
+        use-xdg-base-directories = true;
         warn-dirty = false;
       };
     };

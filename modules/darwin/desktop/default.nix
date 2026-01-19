@@ -23,6 +23,12 @@ in
   };
 
   config = mkIf cfg.enable {
+    # Workaround for https://github.com/nix-darwin/nix-darwin/issues/943.
+    # nix-darwin doesn't add the XDG profile path to PATH when
+    # `use-xdg-base-directories` is enabled.
+    environment.profiles =
+      mkOrder 700 [ "\${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile" ];
+
     environment.systemPackages = with pkgs; [
       home-manager
       neovim
@@ -44,6 +50,7 @@ in
         "root"
         cfg.userName
       ];
+      use-xdg-base-directories = true;
       warn-dirty = false;
     };
 

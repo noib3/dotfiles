@@ -91,6 +91,7 @@ in
         "root"
         cfg.userName
       ];
+      use-xdg-base-directories = true;
       warn-dirty = false;
     };
 
