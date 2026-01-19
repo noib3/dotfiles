@@ -123,6 +123,9 @@ in
       OSFONTDIR = lib.strings.optionalString isLinux (
         config.home.homeDirectory + "/.nix-profile/share/fonts/truetype/NerdFonts"
       );
+      TEXMFCONFIG = "${config.xdg.configHome}/texmf";
+      TEXMFVAR = "${config.xdg.stateHome}/texmf";
+      VIMINIT = "set viminfofile=${config.xdg.stateHome}/vim/viminfo";
     };
 
     stateVersion = "25.11";
