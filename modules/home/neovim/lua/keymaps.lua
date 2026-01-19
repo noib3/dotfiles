@@ -268,7 +268,10 @@ local fzf_live_ripgrep = function(search_root)
     -- I couldn't find any docs on what query's type is, but AFAICT it's always
     -- a table with a single element.
     local query = query[1]
-    return ("rg-pattern '%s' %s"):format(query, search_root)
+    return ("rg-pattern %s %s"):format(
+      vim.fn.shellescape(query),
+      vim.fn.shellescape(search_root)
+    )
   end
 
   fzf_lua.fzf_live(query, {
