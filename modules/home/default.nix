@@ -30,6 +30,7 @@
     ./terminal
     ./terminfo
     ./udiskie
+    ./vim
     ./vivid
     ./whatsapp
     ./zed

@@ -125,7 +125,6 @@ in
       );
       TEXMFCONFIG = "${config.xdg.configHome}/texmf";
       TEXMFVAR = "${config.xdg.stateHome}/texmf";
-      VIMINIT = "set viminfofile=${config.xdg.stateHome}/vim/viminfo";
     };
 
     stateVersion = "25.11";
