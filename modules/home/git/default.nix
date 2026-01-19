@@ -61,16 +61,6 @@ in
         ".direnv"
         ".envrc"
       ];
-
-      includes = [
-        {
-          condition = "gitdir:**/snowstorm/**";
-          contents.user = {
-            email = "riccardo@snowstorm.net";
-            signingkey = "F37C362AF715BC43";
-          };
-        }
-      ];
     };
   };
 }

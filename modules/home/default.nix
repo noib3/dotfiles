@@ -25,6 +25,7 @@
     ./selfcontrol
     ./signal
     ./skhd
+    ./snowstorm-work
     ./ssh
     ./starship
     ./terminal

@@ -152,6 +152,7 @@ in
     selfcontrol.enable = isDarwin;
     signal.enable = true;
     skhd.enable = isDarwin;
+    snowstorm-work.enable = true;
     ssh.enable = true;
     starship.enable = true;
     terminfo.enable = true;
