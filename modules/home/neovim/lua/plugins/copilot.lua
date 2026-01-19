@@ -32,6 +32,15 @@ return {
         end,
       })
 
+      -- By default, disable suggestions in markdown buffers (can be re-enabled
+      -- with `:Copilot suggestion toggle_auto_trigger`).
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+          vim.b.copilot_suggestion_auto_trigger = false
+        end,
+      })
+
       require("copilot").setup(opts)
     end
   }
