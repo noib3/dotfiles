@@ -24,7 +24,19 @@ if [ ! -r "$FILE" ]; then
 fi
 
 FILE_LENGTH=${#FILE}
-MIME=$(file --dereference --mime "$FILE")
+MIME=$(file -Lb --mime -- "$FILE")
+MIME_TYPE=$(file -Lb --mime-type -- "$FILE")
+FILE_DESC=$(file -Lb -- "$FILE")
+
+if is_ssh_private_key "$FILE_DESC"; then
+  echo "Preview disabled for private SSH key"
+  exit 0
+fi
+
+if show_pgp_public_key "$FILE" "$MIME_TYPE"; then
+  exit 0
+fi
+
 if [[ "${MIME:FILE_LENGTH}" =~ binary ]]; then
   echo "$MIME"
   exit 0

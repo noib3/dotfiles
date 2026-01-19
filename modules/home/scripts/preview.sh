@@ -41,6 +41,18 @@ CACHE_FILE="$(
 )"
 CACHE="$CACHE_DIR/$CACHE_FILE"
 
+MIME_TYPE=$(file -Lb --mime-type -- "$FILE")
+FILE_DESC=$(file -Lb -- "$FILE")
+
+if is_ssh_private_key "$FILE_DESC"; then
+  echo "Preview disabled for private SSH key"
+  exit 0
+fi
+
+if show_pgp_public_key "$FILE" "$MIME_TYPE"; then
+  exit 0
+fi
+
 case "$FILE" in
   *.7z|*.a|*.ace|*.alz|*.arc|*.arj|*.bz|*.bz2|*.cab|*.cpio|*.deb|*.gz|*.jar|\
   *.lha|*.lrz|*.lz|*.lzh|*.lzma|*.lzo|*.rar|*.rpm|*.rz|*.t7z|*.tar|*.tbz|\
@@ -57,7 +69,7 @@ case "$FILE" in
     ;;
 esac
 
-case "$(file -Lb --mime-type -- "$FILE")" in
+case "$MIME_TYPE" in
   text/*|application/javascript|application/json|application/csv)
     bat --color=always "$FILE"
     ;;
