@@ -12,7 +12,7 @@
     # The absolute path to the root of this repository.
     documentsDir =
       if config.modules.dropbox.enable then
-        "${config.home.homeDirectory}/Dropbox"
+        config.modules.dropbox.directory
       else
         throw "Where are the documents stored?";
 

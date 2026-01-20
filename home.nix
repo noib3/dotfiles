@@ -138,7 +138,6 @@ in
     claude.enable = true;
     codex.enable = true;
     colorscheme.${colorscheme}.enable = true;
-    dropbox.enable = true;
     fish.enable = true;
     ghostty.enable = true;
     git.enable = true;
