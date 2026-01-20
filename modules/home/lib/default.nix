@@ -13,6 +13,8 @@
     documentsDir =
       if config.modules.dropbox.enable then
         config.modules.dropbox.directory
+      else if config.modules.proton-drive.enable then
+        config.modules.proton-drive.directory
       else
         throw "Where are the documents stored?";
 

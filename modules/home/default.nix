@@ -20,6 +20,7 @@
     ./neovim
     ./nix
     ./nixpkgs
+    ./proton-drive
     ./rust
     ./scripts
     ./selfcontrol
