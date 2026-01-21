@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
 }:
 
@@ -33,12 +34,34 @@ in
     "--color='border:${colors.border}'"
   ];
 
-  changeDirWidgetCommand = ''
-    fd --strip-cwd-prefix --base-directory=$HOME --hidden --type=d --color=always \
-      | sed 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
-      | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
-      | sed 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
-  '';
+  changeDirWidgetCommand =
+    let
+      fdOpts = "--strip-cwd-prefix --hidden --type=d --color=always";
+      fzf-alt-c = pkgs.writeShellApplication {
+        name = "fzf-alt-c";
+        runtimeInputs = with pkgs; [
+          config.programs.fd.package
+          gnused
+        ];
+        text = ''
+          docs_dir="${config.lib.mine.documentsDir}"
+          docs_name="$(basename "$docs_dir")"
+          {
+            (cd "${config.home.homeDirectory}" && fd ${fdOpts})
+
+            # If the documents directory is a symlink, scan it explicitly.
+            if [ -L "$docs_dir" ]; then
+              (cd "$docs_dir" && fd ${fdOpts}) \
+                | sed "s|^|"$'\x1b[${col-dirs}m'"$docs_name/|"
+            fi
+          } \
+            | sed 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
+            | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
+            | sed 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
+        '';
+      };
+    in
+    "${lib.getExe fzf-alt-c}";
 
   changeDirWidgetOptions = [
     "--prompt='Cd> '"

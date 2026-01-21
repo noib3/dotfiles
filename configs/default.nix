@@ -13,7 +13,7 @@
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };
-  fzf = import ./fzf { inherit config pkgs; };
+  fzf = import ./fzf { inherit config lib pkgs; };
   grub = import ./grub;
   home-manager = import ./home-manager;
   kanshi = import ./kanshi { inherit config pkgs; };
