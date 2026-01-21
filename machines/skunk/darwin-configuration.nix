@@ -14,7 +14,7 @@
     inherit hostName userName;
   };
 
-  ids.gids.nixbld = 30000;
+  ids.gids.nixbld = 350;
 
   nix = {
     linux-builder.enable = true;
