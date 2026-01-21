@@ -26,13 +26,20 @@ in
     # Workaround for https://github.com/nix-darwin/nix-darwin/issues/943.
     # nix-darwin doesn't add the XDG profile path to PATH when
     # `use-xdg-base-directories` is enabled.
-    environment.profiles =
-      mkOrder 700 [ "\${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile" ];
+    environment.profiles = mkOrder 700 [
+      "\${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile"
+    ];
 
     environment.systemPackages = with pkgs; [
       home-manager
       neovim
     ];
+
+    modules = {
+      brave-policies.enable = true;
+      fish.enable = true;
+      yabai.enable = true;
+    };
 
     networking = with cfg; {
       computerName = hostName;
@@ -40,18 +47,22 @@ in
       localHostName = hostName;
     };
 
-    nix.settings = {
-      experimental-features = [
-        "flakes"
-        "nix-command"
-        "pipe-operators"
-      ];
-      trusted-users = [
-        "root"
-        cfg.userName
-      ];
-      use-xdg-base-directories = true;
-      warn-dirty = false;
+    nix = {
+      linux-builder.enable = true;
+
+      settings = {
+        experimental-features = [
+          "flakes"
+          "nix-command"
+          "pipe-operators"
+        ];
+        trusted-users = [
+          "root"
+          cfg.userName
+        ];
+        use-xdg-base-directories = true;
+        warn-dirty = false;
+      };
     };
 
     system = {
@@ -118,6 +129,8 @@ in
         enableKeyMapping = true;
         remapCapsLockToEscape = true;
       };
+
+      stateVersion = 5;
     };
   };
 }
