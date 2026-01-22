@@ -32,7 +32,6 @@ end
 return {
   {
     "olimorris/codecompanion.nvim",
-    branch = "v18",
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
