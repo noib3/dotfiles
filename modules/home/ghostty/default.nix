@@ -22,6 +22,7 @@ in
       enableFishIntegration = config.programs.fish.enable;
       settings = {
         adjust-cursor-thickness = "200%";
+        auto-update = "off";
         cursor-style = "bar";
         cursor-style-blink = false;
         keybind = import ./keybinds.nix { inherit lib isDarwin isLinux; };

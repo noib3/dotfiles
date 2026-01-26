@@ -15,9 +15,11 @@ in
       includes = [
         {
           condition = "gitdir:**/snowstorm/**";
-          contents.user = {
-            email = "riccardo@snowstorm.net";
-            signingkey = "F37C362AF715BC43";
+          contents = {
+            user = rec {
+              email = "riccardo@snowstorm.net";
+              signingkey = email;
+            };
           };
         }
       ];
