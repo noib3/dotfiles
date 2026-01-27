@@ -18,16 +18,18 @@ else
 fi
 
 function draw() {
-  if [ -n "${UB_SOCKET-}" ] && [ -z "${FZF_PREVIEW_COLUMNS-}" ]; then
-    ueberzugpp \
-      cmd -s "$UB_SOCKET" -a add -i PREVIEW \
-      -x "$X" -y "$Y" --max-width "$WIDTH" --max-height "$HEIGHT" \
-      -f "$1"
-    # Return with a non-zero exit code to disable the preview cache, or the
-    # cleaner script won't get called.
-    exit 1
-  else
+  if [ -n "${NVIM-}" ]; then
+    # Neovim's terminal doesn't support kitty graphics.
     chafa --size "${WIDTH}x${HEIGHT}" "$1"
+  elif [ -n "${FZF_PREVIEW_COLUMNS-}" ]; then
+    # fzf preview.
+    kitten icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no \
+      --place="${WIDTH}x${HEIGHT}@${X}x${Y}" "$1"
+  else
+    # lf preview.
+    kitten icat --transfer-mode=memory --stdin=no \
+      --place="${WIDTH}x${HEIGHT}@${X}x${Y}" "$1" </dev/null >/dev/tty
+    exit 1
   fi
 }
 

@@ -18,6 +18,8 @@ pkgs.writeShellApplication {
       gnupg
       # Used for SVGs.
       inkscape
+      # Contains `kitten icat`, used for image previews.
+      kitty.kitten
       # Used for audios.
       mediainfo
       # Contains `convert`.
@@ -28,7 +30,6 @@ pkgs.writeShellApplication {
     ++ pkgs.lib.lists.optionals (!pkgs.stdenv.isDarwin) [
       # Contains `ebook-meta`, used for epubs.
       calibre
-      ueberzugpp
     ];
 
   text = ''
