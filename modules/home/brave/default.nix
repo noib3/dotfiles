@@ -24,6 +24,27 @@ in
       ];
     };
 
+    # See https://chromeenterprise.google/policies/ and
+    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy for
+    # the available policies.
+    modules.macOSPreferences.apps."com.brave.Browser" = {
+      forced = {
+        BookmarkBarEnabled = false;
+        BraveAIChatEnabled = false;
+        BraveNewsDisabled = true;
+        BraveRewardsDisabled = true;
+        BraveStatsPingEnabled = false;
+        BraveTalkDisabled = true;
+        BraveVPNDisabled = true;
+        BraveWalletDisabled = true;
+        BrowserSignin = 0;
+        HomepageIsNewTabPage = true;
+        NewTabPageLocation = "about:blank";
+        PasswordManagerEnabled = false;
+        SyncDisabled = true;
+      };
+    };
+
     home.activation = lib.mkIf isDarwin {
       setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run ${pkgs.defaultbrowser}/bin/defaultbrowser browser

@@ -36,7 +36,6 @@ in
     ];
 
     modules = {
-      brave-policies.enable = true;
       fish.enable = true;
       yabai.enable = true;
     };
