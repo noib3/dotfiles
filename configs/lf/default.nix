@@ -83,6 +83,67 @@ in
       ''
     );
 
+    # Override the built-in paste to use append "-copy-{n}" before the extension
+    # if a file with the same name already exists in the destination, rather
+    # than the default ".~{n}~" suffix.
+    paste = ''
+      %{{
+        # Read the copy/cut buffer to get the mode and file list.
+        files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
+        mode=$(head -1 "$files")
+        list=$(tail -n +2 "$files")
+
+        [ -n "$list" ] || exit 0
+
+        # Given a destination path, return it as-is if nothing conflicts,
+        # or append "-copy-{n}" (before the extension) until the name is
+        # unique.
+        gen_name() {
+          local dest="$1"
+          [ -e "$dest" ] || { echo "$dest"; return; }
+
+          local dir base name ext n
+          dir=$(dirname "$dest")
+          base=$(basename "$dest")
+
+          # Strip the leading dot so we split on the first dot that has
+          # text before it.
+          case "$base" in
+            .*) prefix="."; rest="''${base#.}" ;;
+            *)  prefix="";  rest="$base" ;;
+          esac
+
+          name="''${prefix}''${rest%%.*}"
+          ext="''${rest#*.}"
+
+          # Directories and extensionless files: append at the end.
+          if [ -d "$dest" ] || [ "$ext" = "$rest" ]; then
+            n=1
+            while [ -e "$dir/''${base}-copy-''${n}" ]; do n=$((n + 1)); done
+            echo "$dir/''${base}-copy-''${n}"
+          else
+            # Insert before the extension.
+            n=1
+            while [ -e "$dir/''${name}-copy-''${n}.''${ext}" ]; do n=$((n + 1)); done
+            echo "$dir/''${name}-copy-''${n}.''${ext}"
+          fi
+        }
+
+        while IFS= read -r src; do
+          dest=$(gen_name "$PWD/$(basename "$src")")
+          case "$mode" in
+            copy) cp -r "$src" "$dest" ;;
+            move) mv "$src" "$dest" ;;
+          esac
+        done <<< "$list"
+
+        # Clear the buffer after a move so files can't be moved again.
+        if [ "$mode" = "move" ]; then
+          lf -remote "send $id clear"
+        fi
+      }}
+    '';
+
     touch = ''%touch "$@"; lf -remote "send $id select '$@'"'';
     mkdir = ''%mkdir -p "$@"; lf -remote "send $id select '$@'"'';
     make-ex = ''%${chmod} -R u+x $fx; lf -remote "send $id reload"'';
