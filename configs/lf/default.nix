@@ -243,18 +243,18 @@ in
     u = null;
     l = null;
     d = "delete";
-    k = "push :mkdir<space>";
-    t = "push :touch<space>";
+    lg = "$lazygit";
+    mk = "push :mkdir<space>";
+    mtb = "push :make-tarball<space>";
+    to = "push :touch<space>";
+    unm = "unmount-device";
     x = "cut";
     "+" = "make-ex";
     "-" = "remove-ex";
-    "<enter>" = "push $";
     "<c-x><c-d>" = "fuzzy-cd";
     "<c-x><c-e>" = "fuzzy-edit";
     "<c-x><c-r>" = "fuzzy-ripgrep";
-    lg = "$lazygit";
-    mtb = "push :make-tarball<space>";
-    unm = "unmount-device";
+    "<enter>" = "push $";
   }
   // (
     if isLinux then
