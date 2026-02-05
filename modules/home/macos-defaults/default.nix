@@ -28,6 +28,11 @@ in
         # 0 hides it and 18 shows it. See https://roundfleet.com/tutorial/2025-07-07-bluetooth-menu-status-bar-macos
         # for more infos.
         Bluetooth = 18;
+        # Don't show the "Now Playing" icon in the menu bar. Again, not sure
+        # what 8 means. I found this value by checking the output of
+        # `defaults -currentHost read com.apple.controlcenter` before/after
+        # hiding it manually via System Settings > Control Center > Now Playing.
+        NowPlaying = 8;
       };
       "com.apple.Spotlight".forced = {
         # Don't show the Spotlight icon in the menu bar.
