@@ -144,6 +144,7 @@ in
     gnupg.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
+    macosDefaults.enable = isDarwin;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     neovim.enable = true;
