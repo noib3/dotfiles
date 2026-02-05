@@ -14,6 +14,7 @@
           preview = import ./preview.nix { inherit pkgs; };
           rg-pattern = import ./rg-pattern.nix { inherit pkgs; };
           rg-preview = import ./rg-preview.nix { inherit pkgs; };
+          td = import ./td.nix { inherit config pkgs; };
         };
       })
     ];

@@ -55,6 +55,7 @@ in
         scripts.preview
         scripts.rg-pattern
         scripts.rg-preview
+        scripts.td
         spotify
         texliveConTeXt
         tokei
