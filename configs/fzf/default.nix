@@ -49,7 +49,8 @@ in
           {
             (cd "${config.home.homeDirectory}" && fd ${fdOpts})
 
-            # If the documents directory is a symlink, scan it explicitly.
+            # If the documents directory is a symlink, scan it explicitly since
+            # fd doesn't follow symlinks.
             if [ -L "$docs_dir" ]; then
               (cd "$docs_dir" && fd ${fdOpts}) \
                 | sed "s|^|"$'\x1b[${col-dirs}m'"$docs_name/|"

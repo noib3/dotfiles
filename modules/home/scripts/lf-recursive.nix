@@ -5,8 +5,15 @@
 
 let
   inherit (config.lib.mine) hex;
-  old-dirs-col = hex.toANSI config.modules.colorscheme.palette.normal.blue;
-  new-dirs-col = hex.toANSI "#565f89";
+  inherit (config.modules.colorscheme) name palette;
+  old-dirs-col = hex.toANSI palette.normal.blue;
+  grayed-out-dirs = {
+    "afterglow" = hex.scale 0.85 palette.bright.white;
+    "gruvbox" = hex.scale 1.3 palette.bright.black;
+    "tokyonight" = "#565f89";
+    "vscode" = palette.bright.black;
+  };
+  new-dirs-col = hex.toANSI (grayed-out-dirs.${name} or palette.bright.white);
 in
 pkgs.writeShellApplication {
   name = "lf-recursive";
@@ -33,6 +40,6 @@ pkgs.writeShellApplication {
       exit 1
     fi
 
-    inner_lf_recursive "$1" "${old-dirs-col}" "${new-dirs-col}"
+    inner_lf_recursive "$1" "${old-dirs-col}" "${new-dirs-col}" "${config.lib.mine.documentsDir}"
   '';
 }
