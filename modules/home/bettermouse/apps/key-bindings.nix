@@ -14,15 +14,7 @@ let
       };
     };
   };
-in
-{
-  option = mkOption {
-    type = types.listOf keyBindingType;
-    description = "Key bindings for this app";
-    default = [ ];
-  };
 
-  # Convert a list of key bindings to BetterMouse's key array format.
   toBetterMouseFormat =
     bindings:
     groupBy (binding: toString binding.key.code) bindings
@@ -40,4 +32,34 @@ in
       ]
     )
     |> concatLists;
+in
+mkOption {
+  type = types.submodule (
+    { config, ... }:
+    {
+      options.bindings = mkOption {
+        type = types.listOf keyBindingType;
+        description = "Key bindings for this app";
+        default = [ ];
+      };
+
+      options.lock = mkOption {
+        type = types.bool;
+        description = ''
+          When unlocked, changes to global key bindings are synchronized to
+          this app. When locked, this app's key bindings are independent.
+        '';
+        default = false;
+      };
+
+      options.asBetterMouseFormat = mkOption {
+        type = types.listOf types.anything;
+        internal = true;
+        readOnly = true;
+        default = toBetterMouseFormat config.bindings;
+      };
+    }
+  );
+  default = { };
+  description = "Key bindings and related settings for this app";
 }

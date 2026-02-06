@@ -80,7 +80,7 @@ in
 
     modules.bettermouse = {
       apps.global = {
-        keyBindings = [
+        keyBindings.bindings = [
           {
             key = cfg.keys.left.plus cfg.keys.modifiers.ctrl;
             action = cfg.actions.threeFingerSwipeRightWithKeyboard;
@@ -91,7 +91,7 @@ in
           }
         ];
 
-        mouseBindings =
+        mouseBindings.bindings =
           let
             inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
           in

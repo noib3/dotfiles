@@ -4,17 +4,13 @@
 
 with lib;
 let
-  mouseBindings = import ./mouse-bindings.nix { inherit lib; };
-
-  keyBindings = import ./key-bindings.nix { inherit lib; };
-
   perAppType = types.submodule (
     { config, ... }:
     {
       options = {
         clickThrough = import ./click-through.nix { inherit lib; };
-        keyBindings = keyBindings.option;
-        mouseBindings = mouseBindings.option;
+        keyBindings = import ./key-bindings.nix { inherit lib; };
+        mouseBindings = import ./mouse-bindings.nix { inherit lib; };
         pan = import ./pan.nix { inherit lib; };
         scroll = import ./scroll.nix { inherit lib; };
 
@@ -23,9 +19,11 @@ let
           internal = true;
           readOnly = true;
           default = {
-            btn = mouseBindings.toBetterMouseFormat config.mouseBindings;
+            btn = config.mouseBindings.asBetterMouseFormat;
+            btnLock = config.mouseBindings.lock;
             enabled = true;
-            key = keyBindings.toBetterMouseFormat config.keyBindings;
+            key = config.keyBindings.asBetterMouseFormat;
+            keyLock = config.keyBindings.lock;
             leftCTEn = config.clickThrough.left;
             # 32 seems to be a sentinel value for "No button pan", which
             # disables panning.
@@ -40,15 +38,9 @@ let
             scl = config.scroll.asBetterMouseFormat;
             sclEn = config.scroll.enable;
             # Default settings BetterMouse requires for each app entry.
-            url = {
-              relative = "./";
-              base.relative = "file:///";
-            };
-            btnLock = false;
             cursorGain = 1.0;
             cursorMod = 0;
             cursorModifiedRes = 26214400;
-            keyLock = false;
           };
         };
       };
@@ -72,7 +64,16 @@ mkOption {
             |> mapAttrs' (
               bundleId: appConfig: {
                 name = if bundleId == "global" then "" else bundleId;
-                value = appConfig.asBetterMouseFormat;
+                value = appConfig.asBetterMouseFormat // {
+                  url =
+                    if bundleId == "global" then
+                      {
+                        relative = "./";
+                        base.relative = "file:///";
+                      }
+                    else
+                      throw "Per-app settings for '${bundleId}' are not yet supported: we don't know how to derive the app's URL from its bundle ID";
+                };
               }
             );
         };
