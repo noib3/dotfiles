@@ -142,14 +142,8 @@ in
         SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
       };
 
-      # For `config`, we use `often` instead of `forced` because when it's
-      # forced, keyboard bindings aren't applied until the "Keyboard" pane in
-      # the UI is manually focused once.
-      #
-      # My best guess is that BetterMouse needs to write some internal state to
-      # `config` during startup, and when it can't (because the preference is
-      # locked), it skips initialization of other systems like keyboard
-      # bindings.
+      # For `config`, we have to use `often` instead of `forced` because
+      # BetterMouse uses it to persist some internal state.
       often = {
         config = mkBetterMouseConfig {
           cursorHold = if cfg.cursor.holdInGesture then 1 else 0;
