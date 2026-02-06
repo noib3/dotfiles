@@ -15,6 +15,7 @@ let
         clickThrough = import ./click-through.nix { inherit lib; };
         keyBindings = keyBindings.option;
         mouseBindings = mouseBindings.option;
+        pan = import ./pan.nix { inherit lib; };
         scroll = import ./scroll.nix { inherit lib; };
 
         asBetterMouseFormat = mkOption {
@@ -25,7 +26,15 @@ let
             btn = mouseBindings.toBetterMouseFormat config.mouseBindings;
             key = keyBindings.toBetterMouseFormat config.keyBindings;
             leftCTEn = config.clickThrough.left;
+            # 32 seems to be a sentinel value for "No button pan", which
+            # disables panning.
+            panBtn = if config.pan.enable then config.pan.button.buttonId else 32;
             panCT = config.clickThrough.pan;
+            panInertia = config.pan.inertia;
+            panInvert = config.pan.invertDirection;
+            # TODO: I don't know what this setting does or how to change its
+            # value from any of the UI toggles.
+            panMod = 0;
             rightCTEn = config.clickThrough.right;
             scl = config.scroll.asBetterMouseFormat;
             # Default settings BetterMouse requires for each app entry.
@@ -34,16 +43,12 @@ let
               relative = "./";
               base.relative = "file:///";
             };
-            panInertia = true;
-            panInvert = false;
-            panBtn = 1;
-            panMod = 0;
-            sclEn = true;
             btnLock = false;
-            keyLock = false;
-            cursorMod = 0;
             cursorGain = 1.0;
+            cursorMod = 0;
             cursorModifiedRes = 26214400;
+            keyLock = false;
+            sclEn = true;
           };
         };
       };

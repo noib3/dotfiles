@@ -80,6 +80,17 @@ in
 
     modules.bettermouse = {
       apps.global = {
+        keyBindings = [
+          {
+            key = cfg.keys.left.plus cfg.keys.modifiers.ctrl;
+            action = cfg.actions.threeFingerSwipeRightWithKeyboard;
+          }
+          {
+            key = cfg.keys.right.plus cfg.keys.modifiers.ctrl;
+            action = cfg.actions.threeFingerSwipeLeftWithKeyboard;
+          }
+        ];
+
         mouseBindings =
           let
             inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
@@ -99,16 +110,7 @@ in
             }
           ];
 
-        keyBindings = [
-          {
-            key = cfg.keys.left.plus cfg.keys.modifiers.ctrl;
-            action = cfg.actions.threeFingerSwipeRightWithKeyboard;
-          }
-          {
-            key = cfg.keys.right.plus cfg.keys.modifiers.ctrl;
-            action = cfg.actions.threeFingerSwipeLeftWithKeyboard;
-          }
-        ];
+        pan.enable = false;
       };
 
       mice.logitech.MXMaster3SForMac.enable = true;
