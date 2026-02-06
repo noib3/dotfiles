@@ -18,18 +18,43 @@ let
     };
 in
 mkOption {
-  type = types.submodule {
-    options = {
-      logitech = mkOption {
-        type = types.submodule {
-          options = {
-            MXMaster3SForMac = mkMouseOption ./logitech/mx-master-3s-for-mac.nix;
+  type = types.submodule (
+    { config, options, ... }:
+    {
+      options = {
+        logitech = mkOption {
+          type = types.submodule {
+            options = {
+              MXMaster3SForMac = mkMouseOption ./logitech/mx-master-3s-for-mac.nix;
+            };
+          };
+          default = { };
+        };
+
+        asBetterMouseFormat = mkOption {
+          type = types.attrs;
+          internal = true;
+          readOnly = true;
+          default = {
+            mice =
+              config
+              |> filterAttrs (name: _: !(options.${name}.internal or false))
+              |> mapAttrsToList (
+                _vendor: products:
+                products
+                |> filterAttrs (_: v: v ? enable)
+                |> mapAttrsToList (
+                  _product: mouseConfig:
+                  if mouseConfig.enable then mouseConfig.asBetterMouseFormat else null
+                )
+                |> filter (x: x != null)
+              )
+              |> concatLists;
           };
         };
-        default = { };
       };
-    };
-  };
+    }
+  );
 
   description = "Mouse-specific settings keyed by vendor and product name";
 

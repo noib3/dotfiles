@@ -31,9 +31,11 @@ let
   # This means that to convert the following example `config`:
   #
   # ```nix
-  # config = {
-  #   cursorHold = false;
-  #   hideIcon = true;
+  # {
+  #   config = {
+  #     cursorHold = false;
+  #     hideIcon = true;
+  #   };
   # }
   # ```
   #
@@ -332,22 +334,7 @@ in
     modules.macOSPreferences.apps."com.naotanhaocan.BetterMouse" = {
       forced = {
         appitems = mkBetterMouseConfig cfg.apps.asBetterMouseFormat;
-
-        mice = mkBetterMouseConfig {
-          mice =
-            cfg.mice
-            |> mapAttrsToList (
-              _vendor: products:
-              products
-              |> mapAttrsToList (
-                _product: mouseConfig:
-                if mouseConfig.enable then mouseConfig.asBetterMouseFormat else null
-              )
-              |> filter (mouseConfig: mouseConfig != null)
-            )
-            |> concatLists;
-        };
-
+        mice = mkBetterMouseConfig cfg.mice.asBetterMouseFormat;
         SUEnableAutomaticChecks = if cfg.autoUpdate then 1 else 0;
       };
 
