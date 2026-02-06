@@ -3,7 +3,6 @@
 {
   lib,
   actionType,
-  keyType,
   mouseActionType,
   mouseActionKinds,
 }:
@@ -19,7 +18,7 @@ let
       ;
   };
 
-  keyBindings = import ./key-bindings.nix { inherit lib actionType keyType; };
+  keyBindings = import ./key-bindings.nix { inherit lib actionType; };
 
   perAppType = types.submodule (
     { config, ... }:

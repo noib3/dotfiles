@@ -1,15 +1,11 @@
-{
-  lib,
-  actionType,
-  keyType,
-}:
+{ lib, actionType }:
 
 with lib;
 let
   keyBindingType = types.submodule {
     options = {
       key = mkOption {
-        type = keyType;
+        type = import ../keys/key-type.nix { inherit lib; };
         description = "The key (with optional modifiers) that triggers this binding";
       };
       action = mkOption {
