@@ -66,6 +66,14 @@ in
       default = false;
     };
     cursor = import ./cursor { inherit lib; };
+    hideIcon = mkOption {
+      type = types.bool;
+      description = ''
+        Whether to hide BetterMouse's menu bar icon. To make the icon
+        reappear, launch the app again while it's already running.
+      '';
+      default = false;
+    };
     keys = import ./keys { inherit lib; };
     mice = import ./mice { inherit lib; };
   };
@@ -122,6 +130,8 @@ in
         holdInGesture = true;
       };
 
+      hideIcon = true;
+
       mice.logitech.MXMaster3SForMac.enable = true;
     };
 
@@ -142,16 +152,8 @@ in
       # bindings.
       often = {
         config = mkBetterMouseConfig {
-          cursorHold = cfg.cursor.holdInGesture;
-          hideIcon = false;
-          leftDragLimit = true;
-          leftDragLimitRange = 10.0;
-          longPressPeriod = 0.5;
-          longPressRepeatInterval = 0.1;
-          registered = 0.0;
-          showDescription = true;
-          tabSelection = 5;
-          trialLeft = 7.0;
+          cursorHold = if cfg.cursor.holdInGesture then 1 else 0;
+          hideIcon = if cfg.hideIcon then 1 else 0;
           optCsr = cfg.cursor.control.asBetterMouseFormat;
         };
       };
