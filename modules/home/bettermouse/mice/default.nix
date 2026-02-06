@@ -1,6 +1,6 @@
 # Defines the `bettermouse.mice` submodule.
 
-{ lib, mouseActionKinds }:
+{ lib }:
 
 with lib;
 let
@@ -8,7 +8,6 @@ let
     module:
     mkOption {
       type = types.submoduleWith {
-        specialArgs = { inherit mouseActionKinds; };
         modules = [
           ./base-mouse-module.nix
           module
@@ -22,14 +21,7 @@ mkOption {
     { config, options, ... }:
     {
       options = {
-        logitech = mkOption {
-          type = types.submodule {
-            options = {
-              MXMaster3SForMac = mkMouseOption ./logitech/mx-master-3s-for-mac.nix;
-            };
-          };
-          default = { };
-        };
+        logitech = import ./logitech { inherit lib mkMouseOption; };
 
         asBetterMouseFormat = mkOption {
           type = types.attrs;

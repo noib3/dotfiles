@@ -51,119 +51,19 @@ let
   # Steps 3) and 4) are handled by `mkPlistData`, and the following function
   # puts it all together.
   mkBetterMouseConfig = attrs: utils.mkPlistData (toPlist attrs);
-
-  actionType = types.submodule {
-    options = {
-      actionSel = mkOption {
-        type = types.int;
-        description = "The action ID used by BetterMouse";
-      };
-      hotkeyName = mkOption {
-        type = types.str;
-        default = "";
-        description = "Name of the hotkey (if isHotkey is true)";
-      };
-      isHotkey = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Whether this action sends a hotkey";
-      };
-      hotkeyMod = mkOption {
-        type = types.int;
-        default = 0;
-        description = "Modifier flags for the hotkey";
-      };
-      hotkeyKey = mkOption {
-        type = types.int;
-        default = 0;
-        description = "Key code for the hotkey";
-      };
-      clickTh = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Click threshold";
-      };
-      clickThEn = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Click threshold enabled";
-      };
-      multiShot = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Whether to repeat the action while held";
-      };
-      appName = mkOption {
-        type = types.str;
-        default = "";
-        description = "Application name (for app-specific actions)";
-      };
-      enabled = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Whether this action is enabled";
-      };
-    };
-  };
-
-  mouseActionKinds = {
-    click = 0;
-    drag = 1;
-    longPress = 2;
-    holdAndScroll = 3;
-  };
-
-  # Type for a mouse action (click, drag, etc.)
-  mouseActionType = types.addCheck types.attrs (
-    x: x ? buttonId && builtins.isInt x.buttonId
-  );
 in
 {
   options.modules.bettermouse = {
     enable = mkEnableOption "BetterMouse";
-
-    actions = mkOption {
-      type = types.attrsOf actionType;
-      description = "Available actions for key and mouse bindings";
-      default = {
-        # The 3-finger-swipe actions use different selectors depending on
-        # whether the action is meant to be performed with a mouse or with
-        # a keyboard. AFAICT, the only difference is that the mouse swipes are
-        # proportional (the space transition tracks the mouse movement), while
-        # the keyboard swipes are discrete (the space switch happens immediately
-        # when the binding is triggered). Also, from my testing the keyboard
-        # swipes can be used as mouse actions, but the mouse swipes can't be
-        # used as keyboard actions.
-        threeFingerSwipeLeftWithMouse.actionSel = 7;
-        threeFingerSwipeRightWithMouse.actionSel = 8;
-        threeFingerSwipeLeftWithKeyboard.actionSel = 22;
-        threeFingerSwipeRightWithKeyboard.actionSel = 23;
-        missionControl = {
-          actionSel = 43;
-          appName = "Mission Control";
-        };
-      };
-      readOnly = true;
-    };
-
-    apps = import ./apps {
-      inherit
-        lib
-        actionType
-        mouseActionType
-        mouseActionKinds
-        ;
-    };
-
+    actions = import ./actions { inherit lib; };
+    apps = import ./apps { inherit lib; };
     autoUpdate = mkOption {
       type = types.bool;
       description = "Whether to automatically check for updates";
       default = false;
     };
-
     keys = import ./keys { inherit lib; };
-
-    mice = import ./mice { inherit lib mouseActionKinds; };
+    mice = import ./mice { inherit lib; };
   };
 
   config = mkIf cfg.enable {
@@ -179,8 +79,6 @@ in
     ];
 
     modules.bettermouse = {
-      mice.logitech.MXMaster3SForMac.enable = true;
-
       apps.global = {
         mouseBindings =
           let
@@ -212,6 +110,8 @@ in
           }
         ];
       };
+
+      mice.logitech.MXMaster3SForMac.enable = true;
     };
 
     modules.macOSPreferences.apps."com.naotanhaocan.BetterMouse" = {

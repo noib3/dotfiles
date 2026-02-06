@@ -1,24 +1,12 @@
 # Defines the `bettermouse.apps` submodule for per-app settings.
 
-{
-  lib,
-  actionType,
-  mouseActionType,
-  mouseActionKinds,
-}:
+{ lib }:
 
 with lib;
 let
-  mouseBindings = import ./mouse-bindings.nix {
-    inherit
-      lib
-      actionType
-      mouseActionType
-      mouseActionKinds
-      ;
-  };
+  mouseBindings = import ./mouse-bindings.nix { inherit lib; };
 
-  keyBindings = import ./key-bindings.nix { inherit lib actionType; };
+  keyBindings = import ./key-bindings.nix { inherit lib; };
 
   perAppType = types.submodule (
     { config, ... }:

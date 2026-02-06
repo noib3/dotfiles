@@ -1,10 +1,4 @@
-# Base module for mouse definitions.
-
-{
-  lib,
-  mouseActionKinds,
-  ...
-}:
+{ lib, ... }:
 
 let
   inherit (lib) mkOption types;
@@ -19,6 +13,8 @@ let
       allowed.${direction}
     else
       throw "Invalid direction '${direction}'. Must be one of: ${validOptions}";
+
+  mouseActionKinds = import ./action-kinds.nix;
 
   # Submodule type for a mouse button with click, drag, longPress, and
   # holdAndScroll actions derived from the buttonId.

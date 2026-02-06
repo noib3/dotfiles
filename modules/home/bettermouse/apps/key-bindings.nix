@@ -1,4 +1,4 @@
-{ lib, actionType }:
+{ lib }:
 
 with lib;
 let
@@ -9,7 +9,7 @@ let
         description = "The key (with optional modifiers) that triggers this binding";
       };
       action = mkOption {
-        type = actionType;
+        type = import ../actions/action-type.nix { inherit lib; };
         description = "The action to perform when the key is pressed";
       };
     };

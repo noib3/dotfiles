@@ -1,20 +1,17 @@
-{
-  lib,
-  actionType,
-  mouseActionType,
-  mouseActionKinds,
-}:
+{ lib }:
 
 with lib;
 let
   mouseBindingType = types.submodule {
     options = {
       mouseAction = mkOption {
-        type = mouseActionType;
+        type = types.addCheck types.attrs (
+          x: x ? buttonId && builtins.isInt x.buttonId
+        );
         description = "The mouse action (click, drag, etc.) that triggers this binding";
       };
       targetAction = mkOption {
-        type = actionType;
+        type = import ../actions/action-type.nix { inherit lib; };
         description = "The action to perform when the mouse action occurs";
       };
     };
@@ -33,6 +30,8 @@ in
       mkButtonConfig =
         buttonBindings:
         let
+          mouseActionKinds = import ../mice/action-kinds.nix;
+
           clickActions =
             buttonBindings
             |> filter (binding: binding.mouseAction.kind == mouseActionKinds.click)
