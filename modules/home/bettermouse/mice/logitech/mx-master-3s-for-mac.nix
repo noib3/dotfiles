@@ -13,7 +13,7 @@
     buttons = {
       wheel.buttonId = 2;
       thumb.buttonId = 5;
-      # TODO: add other buttons as we discover their IDs
+      # TODO: add other buttons as we discover their IDs.
     };
 
     # TODO: add options to configure more parameters instead of hardcoding them.

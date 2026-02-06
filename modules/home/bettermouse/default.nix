@@ -202,218 +202,50 @@ let
   mouseActionType = types.addCheck types.attrs (
     x: x ? buttonId && builtins.isInt x.buttonId
   );
-
-  # Convert a list of mouse bindings to BetterMouse's btn array format.
-  # Bindings are grouped by button ID, then by modifier, then by gesture type.
-  #
-  # Input:  [ { mouseAction = { buttonId = 5; clickSubtype = 2; };
-  #             targetAction = { actionSel = 43; ... }; }
-  #           { mouseAction = { buttonId = 2; direction = 1; };
-  #             targetAction = { actionSel = 22; ... }; } ]
-  #
-  # Output: [ 5 [ 0 [ { Click = {}; } [ 2 <action> ] ] ]
-  #           2 [ 0 [ { Move = {}; } [ 1 <action> ] ] ] ]
-  bindingsToButtonArray =
-    let
-      # Convert bindings for a single button
-      mkButtonConfig =
-        buttonBindings:
-        let
-          # Convert click bindings: [clickSubtype, action, ...]
-          clickActions =
-            buttonBindings
-            |> filter (binding: binding.mouseAction.kind == mouseActionKinds.click)
-            |> map (binding: [
-              binding.mouseAction.clickSubtype
-              binding.targetAction
-            ])
-            |> concatLists;
-
-          # Convert drag bindings: [direction, action, ...]
-          dragActions =
-            buttonBindings
-            |> filter (binding: binding.mouseAction.kind == mouseActionKinds.drag)
-            |> map (binding: [
-              binding.mouseAction.direction
-              binding.targetAction
-            ])
-            |> concatLists;
-
-          gestureConfigs =
-            (optional (clickActions != [ ]) [
-              { Click = { }; }
-              clickActions
-            ])
-            ++ (optional (dragActions != [ ]) [
-              { Move = { }; }
-              dragActions
-            ]);
-        in
-        # BetterMouse expects [modifier, gestureConfig] pairs. For now, all
-        # bindings use modifier 0 (no modifier).
-        gestureConfigs
-        |> map (gestureConfig: [
-          0
-          gestureConfig
-        ])
-        |> concatLists;
-    in
-    bindings:
-    groupBy (binding: toString binding.mouseAction.buttonId) bindings
-    |> mapAttrsToList (
-      buttonIdStr: buttonBindings: [
-        (toInt buttonIdStr)
-        (mkButtonConfig buttonBindings)
-      ]
-    )
-    |> concatLists;
-
-  # Convert a list of key bindings to BetterMouse's key array format.
-  # Bindings with the same base key code are merged together.
-  #
-  # Input:  [ { key = { code = 124; modifiers = 4; }; action = ...; }
-  #           { key = { code = 124; modifiers = 8; }; action = ...; }
-  #           { key = { code = 123; modifiers = 4; }; action = ...; } ]
-  #
-  # Output: [ 124 [ 4 <action> 8 <action> ]
-  #           123 [ 4 <action> ] ]
-  bindingsToKeyArray =
-    bindings:
-    groupBy (binding: toString binding.key.code) bindings
-    |> mapAttrsToList (
-      codeStr: bindings: [
-        (toInt codeStr)
-        (
-          bindings
-          |> map (binding: [
-            binding.key.modifiers
-            binding.action
-          ])
-          |> concatLists
-        )
-      ]
-    )
-    |> concatLists;
-
-  # Default settings for each app entry in appitems.apps.
-  # BetterMouse requires all these fields to be present.
-  appDefaults = {
-    enabled = true;
-    url = {
-      relative = "./";
-      base.relative = "file:///";
-    };
-    leftCTEn = false;
-    rightCTEn = true;
-    panInertia = true;
-    panInvert = false;
-    panCT = true;
-    panBtn = 1;
-    panMod = 0;
-    sclEn = true;
-    btnLock = false;
-    keyLock = false;
-    cursorMod = 0;
-    cursorGain = 1.0;
-    cursorModifiedRes = 26214400;
-  };
 in
 {
   options.modules.bettermouse = {
     enable = mkEnableOption "BetterMouse";
+
+    actions = mkOption {
+      type = types.attrsOf actionType;
+      description = "Available actions for key and mouse bindings";
+      default = {
+        # The 3-finger-swipe actions use different selectors depending on
+        # whether the action is meant to be performed with a mouse or with
+        # a keyboard. AFAICT, the only difference is that the mouse swipes are
+        # proportional (the space transition tracks the mouse movement), while
+        # the keyboard swipes are discrete (the space switch happens immediately
+        # when the binding is triggered). Also, from my testing the keyboard
+        # swipes can be used as mouse actions, but the mouse swipes can't be
+        # used as keyboard actions.
+        threeFingerSwipeLeftWithMouse.actionSel = 7;
+        threeFingerSwipeRightWithMouse.actionSel = 8;
+        threeFingerSwipeLeftWithKeyboard.actionSel = 22;
+        threeFingerSwipeRightWithKeyboard.actionSel = 23;
+        missionControl = {
+          actionSel = 43;
+          appName = "Mission Control";
+        };
+      };
+      readOnly = true;
+    };
+
+    apps = import ./apps {
+      inherit
+        lib
+        actionType
+        keyType
+        mouseActionType
+        mouseActionKinds
+        ;
+    };
 
     autoUpdate = mkOption {
       type = types.bool;
       description = "Whether to automatically check for updates";
       default = false;
     };
-
-    keyBindings = mkOption {
-      type =
-        let
-          keyBindingType = types.submodule {
-            options = {
-              key = mkOption {
-                type = keyType;
-                description = "The key (with optional modifiers) that triggers this binding";
-              };
-              action = mkOption {
-                type = actionType;
-                description = "The action to perform when the key is pressed";
-              };
-            };
-          };
-        in
-        types.attrsOf (types.listOf keyBindingType);
-      description = ''
-        Key bindings per application. Use "global" for bindings that apply to
-        all apps, or a bundle ID (e.g. "com.apple.Safari") for app-specific
-        bindings.
-      '';
-      example = literalExpression ''
-        {
-          global = [
-            {
-              key = cfg.keys.right.plus cfg.keyModifiers.ctrl;
-              action = cfg.actions.threeFingerSwipeRight;
-            }
-          ];
-          "com.apple.Safari" = [
-            {
-              key = cfg.keys.left.plus cfg.keyModifiers.cmd;
-              action = cfg.actions.back;
-            }
-          ];
-        }
-      '';
-      default = { };
-    };
-
-    mouseBindings = mkOption {
-      type =
-        let
-          mouseBindingType = types.submodule {
-            options = {
-              mouseAction = mkOption {
-                type = mouseActionType;
-                description = "The mouse action (click, drag, etc.) that triggers this binding";
-              };
-              targetAction = mkOption {
-                type = actionType;
-                description = "The action to perform when the mouse action occurs";
-              };
-            };
-          };
-        in
-        types.attrsOf (types.listOf mouseBindingType);
-      description = ''
-        Mouse button bindings per application. Use "global" for bindings that
-        apply to all apps, or a bundle ID for app-specific bindings.
-      '';
-      example = literalExpression ''
-        {
-          global =
-            let
-              inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
-            in
-            [
-              {
-                mouseAction = buttons.thumb.click;
-                targetAction = cfg.actions.missionControl;
-              }
-              {
-                mouseAction = buttons.wheel.drag { direction = "left"; };
-                targetAction = cfg.actions.threeFingerSwipeLeft;
-              }
-            ];
-        }
-      '';
-      default = { };
-    };
-
-    scroll = import ./scroll.nix { inherit lib; };
-
-    mice = import ./mice { inherit lib mouseActionKinds; };
 
     keys = mkOption {
       type = types.attrsOf keyType;
@@ -446,29 +278,7 @@ in
           cmd = 16;
         };
 
-    actions = mkOption {
-      type = types.attrsOf actionType;
-      description = "Available actions for key and mouse bindings";
-      default = {
-        # The 3-finger-swipe actions use different selectors depending on
-        # whether the action is meant to be performed with a mouse or with
-        # a keyboard. AFAICT, the only difference is that the mouse swipes are
-        # proportional (the space transition tracks the mouse movement), while
-        # the keyboard swipes are discrete (the space switch happens immediately
-        # when the binding is triggered). Also, from my testing the keyboard
-        # swipes can be used as mouse actions, but the mouse swipes can't be
-        # used as keyboard actions.
-        threeFingerSwipeLeftWithMouse.actionSel = 7;
-        threeFingerSwipeRightWithMouse.actionSel = 8;
-        threeFingerSwipeLeftWithKeyboard.actionSel = 22;
-        threeFingerSwipeRightWithKeyboard.actionSel = 23;
-        missionControl = {
-          actionSel = 43;
-          appName = "Mission Control";
-        };
-      };
-      readOnly = true;
-    };
+    mice = import ./mice { inherit lib mouseActionKinds; };
   };
 
   config = mkIf cfg.enable {
@@ -486,59 +296,42 @@ in
     modules.bettermouse = {
       mice.logitech.MXMaster3SForMac.enable = true;
 
-      mouseBindings.global =
-        let
-          inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
-        in
-        [
+      apps.global = {
+        mouseBindings =
+          let
+            inherit (cfg.mice.logitech.MXMaster3SForMac) buttons;
+          in
+          [
+            {
+              mouseAction = buttons.thumb.click;
+              targetAction = cfg.actions.missionControl;
+            }
+            {
+              mouseAction = buttons.wheel.drag { direction = "left"; };
+              targetAction = cfg.actions.threeFingerSwipeLeftWithMouse;
+            }
+            {
+              mouseAction = buttons.wheel.drag { direction = "right"; };
+              targetAction = cfg.actions.threeFingerSwipeRightWithMouse;
+            }
+          ];
+
+        keyBindings = [
           {
-            mouseAction = buttons.thumb.click;
-            targetAction = cfg.actions.missionControl;
+            key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
+            action = cfg.actions.threeFingerSwipeRightWithKeyboard;
           }
           {
-            mouseAction = buttons.wheel.drag { direction = "left"; };
-            targetAction = cfg.actions.threeFingerSwipeLeftWithMouse;
-          }
-          {
-            mouseAction = buttons.wheel.drag { direction = "right"; };
-            targetAction = cfg.actions.threeFingerSwipeRightWithMouse;
+            key = cfg.keys.right.plus cfg.keyModifiers.ctrl;
+            action = cfg.actions.threeFingerSwipeLeftWithKeyboard;
           }
         ];
-
-      keyBindings.global = [
-        {
-          key = cfg.keys.left.plus cfg.keyModifiers.ctrl;
-          action = cfg.actions.threeFingerSwipeRightWithKeyboard;
-        }
-        {
-          key = cfg.keys.right.plus cfg.keyModifiers.ctrl;
-          action = cfg.actions.threeFingerSwipeLeftWithKeyboard;
-        }
-      ];
+      };
     };
 
     modules.macOSPreferences.apps."com.naotanhaocan.BetterMouse" = {
       forced = {
-        appitems = mkBetterMouseConfig {
-          apps =
-            # Collect all bundle IDs that have any settings defined.
-            (lib.attrNames cfg.keyBindings)
-            ++ (lib.attrNames cfg.mouseBindings)
-            ++ (lib.attrNames cfg.scroll)
-            # Remove duplicates.
-            |> lib.unique
-            |> map (bundleId: {
-              name = if bundleId == "global" then "" else bundleId;
-              value = appDefaults // {
-                scl = lib.attrsets.optionalAttrs (
-                  cfg.scroll ? ${bundleId}
-                ) cfg.scroll.${bundleId}.asBetterMouseFormat;
-                btn = bindingsToButtonArray (cfg.mouseBindings.${bundleId} or [ ]);
-                key = bindingsToKeyArray (cfg.keyBindings.${bundleId} or [ ]);
-              };
-            })
-            |> lib.listToAttrs;
-        };
+        appitems = mkBetterMouseConfig cfg.apps.asBetterMouseFormat;
 
         mice = mkBetterMouseConfig {
           mice =
