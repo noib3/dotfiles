@@ -5,6 +5,15 @@ mkOption {
   type = types.submodule (
     { config, ... }:
     {
+      options.enable = mkOption {
+        type = types.bool;
+        description = ''
+          Whether this app uses its own scroll settings or falls back to the
+          global ones.
+        '';
+        default = true;
+      };
+
       options.horizontal = mkOption {
         type = types.submodule {
           options = {

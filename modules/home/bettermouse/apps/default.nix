@@ -24,6 +24,7 @@ let
           readOnly = true;
           default = {
             btn = mouseBindings.toBetterMouseFormat config.mouseBindings;
+            enabled = true;
             key = keyBindings.toBetterMouseFormat config.keyBindings;
             leftCTEn = config.clickThrough.left;
             # 32 seems to be a sentinel value for "No button pan", which
@@ -37,8 +38,8 @@ let
             panMod = 0;
             rightCTEn = config.clickThrough.right;
             scl = config.scroll.asBetterMouseFormat;
+            sclEn = config.scroll.enable;
             # Default settings BetterMouse requires for each app entry.
-            enabled = true;
             url = {
               relative = "./";
               base.relative = "file:///";
@@ -48,7 +49,6 @@ let
             cursorMod = 0;
             cursorModifiedRes = 26214400;
             keyLock = false;
-            sclEn = true;
           };
         };
       };
