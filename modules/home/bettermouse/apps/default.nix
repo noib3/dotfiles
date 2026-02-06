@@ -25,8 +25,9 @@ let
     { config, ... }:
     {
       options = {
-        mouseBindings = mouseBindings.option;
+        clickThrough = import ./click-through.nix { inherit lib; };
         keyBindings = keyBindings.option;
+        mouseBindings = mouseBindings.option;
         scroll = import ./scroll.nix { inherit lib; };
 
         asBetterMouseFormat = mkOption {
