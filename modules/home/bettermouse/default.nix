@@ -156,5 +156,26 @@ in
         };
       };
     };
+
+    launchd.agents.bettermouse-reset-trial =
+      let
+        resetTrial = pkgs.writeShellApplication {
+          name = "bettermouse-reset-trial";
+          text = builtins.readFile ./reset-trial.sh;
+        };
+      in
+      {
+        enable = true;
+        config = {
+          ProgramArguments = [ (lib.getExe resetTrial) ];
+          StartCalendarInterval = [
+            # Runs every day at 4:00 AM.
+            {
+              Hour = 4;
+              Minute = 0;
+            }
+          ];
+        };
+      };
   };
 }
