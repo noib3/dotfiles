@@ -1,6 +1,6 @@
 # Defines the `bettermouse.apps` submodule for per-app settings.
 
-{ lib }:
+{ lib, cursorCfg }:
 
 with lib;
 let
@@ -21,6 +21,9 @@ let
           default = {
             btn = config.mouseBindings.asBetterMouseFormat;
             btnLock = config.mouseBindings.lock;
+            cursorGain = cursorCfg.gain;
+            cursorMod = cursorCfg.mod;
+            cursorModifiedRes = cursorCfg.modifiedRes;
             enabled = true;
             key = config.keyBindings.asBetterMouseFormat;
             keyLock = config.keyBindings.lock;
@@ -37,10 +40,6 @@ let
             rightCTEn = config.clickThrough.right;
             scl = config.scroll.asBetterMouseFormat;
             sclEn = config.scroll.enable;
-            # Default settings BetterMouse requires for each app entry.
-            cursorGain = 1.0;
-            cursorMod = 0;
-            cursorModifiedRes = 26214400;
           };
         };
       };

@@ -81,9 +81,11 @@ let
     up = 126;
   };
 
+  modifierType = import ./modifier-type.nix { inherit lib; };
+
   mkKey = code: modifiers: {
     inherit code modifiers;
-    plus = modifier: mkKey code (modifiers + modifier);
+    plus = modifier: mkKey code (modifiers + modifier.keyBinding);
   };
 
   keys =
@@ -99,15 +101,27 @@ let
 
   modifiers =
     {
-      shift = 2;
-      ctrl = 4;
-      option = 8;
-      cmd = 16;
+      shift = {
+        keyBinding = 2;
+        nsEventFlag = 131072; # 0x20000
+      };
+      ctrl = {
+        keyBinding = 4;
+        nsEventFlag = 262144; # 0x40000
+      };
+      option = {
+        keyBinding = 8;
+        nsEventFlag = 524288; # 0x80000
+      };
+      cmd = {
+        keyBinding = 16;
+        nsEventFlag = 1048576; # 0x100000
+      };
     }
     |> mapAttrs (
       name: val:
       mkOption {
-        type = types.int;
+        type = modifierType;
         description = "${name} modifier";
         default = val;
         readOnly = true;

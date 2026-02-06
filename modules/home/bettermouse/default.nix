@@ -56,12 +56,16 @@ in
   options.modules.bettermouse = {
     enable = mkEnableOption "BetterMouse";
     actions = import ./actions { inherit lib; };
-    apps = import ./apps { inherit lib; };
+    apps = import ./apps {
+      inherit lib;
+      cursorCfg = cfg.cursor;
+    };
     autoUpdate = mkOption {
       type = types.bool;
       description = "Whether to automatically check for updates";
       default = false;
     };
+    cursor = import ./cursor { inherit lib; };
     keys = import ./keys { inherit lib; };
     mice = import ./mice { inherit lib; };
   };
@@ -113,6 +117,11 @@ in
         pan.enable = false;
       };
 
+      cursor = {
+        control.enable = true;
+        holdInGesture = true;
+      };
+
       mice.logitech.MXMaster3SForMac.enable = true;
     };
 
@@ -133,7 +142,7 @@ in
       # bindings.
       often = {
         config = mkBetterMouseConfig {
-          cursorHold = false;
+          cursorHold = cfg.cursor.holdInGesture;
           hideIcon = false;
           leftDragLimit = true;
           leftDragLimitRange = 10.0;
@@ -143,17 +152,7 @@ in
           showDescription = true;
           tabSelection = 5;
           trialLeft = 7.0;
-          optCsr = {
-            en = false;
-            acc = [
-              68.75
-              68.75
-            ];
-            res = [
-              5.0
-              5.0
-            ];
-          };
+          optCsr = cfg.cursor.control.asBetterMouseFormat;
         };
       };
     };
