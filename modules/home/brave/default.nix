@@ -36,6 +36,7 @@ in
           pkgs.brave;
       extensions = [
         { id = "ghmbeldphafepmbegfdlkpapadhbakde"; } # Proton Pass
+        { id = "khncfooichmfjbepaaaebmommgaepoid"; } # Unhook
       ];
     };
 
