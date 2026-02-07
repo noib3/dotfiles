@@ -18,6 +18,22 @@ in
   config = mkIf cfg.enable {
     programs.brave = {
       enable = true;
+      package =
+        if isDarwin then
+          pkgs.symlinkJoin {
+            name = "brave-wrapped";
+            paths = [ pkgs.brave ];
+            nativeBuildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              rm "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+              makeWrapper \
+                "${pkgs.brave}/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+                "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+                --add-flags "--disable-features=GlobalMediaControls"
+            '';
+          }
+        else
+          pkgs.brave;
       extensions = [
         { id = "ghmbeldphafepmbegfdlkpapadhbakde"; } # Proton Pass
       ];
