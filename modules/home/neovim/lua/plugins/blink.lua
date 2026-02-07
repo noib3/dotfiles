@@ -23,7 +23,6 @@ return {
           range = "prefix",
         },
         list = {
-          max_items = 7,
           selection = {
             preselect = false,
             auto_insert = false,
@@ -33,7 +32,8 @@ return {
           auto_show = true,
           draw = {
             columns = { { "label" }, { "label_detail" } },
-          }
+          },
+          max_height = 7,
         },
         documentation = {
           auto_show = true,
