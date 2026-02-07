@@ -3,6 +3,7 @@ return {
     "Saghen/blink.cmp",
     build = "cargo build --release --target-dir ./target",
     dependencies = {
+      "moyiz/blink-emoji.nvim",
       {
         "noib3/colorful-menu.nvim",
         branch = "noib3",
@@ -50,10 +51,25 @@ return {
         }
       },
       sources = {
-        default = { "lsp", "path" },
+        default = {
+          "emoji",
+          "lsp",
+          "path",
+        },
         providers = {
           buffer = {
             enabled = false,
+          },
+          emoji = {
+            name = "Emoji",
+            module = "blink-emoji",
+            enabled = function()
+              local enabled_in_filetypes = { "gitcommit", "markdown" }
+              return vim.tbl_contains(enabled_in_filetypes, vim.o.filetype)
+            end,
+            opts = {
+              trigger = ":",
+            },
           },
           lsp = {
             fallbacks = {},
