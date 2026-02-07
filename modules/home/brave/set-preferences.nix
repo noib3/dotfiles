@@ -21,9 +21,17 @@ let
         };
         show_stats = false;
       };
+      show_bookmarks_button = false;
+      show_side_panel_button = false;
     };
+    # Pin the Proton Pass extension to the toolbar.
+    extensions.pinned_extensions = [
+      "ghmbeldphafepmbegfdlkpapadhbakde"
+    ];
     # Hide the top sites in the new tab page (yes, there's a typo in the key).
     ntp.shortcust_visible = false;
+    # Remove all buttons from the toolbar.
+    toolbar.pinned_actions = [ ];
   };
 
   profile = "Default";

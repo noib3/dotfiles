@@ -18,7 +18,6 @@ in
   config = mkIf cfg.enable {
     programs.brave = {
       enable = true;
-      package = pkgs.brave;
       extensions = [
         { id = "ghmbeldphafepmbegfdlkpapadhbakde"; } # Proton Pass
       ];
@@ -29,6 +28,8 @@ in
     # the available policies.
     modules.macOSPreferences.apps."com.brave.Browser" = {
       forced = {
+        AutofillAddressEnabled = false;
+        AutofillCreditCardEnabled = false;
         BookmarkBarEnabled = false;
         BraveAIChatEnabled = false;
         BraveNewsDisabled = true;
