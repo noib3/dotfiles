@@ -18,7 +18,7 @@ DOCS_NAME="$(basename "$DOCS_DIR")"
 
   # If the documents directory is a symlink, scan it explicitly since fd doesn't
   # follow symlinks.
-  if [ -L "$DOCS_DIR" ]; then
+  if [ -L "$DIR_PATH/$DOCS_NAME" ]; then
     fd --base-directory="$DOCS_DIR" --hidden --strip-cwd-prefix --type=f --color=always \
       | sed "s|^|"$'\x1b['"${OLD_DIRS_COL}m${DOCS_NAME}/|"
   fi
