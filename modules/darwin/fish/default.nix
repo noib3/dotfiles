@@ -8,7 +8,6 @@
 with lib;
 let
   cfg = config.modules.fish;
-  inherit (config.modules.desktop) userName;
 in
 {
   options.modules.fish = {
@@ -20,15 +19,19 @@ in
     # where `darwin-rebuild` and other nix-darwin-related commands live.
     programs.fish.enable = true;
 
-    users = {
-      # https://github.com/LnL7/nix-darwin/issues/1237#issuecomment-2562230471
-      knownUsers = [ userName ];
+    users =
+      let
+        inherit (config.system) primaryUser;
+      in
+      {
+        # https://github.com/LnL7/nix-darwin/issues/1237#issuecomment-2562230471
+        knownUsers = [ primaryUser ];
 
-      users.${userName} = {
-        shell = pkgs.fish;
-        # https://github.com/LnL7/nix-darwin/issues/1237#issuecomment-2562242340
-        uid = 501;
+        users.${primaryUser} = {
+          shell = pkgs.fish;
+          # https://github.com/LnL7/nix-darwin/issues/1237#issuecomment-2562242340
+          uid = 501;
+        };
       };
-    };
   };
 }

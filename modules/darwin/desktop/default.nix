@@ -17,9 +17,6 @@ in
       example = "macbook-pro";
       description = "The hostname of the machine";
     };
-    userName = mkOption {
-      type = types.str;
-    };
   };
 
   config = mkIf cfg.enable {
@@ -57,16 +54,13 @@ in
         ];
         trusted-users = [
           "root"
-          cfg.userName
+          config.system.primaryUser
         ];
         use-xdg-base-directories = true;
         warn-dirty = false;
       };
     };
 
-    system = {
-      primaryUser = cfg.userName;
-      stateVersion = 5;
-    };
+    system.stateVersion = 5;
   };
 }

@@ -11,6 +11,8 @@
 
   modules.desktop = {
     enable = true;
-    inherit hostName userName;
+    inherit hostName;
   };
+
+  system.primaryUser = userName;
 }
