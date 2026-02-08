@@ -20,6 +20,7 @@
     ./neovim
     ./nix
     ./nixpkgs
+    ./opencode
     ./proton-drive
     ./rust
     ./scripts

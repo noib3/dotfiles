@@ -375,6 +375,27 @@
         "type": "github"
       }
     },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770564669,
+        "narHash": "sha256-Z0iXn9UOWEpYpZ0Xt6WyMSAg/gEYSCw/WDPA7MOGzOM=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "80c1c59ed34cd19119bbb53f40e5214cae35ad29",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "ref": "production",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "brew-api": "brew-api",
@@ -388,6 +409,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nur": "nur",
+        "opencode": "opencode",
         "rust-overlay": "rust-overlay_2"
       }
     },

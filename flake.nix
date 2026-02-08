@@ -36,6 +36,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
+    opencode = {
+      url = "github:anomalyco/opencode/production";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";

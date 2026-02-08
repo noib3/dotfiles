@@ -145,6 +145,7 @@ in
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     neovim.enable = true;
+    opencode.enable = true;
     proton-drive.enable = isDarwin;
     rust.enable = true;
     selfcontrol.enable = isDarwin;
