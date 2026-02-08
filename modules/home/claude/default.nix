@@ -29,7 +29,6 @@ in
 
     xdg.configFile."claude/settings.json" = {
       text = builtins.toJSON {
-        editor.mode = "vim";
         enabledPlugins = {
           "rust-analyzer-lsp@claude-plugins-official" = true;
         };
