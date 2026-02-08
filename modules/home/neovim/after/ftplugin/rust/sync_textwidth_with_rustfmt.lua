@@ -45,5 +45,4 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   end,
 })
 
-vim.opt_local.formatoptions:append("c")
 set_textwidth_from_rustfmt(0)
