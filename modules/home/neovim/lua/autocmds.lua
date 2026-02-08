@@ -18,11 +18,12 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
 
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = create_augroup("noib3/remove-trailing-whitespace-on-save"),
-  desc = "Removes trailing whitespace on save",
+  desc = "Removes trailing whitespace and trailing newlines on save",
   callback = function()
     local cur_search = vim.fn.getreg("/")
     local cur_view = vim.fn.winsaveview()
     vim.cmd([[%s/\s\+$//e]])
+    vim.cmd([[%s/\($\n\s*\)\+\%$//e]])
     vim.fn.setreg("/", cur_search)
     vim.fn.winrestview(cur_view)
   end,
