@@ -20,8 +20,12 @@ return {
         ["<S-Tab>"] = { "select_prev", "fallback" },
       },
       completion = {
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 50,
+        },
         keyword = {
-          range = "prefix",
+          range = "full",
         },
         list = {
           selection = {
@@ -35,10 +39,6 @@ return {
             columns = { { "label" }, { "label_detail" } },
           },
           max_height = 7,
-        },
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 50,
         },
       },
       fuzzy = {
