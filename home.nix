@@ -2,9 +2,7 @@
   config,
   lib,
   pkgs,
-  colorscheme,
-  fonts,
-  userName,
+  inputs,
   ...
 }:
 
@@ -22,14 +20,15 @@ in
     ./modules/home
   ];
 
-  inherit fonts;
-
   home = {
     homeDirectory =
+      let
+        inherit (config.home) username;
+      in
       if isDarwin then
-        "/Users/${userName}"
+        "/Users/${username}"
       else if isLinux then
-        "/home/${userName}"
+        "/home/${username}"
       else
         throw "What's the home directory for this OS?";
 
@@ -129,8 +128,6 @@ in
     };
 
     stateVersion = "25.11";
-
-    username = userName;
   };
 
   modules = {
@@ -138,7 +135,6 @@ in
     brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;
-    colorscheme.${colorscheme}.enable = true;
     fish.enable = true;
     ghostty.enable = true;
     git.enable = true;

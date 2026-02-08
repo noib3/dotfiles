@@ -82,33 +82,18 @@ let
     inputs.home-manager.lib.homeManagerConfiguration rec {
       pkgs = mkPkgs machine.system;
 
-      modules =
-        let
-          home =
-            {
-              config,
-              lib,
-              pkgs,
-              ...
-            }:
-            import ../home.nix {
-              inherit
-                config
-                lib
-                pkgs
-                colorscheme
-                userName
-                ;
-              fonts = fonts pkgs;
-            };
-        in
-        [
-          home
-          homeManagerModule
-          (mkHomeManagerModule machine)
-          ../fonts/module.nix
-          ../modules/services/bluetooth-autoconnect.nix
-        ];
+      modules = [
+        homeManagerModule
+        (mkHomeManagerModule machine)
+        ../home.nix
+        ../fonts/module.nix
+        ../modules/services/bluetooth-autoconnect.nix
+        {
+          fonts = fonts pkgs;
+          home.username = userName;
+          modules.colorscheme.${colorscheme}.enable = true;
+        }
+      ];
 
       extraSpecialArgs = { inherit inputs; };
     };
