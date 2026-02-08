@@ -90,6 +90,9 @@ in
         Show24Hour = true;
         ShowAMPM = false;
       };
+      "com.apple.screencapture".forced = {
+        show-thumbnail = true;
+      };
       "com.apple.Spotlight".forced = {
         # Don't show the Spotlight icon in the menu bar.
         MenuItemHidden = 1;
