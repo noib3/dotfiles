@@ -17,11 +17,11 @@ in
   config = {
     modules.nixpkgs.allowUnfreePackages = [
       "ookla-speedtest"
-      "spotify"
       "widevine-cdm"
       "zoom"
     ];
 
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreePackages;
+    nixpkgs.config.allowUnfreePredicate =
+      pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreePackages;
   };
 }
