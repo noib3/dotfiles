@@ -17,6 +17,10 @@ return {
           return not string.match(bufname, "claude%-prompt%-.*%.md$")
         end,
       },
+      server = {
+        type = "binary",
+        custom_server_filepath = require("generated.tools").copilot,
+      },
     },
     config = function(_, opts)
       local suggestion = require("copilot.suggestion")
