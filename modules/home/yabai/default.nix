@@ -8,16 +8,20 @@
 # working. Unfortunately Apple doesn't let you do that programmatically, so
 # you'll have to go click these buttons:
 #
-# - System Preferences > Privacy & Security > Accessibility;
+# - System Settings > Privacy & Security > Accessibility;
 # - click the '+' icon;
 # - press cmd-shift-g to open "Go to folder";
-# - paste "/run/current-system/sw/bin";
+# - paste "~/.local/state/nix/profile/bin";
 # - select the Yabai binary;
 with lib;
 let
   cfg = config.modules.yabai;
 in
 {
+  imports = [
+    ./module.nix
+  ];
+
   options.modules.yabai = {
     enable = mkEnableOption "Yabai";
   };

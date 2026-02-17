@@ -155,7 +155,7 @@ in
     terminfo.enable = true;
     udiskie.enable = isLinux;
     whatsapp.enable = isDarwin;
-    zed.enable = false;
+    yabai.enable = isDarwin;
   };
 
   programs = {

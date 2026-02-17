@@ -2,6 +2,5 @@
   imports = [
     ./desktop
     ./fish
-    ./yabai
   ];
 }

@@ -34,7 +34,6 @@ in
 
     modules = {
       fish.enable = true;
-      yabai.enable = true;
     };
 
     networking = with cfg; {

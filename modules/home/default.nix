@@ -36,6 +36,7 @@
     ./vim
     ./vivid
     ./whatsapp
+    ./yabai
     ./zed
   ];
 }
