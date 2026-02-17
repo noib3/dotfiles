@@ -37,6 +37,7 @@ in
         tui = {
           cursor_blink = false;
           cursor_style = "line";
+          scroll_acceleration.enabled = true;
         };
       };
     };
