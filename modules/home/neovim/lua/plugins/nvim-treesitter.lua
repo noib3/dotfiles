@@ -2,23 +2,12 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    build = ":TSUpdate",
     lazy = false,
   },
   {
     "MeanderingProgrammer/treesitter-modules.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {
-      ensure_installed = {
-        "c",
-        "cpp",
-        "lua",
-        "markdown",
-        "nix",
-        "rust",
-        "toml",
-        "vimdoc",
-      },
       highlight = { enable = true },
       indent = { enable = true },
       incremental_selection = {

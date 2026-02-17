@@ -10,6 +10,49 @@ with lib;
 let
   cfg = config.modules.neovim;
 
+  parserLanguage =
+    parser:
+    if parser ? grammarName then
+      parser.grammarName
+    else
+      throw "Expected parser package with `grammarName` attribute";
+
+  queryLanguage =
+    query:
+    if query ? language then
+      query.language
+    else if query ? passthru && query.passthru ? language then
+      query.passthru.language
+    else
+      throw "Expected query package with `language` attribute";
+
+  treesitterParsers =
+    cfg.tree-sitter-parsers
+    |> map (
+      parser:
+      let
+        lang = parserLanguage parser;
+      in
+      nameValuePair "nvim/site/parser/${lang}.so" {
+        source = "${parser}/parser/${lang}.so";
+      }
+    )
+    |> builtins.listToAttrs;
+
+  treesitterQueries =
+    cfg.tree-sitter-queries
+    |> map (
+      query:
+      let
+        lang = queryLanguage query;
+      in
+      nameValuePair "nvim/site/queries/${lang}" {
+        source = "${query}/queries/${lang}";
+        recursive = true;
+      }
+    )
+    |> builtins.listToAttrs;
+
   # Converts a Nix value to a Lua value.
   toLua =
     value:
@@ -22,42 +65,28 @@ let
       "'${value}'"
     else
       toString value;
-
-  # The Tree-sitter CLI needs a C compiler to build parsers.
-  tree-sitter-wrapped = pkgs.symlinkJoin {
-    name = "tree-sitter-wrapped";
-    paths = [ pkgs.tree-sitter ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/tree-sitter \
-        --prefix PATH : ${lib.makeBinPath [ pkgs.clang ]}
-    '';
-  };
-
-  # Wrap Neovim to add a bunch of runtime dependencies needed for various
-  # plugins to work properly.
-  neovim-wrapped = pkgs.symlinkJoin {
-    name = "neovim-nightly-wrapped";
-    paths = [ inputs.neovim-nightly.packages.${pkgs.stdenv.system}.default ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/nvim \
-        --prefix PATH : ${
-          lib.makeBinPath [
-            # Needed by nvim-treesitter to compile parsers.
-            tree-sitter-wrapped
-          ]
-        }
-    '';
-  };
 in
 {
   options.modules.neovim = {
     enable = mkEnableOption "Neovim";
+
+    tree-sitter-parsers = mkOption {
+      type = types.listOf types.package;
+      default = [ ];
+      description = "Tree-sitter parser packages to install";
+    };
+
+    tree-sitter-queries = mkOption {
+      type = types.listOf types.package;
+      default = [ ];
+      description = "Tree-sitter query packages to install";
+    };
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ neovim-wrapped ];
+    home.packages = [
+      inputs.neovim-nightly.packages.${pkgs.stdenv.system}.default
+    ];
 
     home.sessionVariables = {
       EDITOR = "nvim";
@@ -68,17 +97,41 @@ in
       "copilot-language-server"
     ];
 
+    modules.neovim.tree-sitter-parsers =
+      with pkgs.vimPlugins.nvim-treesitter-parsers; [
+        c
+        cpp
+        lua
+        markdown
+        toml
+        vimdoc
+      ];
+
+    modules.neovim.tree-sitter-queries =
+      with pkgs.vimPlugins.nvim-treesitter.queries; [
+        c
+        cpp
+        lua
+        markdown
+        toml
+        vimdoc
+      ];
+
     xdg.configFile.nvim = {
       source = config.lib.file.mkOutOfStoreSymlink (config.lib.mine.mkAbsolute ./.);
     };
 
-    xdg.dataFile."nvim/site/lua/generated/palette.lua".text =
-      "return ${toLua config.modules.colorscheme.palette}";
+    xdg.dataFile = {
+      "nvim/site/lua/generated/palette.lua".text =
+        "return ${toLua config.modules.colorscheme.palette}";
 
-    xdg.dataFile."nvim/site/lua/generated/tools.lua".text = ''
-      return {
-        copilot = "${lib.getExe pkgs.copilot-language-server}";
-      }
-    '';
+      "nvim/site/lua/generated/tools.lua".text = ''
+        return {
+          copilot = "${lib.getExe pkgs.copilot-language-server}";
+        }
+      '';
+    }
+    // treesitterParsers
+    // treesitterQueries;
   };
 }

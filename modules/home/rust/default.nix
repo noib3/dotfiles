@@ -48,6 +48,11 @@ in
       RUSTUP_HOME = "${config.xdg.dataHome}/rustup";
     };
 
+    modules.neovim = {
+      tree-sitter-parsers = [ pkgs.vimPlugins.nvim-treesitter-parsers.rust ];
+      tree-sitter-queries = [ pkgs.vimPlugins.nvim-treesitter.queries.rust ];
+    };
+
     nixpkgs.overlays = [
       inputs.rust-overlay.overlays.default
     ];
