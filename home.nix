@@ -112,6 +112,7 @@ in
 
     sessionVariables = {
       COLORTERM = "truecolor";
+      DOCUMENTS = config.lib.mine.documentsDir;
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       IPYTHONDIR = "${config.xdg.configHome}/ipython";
       LANG = "en_US.UTF-8";
