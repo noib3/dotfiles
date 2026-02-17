@@ -6,7 +6,6 @@
     ./claude
     ./codex
     ./colorscheme
-    ./dropbox
     ./duckduckgo
     ./fish
     ./ghostty
