@@ -1,13 +1,13 @@
 return {
   {
-    dir = "~/Dropbox/dev/nomad/nomad",
+    "nomad/nomad",
     build = function()
       ---@type nomad.neovim.build
       local build = require("nomad.neovim.build")
 
-      build.builders.cargo()
+      build.builders.download_prebuilt()
           :fallback(build.builders.nix())
-          :fallback(build.builders.download_prebuilt())
+          :fallback(build.builders.cargo())
           :build(build.contexts.lazy())
     end,
     opts = {
