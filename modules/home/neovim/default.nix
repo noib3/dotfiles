@@ -103,6 +103,7 @@ in
         cpp
         lua
         markdown
+        markdown_inline
         toml
         vimdoc
       ];
@@ -113,6 +114,7 @@ in
         cpp
         lua
         markdown
+        markdown_inline
         toml
         vimdoc
       ];
