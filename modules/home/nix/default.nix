@@ -27,12 +27,12 @@
           "nix-command"
           "pipe-operators"
         ];
-        trusted-substituters = [
+        extra-substituters = [
           "https://nix-community.cachix.org"
-        ]
-        ++ (lib.optional config.machines."skunk@linux".isCurrent
-          "https://cache.soopy.moe"
-        );
+        ];
+        extra-trusted-public-keys = [
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs"
+        ];
         use-xdg-base-directories = true;
         warn-dirty = false;
       };
