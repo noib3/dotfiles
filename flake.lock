@@ -85,7 +85,7 @@
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
-          "neovim-nightly",
+          "nix-community-neovim",
           "nixpkgs"
         ]
       },
@@ -198,39 +198,43 @@
         "type": "github"
       }
     },
-    "neovim-nightly": {
+    "neovim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771414842,
+        "narHash": "sha256-U7hveKEthXjVemWJ8SMNB6j+nkY+1YXh/eyC+879fck=",
+        "ref": "refs/pull/37938/head",
+        "rev": "9b7ea85fc1f36f7a52cde9d8f2c503890e81c357",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/neovim/neovim.git"
+      },
+      "original": {
+        "ref": "refs/pull/37938/head",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/neovim/neovim.git"
+      }
+    },
+    "nix-community-neovim": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "neovim-src": "neovim-src",
+        "neovim-src": [
+          "neovim"
+        ],
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1771286682,
-        "narHash": "sha256-5X4tVhILpK+KD8Djm3j6NxxOlb/KnO/hL1QG7DQBRZM=",
+        "lastModified": 1771373098,
+        "narHash": "sha256-QbqVr1nPO2YKd5jwQ3XGdDBgKdNO7PkHuWmwm1Xb0W8=",
         "owner": "nix-community",
         "repo": "neovim-nightly-overlay",
-        "rev": "fba9a0ef6f22d02c81c88629a2b29102cc6d2e82",
+        "rev": "3a8cfad64aeeaea6147d4443f15f56549f32d60c",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "neovim-nightly-overlay",
-        "type": "github"
-      }
-    },
-    "neovim-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1771279892,
-        "narHash": "sha256-zilx+VZK5+BAmZKzRImtEHeJ8+yJx1SskPlcbUar8I4=",
-        "owner": "neovim",
-        "repo": "neovim",
-        "rev": "16495e686371d45f02eafff5aa3216ca15d5f735",
-        "type": "github"
-      },
-      "original": {
-        "owner": "neovim",
-        "repo": "neovim",
         "type": "github"
       }
     },
@@ -400,7 +404,8 @@
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
         "home-manager": "home-manager",
-        "neovim-nightly": "neovim-nightly",
+        "neovim": "neovim",
+        "nix-community-neovim": "nix-community-neovim",
         "nix-darwin": "nix-darwin",
         "nix-jettison": "nix-jettison",
         "nixos-hardware": "nixos-hardware",

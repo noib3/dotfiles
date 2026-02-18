@@ -85,7 +85,7 @@ in
 
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.neovim-nightly.packages.${pkgs.stdenv.system}.default
+      inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default
     ];
 
     home.sessionVariables = {

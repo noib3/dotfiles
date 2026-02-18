@@ -22,6 +22,14 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    neovim = {
+      url = "git+https://github.com/neovim/neovim.git?ref=refs/pull/37938/head&shallow=1";
+      flake = false;
+    };
+    nix-community-neovim = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.neovim-src.follows = "neovim";
+    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,7 +38,6 @@
       url = "git+ssh://git@github.com/noib3/nix-jettison";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
     opencode = {
       url = "github:anomalyco/opencode/production";
       inputs.nixpkgs.follows = "nixpkgs";
