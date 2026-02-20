@@ -29,7 +29,7 @@
     ./snowstorm-work
     ./ssh
     ./starship
-    ./terminal
+    ./terminals
     ./terminfo
     ./udiskie
     ./vim

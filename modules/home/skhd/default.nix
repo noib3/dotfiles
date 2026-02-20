@@ -36,7 +36,7 @@ in
 
       config = ''
         # Launch apps.
-        cmd - return : ${config.modules.terminal.launchCommand}
+        cmd - return : ${config.modules.terminals.enabled.launchCommand}
 
         # Toggle fullscreen.
         alt - f : skhd --key "ctrl + cmd - f"

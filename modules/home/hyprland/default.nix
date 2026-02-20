@@ -34,8 +34,10 @@ in
         general = {
           allow_tearing = false;
           border_size = 2;
-          "col.active_border" = "rgb(${lib.strings.removePrefix "#" palette.normal.white})";
-          "col.inactive_border" = "rgb(${lib.strings.removePrefix "#" palette.bright.black})";
+          "col.active_border" =
+            "rgb(${lib.strings.removePrefix "#" palette.normal.white})";
+          "col.inactive_border" =
+            "rgb(${lib.strings.removePrefix "#" palette.bright.black})";
           gaps_in = 10;
           gaps_out = 25;
           layout = "dwindle";
@@ -129,7 +131,7 @@ in
         "$launcher" = "fuzzel";
         # "$browser" = "${lib.getExe config.modules.browser.package}";
         "$browser" = "qutebrowser";
-        "$terminal" = "${config.modules.terminal.launchCommand}";
+        "$terminal" = "${config.modules.terminals.enabled.launchCommand}";
 
         bind = [
           # Launch programs.
