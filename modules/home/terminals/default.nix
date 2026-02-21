@@ -1,6 +1,8 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 let
+  cfg = config.modules.terminals;
+
   terminalType = lib.types.submodule (
     { config, ... }:
     {
@@ -18,32 +20,38 @@ let
       };
     }
   );
+
+  enabledTerminals =
+    removeAttrs cfg [
+      "enabled"
+      "_module"
+    ]
+    |> lib.filterAttrs (_: terminal: terminal.enabled or false)
+    |> lib.attrValues;
 in
 {
   options.modules.terminals = lib.mkOption {
-    type = lib.types.submodule (
-      { config, ... }:
-      {
-        freeformType = lib.types.attrsOf terminalType;
-        options.enabled = lib.mkOption {
-          type = lib.types.nullOr terminalType;
-          default =
-            removeAttrs config [
-              "enabled"
-              "_module"
-            ]
-            |> lib.filterAttrs (_: terminal: terminal.enabled)
-            |> lib.attrValues
-            |> (enabled: if enabled == [ ] then null else builtins.head enabled);
-          readOnly = true;
-          description = ''
-            The first configured terminal with enabled = true, or null if none
-            are enabled.
-          '';
-        };
-      }
-    );
+    type = lib.types.submodule {
+      freeformType = lib.types.attrsOf terminalType;
+      options.enabled = lib.mkOption {
+        type = lib.types.nullOr terminalType;
+        default =
+          if enabledTerminals == [ ] then null else builtins.head enabledTerminals;
+        readOnly = true;
+        description = ''
+          The first configured terminal with enabled = true, or null if none
+          are enabled
+        '';
+      };
+    };
     default = { };
-    description = "Terminal configurations keyed by terminal name.";
+    description = "Terminal configurations keyed by terminal name";
   };
+
+  config.assertions = [
+    {
+      assertion = builtins.length enabledTerminals <= 1;
+      message = "modules.terminals can have at most one enabled entry";
+    }
+  ];
 }
