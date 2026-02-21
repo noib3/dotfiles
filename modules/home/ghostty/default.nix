@@ -37,6 +37,11 @@ in
         window-padding-y = 5;
         unfocused-split-opacity = 1.0;
       }
+      # Ghostty exports its own $TERMINFO path by default, so we need to
+      # override it to use the Home Manager-managed terminfo directory.
+      // lib.attrsets.optionalAttrs config.modules.terminfo.enable {
+        env = "TERMINFO=${config.modules.terminfo.directory}";
+      }
       // lib.attrsets.optionalAttrs isLinux {
         mouse-scroll-multiplier = 1.25;
       }
@@ -48,6 +53,13 @@ in
       enabled = true;
       inherit package;
       launchCommand = "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
+      terminfo.xterm-ghostty =
+        if isDarwin then
+          pkgs.runCommandLocal "ghostty-terminfo" { } ''
+            cp -r "${package}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
+          ''
+        else
+          pkgs.ghostty.terminfo;
     };
   };
 }

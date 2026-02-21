@@ -17,6 +17,14 @@ let
           description = "The command used to open a new terminal window";
           default = lib.getExe config.package;
         };
+        terminfo = lib.mkOption {
+          type = lib.types.attrsOf lib.types.package;
+          default = { };
+          description = ''
+            Terminfo sources keyed by terminfo database name. Each value should
+            evaluate to a directory containing one or more terminfo directories.
+          '';
+        };
       };
     }
   );
