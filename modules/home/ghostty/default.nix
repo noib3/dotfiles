@@ -54,12 +54,25 @@ in
       inherit package;
       launchCommand = "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
       terminfo.xterm-ghostty =
-        if isDarwin then
-          pkgs.runCommandLocal "ghostty-terminfo" { } ''
-            cp -r "${package}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
-          ''
-        else
-          pkgs.ghostty.terminfo;
+        let
+          ghosttyTerminfo =
+            if isDarwin then
+              pkgs.runCommandLocal "ghostty-terminfo" { } ''
+                cp -r "${package}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
+              ''
+            else
+              pkgs.ghostty.terminfo;
+
+          ghosttyTerminfoPatched = pkgs.runCommandLocal "ghostty-terminfo-patched" { } ''
+            mkdir -p "$out"
+            src="$TMPDIR/xterm-ghostty"
+            patched="$TMPDIR/xterm-ghostty-patched"
+            "${pkgs.ncurses}/bin/infocmp" -A "${ghosttyTerminfo}" xterm-ghostty > "$src"
+            sed 's@^\([[:space:]]*sgr=\).*$@\1%?%p9%t\\E(0%e\\E(B%;\\E[0%?%p6%t;1%;%?%p5%t;2%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,@' "$src" > "$patched"
+            "${pkgs.ncurses}/bin/tic" -x -o "$out" "$patched"
+          '';
+        in
+        ghosttyTerminfoPatched;
     };
   };
 }
