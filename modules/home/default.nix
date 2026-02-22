@@ -122,12 +122,13 @@ in
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
       LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
-      OSFONTDIR = lib.strings.optionalString isLinux (
-        config.home.homeDirectory + "/.nix-profile/share/fonts/truetype/NerdFonts"
-      );
+      NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
       TEXMFCONFIG = "${config.xdg.configHome}/texmf";
       TEXMFVAR = "${config.xdg.stateHome}/texmf";
-    };
+    }
+    // (lib.optionalAttrs isLinux {
+      OSFONTDIR = "${config.home.profileDirectory}/share/fonts/truetype/NerdFonts";
+    });
 
     stateVersion = "25.11";
   };
