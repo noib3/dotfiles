@@ -85,8 +85,8 @@ let
       modules = [
         homeManagerModule
         (mkHomeManagerModule machine)
-        ../home.nix
         ../fonts/module.nix
+        ../modules/home
         ../modules/services/bluetooth-autoconnect.nix
         {
           fonts = fonts pkgs;
