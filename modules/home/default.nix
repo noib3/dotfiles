@@ -194,6 +194,7 @@ in
   systemd.user.startServices = true;
 
   xdg = {
+    enable = true;
     mimeApps = {
       enable = isLinux;
       defaultApplications = {
