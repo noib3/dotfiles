@@ -23,7 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim = {
-      url = "git+https://github.com/neovim/neovim.git?ref=refs/pull/37938/head&shallow=1";
+      url = "github:neovim/neovim";
       flake = false;
     };
     nix-community-neovim = {
