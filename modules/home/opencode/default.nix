@@ -39,7 +39,6 @@ in
       enable = true;
       package = opencodePackage;
       settings = {
-        theme = "system";
         permission.external_directory = {
           "/**" = "allow";
         };
@@ -47,8 +46,47 @@ in
           cursor_blink = false;
           cursor_style = "line";
           scroll_acceleration.enabled = true;
+          theme = "system";
         };
       };
     };
+
+    xdg.configFile =
+      let
+        jsonFormat = pkgs.formats.json { };
+
+        inherit (config.programs.opencode) settings;
+
+        opencodeSettings = removeAttrs settings [
+          "theme"
+          "keybinds"
+          "tui"
+        ];
+
+        tuiSettings =
+          (optionalAttrs (settings ? theme) { theme = settings.theme; })
+          // (optionalAttrs (settings ? keybinds) { keybinds = settings.keybinds; })
+          // (settings.tui or { });
+      in
+      {
+        "opencode/opencode.json" = mkForce {
+          source = jsonFormat.generate "opencode.json" (
+            {
+              "$schema" = "https://opencode.ai/config.json";
+            }
+            // opencodeSettings
+          );
+        };
+
+        "opencode/tui.json" = {
+          force = true;
+          source = jsonFormat.generate "opencode-tui.json" (
+            {
+              "$schema" = "https://opencode.ai/tui.json";
+            }
+            // tuiSettings
+          );
+        };
+      };
   };
 }
