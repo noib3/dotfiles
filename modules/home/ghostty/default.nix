@@ -67,7 +67,7 @@ in
             mkdir -p "$out"
             src="$TMPDIR/xterm-ghostty"
             patched="$TMPDIR/xterm-ghostty-patched"
-            "${pkgs.ncurses}/bin/infocmp" -A "${ghosttyTerminfo}" xterm-ghostty > "$src"
+            "${pkgs.ncurses}/bin/infocmp" -x -A "${ghosttyTerminfo}" xterm-ghostty > "$src"
             sed 's@^\([[:space:]]*sgr=\).*$@\1%?%p9%t\\E(0%e\\E(B%;\\E[0%?%p6%t;1%;%?%p5%t;2%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,@' "$src" > "$patched"
             "${pkgs.ncurses}/bin/tic" -x -o "$out" "$patched"
           '';
