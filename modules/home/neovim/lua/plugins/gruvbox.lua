@@ -230,6 +230,7 @@ local config = function()
   return {
     palette_overrides = overrides.palette,
     overrides = overrides.hl_groups,
+    terminal_colors = false,
   }
 end
 
