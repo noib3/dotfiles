@@ -13,14 +13,20 @@ let
   opencodePackage =
     (inputs.opencode.packages.${pkgs.stdenv.system}.default).overrideAttrs
       (old: {
-        # Add patch from https://github.com/anomalyco/opencode/pull/11300 to be
-        # able to set the cursor style and disable blinking.
+        # Apply a patched version of
+        # https://github.com/anomalyco/opencode/pull/11300 to set the cursor
+        # style and disable blinking in the TUI.
         patches = (old.patches or [ ]) ++ [
-          (pkgs.fetchpatch {
-            url = "https://github.com/anomalyco/opencode/commit/062837c4caf574846c8b4f2b7a43fe2bb21531e8.patch";
-            hash = "sha256-oSFUS7PONbcLh/JZHDgcHJhtPRq3Tbl7hE7F/vN6UpI=";
-          })
+          ./patches/cursor-style-and-blink.patch
         ];
+
+        # Nixpkgs' version of Bun is 1.3.9, so we need to patch the expected
+        # version range to allow Opencode to run with that version (upstream
+        # requires `^1.3.10`).
+        postPatch = (old.postPatch or "") + ''
+          substituteInPlace packages/script/src/index.ts \
+            --replace-fail 'const expectedBunVersionRange = `^''${expectedBunVersion}`' 'const expectedBunVersionRange = `>=1.3.9`'
+        '';
       });
 in
 {

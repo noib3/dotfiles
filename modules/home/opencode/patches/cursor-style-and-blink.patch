@@ -1,0 +1,198 @@
+diff --git a/packages/opencode/src/config/tui-schema.ts b/packages/opencode/src/config/tui-schema.ts
+--- a/packages/opencode/src/config/tui-schema.ts
++++ b/packages/opencode/src/config/tui-schema.ts
+@@ -10,6 +10,8 @@ const KeybindOverride = z
+   )
+   .strict()
+ 
++const CursorStyle = z.enum(["block", "line", "underline"])
++
+ export const TuiOptions = z.object({
+   scroll_speed: z.number().min(0.001).optional().describe("TUI scroll speed"),
+   scroll_acceleration: z
+@@ -22,6 +24,8 @@ export const TuiOptions = z.object({
+     .enum(["auto", "stacked"])
+     .optional()
+     .describe("Control diff rendering style: 'auto' adapts to terminal width, 'stacked' always shows single column"),
++  cursor_style: CursorStyle.optional().describe("Cursor shape in text inputs: 'block', 'line', or 'underline'"),
++  cursor_blink: z.boolean().optional().describe("Enable cursor blinking in text inputs"),
+ })
+ 
+ export const TuiInfo = z
+diff --git a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+--- a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+@@ -34,6 +34,7 @@ import { useToast } from "../../ui/toast"
+ import { useKV } from "../../context/kv"
+ import { useTextareaKeybindings } from "../textarea-keybindings"
+ import { DialogSkill } from "../dialog-skill"
++import { useTuiConfig } from "@tui/context/tui-config"
+ 
+ export type PromptProps = {
+   sessionID?: string
+@@ -79,6 +80,7 @@ export function Prompt(props: PromptProps) {
+   const { theme, syntax } = useTheme()
+   const kv = useKV()
+ 
++  const tuiConfig = useTuiConfig()
+   function promptModelWarning() {
+     toast.show({
+       variant: "warning",
+@@ -714,6 +716,11 @@ export function Prompt(props: PromptProps) {
+     return !!current
+   })
+ 
++  const cursorStyle = createMemo(() => ({
++    style: (tuiConfig.cursor_style ?? "block") as "block" | "line" | "underline",
++    blinking: tuiConfig.cursor_blink ?? true,
++  }))
++
+   const spinnerDef = createMemo(() => {
+     const color = local.agent.color(local.agent.current().name)
+     return {
+@@ -995,6 +1002,7 @@ export function Prompt(props: PromptProps) {
+               onMouseDown={(r: MouseEvent) => r.target?.focus()}
+               focusedBackgroundColor={theme.backgroundElement}
+               cursorColor={theme.text}
++              cursorStyle={cursorStyle()}
+               syntaxStyle={syntax()}
+             />
+             <box flexDirection="row" flexShrink={0} paddingTop={1} gap={1}>
+diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx
+--- a/packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx
++++ b/packages/opencode/src/cli/cmd/tui/routes/session/permission.tsx
+@@ -474,6 +474,12 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
+   const dimensions = useTerminalDimensions()
+   const narrow = createMemo(() => dimensions().width < 80)
+   const dialog = useDialog()
++  const config = useTuiConfig()
++
++  const cursorStyle = createMemo(() => ({
++    style: (config.cursor_style ?? "block") as "block" | "line" | "underline",
++    blinking: config.cursor_blink ?? true,
++  }))
+ 
+   useKeyboard((evt) => {
+     if (dialog.stack.length > 0) return
+@@ -522,6 +529,7 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
+           textColor={theme.text}
+           focusedTextColor={theme.text}
+           cursorColor={theme.primary}
++          cursorStyle={cursorStyle()}
+           keyBindings={textareaKeybindings()}
+         />
+         <box flexDirection="row" gap={2} flexShrink={0}>
+diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/question.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/question.tsx
+--- a/packages/opencode/src/cli/cmd/tui/routes/session/question.tsx
++++ b/packages/opencode/src/cli/cmd/tui/routes/session/question.tsx
+@@ -9,6 +9,7 @@ import { useSDK } from "../../context/sdk"
+ import { SplitBorder } from "../../component/border"
+ import { useTextareaKeybindings } from "../../component/textarea-keybindings"
+ import { useDialog } from "../../ui/dialog"
++import { useTuiConfig } from "../../context/tui-config"
+ 
+ export function QuestionPrompt(props: { request: QuestionRequest }) {
+   const sdk = useSDK()
+@@ -16,5 +17,6 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
+   const keybind = useKeybind()
+   const bindings = useTextareaKeybindings()
++  const config = useTuiConfig()
+ 
+   const questions = createMemo(() => props.request.questions)
+   const single = createMemo(() => questions().length === 1 && questions()[0]?.multiple !== true)
+@@ -45,6 +47,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
+     if (!value) return false
+     return store.answers[store.tab]?.includes(value) ?? false
+   })
++  const cursorStyle = createMemo(() => ({
++    style: (config.cursor_style ?? "block") as "block" | "line" | "underline",
++    blinking: config.cursor_blink ?? true,
++  }))
+ 
+   function submit() {
+     const answers = questions().map((_, i) => store.answers[i] ?? [])
+@@ -394,6 +401,7 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
+                         textColor={theme.text}
+                         focusedTextColor={theme.text}
+                         cursorColor={theme.primary}
++                        cursorStyle={cursorStyle()}
+                         keyBindings={bindings()}
+                       />
+                     </box>
+diff --git a/packages/opencode/src/cli/cmd/tui/ui/dialog-export-options.tsx b/packages/opencode/src/cli/cmd/tui/ui/dialog-export-options.tsx
+--- a/packages/opencode/src/cli/cmd/tui/ui/dialog-export-options.tsx
++++ b/packages/opencode/src/cli/cmd/tui/ui/dialog-export-options.tsx
+@@ -2,8 +2,9 @@ import { TextareaRenderable, TextAttributes } from "@opentui/core"
+ import { useTheme } from "../context/theme"
+ import { useDialog, type DialogContext } from "./dialog"
+ import { createStore } from "solid-js/store"
+-import { onMount, Show, type JSX } from "solid-js"
++import { createMemo, onMount, Show, type JSX } from "solid-js"
+ import { useKeyboard } from "@opentui/solid"
++import { useTuiConfig } from "../context/tui-config"
+ 
+ export type DialogExportOptionsProps = {
+   defaultFilename: string
+@@ -25,6 +26,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
+   const dialog = useDialog()
+   const { theme } = useTheme()
+   let textarea: TextareaRenderable
++  const config = useTuiConfig()
+   const [store, setStore] = createStore({
+     thinking: props.defaultThinking,
+     toolDetails: props.defaultToolDetails,
+@@ -33,6 +35,11 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
+     active: "filename" as "filename" | "thinking" | "toolDetails" | "assistantMetadata" | "openWithoutSaving",
+   })
+ 
++  const cursorStyle = createMemo(() => ({
++    style: (config.cursor_style ?? "block") as "block" | "line" | "underline",
++    blinking: config.cursor_blink ?? true,
++  }))
++
+   useKeyboard((evt) => {
+     if (evt.name === "return") {
+       props.onConfirm?.({
+@@ -108,6 +115,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
+           textColor={theme.text}
+           focusedTextColor={theme.text}
+           cursorColor={theme.text}
++          cursorStyle={cursorStyle()}
+         />
+       </box>
+       <box flexDirection="column">
+diff --git a/packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx b/packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx
+--- a/packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx
++++ b/packages/opencode/src/cli/cmd/tui/ui/dialog-prompt.tsx
+@@ -1,8 +1,9 @@
+ import { TextareaRenderable, TextAttributes } from "@opentui/core"
+ import { useTheme } from "../context/theme"
+ import { useDialog, type DialogContext } from "./dialog"
+-import { onMount, type JSX } from "solid-js"
++import { createMemo, onMount, type JSX } from "solid-js"
+ import { useKeyboard } from "@opentui/solid"
++import { useTuiConfig } from "../context/tui-config"
+ 
+ export type DialogPromptProps = {
+   title: string
+@@ -17,6 +18,12 @@ export function DialogPrompt(props: DialogPromptProps) {
+   const dialog = useDialog()
+   const { theme } = useTheme()
+   let textarea: TextareaRenderable
++  const config = useTuiConfig()
++
++  const cursorStyle = createMemo(() => ({
++    style: (config.cursor_style ?? "block") as "block" | "line" | "underline",
++    blinking: config.cursor_blink ?? true,
++  }))
+ 
+   useKeyboard((evt) => {
+     if (evt.name === "return") {
+@@ -59,6 +66,7 @@ export function DialogPrompt(props: DialogPromptProps) {
+           textColor={theme.text}
+           focusedTextColor={theme.text}
+           cursorColor={theme.text}
++          cursorStyle={cursorStyle()}
+         />
+       </box>
+       <box paddingBottom={1} gap={1} flexDirection="row">
