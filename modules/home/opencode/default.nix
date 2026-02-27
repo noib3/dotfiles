@@ -40,6 +40,9 @@ in
       package = opencodePackage;
       settings = {
         theme = "system";
+        permission.external_directory = {
+          "/**" = "allow";
+        };
         tui = {
           cursor_blink = false;
           cursor_style = "line";
