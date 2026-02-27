@@ -24,6 +24,8 @@ in
 
     modules.macOSPreferences.apps = {
       ".GlobalPreferences".forced = {
+        # Make Monday the first day of the week.
+        AppleFirstWeekday.gregorian = 2;
         AppleICUForce24HourTime = true;
         AppleInterfaceStyle = "Dark";
         AppleKeyboardUIMode = 3;
