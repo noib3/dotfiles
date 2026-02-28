@@ -95,6 +95,10 @@
                 '').outPath;
             };
           }) config.checks;
+
+          devShells.default = pkgs.mkShell {
+            packages = [ config.formatter ];
+          };
         };
     };
 }
