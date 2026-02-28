@@ -4,49 +4,6 @@ return {
     dependencies = { "Saghen/blink.cmp" },
     opts = {
       servers = {
-        -- Wait to load lua_ls until after all the plugins have been loaded and
-        -- their paths have been added to the runtimepath (or
-        -- 'nvim_get_runtime_file' won't return the full list).
-        lua_ls = function(setup_lsp)
-          local config = function()
-            return {
-              settings = {
-                Lua = {
-                  completion = {
-                    callSnippet = "Disable",
-                    keywordSnippet = "Disable",
-                  },
-                  diagnostics = {
-                    disable = {
-                      ["codestyle-check"] = true,
-                      ["redefined-local"] = true,
-                      ["undefined-field"] = { "vim.uv" },
-                    },
-                    globals = { "vim" },
-                  },
-                  format = {
-                    enable = false,
-                  },
-                  runtime = {
-                    version = "LuaJIT",
-                  },
-                  telemetry = {
-                    enable = false,
-                  },
-                  workspace = {
-                    ignoreDir = { ".git", "node_modules", "target" },
-                    library = vim.api.nvim_get_runtime_file("", true),
-                  },
-                },
-              },
-            }
-          end
-          vim.api.nvim_create_autocmd("User", {
-            pattern = "LazyDone",
-            once = true,
-            callback = function() setup_lsp(config()) end,
-          })
-        end,
         marksman = {},
         rust_analyzer = {
           settings = {
@@ -87,19 +44,9 @@ return {
 
       vim.lsp.config("*", { capabilities = blink.get_lsp_capabilities() })
 
-      local setup_lsp = function(server_name)
-        return function(config)
-          vim.lsp.config(server_name, config)
-          vim.lsp.enable(server_name)
-        end
-      end
-
       for server_name, config in pairs(opts.servers) do
-        if type(config) == "table" then
-          setup_lsp(server_name)(config)
-        elseif type(config) == "function" then
-          config(setup_lsp(server_name))
-        end
+        vim.lsp.config(server_name, config)
+        vim.lsp.enable(server_name)
       end
     end,
   },
