@@ -1,7 +1,15 @@
 {
   "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
   "diagnostics": {
-    "disable": ["codestyle-check", "redefined-local"],
+    "disable": [
+      "codestyle-check",
+      "redefined-local",
+      // Plugins are installed by Lazy at runtime, so their type definitions
+      // aren't available to lua_ls during static analysis.
+      // TODO: remove once we switch from Lazy to Nix for plugin management.
+      "undefined-doc-name",
+      "undefined-field"
+    ],
     "globals": ["vim"],
     "libraryFiles": "Disable"
   },
