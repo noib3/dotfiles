@@ -18,23 +18,14 @@ return {
                   },
                   diagnostics = {
                     disable = {
+                      ["codestyle-check"] = true,
                       ["redefined-local"] = true,
                       ["undefined-field"] = { "vim.uv" },
                     },
                     globals = { "vim" },
-                    neededFileStatus = {
-                      ["codestyle-check"] = "Any",
-                    },
                   },
-                  -- https://github.com/LuaLS/lua-language-server/wiki/Formatter#lua
                   format = {
-                    enable = true,
-                    defaultConfig = {
-                      indent_style = "space",
-                      indent_size = "2",
-                      quote_style = "double",
-                      max_line_length = "80",
-                    },
+                    enable = false,
                   },
                   runtime = {
                     version = "LuaJIT",

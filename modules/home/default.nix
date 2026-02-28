@@ -90,8 +90,8 @@ in
       ]
       # Lua.
       ++ [
-        stylua
         lua-language-server
+        stylua
       ]
       # Markdown.
       ++ [ marksman ]
