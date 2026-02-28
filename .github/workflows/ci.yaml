@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  format:
-    name: format
+  formatting:
+    name: Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
