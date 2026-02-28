@@ -17,8 +17,14 @@
         # We've already added a 'format' check.
         flakeCheck = false;
         projectRootFile = "flake.nix";
-        programs.nixfmt.enable = true;
-        programs.stylua.enable = true;
+        programs.nixfmt = {
+          enable = true;
+          width = 80;
+        };
+        programs.stylua = {
+          enable = true;
+          settings = builtins.fromTOML (builtins.readFile ../../stylua.toml);
+        };
       };
     };
 }
