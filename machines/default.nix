@@ -32,6 +32,7 @@ let
     in
     {
       name = machine.name;
+      system = machine.system;
       nixosConfiguration = machine.nixosConfiguration pkgs;
       darwinConfiguration = machine.darwinConfiguration pkgs;
       homeConfiguration = mkHomeConfiguration machine;
@@ -99,6 +100,8 @@ let
     };
 in
 {
+  systems = machines |> map (machine: machine.system) |> lib.lists.unique;
+
   forEach =
     forMachine:
     (lib.lists.foldl' lib.attrsets.recursiveUpdate { } (map forMachine machines));

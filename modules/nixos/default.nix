@@ -1,5 +1,3 @@
-{ ... }:
-
 {
   imports = [
     ./block-domains.nix

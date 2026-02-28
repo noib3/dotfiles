@@ -18,6 +18,7 @@
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -46,6 +47,10 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -58,9 +63,38 @@
         userName = "noib3";
       };
     in
-    machines.forEach (machine: {
-      nixosConfigurations.${machine.name} = machine.nixosConfiguration;
-      darwinConfigurations.${machine.name} = machine.darwinConfiguration;
-      homeConfigurations.${machine.name} = machine.homeConfiguration;
-    });
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = machines.systems;
+
+      imports = [ ./modules/flake ];
+
+      flake = machines.forEach (machine: {
+        nixosConfigurations.${machine.name} = machine.nixosConfiguration;
+        darwinConfigurations.${machine.name} = machine.darwinConfiguration;
+        homeConfigurations.${machine.name} = machine.homeConfiguration;
+      });
+
+      perSystem =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
+        {
+          # Workaround for https://github.com/NixOS/nix/issues/8881 so that
+          # we can run individual checks with `nix run .#check-<foo>`.
+          apps = lib.mapAttrs' (name: check: {
+            name = "check-${name}";
+            value = {
+              type = "app";
+              program =
+                (pkgs.writeShellScript "check-${name}" ''
+                  # Force evaluation of ${check}.
+                  echo -e "\033[1;32m✓\033[0m Check '${name}' passed"
+                '').outPath;
+            };
+          }) config.checks;
+        };
+    };
 }
