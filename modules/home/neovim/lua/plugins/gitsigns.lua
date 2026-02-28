@@ -25,6 +25,6 @@ return {
         map("v", "u", unstage_selected)
       end,
       signcolumn = false,
-    }
-  }
+    },
+  },
 }

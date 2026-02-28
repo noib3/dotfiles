@@ -42,13 +42,15 @@ M.save = function(opts)
 
   local buffer_was_modified = false
 
-  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" },
+  vim.api.nvim_create_autocmd(
+    { "TextChanged", "TextChangedI", "TextChangedP" },
     {
       group = check_modified_augroup_id,
       buffer = bufnr,
       callback = function() buffer_was_modified = true end,
       once = true,
-    })
+    }
+  )
 
   local offset_encoding = formatting_client.offset_encoding
 
@@ -58,9 +60,7 @@ M.save = function(opts)
     vim.api.nvim_buf_call(bufnr, vim.lsp.util.make_formatting_params),
     function(_, result, _)
       -- Server was too slow.
-      if buffer_was_modified then
-        return
-      end
+      if buffer_was_modified then return end
 
       if result then
         vim.lsp.util.apply_text_edits(result, bufnr, offset_encoding)
@@ -71,9 +71,7 @@ M.save = function(opts)
     bufnr
   )
 
-  if not did_send_request then
-    save_buf()
-  end
+  if not did_send_request then save_buf() end
 end
 
 return M

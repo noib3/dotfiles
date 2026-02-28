@@ -76,12 +76,21 @@
 
       # TODO: this shouldn't be needed, `editor::Move{Up,Down}` should play
       # nice with Vim.
-      up = ["workspace::SendKeystrokes" "g k"];
-      down = ["workspace::SendKeystrokes" "g j"];
+      up = [
+        "workspace::SendKeystrokes"
+        "g k"
+      ];
+      down = [
+        "workspace::SendKeystrokes"
+        "g j"
+      ];
 
       # TODO: this shouldn't be needed, the default bindings should play nice
       # with Vim.
-      cmd-right = ["workspace::SendKeystrokes" "$ left"];
+      cmd-right = [
+        "workspace::SendKeystrokes"
+        "$ left"
+      ];
       cmd-left = "vim::FirstNonWhitespace";
     };
   }

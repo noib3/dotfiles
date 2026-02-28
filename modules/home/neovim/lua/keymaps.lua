@@ -20,13 +20,11 @@ local close = function()
   local has_bufdelete, _ = pcall(require, "bufdelete")
   local bd = has_bufdelete and "Bdelete" or "bdelete"
 
-  local cmd =
-      (
-        (filetype == "help" or buftype == "nofile" or is_last_buffer())
-        and "q"
-      )
-      or (buftype == "terminal" and "bdelete!")
-      or bd
+  local cmd = (
+    (filetype == "help" or buftype == "nofile" or is_last_buffer()) and "q"
+  )
+    or (buftype == "terminal" and "bdelete!")
+    or bd
 
   vim.cmd(cmd)
 end
@@ -54,13 +52,9 @@ local open_split = function(dir, cmd)
   -- are.
   local split_cmd = split .. " | wincmd p | wincmd " .. dir
 
-  if cmd then
-    split_cmd = split_cmd .. " | " .. cmd
-  end
+  if cmd then split_cmd = split_cmd .. " | " .. cmd end
 
-  return function()
-    vim.cmd(split_cmd)
-  end
+  return function() vim.cmd(split_cmd) end
 end
 
 -- Disable `s`.
@@ -109,12 +103,16 @@ keymap.set({ "n", "v" }, "<S-Right>", "<C-w>l", { noremap = true })
 keymap.set("c", "<C-a>", "<C-b>")
 
 -- Navigate to the next/previous diagnostic.
-keymap.set("n", "dn", function()
-  vim.diagnostic.jump({ count = 1, float = true })
-end)
-keymap.set("n", "dN", function()
-  vim.diagnostic.jump({ count = -1, float = true })
-end)
+keymap.set(
+  "n",
+  "dn",
+  function() vim.diagnostic.jump({ count = 1, float = true }) end
+)
+keymap.set(
+  "n",
+  "dN",
+  function() vim.diagnostic.jump({ count = -1, float = true }) end
+)
 
 --·Clear·the current search·result¬.
 keymap.set("n", "<Esc>", "<Cmd>noh<Cr>")
@@ -141,9 +139,7 @@ keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
 keymap.set("n", "tt", function() vim.cmd("terminal") end)
 
 -- Open a terminal in a new split window.
-local open_terminal = function(dir)
-  return open_split(dir, "terminal")
-end
+local open_terminal = function(dir) return open_split(dir, "terminal") end
 
 keymap.set("n", "t<Up>", open_terminal(direction.Up))
 keymap.set("n", "t<Down>", open_terminal(direction.Down))
@@ -194,9 +190,7 @@ local fzf_opts = {
 ---
 ---@param qf_entries string[]
 local open_trouble_qf = function(qf_entries)
-  if #qf_entries == 0 then
-    return
-  end
+  if #qf_entries == 0 then return end
 
   local win = vim.api.nvim_get_current_win()
   vim.fn.setqflist(qf_entries, "r")
@@ -204,7 +198,7 @@ local open_trouble_qf = function(qf_entries)
     mode = "quickfix",
     new = false,
     refresh = true,
-  });
+  })
   vim.api.nvim_set_current_win(win)
 end
 
@@ -218,15 +212,13 @@ local fzf_files = function(search_root)
   fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
     actions = {
       default = function(selected_paths)
-        if #selected_paths == 0 then
-          return
-        end
+        if #selected_paths == 0 then return end
 
         local qf_entries = {}
 
         for _, path in ipairs(selected_paths) do
           table.insert(qf_entries, {
-            filename = vim.fs.joinpath(search_root, path)
+            filename = vim.fs.joinpath(search_root, path),
           })
         end
 
@@ -243,17 +235,15 @@ end
 vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
   desc = "Fuzzy find files in the current git repo",
   callback = function()
-    local git_root = vim.fn.systemlist(
-      "git rev-parse --show-toplevel 2>/dev/null")[1]
+    local git_root =
+      vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
     fzf_files(git_root or vim.env.HOME)
   end,
 })
 
 vim.api.nvim_set_keymap("n", "<C-x><C-f>", "", {
   desc = "Fuzzy find files in the home directory",
-  callback = function()
-    fzf_files(vim.env.HOME)
-  end,
+  callback = function() fzf_files(vim.env.HOME) end,
 })
 
 local fzf_live_ripgrep = function(search_root)
@@ -280,9 +270,7 @@ local fzf_live_ripgrep = function(search_root)
   fzf_lua.fzf_live(query, {
     actions = {
       default = function(selected_paths)
-        if #selected_paths == 0 then
-          return
-        end
+        if #selected_paths == 0 then return end
 
         local regex = "^([^:]*):([^:]*):([^:]*):.*$"
         local qf_entries = {}
@@ -311,8 +299,8 @@ end
 vim.api.nvim_set_keymap("n", "<C-x><C-r>", "", {
   desc = "Execute a live ripgrep search in the current git repo",
   callback = function()
-    local git_root = vim.fn.systemlist(
-      "git rev-parse --show-toplevel 2>/dev/null")[1]
+    local git_root =
+      vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
     fzf_live_ripgrep(git_root or vim.env.HOME)
   end,
 })

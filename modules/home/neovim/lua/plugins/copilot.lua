@@ -40,12 +40,10 @@ return {
       -- with `:Copilot suggestion toggle_auto_trigger`).
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "markdown",
-        callback = function()
-          vim.b.copilot_suggestion_auto_trigger = false
-        end,
+        callback = function() vim.b.copilot_suggestion_auto_trigger = false end,
       })
 
       require("copilot").setup(opts)
-    end
-  }
+    end,
+  },
 }

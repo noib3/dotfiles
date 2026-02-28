@@ -7,5 +7,5 @@ return {
       vim.g.tokyonight_transparent = true
       vim.cmd("colorscheme tokyonight-night")
     end,
-  }
+  },
 }

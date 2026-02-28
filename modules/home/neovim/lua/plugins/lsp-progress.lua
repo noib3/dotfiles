@@ -51,9 +51,10 @@ return {
         client_format = function(client_name, spinner, series_messages)
           if #series_messages == 0 then return nil end
 
-          local non_empty_messages = vim.tbl_filter(function(msg)
-            return msg and #msg > 0
-          end, series_messages)
+          local non_empty_messages = vim.tbl_filter(
+            function(msg) return msg and #msg > 0 end,
+            series_messages
+          )
 
           local message
 
@@ -68,16 +69,17 @@ return {
 
           return {
             name = client_name,
-            body = spinner .. (#message > 0 and (" " .. message) or "")
+            body = spinner .. (#message > 0 and (" " .. message) or ""),
           }
         end,
 
         format = function(client_messages)
           local lsp_clients = vim.lsp.get_clients({ bufnr = 0 })
           if #lsp_clients == 0 then return "" end
-          table.sort(lsp_clients, function(lhs, rhs)
-            return lhs.name < rhs.name
-          end)
+          table.sort(
+            lsp_clients,
+            function(lhs, rhs) return lhs.name < rhs.name end
+          )
 
           local progress_map = {}
           for _, client_message in ipairs(client_messages) do
@@ -85,25 +87,18 @@ return {
           end
 
           local components = vim.tbl_map(function(lsp_client)
-              if not lsp_client.name or lsp_client.name == "" then
-                return nil
-              end
+            if not lsp_client.name or lsp_client.name == "" then return nil end
 
-              local client_progress = progress_map[lsp_client.name]
+            local client_progress = progress_map[lsp_client.name]
 
-              return
-                  lsp_client.name
-                  ..
-                  (client_progress and (" " .. client_progress) or "")
-            end,
-            lsp_clients
-          )
+            return lsp_client.name
+              .. (client_progress and (" " .. client_progress) or "")
+          end, lsp_clients)
 
-          return #components > 0
-              and table.concat(components, lsp_separator)
-              or ""
-        end
+          return #components > 0 and table.concat(components, lsp_separator)
+            or ""
+        end,
       })
-    end
-  }
+    end,
+  },
 }

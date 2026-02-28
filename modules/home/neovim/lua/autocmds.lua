@@ -46,9 +46,7 @@ vim.api.nvim_create_autocmd("BufAdd", {
   group = create_augroup("noib3/disable-wrapping-in-lock-files"),
   pattern = "*.lock,lazy-lock.json",
   desc = "Disable soft wrapping in lock files",
-  callback = function()
-    vim.wo.wrap = false
-  end,
+  callback = function() vim.wo.wrap = false end,
 })
 
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -108,22 +106,16 @@ local rgb_from_number = function(n)
 end
 
 local rgb_from_color_name = function(color)
-  if type(color) ~= "string" then
-    return nil
-  end
+  if type(color) ~= "string" then return nil end
 
   if color:match("^#%x%x%x%x%x%x$") then
     local n = tonumber(color:sub(2), 16)
-    if n then
-      return rgb_from_number(n)
-    end
+    if n then return rgb_from_number(n) end
     return nil
   end
 
   local n = vim.api.nvim_get_color_by_name(color)
-  if type(n) ~= "number" or n < 0 then
-    return nil
-  end
+  if type(n) ~= "number" or n < 0 then return nil end
   return rgb_from_number(n)
 end
 
@@ -133,17 +125,13 @@ vim.api.nvim_create_autocmd("TermRequest", {
   callback = function(ev)
     local seq = ev.data and ev.data.sequence or ""
     local idx = seq:match("^\27%]4;(%d+);%?$")
-        or seq:match("^\27%]4;(%d+);%?\7$")
-        or seq:match("^\27%]4;(%d+);%?\27\\$")
+      or seq:match("^\27%]4;(%d+);%?\7$")
+      or seq:match("^\27%]4;(%d+);%?\27\\$")
     idx = tonumber(idx)
-    if not idx or idx < 0 or idx > 15 then
-      return
-    end
+    if not idx or idx < 0 or idx > 15 then return end
 
     local r, g, b = rgb_from_color_name(vim.g["terminal_color_" .. idx])
-    if not r or not g or not b then
-      return
-    end
+    if not r or not g or not b then return end
 
     local reply = string.format("\27]4;%d;%s\7", idx, format_rgb(r, g, b))
     send_term_reply(ev, reply)
@@ -155,14 +143,16 @@ vim.api.nvim_create_autocmd("TermRequest", {
   desc = "Replies to OSC 10 color queries in :terminal",
   callback = function(ev)
     local seq = ev.data and ev.data.sequence or ""
-    if seq ~= "\27]10;?" and not seq:match("^\27%]10;%?\7$") and not seq:match("^\27%]10;%?\27\\$") then
+    if
+      seq ~= "\27]10;?"
+      and not seq:match("^\27%]10;%?\7$")
+      and not seq:match("^\27%]10;%?\27\\$")
+    then
       return
     end
 
     local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
-    if type(normal.fg) ~= "number" then
-      return
-    end
+    if type(normal.fg) ~= "number" then return end
 
     local r, g, b = rgb_from_number(normal.fg)
     local reply = string.format("\27]10;%s\7", format_rgb(r, g, b))
@@ -175,14 +165,16 @@ vim.api.nvim_create_autocmd("TermRequest", {
   desc = "Replies to OSC 11 color queries in :terminal",
   callback = function(ev)
     local seq = ev.data and ev.data.sequence or ""
-    if seq ~= "\27]11;?" and not seq:match("^\27%]11;%?\7$") and not seq:match("^\27%]11;%?\27\\$") then
+    if
+      seq ~= "\27]11;?"
+      and not seq:match("^\27%]11;%?\7$")
+      and not seq:match("^\27%]11;%?\27\\$")
+    then
       return
     end
 
     local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
-    if type(normal.bg) ~= "number" then
-      return
-    end
+    if type(normal.bg) ~= "number" then return end
 
     local r, g, b = rgb_from_number(normal.bg)
     local reply = string.format("\27]11;%s\7", format_rgb(r, g, b))

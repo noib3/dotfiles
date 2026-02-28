@@ -22,7 +22,12 @@ in
     };
 
   darwin =
-    { inputs, colorscheme, userName, ... }:
+    {
+      inputs,
+      colorscheme,
+      userName,
+      ...
+    }:
     rec {
       name = "skunk@darwin";
       system = "x86_64-darwin";

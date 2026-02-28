@@ -5,7 +5,9 @@ local M = {}
 ---@param str string The string to iterate over
 ---@return function lines Iterator over the string's lines
 M.iter_lines = function(str)
-  if not str then return function() return nil end end
+  if not str then
+    return function() return nil end
+  end
   return str:gmatch("[^\r\n]+")
 end
 
@@ -34,8 +36,6 @@ end
 ---@param str string
 ---@param prefix string
 ---@return boolean
-M.starts_with = function(str, prefix)
-  return str:sub(1, #prefix) == prefix
-end
+M.starts_with = function(str, prefix) return str:sub(1, #prefix) == prefix end
 
 return M

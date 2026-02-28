@@ -1,4 +1,9 @@
-{ inputs, colorscheme, userName, ... }:
+{
+  inputs,
+  colorscheme,
+  userName,
+  ...
+}:
 
 rec {
   name = "stolen-bride";

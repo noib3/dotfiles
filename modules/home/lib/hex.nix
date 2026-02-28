@@ -105,8 +105,7 @@ rec {
         "f"
       ];
       toHex' =
-        q: a:
-        if q > 0 then (toHex' (q / 16) ((elemAt intToHex (mod q 16)) + a)) else a;
+        q: a: if q > 0 then (toHex' (q / 16) ((elemAt intToHex (mod q 16)) + a)) else a;
 
       append_zero_if_needed =
         str: if (builtins.stringLength str) == 1 then "0" + str else str;

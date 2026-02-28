@@ -6,5 +6,5 @@ return {
       hop.setup({})
       vim.keymap.set("n", "f", hop.hint_words)
     end,
-  }
+  },
 }

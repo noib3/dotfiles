@@ -2,16 +2,14 @@ local utils = require("utils")
 
 local is_text_file = function(path)
   local output = vim.fn.systemlist({ "file", "-Lb", "--mime-type", path })
-  if vim.v.shell_error ~= 0 or not output or not output[1] then
-    return false
-  end
+  if vim.v.shell_error ~= 0 or not output or not output[1] then return false end
   local mime = output[1]
   return vim.startswith(mime, "text/")
-      or mime == "application/csv"
-      or mime == "application/javascript"
-      or mime == "application/json"
-      or mime == "application/x-pem-file"
-      or mime == "inode/x-empty"
+    or mime == "application/csv"
+    or mime == "application/javascript"
+    or mime == "application/json"
+    or mime == "application/x-pem-file"
+    or mime == "inode/x-empty"
 end
 
 local open = function(path)
@@ -40,7 +38,7 @@ local setup_lf = function()
   local temp_mtime = nil
 
   vim.api.nvim_create_autocmd("VimLeave", {
-    callback = function() os.remove(temp_file) end
+    callback = function() os.remove(temp_file) end,
   })
 
   local cmd = function()
@@ -70,20 +68,19 @@ local setup_lf = function()
       -- * if text file is first one, open it in current window;
       -- * if text file is not first one, add it to the qf list;
       for path in utils.lua.iter_lines(selected_paths) do
-        if vim.fn.isdirectory(path) == 1 then
-          goto continue
-        end
+        if vim.fn.isdirectory(path) == 1 then goto continue end
         if is_text_file(path) then
           ---@cast window integer
-          vim.api.nvim_win_call(window, function()
-            vim.cmd.edit(vim.fn.fnameescape(path))
-          end)
+          vim.api.nvim_win_call(
+            window,
+            function() vim.cmd.edit(vim.fn.fnameescape(path)) end
+          )
         else
           open(path)
         end
         ::continue::
       end
-    end
+    end,
   })
 
   local open_lf = function()
@@ -111,6 +108,6 @@ return {
       require("toggleterm").setup(opts)
       setup_lazygit()
       setup_lf()
-    end
-  }
+    end,
+  },
 }

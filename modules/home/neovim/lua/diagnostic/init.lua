@@ -1,5 +1,5 @@
-local utils = require("utils")
 local rust = require("diagnostic.rust")
+local utils = require("utils")
 
 local default_underline_handler = vim.diagnostic.handlers.underline
 local default_virtual_text_handler = vim.diagnostic.handlers.virtual_text

@@ -6,7 +6,7 @@ return {
         crates = {
           enabled = true,
           min_chars = 1,
-        }
+        },
       },
       lsp = {
         enabled = true,
@@ -14,6 +14,6 @@ return {
         completion = true,
         hover = true,
       },
-    }
+    },
   },
 }

@@ -28,8 +28,9 @@ local fade_out = function(namespace, bufnr, lnum, col, end_lnum, end_col)
 
   local ns = vim.diagnostic.get_namespace(namespace)
   if not ns.user_data.underline_ns then
-    ns.user_data.underline_ns =
-        vim.api.nvim_create_namespace(string.format("%s/diagnostic/underline", ns.name))
+    ns.user_data.underline_ns = vim.api.nvim_create_namespace(
+      string.format("%s/diagnostic/underline", ns.name)
+    )
   end
 
   vim.hl.range(
@@ -64,9 +65,7 @@ M.handlers.underline = {
     -- I want unused code to be highlighted as a regular warning, so let's
     -- remove the corresponding tag.
     for _, diagnostic in ipairs(rest) do
-      if diagnostic._tags then
-        diagnostic._tags.unnecessary = nil
-      end
+      if diagnostic._tags then diagnostic._tags.unnecessary = nil end
     end
 
     default_underline_handler.show(namespace, bufnr, rest, opts)
@@ -95,7 +94,12 @@ M.handlers.virtual_text = {
       orig_messages[idx] = diagnostic.message
       diagnostic.message = diagnostic.message:match("^[^\n]*")
     end
-    default_virtual_text_handler.show(namespace, bufnr, active_diagnostics, opts)
+    default_virtual_text_handler.show(
+      namespace,
+      bufnr,
+      active_diagnostics,
+      opts
+    )
 
     for idx, diagnostic in ipairs(active_diagnostics) do
       diagnostic.message = orig_messages[idx]

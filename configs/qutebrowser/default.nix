@@ -7,7 +7,9 @@
 let
   colors = import ./colors.nix { inherit config; };
 
-  add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
+  add-torrent = pkgs.writeShellScriptBin "add-torrent" (
+    builtins.readFile ./scripts/add-torrent.sh
+  );
 
   fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden" {
     libraries = [ pkgs.python310Packages.tldextract ];

@@ -7,7 +7,7 @@ return {
       {
         "noib3/colorful-menu.nvim",
         branch = "noib3",
-      }
+      },
     },
     ---@type blink.cmp.Config
     opts = {
@@ -48,7 +48,7 @@ return {
         enabled = true,
         window = {
           show_documentation = false,
-        }
+        },
       },
       sources = {
         default = {
@@ -93,13 +93,17 @@ return {
         label_detail = {
           text = colorful_menu.blink_components_detail_text,
           highlight = colorful_menu.blink_components_detail_highlight,
-        }
+        },
       }
 
       blink.setup(opts)
       vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
-      vim.api.nvim_set_hl(0, "BlinkCmpMenuSelection", { background = "#7c6f64" })
+      vim.api.nvim_set_hl(
+        0,
+        "BlinkCmpMenuSelection",
+        { background = "#7c6f64" }
+      )
       vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { foreground = "#a89984" })
     end,
-  }
+  },
 }

@@ -65,8 +65,7 @@ in
     "ctrl + {Up,Down,Left,Right}" = "bspc node -s {north,south,west,east}";
 
     # Warp windows
-    "super + shift + {Up,Down,Left,Right}" =
-      "bspc node -n {north,south,west,east}";
+    "super + shift + {Up,Down,Left,Right}" = "bspc node -n {north,south,west,east}";
 
     # Kill windows
     "super + q" = "bspc node -k";

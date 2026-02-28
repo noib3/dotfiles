@@ -9,7 +9,7 @@ return {
         init = function()
           vim.g.rustaceanvim = { server = { auto_attach = false } }
         end,
-      }
+      },
     },
     config = function()
       local neotest = require("neotest")
@@ -17,12 +17,12 @@ return {
 
       neotest.setup({
         adapters = {
-          require("rustaceanvim.neotest")
+          require("rustaceanvim.neotest"),
         },
         status = {
           signs = false,
           virtual_text = true,
-        }
+        },
       })
 
       vim.keymap.set("n", "<D-c><D-c>", neotest.run.run, {
@@ -57,6 +57,6 @@ return {
       -- 2. when the cursor is *not* on a test line but *is* in a buffer with
       -- at least one test running, provide a code action to stop all pending
       -- tests in that buffer;
-    end
-  }
+    end,
+  },
 }

@@ -38,9 +38,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = "rustfmt.toml",
   callback = function()
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.bo[buf].filetype == "rust" then
-        set_textwidth_from_rustfmt(buf)
-      end
+      if vim.bo[buf].filetype == "rust" then set_textwidth_from_rustfmt(buf) end
     end
   end,
 })

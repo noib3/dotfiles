@@ -34,7 +34,7 @@ return {
                     enable = false,
                   },
                   workspace = {
-                    ignoreDir = { ".git", "node_modules", "target", },
+                    ignoreDir = { ".git", "node_modules", "target" },
                     library = vim.api.nvim_get_runtime_file("", true),
                   },
                 },
@@ -44,9 +44,7 @@ return {
           vim.api.nvim_create_autocmd("User", {
             pattern = "LazyDone",
             once = true,
-            callback = function()
-              setup_lsp(config())
-            end
+            callback = function() setup_lsp(config()) end,
           })
         end,
         marksman = {},
@@ -104,5 +102,5 @@ return {
         end
       end
     end,
-  }
+  },
 }

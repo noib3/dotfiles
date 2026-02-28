@@ -35,9 +35,10 @@ end
 ---@param path string
 ---@param callback fun(exists: boolean)
 local file_exists_async = function(path, callback)
-  vim.uv.fs_stat(path, function(err, stat)
-    callback(err == nil and stat ~= nil)
-  end)
+  vim.uv.fs_stat(
+    path,
+    function(err, stat) callback(err == nil and stat ~= nil) end
+  )
 end
 
 ---@alias DetectFormatterResult
@@ -89,9 +90,7 @@ end
 ---@type vim.lsp.Config
 return {
   on_attach = function(client)
-    if not client.root_dir then
-      return
-    end
+    if not client.root_dir then return end
 
     detect_flake_formatter(client.root_dir, function(result)
       if result.variant == "found" then
@@ -103,14 +102,16 @@ return {
           },
         })
         vim.notify(
-          ("[nixd] Set formatting command to %s")
-          :format(vim.inspect(result.command)),
+          ("[nixd] Set formatting command to %s"):format(
+            vim.inspect(result.command)
+          ),
           vim.log.levels.DEBUG
         )
       elseif result.variant == "unknown_formatter" then
         vim.notify(
-          ("[nixd] Unknown formatter at %s, not configuring formatting")
-          :format(result.bin_path),
+          ("[nixd] Unknown formatter at %s, not configuring formatting"):format(
+            result.bin_path
+          ),
           vim.log.levels.WARN
         )
       end

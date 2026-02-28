@@ -45,12 +45,12 @@ return {
               "diagnostics",
               diagnostics_color = {
                 error = "DiagnosticError",
-                warn  = "DiagnosticWarn",
+                warn = "DiagnosticWarn",
               },
               sections = { "error", "warn" },
               sources = { "nvim_workspace_diagnostic" },
               symbols = { error = " ", warn = " " },
-            }
+            },
           },
           lualine_c = {},
           lualine_x = {},
@@ -62,10 +62,10 @@ return {
             {
               "branch",
               color = {
-                fg = vim.opt.background:get() == "dark" and "#928374" or
-                    "#7c6f64"
-              }
-            }
+                fg = vim.opt.background:get() == "dark" and "#928374"
+                  or "#7c6f64",
+              },
+            },
           },
         },
       }
@@ -81,6 +81,6 @@ return {
         pattern = "LspProgressStatusUpdated",
         callback = lualine.refresh,
       })
-    end
-  }
+    end,
+  },
 }

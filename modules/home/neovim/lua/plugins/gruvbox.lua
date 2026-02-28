@@ -222,10 +222,8 @@ local overrides = {
 
 ---@return GruvboxConfig
 local config = function()
-  local overrides =
-      vim.opt.background:get() == "dark"
-      and overrides.dark
-      or overrides.light
+  local overrides = vim.opt.background:get() == "dark" and overrides.dark
+    or overrides.light
 
   return {
     palette_overrides = overrides.palette,
@@ -247,11 +245,11 @@ return {
           if vim.g.colors_name ~= "gruvbox" then return end
           gruvbox.setup(config())
           vim.cmd.colorscheme("gruvbox")
-        end
+        end,
       })
 
       gruvbox.setup(config())
       vim.cmd.colorscheme("gruvbox")
     end,
-  }
+  },
 }

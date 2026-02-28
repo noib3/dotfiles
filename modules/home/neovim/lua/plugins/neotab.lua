@@ -4,5 +4,5 @@ return {
     opts = {
       act_as_tab = true,
     },
-  }
+  },
 }

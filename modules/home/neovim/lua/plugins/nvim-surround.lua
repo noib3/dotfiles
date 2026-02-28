@@ -4,5 +4,5 @@ return {
     version = "*",
     event = "VeryLazy",
     opts = {},
-  }
+  },
 }

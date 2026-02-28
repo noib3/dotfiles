@@ -28,18 +28,15 @@ return {
         end
         add_diagnostic("Error", "")
         add_diagnostic("Warn", "")
-        if #ret > 0 then
-          table.insert(ret, { " ︳", guifg = "#928374" })
-        end
+        if #ret > 0 then table.insert(ret, { " ︳", guifg = "#928374" }) end
         return ret
       end
 
       local dirty_indicator = function(bufnr)
         local is_dirty = vim.bo[bufnr].modified
-        return
-            is_dirty
+        return is_dirty
             and { "•", guifg = palette.bright.green, gui = "bold" }
-            or ""
+          or ""
       end
 
       local file_icon = function(bufnr)
@@ -69,11 +66,11 @@ return {
             horizontal = 0,
             vertical = 0,
           },
-        }
+        },
       })
 
       local group = vim.api.nvim_create_augroup("noib3/refresh-incline", {
-        clear = true
+        clear = true,
       })
 
       vim.api.nvim_create_autocmd("DiagnosticChanged", {
@@ -82,5 +79,5 @@ return {
         callback = incline.refresh,
       })
     end,
-  }
+  },
 }

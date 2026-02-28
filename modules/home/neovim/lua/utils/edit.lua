@@ -15,9 +15,7 @@ M.open = function(filepath)
     vim.api.nvim_create_autocmd("BufEnter", {
       buffer = buf,
       once = true,
-      callback = function()
-        vim.cmd.startinsert()
-      end,
+      callback = function() vim.cmd.startinsert() end,
     })
   end
 end

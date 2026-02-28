@@ -16,8 +16,8 @@ local cursor_is_on_macro_invocation = function()
     if attr and attr:type() == "attribute" then
       local attr_name = attr:named_child(0)
       return attr_name
-          and attr_name:type() == "identifier"
-          and vim.treesitter.get_node_text(attr_name, 0) == "derive"
+        and attr_name:type() == "identifier"
+        and vim.treesitter.get_node_text(attr_name, 0) == "derive"
     end
   end
 
@@ -30,9 +30,27 @@ local cursor_is_on_macro_invocation = function()
   -- and macros that R-A can't expand (e.g. `test`).
   if parent:type() == "attribute" then
     local non_macro_attrs = {
-      "allow", "cfg", "cfg_attr", "cold", "deny", "deprecated", "derive", "doc",
-      "expect", "forbid", "ignore", "inline", "link", "must_use", "no_mangle",
-      "non_exhaustive", "repr", "serde", "target_feature", "test", "warn",
+      "allow",
+      "cfg",
+      "cfg_attr",
+      "cold",
+      "deny",
+      "deprecated",
+      "derive",
+      "doc",
+      "expect",
+      "forbid",
+      "ignore",
+      "inline",
+      "link",
+      "must_use",
+      "no_mangle",
+      "non_exhaustive",
+      "repr",
+      "serde",
+      "target_feature",
+      "test",
+      "warn",
     }
     local attr_name = vim.treesitter.get_node_text(node, 0)
     return not vim.tbl_contains(non_macro_attrs, attr_name)
@@ -67,8 +85,10 @@ local do_expand = function(bufnr, client)
       "// " .. string.rep("=", #title),
       "",
     }
-    vim.list_extend(lines,
-      vim.split(result.expansion, "\n", { trimempty = true }))
+    vim.list_extend(
+      lines,
+      vim.split(result.expansion, "\n", { trimempty = true })
+    )
 
     local scratch = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_lines(scratch, 0, -1, false, lines)

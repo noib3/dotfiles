@@ -30,7 +30,10 @@ return {
       local selection = require("treesitter-modules.lib.selection")
       local initial_cursor = nil
 
-      vim.keymap.set({ "n", "x" }, "<Tab>", function()
+      vim.keymap.set(
+        { "n", "x" },
+        "<Tab>",
+        function()
           local buf = vim.api.nvim_get_current_buf()
           local lang = get_language(buf)
 
@@ -47,38 +50,38 @@ return {
       )
 
       vim.keymap.set("x", "<S-Tab>", function()
-          if not initial_cursor then return end
+        if not initial_cursor then return end
 
-          local _, start_row, start_col = unpack(vim.fn.getpos("v"))
-          local _, end_row, end_col = unpack(vim.fn.getpos("."))
-          local old_pos = { start_row, start_col, end_row, end_col }
+        local _, start_row, start_col = unpack(vim.fn.getpos("v"))
+        local _, end_row, end_col = unpack(vim.fn.getpos("."))
+        local old_pos = { start_row, start_col, end_row, end_col }
 
-          local buf = vim.api.nvim_get_current_buf()
-          selection.node_decremental(buf, get_language(buf))
+        local buf = vim.api.nvim_get_current_buf()
+        selection.node_decremental(buf, get_language(buf))
 
-          local _, start_row, start_col = unpack(vim.fn.getpos("v"))
-          local _, end_row, end_col = unpack(vim.fn.getpos("."))
-          local new_pos = { start_row, start_col, end_row, end_col }
+        local _, start_row, start_col = unpack(vim.fn.getpos("v"))
+        local _, end_row, end_col = unpack(vim.fn.getpos("."))
+        local new_pos = { start_row, start_col, end_row, end_col }
 
-          if vim.deep_equal(old_pos, new_pos) then
-            -- If the selection didn't change it means we're at the smallest
-            -- node, so we restore the initial cursor position and exit visual
-            -- mode.
-            vim.api.nvim_win_set_cursor(0, initial_cursor)
-            initial_cursor = nil
+        if vim.deep_equal(old_pos, new_pos) then
+          -- If the selection didn't change it means we're at the smallest
+          -- node, so we restore the initial cursor position and exit visual
+          -- mode.
+          vim.api.nvim_win_set_cursor(0, initial_cursor)
+          initial_cursor = nil
 
-            vim.cmd.normal({
-              vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
-              bang = true
-            })
-          end
-        end,
-        { desc = "Select smaller syntax node or restore initial cursor position" }
-      )
+          vim.cmd.normal({
+            vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+            bang = true,
+          })
+        end
+      end, {
+        desc = "Select smaller syntax node or restore initial cursor position",
+      })
     end,
   },
   {
     "RRethy/nvim-treesitter-endwise",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
-  }
+  },
 }
