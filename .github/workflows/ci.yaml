@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@refs/pull/72/head
+        uses: nixbuild/nix-quick-install-action@v34
         with:
-          nix_version: 2.33.0
+          nix_version: 2.29.2
       - name: Check formatting
         run: nix run .#check-format
