@@ -59,15 +59,6 @@ return {
           })
         end,
         marksman = {},
-        nixd = {
-          settings = {
-            nixd = {
-              formatting = {
-                command = { "nixfmt", "--width", "80" },
-              },
-            }
-          }
-        },
         rust_analyzer = {
           settings = {
             ["rust-analyzer"] = {
