@@ -33,6 +33,7 @@ jobs:
         with:
           nix_version: 2.29.2
           nix_conf: |
+            accept-flake-config = true
             experimental-features = pipe-operators
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
