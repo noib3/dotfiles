@@ -22,3 +22,17 @@ jobs:
             experimental-features = pipe-operators
       - name: Check formatting
         run: nix run .#check-format
+
+  neovim-config:
+    name: Neovim config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          nix_version: 2.29.2
+          nix_conf: |
+            experimental-features = pipe-operators
+      - name: Check the Neovim config
+        run: nix run .#check-neovim-config
