@@ -32,5 +32,5 @@ done
 
 # If dispatch fails, launch a new instance.
 "$NVIM_EXE" --server "$NVIM" --remote-expr \
-  "luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimLaunchedFromEmbeddedTerminal\", modeline = false, data = { $filenames } })')" \
+  "luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimLaunch\", modeline = false, data = { $filenames } })')" \
   2>/dev/null || exec "$NVIM_EXE" "$@"
