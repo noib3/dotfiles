@@ -2,20 +2,17 @@
   description = "noib3's dotfiles";
 
   inputs = {
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
     brew-nix = {
       url = "github:BatteredBunny/brew-nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "nix-darwin";
     };
-    codex-cli-nix = {
-      url = "github:sadjow/codex-cli-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    codex-cli-nix = {
+      url = "github:sadjow/codex-cli-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -29,7 +26,7 @@
     };
     nix-community-neovim = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.neovim-src.follows = "neovim";
+      # inputs.neovim-src.follows = "neovim";
     };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
@@ -39,6 +36,9 @@
       url = "git+ssh://git@github.com/noib3/nix-jettison";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nur.url = "github:nix-community/NUR";
     opencode = {
       url = "github:anomalyco/opencode/production";
       inputs.nixpkgs.follows = "nixpkgs";

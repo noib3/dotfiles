@@ -13,16 +13,18 @@ let
   opencodePackage =
     (inputs.opencode.packages.${pkgs.stdenv.system}.default).overrideAttrs
       (old: {
-        # Apply a patched version of
-        # https://github.com/anomalyco/opencode/pull/11300 to set the cursor
-        # style and disable blinking in the TUI.
         patches = (old.patches or [ ]) ++ [
+          # Apply a patched version of
+          # https://github.com/anomalyco/opencode/pull/11300 to set the cursor
+          # style and disable blinking in the TUI.
           ./patches/cursor-style-and-blink.patch
+          # Fixes https://github.com/anomalyco/opencode/issues/15400
+          ./patches/optional-team-members-file.patch
         ];
 
         # Nixpkgs' version of Bun is 1.3.9, so we need to patch the expected
         # version range to allow Opencode to run with that version (upstream
-        # requires `^1.3.10`).
+        # requires `^1.3.10`). See https://github.com/anomalyco/opencode/issues/15394
         postPatch = (old.postPatch or "") + ''
           substituteInPlace packages/script/src/index.ts \
             --replace-fail 'const expectedBunVersionRange = `^''${expectedBunVersion}`' 'const expectedBunVersionRange = `>=1.3.9`'
