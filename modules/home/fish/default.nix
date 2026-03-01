@@ -32,7 +32,6 @@ in
         wget = "${pkgs.wget}/bin/wget --hsts-file=~/.cache/wget/wget-hsts";
       }
       // lib.attrsets.optionalAttrs isDarwin {
-        ldd = "otool -L";
         reboot = ''osascript -e "tell app \"System Events\" to restart"'';
         shutdown = ''osascript -e "tell app \"System Events\" to shut down"'';
       }
@@ -46,8 +45,6 @@ in
         hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
         ipy = "ipython";
         lg = "lazygit";
-        ngc = "nix store gc";
-        t = "tdtd";
       }
       // lib.attrsets.optionalAttrs config.machine.hasNixosConfiguration {
         nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --sudo";
