@@ -4,6 +4,14 @@ local create_augroup = function(name)
   return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
+--- Returns an iterator over the windows currently displaying the given buffer.
+--- @param buf number
+local buf_get_wins = function(buf)
+  return vim
+    .iter(vim.api.nvim_list_wins())
+    :filter(function(win) return vim.api.nvim_win_get_buf(win) == buf end)
+end
+
 vim.api.nvim_create_autocmd("VimResized", {
   group = create_augroup("noib3/rebalance-splits"),
   desc = "Rebalances window splits when terminal is resized",
@@ -39,6 +47,77 @@ vim.api.nvim_create_autocmd("TermOpen", {
     if vim.startswith(vim.api.nvim_buf_get_name(0), "term://") then
       vim.cmd("startinsert")
     end
+  end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+  group = create_augroup("noib3/handle-nvim-launch-in-terminal"),
+  pattern = "NvimLaunchedFromEmbeddedTerminal",
+  callback = function(ev)
+    local term_buf = ev.buf
+    assert(vim.bo[term_buf].buftype == "terminal")
+
+    local filenames = ev.data
+    local file_buf
+
+    if #filenames == 0 then
+      vim.cmd.enew()
+      file_buf = vim.api.nvim_get_current_buf()
+    else
+      -- Create new buffers for each file.
+      for _, filename in ipairs(filenames) do
+        local buf = vim.fn.bufadd(filename)
+        vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
+        vim.fn.bufload(buf)
+        -- Set the buffer's filetype.
+        local ft = vim.filetype.match({ buf = buf, filename = filename })
+        if ft and ft ~= "" then
+          vim.api.nvim_buf_call(
+            buf,
+            function() vim.cmd("setfiletype " .. ft) end
+          )
+        end
+        if not file_buf then file_buf = buf end
+      end
+      -- Display the first file in all the windows currently showing the
+      -- terminal.
+      for win in buf_get_wins(term_buf) do
+        vim.api.nvim_win_set_buf(win, file_buf)
+      end
+    end
+
+    -- Unlist the terminal buffer (to keep up the illusion that the newly opened
+    -- file has "swallowed" the terminal).
+    vim.bo[term_buf].buflisted = false
+
+    -- The list of windows currently displaying the opened file.
+    local file_wins = {}
+
+    -- Keep the list updated.
+    vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave" }, {
+      buffer = file_buf,
+      callback = function() file_wins = buf_get_wins(file_buf):totable() end,
+    })
+
+    vim.api.nvim_create_autocmd("BufDelete", {
+      buffer = file_buf,
+      once = true,
+      callback = function()
+        -- Return early if the original terminal buffer has since been deleted.
+        if not vim.api.nvim_buf_is_valid(term_buf) then return end
+        -- Re-list the terminal buffer to make it show up in buffer lists again.
+        vim.bo[term_buf].buflisted = true
+        -- Restore insert mode in the terminal.
+        vim.api.nvim_buf_call(term_buf, vim.cmd.startinsert)
+        -- Display the terminal on all the windows that were displaying the
+        -- deleted buffer (scheduled to ensure BufDelete has fully completed).
+        vim.schedule(function()
+          for _, win in ipairs(file_wins) do
+            vim.api.nvim_win_set_buf(win, term_buf)
+          end
+        end)
+      end,
+    })
   end,
 })
 

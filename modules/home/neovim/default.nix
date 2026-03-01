@@ -70,6 +70,21 @@ in
   options.modules.neovim = {
     enable = mkEnableOption "Neovim";
 
+    package = mkOption {
+      type = types.package;
+      description = "The Neovim package to use";
+      default = pkgs.writeShellApplication {
+        name = "nvim";
+        runtimeEnv = {
+          NVIM_EXE =
+            lib.getExe
+              inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default;
+        };
+        text = builtins.readFile ./nvim.sh;
+      };
+      readOnly = true;
+    };
+
     tree-sitter-parsers = mkOption {
       type = types.listOf types.package;
       default = [ ];
@@ -85,7 +100,7 @@ in
 
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default
+      cfg.package
     ];
 
     home.sessionVariables = {
