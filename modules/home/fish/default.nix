@@ -101,11 +101,16 @@ in
         bind -M insert \cX\cR fuzzy-ripgrep-fish
         bind -M insert \cS fuzzy-search
 
-        # For some reason the pisces plugin needs to be sourced manually to become
-        # active.
+        # For some reason the pisces plugin needs to be sourced manually to
+        # become active.
         source ~/.config/fish/conf.d/plugin-pisces.fish
 
         ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
+
+        # Workaround for https://github.com/NixOS/nix/issues/5131
+        if set -q IN_NIX_SHELL
+          set -gx SHELL (status fish-path)
+        end
       '';
 
       plugins = [
