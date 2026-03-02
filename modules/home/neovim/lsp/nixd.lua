@@ -90,7 +90,13 @@ end
 ---@type vim.lsp.Config
 return {
   settings = {
-    nixd = {},
+    nixd = {
+      diagnostic = {
+        suppress = {
+          "sema-primop-removed-prefix",
+        },
+      },
+    },
   },
   on_attach = function(client)
     if not client.root_dir then return end
