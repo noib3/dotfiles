@@ -75,11 +75,9 @@ in
       description = "The Neovim package to use";
       default = pkgs.writeShellApplication {
         name = "nvim";
-        runtimeEnv = {
-          NVIM_EXE =
-            lib.getExe
-              inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default;
-        };
+        runtimeEnv.NVIM_EXE =
+          lib.getExe
+            inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default;
         text = builtins.readFile ./nvim.sh;
       };
       readOnly = true;

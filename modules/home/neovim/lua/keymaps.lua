@@ -146,6 +146,9 @@ keymap.set("n", "t<Down>", open_terminal(direction.Down))
 keymap.set("n", "t<Left>", open_terminal(direction.Left))
 keymap.set("n", "t<Right>", open_terminal(direction.Right))
 
+-- Open the punchclock.
+keymap.set("n", "<D-p>", function() vim.fn.jobstart("pc") end)
+
 -- Open today's todo.
 keymap.set("n", "td", function() vim.fn.jobstart("td") end)
 

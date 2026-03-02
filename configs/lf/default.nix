@@ -181,8 +181,6 @@ in
 
     fuzzy-ripgrep = "$clear; fuzzy-ripgrep";
 
-    td = "$td";
-
     unmount-device = (
       if isLinux then
         ''
@@ -249,7 +247,8 @@ in
     lg = "$lazygit";
     mk = "push :mkdir<space>";
     mtb = "push :make-tarball<space>";
-    td = "td";
+    pc = "$pc";
+    td = "$td";
     to = "push :touch<space>";
     unm = "unmount-device";
     x = "cut";

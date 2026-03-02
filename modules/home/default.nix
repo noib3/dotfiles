@@ -53,6 +53,7 @@ in
         ripgrep
         scripts.fuzzy-ripgrep
         scripts.lf-recursive
+        scripts.pc
         scripts.preview
         scripts.rg-pattern
         scripts.rg-preview
