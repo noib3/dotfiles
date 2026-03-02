@@ -89,18 +89,24 @@ end
 
 ---@type vim.lsp.Config
 return {
+  settings = {
+    nixd = {},
+  },
   on_attach = function(client)
     if not client.root_dir then return end
 
     detect_flake_formatter(client.root_dir, function(result)
       if result.variant == "found" then
-        client:notify("workspace/didChangeConfiguration", {
-          settings = {
-            nixd = {
-              formatting = { command = result.command },
-            },
-          },
-        })
+        client.settings.nixd =
+          vim.tbl_deep_extend("force", client.settings.nixd --[[@as table]], {
+            formatting = { command = result.command },
+          })
+
+        client:notify(
+          "workspace/didChangeConfiguration",
+          { settings = client.settings }
+        )
+
         vim.notify(
           ("[nixd] Set formatting command to %s"):format(
             vim.inspect(result.command)
