@@ -21,7 +21,7 @@ jobs:
           nix_conf: |
             experimental-features = pipe-operators
       - name: Check formatting
-        run: nix run .#check-format
+        run: nix run .#check-formatting
 
   neovim-config:
     name: Neovim config
@@ -37,3 +37,18 @@ jobs:
             experimental-features = pipe-operators
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
+
+  nix-lints:
+    name: Nix lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          nix_version: 2.29.2
+          nix_conf: |
+            accept-flake-config = true
+            experimental-features = pipe-operators
+      - name: Run Nix linter on all .nix files
+        run: nix run .#check-nix-lints

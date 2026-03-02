@@ -15,7 +15,7 @@
   fzf = import ./fzf { inherit config lib pkgs; };
   grub = import ./grub;
   home-manager = import ./home-manager;
-  kanshi = import ./kanshi { inherit config pkgs; };
+  kanshi = import ./kanshi { inherit pkgs; };
   lazygit = import ./lazygit;
   lf = import ./lf { inherit lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };

@@ -1,4 +1,4 @@
-{ config, pkgs }:
+{ pkgs }:
 
 # A profile is enabled when the `criteria`s of all its outputs match a
 # currently connected monitor.

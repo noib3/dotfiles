@@ -1,6 +1,6 @@
 { pkgs }:
 
-pkgs.writeShellApplication rec {
+pkgs.writeShellApplication {
   name = "website-blocker";
 
   runtimeInputs = with pkgs; [

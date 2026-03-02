@@ -9,7 +9,7 @@
   perSystem =
     { config, ... }:
     {
-      checks.format = config.treefmt.build.check inputs.self;
+      checks.formatting = config.treefmt.build.check inputs.self;
 
       formatter = config.treefmt.build.wrapper;
 
