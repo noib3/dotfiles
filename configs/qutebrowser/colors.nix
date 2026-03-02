@@ -27,11 +27,6 @@ let
         bg = palette.normal.black;
         fg = hex.scale 0.95 palette.normal.white;
       };
-      dmenu = {
-        normal.bg = hex.scale 1.5 palette.normal.black;
-        prompt.fg = palette.normal.magenta;
-        highlight.fg = palette.normal.magenta;
-      };
     };
     "gruvbox" = {
       tabs = {
@@ -118,15 +113,5 @@ in
       bg = c.${name}.messages.error.bg or palette.normal.red;
       fg = palette.normal.white;
     };
-  };
-
-  dmenu = rec {
-    normal.fg = palette.normal.white;
-    normal.bg = c.${name}.dmenu.normal.bg or palette.normal.black;
-    prompt.fg = c.${name}.dmenu.prompt.fg or palette.normal.blue;
-    prompt.bg = normal.bg;
-    selected.fg = palette.normal.white;
-    selected.bg = hex.scale 1.25 palette.normal.black;
-    highlight.fg = c.${name}.dmenu.highlight.fg or palette.normal.yellow;
   };
 }

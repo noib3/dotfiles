@@ -1,28 +1,9 @@
 {
   configDir,
   writeShellScriptBin,
-  writePython3Bin,
 }:
 
 let
-  dmenu-bluetooth = writePython3Bin "dmenu-bluetooth" { } (
-    builtins.readFile "${configDir}/dmenu/scripts/dmenu-bluetooth.py"
-  );
-
-  dmenu-open = writeShellScriptBin "dmenu-open" (
-    builtins.readFile "${configDir}/dmenu/scripts/dmenu-open.sh"
-  );
-
-  dmenu-pulseaudio = writePython3Bin "dmenu-pulseaudio" { } (
-    builtins.readFile "${configDir}/dmenu/scripts/dmenu-pulseaudio.py"
-  );
-
-  dmenu-run = writeShellScriptBin "dmenu-run" "dmenu_run -p 'Run>'";
-
-  dmenu-wifi = writePython3Bin "dmenu-wifi" { } (
-    builtins.readFile "${configDir}/dmenu/scripts/dmenu-wifi.py"
-  );
-
   toggle-gaps = writeShellScriptBin "toggle-gaps" (
     builtins.readFile "${configDir}/bspwm/scripts/toggle-gaps.sh"
   );
@@ -39,15 +20,6 @@ in
 
     # Open the web browser
     "alt + w" = "qutebrowser";
-
-    # Launch the program runner and the file opener
-    "super + o" = "${dmenu-run}/bin/dmenu-run";
-    "super + space" = "${dmenu-open}/bin/dmenu-open";
-
-    # Open wifi, bluetooth and shutdown menus
-    "alt + shift + b" = "${dmenu-bluetooth}/bin/dmenu-bluetooth";
-    "alt + shift + w" = "${dmenu-wifi}/bin/dmenu-wifi";
-    "alt + shift + a" = "${dmenu-pulseaudio}/bin/dmenu-pulseaudio";
 
     # Toggle fullscreen
     "alt + {f,d,g}" = "bspc node -t {~fullscreen,tiled,fullscreen}";
@@ -89,10 +61,6 @@ in
 
     # Focus or send window to the given desktop
     "alt + {_,super + }{1-6}" = "bspc {desktop -f,node -d} '^{1-6}'";
-
-    # Control audio volume
-    "XF86Audio{LowerVolume,RaiseVolume,Mute}" =
-      "${dmenu-pulseaudio}/bin/dmenu-pulseaudio --volume {lower,raise,toggle}";
 
     # Screenshot either the whole screen or a portion of it and send a
     # notification.
