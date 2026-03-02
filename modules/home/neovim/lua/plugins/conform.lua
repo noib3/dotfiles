@@ -7,5 +7,9 @@ return {
       },
       notify_no_formatters = false,
     },
+    config = function(_, opts)
+      require("conform").setup(opts)
+      vim.lsp.enable("conform")
+    end,
   },
 }

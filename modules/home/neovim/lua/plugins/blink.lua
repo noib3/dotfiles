@@ -9,101 +9,106 @@ return {
         branch = "noib3",
       },
     },
-    ---@type blink.cmp.Config
-    opts = {
-      keymap = {
-        preset = "none",
-        ["<CR>"] = { "accept", "fallback" },
-        ["<Up>"] = { "select_next", "fallback" },
-        ["<Down>"] = { "select_prev", "fallback" },
-        ["<Tab>"] = { "select_next", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "fallback" },
-      },
-      completion = {
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 50,
-        },
-        keyword = {
-          range = "full",
-        },
-        list = {
-          selection = {
-            preselect = false,
-            auto_insert = false,
-          },
-        },
-        menu = {
-          auto_show = true,
-          draw = {
-            columns = { { "label" }, { "label_detail" } },
-          },
-          max_height = 7,
-        },
-      },
-      fuzzy = {
-        prebuilt_binaries = { download = false },
-      },
-      signature = {
-        enabled = true,
-        window = {
-          show_documentation = false,
-        },
-      },
-      sources = {
-        default = {
-          "emoji",
-          "lsp",
-          "path",
-        },
-        providers = {
-          buffer = {
-            enabled = false,
-          },
-          emoji = {
-            name = "Emoji",
-            module = "blink-emoji",
-            enabled = function()
-              local enabled_in_filetypes = { "gitcommit", "markdown" }
-              return vim.tbl_contains(enabled_in_filetypes, vim.o.filetype)
-            end,
-            opts = {
-              trigger = ":",
-            },
-          },
-          lsp = {
-            fallbacks = {},
-          },
-          path = {
-            fallbacks = {},
-          },
-        },
-      },
-    },
-    config = function(_, opts)
-      local blink = require("blink.cmp")
+    opts = function()
       local colorful_menu = require("colorful-menu")
 
-      -- Highlight the completion labels with Tree-sitter.
-      opts.completion.menu.draw.components = {
-        label = {
-          text = colorful_menu.blink_components_label_text,
-          highlight = colorful_menu.blink_components_label_highlight,
+      ---@type blink.cmp.Config
+      return {
+        keymap = {
+          preset = "none",
+          ["<CR>"] = { "accept", "fallback" },
+          ["<Up>"] = { "select_next", "fallback" },
+          ["<Down>"] = { "select_prev", "fallback" },
+          ["<Tab>"] = { "select_next", "fallback" },
+          ["<S-Tab>"] = { "select_prev", "fallback" },
         },
-        label_detail = {
-          text = colorful_menu.blink_components_detail_text,
-          highlight = colorful_menu.blink_components_detail_highlight,
+        completion = {
+          documentation = {
+            auto_show = true,
+            auto_show_delay_ms = 50,
+          },
+          keyword = {
+            range = "full",
+          },
+          list = {
+            selection = {
+              preselect = false,
+              auto_insert = false,
+            },
+          },
+          menu = {
+            auto_show = true,
+            draw = {
+              columns = { { "label" }, { "label_detail" } },
+              -- Highlight the completion labels with Tree-sitter.
+              components = {
+                label = {
+                  text = colorful_menu.blink_components_label_text,
+                  highlight = colorful_menu.blink_components_label_highlight,
+                },
+                label_detail = {
+                  text = colorful_menu.blink_components_detail_text,
+                  highlight = colorful_menu.blink_components_detail_highlight,
+                },
+              },
+            },
+            max_height = 7,
+          },
+        },
+        fuzzy = {
+          prebuilt_binaries = { download = false },
+        },
+        signature = {
+          enabled = true,
+          window = {
+            show_documentation = false,
+          },
+        },
+        sources = {
+          default = {
+            "emoji",
+            "lsp",
+            "path",
+          },
+          providers = {
+            buffer = {
+              enabled = false,
+            },
+            emoji = {
+              name = "Emoji",
+              module = "blink-emoji",
+              enabled = function()
+                local enabled_in_filetypes = { "gitcommit", "markdown" }
+                return vim.tbl_contains(enabled_in_filetypes, vim.o.filetype)
+              end,
+              opts = {
+                trigger = ":",
+              },
+            },
+            lsp = {
+              fallbacks = {},
+            },
+            path = {
+              fallbacks = {},
+            },
+          },
         },
       }
-
+    end,
+    config = function(_, opts)
+      local blink = require("blink.cmp")
       blink.setup(opts)
-      vim.api.nvim_set_hl(0, "BlinkCmpLabelMatch", { bold = true })
-      vim.api.nvim_set_hl(
-        0,
-        "BlinkCmpMenuSelection",
-        { background = "#7c6f64" }
-      )
-      vim.api.nvim_set_hl(0, "BlinkCmpLabelDetail", { foreground = "#a89984" })
+      vim.lsp.config("*", { capabilities = blink.get_lsp_capabilities() })
+
+      ---@type table<string, vim.api.keyset.highlight>
+      local highlights = {
+        BlinkCmpLabelMatch = { bold = true },
+        BlinkCmpMenuSelection = { background = "#7c6f64" },
+        BlinkCmpLabelDetail = { foreground = "#a89984" },
+      }
+      for name, hl in pairs(highlights) do
+        vim.api.nvim_set_hl(0, name, hl)
+      end
     end,
   },
 }

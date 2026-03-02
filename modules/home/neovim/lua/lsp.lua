@@ -72,3 +72,10 @@ vim.api.nvim_create_autocmd("LspDetach", {
     on_detach(client, args.buf)
   end,
 })
+
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("marksman")
+vim.lsp.enable("nixd")
+vim.lsp.enable("rust_analyzer")
+vim.lsp.enable("taplo")
+vim.lsp.enable("ts_ls")
