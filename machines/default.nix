@@ -88,7 +88,6 @@ let
         (mkHomeManagerModule machine)
         ../fonts/module.nix
         ../modules/home
-        ../modules/services/bluetooth-autoconnect.nix
         {
           fonts = fonts pkgs;
           home.username = userName;

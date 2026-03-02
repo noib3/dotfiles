@@ -7,7 +7,7 @@
 
 with lib;
 let
-  cfg = config.services.bluetooth-autoconnect;
+  cfg = config.modules.bluetooth-autoconnect;
 
   package = pkgs.stdenv.mkDerivation {
     name = "bluetooth-autoconnect";
@@ -36,17 +36,13 @@ let
       cp bluetooth-autoconnect $out/bin/
       chmod +x $out/bin/bluetooth-autoconnect
     '';
+
+    meta.mainProgram = "bluetooth-autoconnect";
   };
 in
 {
-  options.services.bluetooth-autoconnect = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Whether to run the bluetooth-autoconnect script in daemon mode
-      '';
-    };
+  options.modules.bluetooth-autoconnect = {
+    enable = mkEnableOption "the bluetooth-autoconnect script in daemon mode";
   };
 
   config = mkIf cfg.enable {
@@ -58,7 +54,7 @@ in
 
       Service = {
         Type = "simple";
-        ExecStart = "${package}/bin/bluetooth-autoconnect -d";
+        ExecStart = "${lib.getExe package} -d";
       };
 
       Install = {
