@@ -56,11 +56,6 @@ in
         key = "me@noib3.dev";
         signByDefault = true;
       };
-
-      ignores = [
-        ".direnv"
-        ".envrc"
-      ];
     };
   };
 }
