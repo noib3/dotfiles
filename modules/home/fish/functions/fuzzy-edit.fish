@@ -1,19 +1,28 @@
+set -l root
+
 if git status &>/dev/null
-  set ROOT (git rev-parse --show-toplevel)
+  set root (git rev-parse --show-toplevel)
 else
-  set ROOT "$HOME"
+  set root "$HOME"
 end
 
-set -l filenames (
-  lf-recursive "$ROOT" \
-    | fzf --multi --prompt="Edit> " --preview="preview $ROOT/{}" \
-    | sed "s/\ /\\\ /g;s!^!$ROOT/!" \
-    | tr '\n' ' ' \
-    | sed 's/[[:space:]]*$//'
+set -l root_for_preview (string escape --style=script -- "$root")
+
+set -l selected_files (
+  lf-recursive "$root" \
+    | fzf --multi --prompt="Edit> " --preview="preview $root_for_preview/{}"
 )
 
-test ! -z "$filenames" \
-  && commandline "$EDITOR $filenames" \
-  && commandline -f execute
+if test (count $selected_files) -gt 0
+  set -l escaped_paths
+
+  for filename in $selected_files
+    set -a escaped_paths (string escape -- "$root/$filename")
+  end
+
+  set -l cmd (string join " " "$EDITOR" $escaped_paths)
+  commandline "$cmd"
+  commandline -f execute
+end
 
 commandline -f repaint
