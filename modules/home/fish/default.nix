@@ -111,6 +111,12 @@ in
         if set -q IN_NIX_SHELL
           set -gx SHELL (status fish-path)
         end
+
+        function __update_cargo_target_dir --on-variable PWD
+          ${lib.getExe pkgs.scripts.cargo-target-dir-env} --shell fish | source
+        end
+
+        __update_cargo_target_dir
       '';
 
       plugins = [
