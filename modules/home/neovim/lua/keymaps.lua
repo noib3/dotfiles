@@ -20,10 +20,9 @@ local close = function()
   local has_bufdelete, _ = pcall(require, "bufdelete")
   local bd = has_bufdelete and "Bdelete" or "bdelete"
 
-  local cmd = (
-    (filetype == "help" or buftype == "nofile" or is_last_buffer()) and "q"
-  )
-    or (buftype == "terminal" and "bdelete!")
+  local cmd = (buftype == "terminal" and "bdelete!")
+    or (vim.b.from_nvim_launch and bd)
+    or ((filetype == "help" or buftype == "nofile" or is_last_buffer()) and "q")
     or bd
 
   vim.cmd(cmd)

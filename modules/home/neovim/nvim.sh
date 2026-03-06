@@ -23,14 +23,36 @@ done
 # If the arguments contain any non-file arguments, launch a new instance.
 [[ "$files_only" == true ]] || exec "$NVIM_EXE" "$@"
 
-filenames=""
+filepaths=""
 for arg in "$@"; do
-  escaped_arg=${arg//\\/\\\\}
-  escaped_arg=${escaped_arg//\"/\\\"}
-  filenames+="\"$escaped_arg\","
+  filepath="$arg"
+  if [[ "$filepath" != /* ]]; then
+    filepath="$PWD/$filepath"
+  fi
+
+  escaped_filepath=${filepath//\\/\\\\}
+  escaped_filepath=${escaped_filepath//\"/\\\"}
+  filepaths+="\"$escaped_filepath\","
 done
 
-# If dispatch fails, launch a new instance.
-"$NVIM_EXE" --server "$NVIM" --remote-expr \
-  "luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimLaunch\", modeline = false, data = { $filenames } })')" \
-  2>/dev/null || exec "$NVIM_EXE" "$@"
+# We need to block until the opened buffers are closed so that callers that
+# expect the editor to be synchronous (e.g. `git rebase -i`) don't continue
+# before the user is done editing.
+#
+# TODO: replace the FIFO with `--remote-wait` once Neovim implements it
+# (currently returns `E5600: Wait commands not yet implemented`).
+fifo=$(mktemp -u)
+mkfifo "$fifo"
+trap 'rm -f "$fifo"' EXIT
+
+escaped_fifo=${fifo//\\/\\\\}
+escaped_fifo=${escaped_fifo//\"/\\\"}
+
+if "$NVIM_EXE" --server "$NVIM" --remote-expr \
+  "luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimLaunch\", modeline = false, data = { filepaths = { $filepaths }, on_done = function() local f = io.open(\"$escaped_fifo\", \"w\"); if f then f:close() end end } })')" \
+  2>/dev/null; then
+  read -r <"$fifo" || true
+  exit 0
+fi
+
+exec "$NVIM_EXE" "$@"

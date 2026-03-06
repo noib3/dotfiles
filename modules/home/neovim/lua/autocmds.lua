@@ -57,26 +57,29 @@ vim.api.nvim_create_autocmd("User", {
     local orig_buf = ev.buf
     local orig_buf_is_terminal = vim.bo[orig_buf].buftype == "terminal"
 
-    local filenames = ev.data
+    local filepaths = ev.data.filepaths
+
     local file_buf
 
-    if #filenames == 0 then
+    if #filepaths == 0 then
       vim.cmd.enew()
       file_buf = vim.api.nvim_get_current_buf()
+      vim.b[file_buf].from_nvim_launch = true
     else
       -- Create new buffers for each file.
-      for _, filename in ipairs(filenames) do
-        local buf = vim.fn.bufadd(filename)
+      for _, filepath in ipairs(filepaths) do
+        local buf = vim.fn.bufadd(filepath)
         vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
         vim.fn.bufload(buf)
         -- Set the buffer's filetype.
-        local ft = vim.filetype.match({ buf = buf, filename = filename })
+        local ft = vim.filetype.match({ buf = buf, filename = filepath })
         if ft and ft ~= "" then
           vim.api.nvim_buf_call(
             buf,
             function() vim.cmd("setfiletype " .. ft) end
           )
         end
+        vim.b[buf].from_nvim_launch = true
         if not file_buf then file_buf = buf end
       end
       -- Display the first file in all the windows currently showing the
@@ -103,20 +106,25 @@ vim.api.nvim_create_autocmd("User", {
       buffer = file_buf,
       once = true,
       callback = function()
+        ev.data.on_done()
         -- Return early if the original buffer has since been deleted.
         if not vim.api.nvim_buf_is_valid(orig_buf) then return end
-        -- If the buffer was a terminal, re-add it to the buffer list and
-        -- restore insert mode.
-        if orig_buf_is_terminal then
-          vim.bo[orig_buf].buflisted = true
-          vim.api.nvim_buf_call(orig_buf, vim.cmd.startinsert)
-        end
+        -- If the buffer was a terminal, re-add it to the buffer list.
+        if orig_buf_is_terminal then vim.bo[orig_buf].buflisted = true end
         -- Display the original buffer on all the windows that were displaying
         -- the deleted buffer (scheduled to ensure BufDelete has fully
         -- completed).
         vim.schedule(function()
+          local restored = false
           for _, win in ipairs(file_wins) do
-            vim.api.nvim_win_set_buf(win, orig_buf)
+            if vim.api.nvim_win_is_valid(win) then
+              vim.api.nvim_win_set_buf(win, orig_buf)
+              restored = true
+            end
+          end
+          -- Restore insert mode only if the terminal is visible again.
+          if orig_buf_is_terminal and restored then
+            vim.api.nvim_buf_call(orig_buf, vim.cmd.startinsert)
           end
         end)
       end,
