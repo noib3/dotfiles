@@ -8,7 +8,6 @@
   bat = import ./bat;
   bspwm = import ./bspwm;
   calcurse = import ./calcurse;
-  direnv = import ./direnv;
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };

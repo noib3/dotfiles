@@ -18,7 +18,7 @@
   },
   "workspace": {
     "checkThirdParty": false,
-    "ignoreDir": [".direnv", ".git"],
+    "ignoreDir": [".git"],
     "library": ["$VIMRUNTIME/lua"]
   }
 }

@@ -140,6 +140,7 @@ in
     brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;
+    direnv.enable = true;
     fish.enable = true;
     ghostty.enable = true;
     git.enable = true;
@@ -168,7 +169,6 @@ in
   programs = {
     inherit (configs)
       bat
-      direnv
       fd
       fuzzel
       fzf
