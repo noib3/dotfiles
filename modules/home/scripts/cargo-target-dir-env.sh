@@ -55,7 +55,7 @@ emit_set_fish() {
   target_dir=$1
   quoted_target_dir=$(shell_quote_fish "$target_dir")
   printf 'set -gx CARGO_TARGET_DIR %s\n' "$quoted_target_dir"
-  printf '%s\n' 'set -g __cargo_target_dir_dynamic 1'
+  printf '%s\n' 'set -gx __cargo_target_dir_dynamic 1'
 }
 
 emit_unset() {
@@ -102,21 +102,29 @@ if [ "$is_valid_shell" != true ]; then
   exit 2
 fi
 
-if [ "${CARGO_TARGET_DIR+x}" = x ]; then
-  exit 0
+is_dynamic_cargo_target_dir=false
+if [ "${__cargo_target_dir_dynamic+x}" = x ]; then
+  is_dynamic_cargo_target_dir=true
 fi
 
 if ! command -v cargo >/dev/null 2>&1; then
+  if [ "$is_dynamic_cargo_target_dir" = true ]; then
+    emit_unset
+  fi
   exit 0
 fi
 
 if ! cargo_toml=$(cargo locate-project --workspace --message-format plain 2>/dev/null); then
-  emit_unset
+  if [ "$is_dynamic_cargo_target_dir" = true ]; then
+    emit_unset
+  fi
   exit 0
 fi
 
 project_root=$(canonical_dir "$(dirname "$cargo_toml")") || {
-  emit_unset
+  if [ "$is_dynamic_cargo_target_dir" = true ]; then
+    emit_unset
+  fi
   exit 0
 }
 
@@ -151,6 +159,15 @@ project_basename=$(sanitize_basename "$(basename "$project_root")")
 target_dir=$state_home/cargo/$hash-$project_basename/target
 
 if ! mkdir -p "$target_dir"; then
+  exit 0
+fi
+
+if [ "${CARGO_TARGET_DIR+x}" = x ] && [ "$is_dynamic_cargo_target_dir" != true ]; then
+  # Respect user-managed values.
+  exit 0
+fi
+
+if [ "$is_dynamic_cargo_target_dir" = true ] && [ "${CARGO_TARGET_DIR:-}" = "$target_dir" ]; then
   exit 0
 fi
 
