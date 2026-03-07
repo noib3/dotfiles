@@ -64,6 +64,7 @@ let
     inputs.hop-nvim
     inputs.nvim-colorizer-lua
     inputs.nvim-notify
+    inputs.nvim-web-devicons
   ];
 
   # Each of these is a valid Neovim rtp entry.

@@ -67,6 +67,10 @@
       url = "github:rcarriga/nvim-notify";
       flake = false;
     };
+    nvim-web-devicons = {
+      url = "github:nvim-tree/nvim-web-devicons";
+      flake = false;
+    };
   };
 
   outputs =
