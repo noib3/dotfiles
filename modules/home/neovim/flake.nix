@@ -11,6 +11,10 @@
       url = "github:famiu/bufdelete.nvim";
       flake = false;
     };
+    nvim-lspconfig = {
+      url = "github:neovim/nvim-lspconfig";
+      flake = false;
+    };
   };
 
   outputs =

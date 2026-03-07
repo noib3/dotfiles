@@ -50,6 +50,7 @@ let
   # Vim plugins added to the rtp.
   vimPlugins = [
     inputs.bufdelete-nvim
+    inputs.nvim-lspconfig
   ];
 
   # Each of these is a valid Neovim rtp entry.
