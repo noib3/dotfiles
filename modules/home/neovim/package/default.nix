@@ -47,8 +47,8 @@ let
     vimdoc
   ];
 
-  # Vim plugins added to the rtp.
-  nixPlugins = [
+  # Each of these is a valid Neovim rtp entry.
+  plugins = [
     inputs.blink-cmp.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
     inputs.bufdelete-nvim
@@ -84,18 +84,15 @@ let
     inputs.tokyonight-nvim
     inputs.treesitter-modules-nvim
     inputs.trouble-nvim
-  ];
+  ]
+  ++ treeSitterParsers
+  ++ treeSitterQueries
+  ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
 
-  # Each of these is a valid Neovim rtp entry.
-  plugins =
-    # The config directory is first so that its `lua/` modules take priority,
-    # matching Neovim's default behavior of placing `stdpath('config')` at the
-    # top of the rtp.
-    lib.optionals includeConfig [ ../config ]
-    ++ nixPlugins
-    ++ treeSitterParsers
-    ++ treeSitterQueries
-    ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
+  # The config directory is first so that its `lua/` modules take priority,
+  # matching Neovim's default behavior of placing `stdpath('config')` at the
+  # top of the rtp.
+  runtimePaths = lib.optionals includeConfig [ ../config ] ++ plugins;
 
   neovimOrig = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
 
@@ -104,7 +101,7 @@ let
     text = ''
       exec ${lib.getExe neovimOrig} \
         ${lib.optionalString includeConfig "-u ${../config/init.lua}"} \
-        --cmd 'set rtp^=${lib.concatStringsSep "," plugins}' \
+        --cmd 'set rtp^=${lib.concatStringsSep "," runtimePaths}' \
         "$@"
     '';
   };
