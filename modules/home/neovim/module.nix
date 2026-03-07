@@ -1,4 +1,4 @@
-{ nix-community-neovim }:
+inputs:
 
 {
   config,

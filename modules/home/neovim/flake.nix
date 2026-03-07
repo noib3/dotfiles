@@ -8,35 +8,31 @@
   };
 
   outputs =
-    {
-      nixpkgs,
-      nix-community-neovim,
-      ...
-    }:
+    inputs:
     let
-      eachSystem = nixpkgs.lib.genAttrs [
+      eachSystem = inputs.nixpkgs.lib.genAttrs [
         "x86_64-linux"
         "aarch64-linux"
         "aarch64-darwin"
       ];
     in
     {
+      homeManagerModules.default = import ./module.nix inputs;
+
       packages = eachSystem (
         system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
         in
         {
-          default = pkgs.callPackage ./package.nix {
-            neovim = nix-community-neovim.packages.${system}.default;
-          };
+          default = pkgs.callPackage ./package.nix { inherit inputs; };
         }
       );
 
       devShells = eachSystem (
         system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
         in
         {
           develop-neovim = pkgs.mkShell {
@@ -46,10 +42,8 @@
       );
 
       vimRuntime = eachSystem (
-        system: "${nix-community-neovim.packages.${system}.default}/share/nvim/runtime"
+        system: "${inputs.nix-community-neovim.packages.${system}.default}/share/nvim/runtime"
       );
-
-      homeManagerModules.default = import ./module.nix { inherit nix-community-neovim; };
     };
 
   nixConfig = {

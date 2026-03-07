@@ -13,10 +13,19 @@ in
     inputs.neovim.homeManagerModules.default
   ];
 
+  options.modules.neovim = {
+    enable = lib.mkEnableOption "Neovim";
+  };
+
   config = lib.mkIf cfg.enable {
     home.packages = [
       config.modules.neovim.package
     ];
+
+    home.sessionVariables = {
+      EDITOR = "nvim";
+      MANPAGER = "nvim +Man! -";
+    };
 
     modules.neovim = {
       includeConfig = false;
