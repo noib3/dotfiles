@@ -67,6 +67,7 @@ let
     inputs.nvim-web-devicons
     inputs.fzf-lua
     inputs.toggleterm-nvim
+    inputs.trouble-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
