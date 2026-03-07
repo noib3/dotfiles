@@ -57,6 +57,7 @@ let
     inputs.gitsigns-nvim
     inputs.inc-rename-nvim
     inputs.lsp-progress-nvim
+    inputs.neotab-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.

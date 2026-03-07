@@ -39,6 +39,10 @@
       url = "github:linrongbin16/lsp-progress.nvim";
       flake = false;
     };
+    neotab-nvim = {
+      url = "github:kawre/neotab.nvim";
+      flake = false;
+    };
   };
 
   outputs =
