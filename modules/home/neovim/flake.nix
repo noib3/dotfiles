@@ -144,7 +144,12 @@
   };
 
   outputs =
-    inputs@{ nixpkgs, nix-community-neovim, ... }:
+    inputs@{
+      self,
+      nixpkgs,
+      nix-community-neovim,
+      ...
+    }:
     let
       systems = [
         "x86_64-linux"
@@ -167,6 +172,7 @@
         default =
           pkgs.runCommand "check-config"
             {
+              env.NVIM_PLUGINS = self.packages.${pkgs.stdenv.system}.default.pluginsDir;
               env.VIMRUNTIME = "${
                 nix-community-neovim.packages.${pkgs.stdenv.system}.default
               }/share/nvim/runtime";

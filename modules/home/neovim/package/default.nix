@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  linkFarm,
   stdenvNoCC,
   vimPlugins,
   writeShellApplication,
@@ -89,6 +90,15 @@ let
   ++ treeSitterQueries
   ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
 
+  # A directory containing one symlink per plugin, used by lua-language-server
+  # to resolve plugin type definitions.
+  pluginsDir = linkFarm "nvim-plugins" (
+    builtins.map (plugin: {
+      name = builtins.baseNameOf (builtins.unsafeDiscardStringContext plugin);
+      path = plugin;
+    }) plugins
+  );
+
   # The config directory is first so that its `lua/` modules take priority,
   # matching Neovim's default behavior of placing `stdpath('config')` at the
   # top of the rtp.
@@ -98,6 +108,7 @@ let
 
   neovimWithPlugins = writeShellApplication {
     name = "nvim-with-plugins";
+    runtimeEnv.NVIM_PLUGINS = pluginsDir;
     text = ''
       exec ${lib.getExe neovimOrig} \
         ${lib.optionalString includeConfig "-u ${../config/init.lua}"} \
@@ -109,5 +120,6 @@ in
 writeShellApplication {
   name = "nvim";
   runtimeEnv.NVIM_EXE = lib.getExe neovimWithPlugins;
+  passthru = { inherit pluginsDir; };
   text = builtins.readFile ./nvim.sh;
 }

@@ -224,6 +224,7 @@ local overrides = {
 
 ---@return GruvboxConfig
 local config = function()
+  ---@diagnostic disable-next-line: undefined-field
   local overrides = vim.opt.background:get() == "dark" and overrides.dark
     or overrides.light
 

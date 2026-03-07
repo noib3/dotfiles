@@ -56,6 +56,7 @@ lualine.setup({
       {
         "branch",
         color = {
+          ---@diagnostic disable-next-line: undefined-field
           fg = vim.opt.background:get() == "dark" and "#928374" or "#7c6f64",
         },
       },
@@ -67,5 +68,5 @@ lualine.setup({
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("noib3/lualine", { clear = true }),
   pattern = "LspProgressStatusUpdated",
-  callback = lualine.refresh,
+  callback = lualine.refresh --[[@as fun()]],
 })
