@@ -87,6 +87,10 @@
       url = "github:b0o/incline.nvim";
       flake = false;
     };
+    lualine-nvim = {
+      url = "github:nvim-lualine/lualine.nvim";
+      flake = false;
+    };
   };
 
   outputs =

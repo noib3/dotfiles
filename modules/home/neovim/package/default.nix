@@ -69,6 +69,7 @@ let
     inputs.toggleterm-nvim
     inputs.trouble-nvim
     inputs.incline-nvim
+    inputs.lualine-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
