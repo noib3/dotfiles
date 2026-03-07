@@ -92,22 +92,15 @@ local setup_lf = function()
   vim.keymap.set("n", "ll", open_lf, { silent = true })
 end
 
-return {
-  {
-    "akinsho/toggleterm.nvim",
-    opts = {
-      autochdir = true,
-      direction = "float",
-      float_opts = {
-        border = "single",
-        height = function() return utils.math.round(vim.o.lines * 0.8) end,
-        width = function() return utils.math.round(vim.o.columns * 0.8) end,
-      },
-    },
-    config = function(_, opts)
-      require("toggleterm").setup(opts)
-      setup_lazygit()
-      setup_lf()
-    end,
+require("toggleterm").setup({
+  autochdir = true,
+  direction = "float",
+  float_opts = {
+    border = "single",
+    height = function() return utils.math.round(vim.o.lines * 0.8) end,
+    width = function() return utils.math.round(vim.o.columns * 0.8) end,
   },
-}
+})
+
+setup_lazygit()
+setup_lf()

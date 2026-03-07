@@ -75,6 +75,10 @@
       url = "github:ibhagwan/fzf-lua";
       flake = false;
     };
+    toggleterm-nvim = {
+      url = "github:akinsho/toggleterm.nvim";
+      flake = false;
+    };
   };
 
   outputs =
