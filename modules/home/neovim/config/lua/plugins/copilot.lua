@@ -7,6 +7,7 @@ end
 return {
   {
     "zbirenbaum/copilot.lua",
+    enabled = false,
     opts = {
       suggestion = {
         auto_trigger = true,
@@ -19,7 +20,7 @@ return {
       },
       server = {
         type = "binary",
-        custom_server_filepath = require("generated.tools").copilot,
+        -- custom_server_filepath = require("generated.tools").copilot,
       },
     },
     config = function(_, opts)

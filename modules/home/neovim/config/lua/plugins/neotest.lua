@@ -13,7 +13,7 @@ return {
     },
     config = function()
       local neotest = require("neotest")
-      local palette = require("generated.palette")
+      local palette = require("palette")
 
       neotest.setup({
         adapters = {
