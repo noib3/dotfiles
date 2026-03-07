@@ -1,18 +1,18 @@
 if git status &>/dev/null; then
-  cd "$(git rev-parse --show-toplevel)"
+  cd "$(git rev-parse --show-toplevel)" || exit
 fi
 
-results="$(\
-  rg-pattern "" \
-    | fzf \
-        --multi \
-        --prompt='Rg> ' \
-        --disabled \
-        --delimiter=':' \
-        --with-nth='1,2,4..' \
-        --bind="change:reload:rg-pattern {q}" \
-        --preview='rg-preview {1}:{2}' \
-        --preview-window='+{2}-/2' \
+results="$(
+  rg-pattern "" |
+    fzf \
+      --multi \
+      --prompt='Rg> ' \
+      --disabled \
+      --delimiter=':' \
+      --with-nth='1,2,4..' \
+      --bind="change:reload:rg-pattern {q}" \
+      --preview='rg-preview {1}:{2}' \
+      --preview-window='+{2}-/2'
 )"
 
 [ -n "$results" ] || exit 0

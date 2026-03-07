@@ -21,6 +21,6 @@ case $(bspc config -d focused top_padding) in
     ;;
 esac
 
-bspc config -d focused window_gap "$window_gap" \
-  && bspc config -d focused border_width "$border_width" \
-  && bspc config -d focused top_padding "$top_padding"
+bspc config -d focused window_gap "$window_gap" &&
+  bspc config -d focused border_width "$border_width" &&
+  bspc config -d focused top_padding "$top_padding"

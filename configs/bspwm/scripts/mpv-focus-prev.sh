@@ -5,17 +5,17 @@
 mapfile -t mpv_ids < <(xdo id -Nmpv)
 
 while IFS=' ' read -r event_type _ _ nid; do
-    case "$event_type" in
-        node_remove)
-            for mpv_id in "${mpv_ids[@]}"; do
-                (( mpv_id == nid )) \
-                    || continue
-                bspc desktop -f last
-                break
-            done
-            ;&
-        node_add)
-            mapfile -t mpv_ids < <(xdo id -Nmpv)
-            ;;
-    esac
+  case "$event_type" in
+    node_remove)
+      for mpv_id in "${mpv_ids[@]}"; do
+        ((mpv_id == nid)) ||
+          continue
+        bspc desktop -f last
+        break
+      done
+      ;&
+    node_add)
+      mapfile -t mpv_ids < <(xdo id -Nmpv)
+      ;;
+  esac
 done < <(bspc subscribe node_{add,remove})

@@ -52,3 +52,17 @@ jobs:
             experimental-features = pipe-operators
       - name: Run Nix linter on all .nix files
         run: nix run .#check-nix-lints
+
+  shell-lints:
+    name: Shell lints
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v34
+        with:
+          nix_version: 2.29.2
+          nix_conf: |
+            experimental-features = pipe-operators
+      - name: Run ShellCheck on all .sh files
+        run: nix run .#check-shell-lints

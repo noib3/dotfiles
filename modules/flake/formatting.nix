@@ -21,6 +21,10 @@
           enable = true;
           width = 80;
         };
+        programs.shfmt = {
+          enable = true;
+          useEditorConfig = true;
+        };
         programs.stylua = {
           enable = true;
           settings = builtins.fromTOML (builtins.readFile ../../stylua.toml);

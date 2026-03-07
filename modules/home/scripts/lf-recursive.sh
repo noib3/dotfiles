@@ -1,3 +1,6 @@
+# This file is inlined inside a function body by lf-recursive.nix.
+# shellcheck disable=SC2168
+
 # The path to the given directory.
 local DIR_PATH="${1%/}"
 
@@ -19,9 +22,9 @@ DOCS_NAME="$(basename "$DOCS_DIR")"
   # If the documents directory is a symlink, scan it explicitly since fd doesn't
   # follow symlinks.
   if [ -L "$DIR_PATH/$DOCS_NAME" ]; then
-    fd --base-directory="$DOCS_DIR" --hidden --strip-cwd-prefix --type=f --color=always \
-      | sed "s|^|"$'\x1b['"${OLD_DIRS_COL}m${DOCS_NAME}/|"
+    fd --base-directory="$DOCS_DIR" --hidden --strip-cwd-prefix --type=f --color=always |
+      sed "s|^|"$'\x1b['"${OLD_DIRS_COL}m${DOCS_NAME}/|"
   fi
-} \
-  | sort -r \
-  | sed "s|\x1b\[${OLD_DIRS_COL}m|\x1b\[${NEW_DIRS_COL}m|g"
+} |
+  sort -r |
+  sed "s|\x1b\[${OLD_DIRS_COL}m|\x1b\[${NEW_DIRS_COL}m|g"

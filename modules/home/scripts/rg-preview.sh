@@ -3,7 +3,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-IFS=':' read -r -a INPUT <<< "$1"
+IFS=':' read -r -a INPUT <<<"$1"
 FILE=${INPUT[0]}
 CENTER=${INPUT[1]}
 
@@ -12,7 +12,7 @@ if [[ $1 =~ ^[A-Za-z]:\\ ]]; then
   CENTER=${INPUT[2]}
 fi
 
-if [[ -n "$CENTER" && ! "$CENTER" =~ ^[0-9] ]]; then
+if [[ -n $CENTER && ! $CENTER =~ ^[0-9] ]]; then
   exit 1
 fi
 CENTER=${CENTER/[^0-9]*/}
@@ -37,7 +37,7 @@ if show_pgp_public_key "$FILE" "$MIME_TYPE"; then
   exit 0
 fi
 
-if [[ "${MIME:FILE_LENGTH}" =~ binary ]]; then
+if [[ ${MIME:FILE_LENGTH} =~ binary ]]; then
   echo "$MIME"
   exit 0
 fi
@@ -47,4 +47,4 @@ if [ -z "$CENTER" ]; then
 fi
 
 bat --style="${BAT_STYLE:-numbers}" --color=always --pager=never \
-      --highlight-line="$CENTER" "$FILE"
+  --highlight-line="$CENTER" "$FILE"

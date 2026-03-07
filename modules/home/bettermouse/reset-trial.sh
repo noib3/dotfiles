@@ -1,5 +1,5 @@
 is_running() {
-  /usr/bin/pgrep -x BetterMouse > /dev/null
+  /usr/bin/pgrep -x BetterMouse >/dev/null
 }
 
 was_running=false

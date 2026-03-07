@@ -17,18 +17,18 @@ unblock() {
 
   local RULE_NUMBERS
 
-  RULE_NUMBERS=$(\
-    iptables -L OUTPUT --line-numbers \
-      | jc --iptables \
-      | jq ".[] | select(.chain == \"OUTPUT\") | .rules[]" \
-      | jq "select(.target == \"REJECT\" and (.options | contains(\"STRING match  \\\"$DOMAIN\\\"\")))" \
-      | jq ".num" \
+  RULE_NUMBERS=$(
+    iptables -L OUTPUT --line-numbers |
+      jc --iptables |
+      jq '.[] | select(.chain == "OUTPUT") | .rules[]' |
+      jq "select(.target == \"REJECT\" and (.options | contains(\"STRING match  \\\"$DOMAIN\\\"\")))" |
+      jq ".num"
   )
 
   if [ -n "$RULE_NUMBERS" ]; then
     # Delete each rule by number
     for RULE_NUMBER in $RULE_NUMBERS; do
-        iptables -D OUTPUT "$RULE_NUMBER"
+      iptables -D OUTPUT "$RULE_NUMBER"
     done
     echo "Unblocked $DOMAIN"
   else
@@ -38,13 +38,13 @@ unblock() {
 }
 
 if [[ $(id -u) -ne 0 ]]; then
-    echo "needs to be running as root"
-    exit 1
+  echo "needs to be running as root"
+  exit 1
 fi
 
 if [[ $# -ne 2 ]]; then
-    usage
-    exit 1
+  usage
+  exit 1
 fi
 
 ACTION="$1"

@@ -14,7 +14,11 @@ function torrent_add() {
 }
 
 function qute_echo_error() {
-  echo "message-error \"$1\"" >> "$QUTE_FIFO"
+  echo "message-error \"$1\"" >>"$QUTE_FIFO"
 }
 
-torrent_add && notify_add || qute_echo_error "$QUTE_INVALID_LINK_MSG"
+if torrent_add; then
+  notify_add
+else
+  qute_echo_error "$QUTE_INVALID_LINK_MSG"
+fi

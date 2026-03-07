@@ -37,9 +37,9 @@ CACHE_DIR="$HOME/.cache/image-previews"
 mkdir -p "$CACHE_DIR"
 
 CACHE_FILE="$(
-  stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$FILE")" \
-    | sha256sum \
-    | awk '{print $1}' \
+  stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$FILE")" |
+    sha256sum |
+    awk '{print $1}'
 )"
 CACHE="$CACHE_DIR/$CACHE_FILE"
 
@@ -56,9 +56,9 @@ if show_pgp_public_key "$FILE" "$MIME_TYPE"; then
 fi
 
 case "$FILE" in
-  *.7z|*.a|*.ace|*.alz|*.arc|*.arj|*.bz|*.bz2|*.cab|*.cpio|*.deb|*.gz|*.jar|\
-  *.lha|*.lrz|*.lz|*.lzh|*.lzma|*.lzo|*.rar|*.rpm|*.rz|*.t7z|*.tar|*.tbz|\
-  *.tbz2|*.tgz|*.tlz|*.txz|*.tZ|*.tzo|*.war|*.xz|*.Z|*.zip)
+  *.7z | *.a | *.ace | *.alz | *.arc | *.arj | *.bz | *.bz2 | *.cab | *.cpio | *.deb | *.gz | *.jar | \
+    *.lha | *.lrz | *.lz | *.lzh | *.lzma | *.lzo | *.rar | *.rpm | *.rz | *.t7z | *.tar | *.tbz | \
+    *.tbz2 | *.tgz | *.tlz | *.txz | *.tZ | *.tzo | *.war | *.xz | *.Z | *.zip)
     als -- "$FILE"
     ;;
   *.svg)
@@ -72,7 +72,7 @@ case "$FILE" in
 esac
 
 case "$MIME_TYPE" in
-  text/*|application/javascript|application/json|application/csv)
+  text/* | application/javascript | application/json | application/csv)
     bat --color=always "$FILE"
     ;;
   */pdf)

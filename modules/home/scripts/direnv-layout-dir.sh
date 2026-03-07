@@ -56,7 +56,8 @@ if [ -n "${DOCUMENTS:-}" ]; then
     # (for example "$DOCUMENTS/foo" vs "/foo").
     case "$project_root" in
       "$docs_root")
-        hash_input="\$DOCUMENTS"
+        # shellcheck disable=SC2016
+        hash_input='$DOCUMENTS'
         ;;
       "$docs_root"/*)
         stripped_path=${project_root#"$docs_root"}

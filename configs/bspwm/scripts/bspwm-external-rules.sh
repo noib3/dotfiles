@@ -5,7 +5,7 @@ wid=$1
 
 # Float Android emulators and keep them visible while other windows are
 # fullscreen.
-! [[ $(xtitle "$wid") =~ ^Emulator.*$ ]] \
-  || echo "state=floating layer=above" \
-  # For debugging
-  # || (echo "$wid - $(xtitle $wid)" >> ~/diocane)
+! [[ $(xtitle "$wid") =~ ^Emulator.*$ ]] ||
+  echo "state=floating layer=above"
+# For debugging
+# || (echo "$wid - $(xtitle $wid)" >> ~/diocane)

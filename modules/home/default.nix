@@ -94,6 +94,12 @@ in
         lua-language-server
         stylua
       ]
+      # Shell.
+      ++ [
+        bash-language-server
+        shellcheck
+        shfmt
+      ]
       # Markdown.
       ++ [ marksman ]
       # TOML.
