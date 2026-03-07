@@ -49,10 +49,13 @@ let
 
   # Each of these is a valid Neovim rtp entry.
   plugins =
-    treeSitterParsers
+    # The config directory is first so that its `lua/` modules take priority,
+    # matching Neovim's default behavior of placing `stdpath('config')` at the
+    # top of the rtp.
+    lib.optionals includeConfig [ ./config ]
+    ++ treeSitterParsers
     ++ treeSitterQueries
-    ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ]
-    ++ lib.optionals includeConfig [ ./config ];
+    ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
 
   neovimOrig = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
 
@@ -60,6 +63,7 @@ let
     name = "nvim-with-plugins";
     text = ''
       exec ${lib.getExe neovimOrig} \
+        ${lib.optionalString includeConfig "-u ${./config/init.lua}"} \
         --cmd 'set rtp^=${lib.concatStringsSep "," (map toString plugins)}' \
         "$@"
     '';
