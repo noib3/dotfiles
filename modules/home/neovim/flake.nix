@@ -15,6 +15,10 @@
       url = "github:neovim/nvim-lspconfig";
       flake = false;
     };
+    nvim-ts-context-commentstring = {
+      url = "github:JoosepAlviste/nvim-ts-context-commentstring";
+      flake = false;
+    };
   };
 
   outputs =

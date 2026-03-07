@@ -51,6 +51,7 @@ let
   vimPlugins = [
     inputs.bufdelete-nvim
     inputs.nvim-lspconfig
+    inputs.nvim-ts-context-commentstring
   ];
 
   # Each of these is a valid Neovim rtp entry.
