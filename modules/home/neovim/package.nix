@@ -63,27 +63,16 @@ let
   allParsers = defaultParsers ++ extraTreesitterParsers;
   allQueries = defaultQueries ++ extraTreesitterQueries;
 
-  configSrc = lib.fileset.toSource {
+  configDir = lib.fileset.toSource {
     root = ./.;
     fileset = lib.fileset.unions [
-      ./init.lua
+      ./plugin
       ./filetype.lua
       ./lua
       ./after
       ./lsp
       ./lazy-lock.json
     ];
-  };
-
-  # Wrap in a nvim/ subdirectory so we can point XDG_CONFIG_HOME at the
-  # parent and Neovim finds the config at $XDG_CONFIG_HOME/nvim/init.lua.
-  configDir = stdenvNoCC.mkDerivation {
-    name = "nvim-config";
-    dontUnpack = true;
-    installPhase = ''
-      mkdir -p $out/nvim
-      cp -r ${configSrc}/* $out/nvim/
-    '';
   };
 
   dataDir = stdenvNoCC.mkDerivation {
@@ -113,23 +102,17 @@ let
     '';
   };
 
+  # The config directory is appended (not prepended) to the runtime path so
+  # that its plugin/ files are sourced after all other plugins.
+  configRtpCmd = lib.optionalString includeConfig " --cmd 'set rtp+=${configDir}'";
+
   wrappedNeovim = lib.getExe (writeShellApplication {
     name = "nvim-wrapped";
-    text =
-      if includeConfig then
-        ''
-          exec env \
-            XDG_CONFIG_HOME=${configDir} \
-            ${lib.getExe neovim} \
-              --cmd 'set rtp^=${dataDir}/nvim/site' \
-              "$@"
-        ''
-      else
-        ''
-          exec ${lib.getExe neovim} \
-            --cmd 'set rtp^=${dataDir}/nvim/site' \
-            "$@"
-        '';
+    text = ''
+      exec ${lib.getExe neovim} \
+        --cmd 'set rtp^=${dataDir}/nvim/site'${configRtpCmd} \
+        "$@"
+    '';
   });
 in
 writeShellApplication {
