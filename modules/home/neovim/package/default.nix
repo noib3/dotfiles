@@ -59,6 +59,8 @@ let
     inputs.lsp-progress-nvim
     inputs.neotab-nvim
     inputs.nvim-lastplace
+    inputs.nvim-surround
+    inputs.conform-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.

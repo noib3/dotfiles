@@ -51,6 +51,10 @@
       url = "github:kylechui/nvim-surround";
       flake = false;
     };
+    conform-nvim = {
+      url = "github:stevearc/conform.nvim";
+      flake = false;
+    };
   };
 
   outputs =
