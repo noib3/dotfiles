@@ -6,15 +6,12 @@
 {
   perSystem =
     { pkgs, system, ... }:
-    let
-      neovim = inputs.nix-community-neovim.packages.${system}.default;
-    in
     {
       checks.neovim-config =
         pkgs.runCommand "check-neovim-config"
           {
             nativeBuildInputs = [ pkgs.lua-language-server ];
-            env.VIMRUNTIME = "${neovim}/share/nvim/runtime";
+            env.VIMRUNTIME = inputs.neovim.vimRuntime.${system};
           }
           ''
             lua-language-server \

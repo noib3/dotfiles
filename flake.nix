@@ -21,12 +21,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim = {
+      url = "path:./modules/home/neovim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-src = {
       url = "github:neovim/neovim";
       flake = false;
-    };
-    nix-community-neovim = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      # inputs.neovim-src.follows = "neovim";
     };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
