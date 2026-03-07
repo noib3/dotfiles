@@ -19,7 +19,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [
-      config.modules.neovim.package
+      config.neovim.package
     ];
 
     home.sessionVariables = {
@@ -27,13 +27,15 @@ in
       MANPAGER = "nvim +Man! -";
     };
 
-    modules.neovim = {
+    neovim = {
       includeConfig = false;
       palette = config.modules.colorscheme.palette;
     };
 
     xdg.configFile.nvim = {
-      source = config.lib.file.mkOutOfStoreSymlink (config.lib.mine.mkAbsolute ./.);
+      source = config.lib.file.mkOutOfStoreSymlink (
+        config.lib.mine.mkAbsolute ./config
+      );
     };
   };
 }

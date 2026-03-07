@@ -9,16 +9,16 @@ inputs:
 
 with lib;
 let
-  cfg = config.modules.neovim;
+  cfg = config.neovim;
 in
 {
-  options.modules.neovim = {
+  options.neovim = {
     package = mkOption {
       type = types.package;
       description = "The fully configured Neovim package";
       readOnly = true;
       default = pkgs.callPackage ./package.nix {
-        neovim = nix-community-neovim.packages.${pkgs.stdenv.system}.default;
+        inherit inputs;
         inherit (cfg) palette includeConfig;
         extraTreesitterParsers = cfg.tree-sitter-parsers;
         extraTreesitterQueries = cfg.tree-sitter-queries;

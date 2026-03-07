@@ -63,18 +63,6 @@ let
   allParsers = defaultParsers ++ extraTreesitterParsers;
   allQueries = defaultQueries ++ extraTreesitterQueries;
 
-  configDir = lib.fileset.toSource {
-    root = ./.;
-    fileset = lib.fileset.unions [
-      ./plugin
-      ./filetype.lua
-      ./lua
-      ./after
-      ./lsp
-      ./lazy-lock.json
-    ];
-  };
-
   dataDir = stdenvNoCC.mkDerivation {
     name = "nvim-data";
     dontUnpack = true;
@@ -104,7 +92,7 @@ let
 
   # The config directory is appended (not prepended) to the runtime path so
   # that its plugin/ files are sourced after all other plugins.
-  configRtpCmd = lib.optionalString includeConfig " --cmd 'set rtp+=${configDir}'";
+  configRtpCmd = lib.optionalString includeConfig " --cmd 'set rtp+=${./config}'";
 
   wrappedNeovim = lib.getExe (writeShellApplication {
     name = "nvim-wrapped";
