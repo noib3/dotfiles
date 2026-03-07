@@ -152,7 +152,9 @@
         "aarch64-darwin"
       ];
 
-      eachSystem = fun: nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
+      eachSystem =
+        fun:
+        nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
     in
     {
       homeManagerModules.default = import ./module.nix inputs;
