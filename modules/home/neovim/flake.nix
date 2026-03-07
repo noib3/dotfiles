@@ -142,6 +142,9 @@
       url = "github:noib3/colorful-menu.nvim/noib3";
       flake = false;
     };
+    nomad = {
+      url = "github:nomad/nomad";
+    };
   };
 
   outputs =
@@ -153,9 +156,7 @@
         "aarch64-darwin"
       ];
 
-      eachSystem =
-        fun:
-        nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
+      eachSystem = fun: nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
     in
     {
       homeManagerModules.default = import ./module.nix inputs;
@@ -191,9 +192,11 @@
   nixConfig = {
     extra-substituters = [
       "https://nix-community.cachix.org"
+      "https://nomad.cachix.org"
     ];
     extra-trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "nomad.cachix.org-1:jQ4al6yxQyvUBB7YJVJbMbc9rASokqamqvPhBUrVjww="
     ];
   };
 }

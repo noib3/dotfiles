@@ -83,6 +83,7 @@ let
     inputs.blink-cmp.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
     inputs.colorful-menu-nvim
+    inputs.nomad.packages.${stdenvNoCC.system}.neovim-nightly
   ];
 
   # Each of these is a valid Neovim rtp entry.
