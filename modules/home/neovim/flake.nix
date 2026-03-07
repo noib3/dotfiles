@@ -59,6 +59,10 @@
       url = "github:smoka7/hop.nvim";
       flake = false;
     };
+    nvim-colorizer-lua = {
+      url = "github:NiklasV1/nvim-colorizer.lua";
+      flake = false;
+    };
   };
 
   outputs =
