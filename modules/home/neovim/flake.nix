@@ -111,6 +111,18 @@
       url = "github:mrcjkb/rustaceanvim";
       flake = false;
     };
+    nvim-treesitter = {
+      url = "github:nvim-treesitter/nvim-treesitter/main";
+      flake = false;
+    };
+    treesitter-modules-nvim = {
+      url = "github:MeanderingProgrammer/treesitter-modules.nvim";
+      flake = false;
+    };
+    nvim-treesitter-endwise = {
+      url = "github:RRethy/nvim-treesitter-endwise";
+      flake = false;
+    };
   };
 
   outputs =

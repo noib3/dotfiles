@@ -75,6 +75,9 @@ let
     inputs.plenary-nvim
     inputs.nvim-nio
     inputs.rustaceanvim
+    inputs.nvim-treesitter
+    inputs.treesitter-modules-nvim
+    inputs.nvim-treesitter-endwise
   ];
 
   # Each of these is a valid Neovim rtp entry.
