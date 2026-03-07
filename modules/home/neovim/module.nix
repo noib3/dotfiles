@@ -20,8 +20,6 @@ in
       default = pkgs.callPackage ./package {
         inherit inputs;
         inherit (cfg) palette includeConfig;
-        extraTreesitterParsers = cfg.tree-sitter-parsers;
-        extraTreesitterQueries = cfg.tree-sitter-queries;
       };
     };
 
@@ -39,18 +37,6 @@ in
       type = types.attrs;
       default = import ./palettes/gruvbox.nix;
       description = "The colorscheme palette to generate into Lua";
-    };
-
-    tree-sitter-parsers = mkOption {
-      type = types.listOf types.package;
-      default = [ ];
-      description = "Tree-sitter parser packages to install";
-    };
-
-    tree-sitter-queries = mkOption {
-      type = types.listOf types.package;
-      default = [ ];
-      description = "Tree-sitter query packages to install";
     };
   };
 }

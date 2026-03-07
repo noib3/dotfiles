@@ -42,10 +42,5 @@
           ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix -- $argv
       end
     '';
-
-    modules.neovim = {
-      tree-sitter-parsers = [ pkgs.vimPlugins.nvim-treesitter-parsers.nix ];
-      tree-sitter-queries = [ pkgs.vimPlugins.nvim-treesitter.queries.nix ];
-    };
   };
 }

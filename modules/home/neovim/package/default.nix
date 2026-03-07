@@ -1,14 +1,12 @@
 {
+  inputs,
   lib,
   stdenvNoCC,
+  vimPlugins,
   writeShellApplication,
   writeTextDir,
-  inputs,
-  vimPlugins,
-  palette ? import ../palettes/gruvbox.nix,
   includeConfig ? true,
-  extraTreesitterParsers ? [ ],
-  extraTreesitterQueries ? [ ],
+  palette ? import ../palettes/gruvbox.nix,
 }:
 
 let
@@ -25,32 +23,34 @@ let
     else
       toString value;
 
-  defaultParsers = with vimPlugins.nvim-treesitter-parsers; [
+  treeSitterParsers = with vimPlugins.nvim-treesitter-parsers; [
     c
     cpp
     lua
     markdown
     markdown_inline
+    nix
+    rust
     toml
     vimdoc
   ];
 
-  defaultQueries = with vimPlugins.nvim-treesitter.queries; [
+  treeSitterQueries = with vimPlugins.nvim-treesitter.queries; [
     c
     cpp
     lua
     markdown
     markdown_inline
+    nix
+    rust
     toml
     vimdoc
   ];
 
   # Each of these is a valid Neovim rtp entry.
   plugins =
-    defaultParsers
-    ++ defaultQueries
-    ++ extraTreesitterParsers
-    ++ extraTreesitterQueries
+    treeSitterParsers
+    ++ treeSitterQueries
     ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ]
     ++ lib.optionals includeConfig [ ./config ];
 
