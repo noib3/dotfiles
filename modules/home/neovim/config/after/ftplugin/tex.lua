@@ -19,7 +19,7 @@ vim.keymap.set(
 
 vim.keymap.set(
   "n",
-  "<Leader>lv",
+  ",lv",
   "<Cmd>silent call v:lua.open_tex_pdf()<CR>",
   { buffer = true, silent = true }
 )
