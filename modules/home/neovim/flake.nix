@@ -8,7 +8,7 @@
   };
 
   outputs =
-    inputs:
+    inputs@{ nixpkgs, nix-community-neovim, ... }:
     let
       systems = [
         "x86_64-linux"
@@ -17,10 +17,8 @@
       ];
 
       eachSystem =
-        f:
-        inputs.nixpkgs.lib.genAttrs systems (
-          system: f inputs.nixpkgs.legacyPackages.${system}
-        );
+        fun:
+        nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
     in
     {
       homeManagerModules.default = import ./module.nix inputs;
@@ -29,18 +27,28 @@
         default = pkgs.callPackage ./package { inherit inputs; };
       });
 
+      checks = eachSystem (pkgs: {
+        default =
+          pkgs.runCommand "check-config"
+            {
+              env.VIMRUNTIME = "${
+                nix-community-neovim.packages.${pkgs.stdenv.system}.default
+              }/share/nvim/runtime";
+            }
+            ''
+              ${pkgs.lib.getExe pkgs.lua-language-server} \
+                --check ${./config} \
+                --logpath="$TMPDIR" \
+                --metapath="$TMPDIR/meta" \
+                2>&1 | tee "$out"
+            '';
+      });
+
       devShells = eachSystem (pkgs: {
         develop-neovim = pkgs.mkShell {
           name = "develop-neovim";
         };
       });
-
-      vimRuntime = eachSystem (
-        pkgs:
-        "${
-          inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default
-        }/share/nvim/runtime"
-      );
     };
 
   nixConfig = {
