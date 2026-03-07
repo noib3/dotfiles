@@ -48,7 +48,7 @@ let
   ];
 
   # Vim plugins added to the rtp.
-  vimPlugins = [
+  nixPlugins = [
     inputs.bufdelete-nvim
     inputs.nvim-lspconfig
     inputs.nvim-ts-context-commentstring
@@ -88,7 +88,7 @@ let
     # matching Neovim's default behavior of placing `stdpath('config')` at the
     # top of the rtp.
     lib.optionals includeConfig [ ../config ]
-    ++ vimPlugins
+    ++ nixPlugins
     ++ treeSitterParsers
     ++ treeSitterQueries
     ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
