@@ -71,6 +71,10 @@
       url = "github:nvim-tree/nvim-web-devicons";
       flake = false;
     };
+    fzf-lua = {
+      url = "github:ibhagwan/fzf-lua";
+      flake = false;
+    };
   };
 
   outputs =
