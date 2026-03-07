@@ -52,7 +52,7 @@ let
     # The config directory is first so that its `lua/` modules take priority,
     # matching Neovim's default behavior of placing `stdpath('config')` at the
     # top of the rtp.
-    lib.optionals includeConfig [ ./config ]
+    lib.optionals includeConfig [ ../config ]
     ++ treeSitterParsers
     ++ treeSitterQueries
     ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
@@ -63,7 +63,7 @@ let
     name = "nvim-with-plugins";
     text = ''
       exec ${lib.getExe neovimOrig} \
-        ${lib.optionalString includeConfig "-u ${./config/init.lua}"} \
+        ${lib.optionalString includeConfig "-u ${../config/init.lua}"} \
         --cmd 'set rtp^=${lib.concatStringsSep "," plugins}' \
         "$@"
     '';
