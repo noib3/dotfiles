@@ -64,7 +64,7 @@ let
     text = ''
       exec ${lib.getExe neovimOrig} \
         ${lib.optionalString includeConfig "-u ${./config/init.lua}"} \
-        --cmd 'set rtp^=${lib.concatStringsSep "," (map toString plugins)}' \
+        --cmd 'set rtp^=${lib.concatStringsSep "," plugins}' \
         "$@"
     '';
   };
