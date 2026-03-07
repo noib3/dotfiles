@@ -1,6 +1,1 @@
-return {
-  {
-    "ethanholz/nvim-lastplace",
-    opts = {},
-  },
-}
+require("nvim-lastplace").setup({})

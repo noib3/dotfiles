@@ -43,6 +43,10 @@
       url = "github:kawre/neotab.nvim";
       flake = false;
     };
+    nvim-lastplace = {
+      url = "github:ethanholz/nvim-lastplace";
+      flake = false;
+    };
   };
 
   outputs =
