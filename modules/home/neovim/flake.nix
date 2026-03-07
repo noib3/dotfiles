@@ -127,6 +127,10 @@
       url = "github:ellisonleao/gruvbox.nvim";
       flake = false;
     };
+    tokyonight-nvim = {
+      url = "github:folke/tokyonight.nvim";
+      flake = false;
+    };
   };
 
   outputs =
