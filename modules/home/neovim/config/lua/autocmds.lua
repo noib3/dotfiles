@@ -155,7 +155,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   group = create_augroup("noib3/set-terminal-colors"),
   desc = "Sets terminal colors from the colorscheme palette",
   callback = function()
-    local palette = require("generated.palette")
+    local palette = require("palette")
     -- Normal colors.
     vim.g.terminal_color_0 = palette.normal.black
     vim.g.terminal_color_1 = palette.normal.red

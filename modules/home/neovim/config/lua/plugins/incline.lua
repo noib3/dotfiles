@@ -7,7 +7,7 @@ return {
     config = function()
       local incline = require("incline")
       local devicons = require("nvim-web-devicons")
-      local palette = require("generated.palette")
+      local palette = require("palette")
 
       local bufname = function(bufnr)
         local bufpath = vim.api.nvim_buf_get_name(bufnr)

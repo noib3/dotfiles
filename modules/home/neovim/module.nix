@@ -17,7 +17,7 @@ in
       type = types.package;
       description = "The fully configured Neovim package";
       readOnly = true;
-      default = pkgs.callPackage ./package.nix {
+      default = pkgs.callPackage ./package {
         inherit inputs;
         inherit (cfg) palette includeConfig;
         extraTreesitterParsers = cfg.tree-sitter-parsers;
