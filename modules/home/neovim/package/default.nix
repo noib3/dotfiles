@@ -78,6 +78,7 @@ let
     inputs.nvim-treesitter
     inputs.treesitter-modules-nvim
     inputs.nvim-treesitter-endwise
+    inputs.gruvbox-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.

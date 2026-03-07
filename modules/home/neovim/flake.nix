@@ -123,6 +123,10 @@
       url = "github:RRethy/nvim-treesitter-endwise";
       flake = false;
     };
+    gruvbox-nvim = {
+      url = "github:ellisonleao/gruvbox.nvim";
+      flake = false;
+    };
   };
 
   outputs =
