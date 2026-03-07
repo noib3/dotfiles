@@ -35,6 +35,10 @@
       url = "github:smjonas/inc-rename.nvim";
       flake = false;
     };
+    lsp-progress-nvim = {
+      url = "github:linrongbin16/lsp-progress.nvim";
+      flake = false;
+    };
   };
 
   outputs =
