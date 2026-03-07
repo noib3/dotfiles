@@ -95,6 +95,22 @@
       url = "github:windwp/nvim-autopairs";
       flake = false;
     };
+    neotest = {
+      url = "github:nvim-neotest/neotest";
+      flake = false;
+    };
+    plenary-nvim = {
+      url = "github:nvim-lua/plenary.nvim";
+      flake = false;
+    };
+    nvim-nio = {
+      url = "github:nvim-neotest/nvim-nio";
+      flake = false;
+    };
+    rustaceanvim = {
+      url = "github:mrcjkb/rustaceanvim";
+      flake = false;
+    };
   };
 
   outputs =

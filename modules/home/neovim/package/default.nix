@@ -71,6 +71,10 @@ let
     inputs.incline-nvim
     inputs.lualine-nvim
     inputs.nvim-autopairs
+    inputs.neotest
+    inputs.plenary-nvim
+    inputs.nvim-nio
+    inputs.rustaceanvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
