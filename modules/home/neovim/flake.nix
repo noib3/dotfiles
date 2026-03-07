@@ -131,6 +131,17 @@
       url = "github:folke/tokyonight.nvim";
       flake = false;
     };
+    blink-cmp = {
+      url = "github:Saghen/blink.cmp";
+    };
+    blink-emoji-nvim = {
+      url = "github:moyiz/blink-emoji.nvim";
+      flake = false;
+    };
+    colorful-menu-nvim = {
+      url = "github:noib3/colorful-menu.nvim/noib3";
+      flake = false;
+    };
   };
 
   outputs =

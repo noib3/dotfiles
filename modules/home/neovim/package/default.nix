@@ -80,6 +80,9 @@ let
     inputs.nvim-treesitter-endwise
     inputs.gruvbox-nvim
     inputs.tokyonight-nvim
+    inputs.blink-cmp.packages.${stdenvNoCC.system}.default
+    inputs.blink-emoji-nvim
+    inputs.colorful-menu-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
