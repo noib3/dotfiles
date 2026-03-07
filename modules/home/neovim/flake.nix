@@ -63,6 +63,10 @@
       url = "github:NiklasV1/nvim-colorizer.lua";
       flake = false;
     };
+    nvim-notify = {
+      url = "github:rcarriga/nvim-notify";
+      flake = false;
+    };
   };
 
   outputs =
