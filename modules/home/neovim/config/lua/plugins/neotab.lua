@@ -1,8 +1,3 @@
-return {
-  {
-    "kawre/neotab.nvim",
-    opts = {
-      act_as_tab = true,
-    },
-  },
-}
+require("neotab").setup({
+  act_as_tab = true,
+})

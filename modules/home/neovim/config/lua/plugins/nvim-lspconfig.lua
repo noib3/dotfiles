@@ -1,5 +1,0 @@
-return {
-  {
-    "neovim/nvim-lspconfig",
-  },
-}

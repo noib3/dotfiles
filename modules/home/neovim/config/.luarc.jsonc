@@ -3,12 +3,7 @@
   "diagnostics": {
     "disable": [
       "codestyle-check",
-      "redefined-local",
-      // Plugins are installed by Lazy at runtime, so their type definitions
-      // aren't available to lua_ls during static analysis.
-      // TODO: remove once we switch from Lazy to Nix for plugin management.
-      "undefined-doc-name",
-      "undefined-field"
+      "redefined-local"
     ],
     "globals": ["vim"],
     "libraryFiles": "Disable"
@@ -19,6 +14,6 @@
   "workspace": {
     "checkThirdParty": false,
     "ignoreDir": [".git"],
-    "library": ["$VIMRUNTIME/lua"]
+    "library": ["$VIMRUNTIME/lua", "$NVIM_PLUGINS"]
   }
 }

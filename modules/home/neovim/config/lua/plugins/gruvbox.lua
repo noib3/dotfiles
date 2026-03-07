@@ -1,3 +1,5 @@
+if vim.env.COLORSCHEME ~= "gruvbox" then return end
+
 -- https://github.com/sainnhe/gruvbox-material (soft variant).
 local overrides = {
   dark = {
@@ -222,6 +224,7 @@ local overrides = {
 
 ---@return GruvboxConfig
 local config = function()
+  ---@diagnostic disable-next-line: undefined-field
   local overrides = vim.opt.background:get() == "dark" and overrides.dark
     or overrides.light
 
@@ -232,24 +235,16 @@ local config = function()
   }
 end
 
-return {
-  {
-    "ellisonleao/gruvbox.nvim",
-    cond = vim.env.COLORSCHEME == "gruvbox",
-    config = function()
-      local gruvbox = require("gruvbox")
+local gruvbox = require("gruvbox")
 
-      vim.api.nvim_create_autocmd("OptionSet", {
-        pattern = "background",
-        callback = function()
-          if vim.g.colors_name ~= "gruvbox" then return end
-          gruvbox.setup(config())
-          vim.cmd.colorscheme("gruvbox")
-        end,
-      })
+vim.api.nvim_create_autocmd("OptionSet", {
+  pattern = "background",
+  callback = function()
+    if vim.g.colors_name ~= "gruvbox" then return end
+    gruvbox.setup(config())
+    vim.cmd.colorscheme("gruvbox")
+  end,
+})
 
-      gruvbox.setup(config())
-      vim.cmd.colorscheme("gruvbox")
-    end,
-  },
-}
+gruvbox.setup(config())
+vim.cmd.colorscheme("gruvbox")

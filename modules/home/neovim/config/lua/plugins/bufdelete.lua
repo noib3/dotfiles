@@ -1,5 +1,0 @@
-return {
-  {
-    "famiu/bufdelete.nvim",
-  },
-}
