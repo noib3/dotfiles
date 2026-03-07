@@ -70,6 +70,7 @@ let
     inputs.trouble-nvim
     inputs.incline-nvim
     inputs.lualine-nvim
+    inputs.nvim-autopairs
   ];
 
   # Each of these is a valid Neovim rtp entry.

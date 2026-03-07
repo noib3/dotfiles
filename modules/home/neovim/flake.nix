@@ -91,6 +91,10 @@
       url = "github:nvim-lualine/lualine.nvim";
       flake = false;
     };
+    nvim-autopairs = {
+      url = "github:windwp/nvim-autopairs";
+      flake = false;
+    };
   };
 
   outputs =
