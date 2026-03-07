@@ -5,6 +5,12 @@
     neovim-src.follows = "nix-community-neovim/neovim-src";
     nix-community-neovim.url = "github:nix-community/neovim-nightly-overlay";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Plugins.
+    bufdelete-nvim = {
+      url = "github:famiu/bufdelete.nvim";
+      flake = false;
+    };
   };
 
   outputs =
@@ -16,9 +22,7 @@
         "aarch64-darwin"
       ];
 
-      eachSystem =
-        fun:
-        nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
+      eachSystem = fun: nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
     in
     {
       homeManagerModules.default = import ./module.nix inputs;

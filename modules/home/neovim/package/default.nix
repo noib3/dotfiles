@@ -47,12 +47,18 @@ let
     vimdoc
   ];
 
+  # Vim plugins added to the rtp.
+  vimPlugins = [
+    inputs.bufdelete-nvim
+  ];
+
   # Each of these is a valid Neovim rtp entry.
   plugins =
     # The config directory is first so that its `lua/` modules take priority,
     # matching Neovim's default behavior of placing `stdpath('config')` at the
     # top of the rtp.
     lib.optionals includeConfig [ ../config ]
+    ++ vimPlugins
     ++ treeSitterParsers
     ++ treeSitterQueries
     ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
