@@ -727,6 +727,7 @@
         "nvim-autopairs": "nvim-autopairs",
         "nvim-colorizer-lua": "nvim-colorizer-lua",
         "nvim-lastplace": "nvim-lastplace",
+        "nvim-lint": "nvim-lint",
         "nvim-lspconfig": "nvim-lspconfig",
         "nvim-nio": "nvim-nio",
         "nvim-notify": "nvim-notify",
@@ -1164,6 +1165,22 @@
       "original": {
         "owner": "ethanholz",
         "repo": "nvim-lastplace",
+        "type": "github"
+      }
+    },
+    "nvim-lint": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771878210,
+        "narHash": "sha256-WotyvU8lqfjN3PVXVpDQm7HMahmwYRYgTN0+WsJwyWQ=",
+        "owner": "mfussenegger",
+        "repo": "nvim-lint",
+        "rev": "606b823a57b027502a9ae00978ebf4f5d5158098",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mfussenegger",
+        "repo": "nvim-lint",
         "type": "github"
       }
     },

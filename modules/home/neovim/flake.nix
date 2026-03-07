@@ -89,6 +89,10 @@
       url = "github:ethanholz/nvim-lastplace";
       flake = false;
     };
+    nvim-lint = {
+      url = "github:mfussenegger/nvim-lint";
+      flake = false;
+    };
     nvim-lspconfig = {
       url = "github:neovim/nvim-lspconfig";
       flake = false;

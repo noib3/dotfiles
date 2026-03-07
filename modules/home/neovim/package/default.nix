@@ -72,6 +72,7 @@ let
     inputs.nvim-autopairs
     inputs.nvim-colorizer-lua
     inputs.nvim-lastplace
+    inputs.nvim-lint
     inputs.nvim-lspconfig
     inputs.nvim-nio
     inputs.nvim-notify
