@@ -53,6 +53,7 @@ let
     inputs.nvim-lspconfig
     inputs.nvim-ts-context-commentstring
     inputs.Comment-nvim
+    inputs.crates-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.

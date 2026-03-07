@@ -23,6 +23,10 @@
       url = "github:numToStr/Comment.nvim";
       flake = false;
     };
+    crates-nvim = {
+      url = "github:saecki/crates.nvim";
+      flake = false;
+    };
   };
 
   outputs =
