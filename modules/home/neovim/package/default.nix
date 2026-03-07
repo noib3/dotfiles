@@ -68,6 +68,7 @@ let
     inputs.fzf-lua
     inputs.toggleterm-nvim
     inputs.trouble-nvim
+    inputs.incline-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.

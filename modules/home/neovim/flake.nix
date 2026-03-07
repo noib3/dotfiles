@@ -83,6 +83,10 @@
       url = "github:folke/trouble.nvim";
       flake = false;
     };
+    incline-nvim = {
+      url = "github:b0o/incline.nvim";
+      flake = false;
+    };
   };
 
   outputs =
