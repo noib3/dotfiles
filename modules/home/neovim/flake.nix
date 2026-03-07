@@ -28,6 +28,10 @@
       url = "github:stevearc/conform.nvim";
       flake = false;
     };
+    copilot-lua = {
+      url = "github:zbirenbaum/copilot.lua";
+      flake = false;
+    };
     crates-nvim = {
       url = "github:saecki/crates.nvim";
       flake = false;

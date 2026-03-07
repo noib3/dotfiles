@@ -101,6 +101,22 @@
         "type": "github"
       }
     },
+    "copilot-lua": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772756076,
+        "narHash": "sha256-ix+dR/sho4a1f4EliUMWkB396NbPLb7C9t+jN8fiviA=",
+        "owner": "zbirenbaum",
+        "repo": "copilot.lua",
+        "rev": "437b18f7db78a0ec2bea05dde37791019913e547",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zbirenbaum",
+        "repo": "copilot.lua",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1759893430,
@@ -903,6 +919,7 @@
         "colorful-menu-nvim": "colorful-menu-nvim",
         "comment-nvim": "comment-nvim",
         "conform-nvim": "conform-nvim",
+        "copilot-lua": "copilot-lua",
         "crates-nvim": "crates-nvim",
         "fzf-lua": "fzf-lua",
         "gitsigns-nvim": "gitsigns-nvim",

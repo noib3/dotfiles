@@ -56,6 +56,7 @@ let
     inputs.colorful-menu-nvim
     inputs.comment-nvim
     inputs.conform-nvim
+    inputs.copilot-lua
     inputs.crates-nvim
     inputs.fzf-lua
     inputs.gitsigns-nvim
