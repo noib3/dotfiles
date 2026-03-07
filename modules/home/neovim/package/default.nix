@@ -5,7 +5,7 @@
   writeTextDir,
   inputs,
   vimPlugins,
-  palette ? import ./palettes/gruvbox.nix,
+  palette ? import ../palettes/gruvbox.nix,
   includeConfig ? true,
   extraTreesitterParsers ? [ ],
   extraTreesitterQueries ? [ ],

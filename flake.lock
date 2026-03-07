@@ -230,11 +230,11 @@
         ]
       },
       "locked": {
-        "path": "./modules/home/neovim",
+        "path": "modules/home/neovim",
         "type": "path"
       },
       "original": {
-        "path": "./modules/home/neovim",
+        "path": "modules/home/neovim",
         "type": "path"
       },
       "parent": []
@@ -242,11 +242,11 @@
     "neovim-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1772854115,
-        "narHash": "sha256-NKogMc0GhMPmo5z7XshYsP7q+2shc2uVIi1+nX77SgQ=",
+        "lastModified": 1772822087,
+        "narHash": "sha256-uaecQjyj20yqMHcNNAnJzTsgi3rjDfx2mh9bD9TNPks=",
         "owner": "neovim",
         "repo": "neovim",
-        "rev": "f1c82be1a1af3a0513f0562dd2d9024304aef27d",
+        "rev": "34a59e30dbe23bab59bc6b39a4b235c5b2862e60",
         "type": "github"
       },
       "original": {
