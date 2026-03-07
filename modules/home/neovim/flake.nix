@@ -19,12 +19,16 @@
       url = "github:JoosepAlviste/nvim-ts-context-commentstring";
       flake = false;
     };
-    Comment-nvim = {
+    comment-nvim = {
       url = "github:numToStr/Comment.nvim";
       flake = false;
     };
     crates-nvim = {
       url = "github:saecki/crates.nvim";
+      flake = false;
+    };
+    gitsigns-nvim = {
+      url = "github:lewis6991/gitsigns.nvim";
       flake = false;
     };
   };
