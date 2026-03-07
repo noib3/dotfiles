@@ -29,9 +29,9 @@ in
       type = types.bool;
       default = true;
       description = ''
-        Whether to bundle the Neovim configuration into the package's
-        runtime path. Set to false when providing the configuration
-        externally (e.g. via a symlink to ~/.config/nvim).
+        Whether to bundle the Neovim configuration into the package's runtime
+        path. Set to false when providing the configuration externally (e.g. via
+        a symlink to ~/.config/nvim).
       '';
     };
 
