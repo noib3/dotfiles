@@ -51,12 +51,8 @@ let
     ++ defaultQueries
     ++ extraTreesitterParsers
     ++ extraTreesitterQueries
-    ++ [
-      (writeTextDir "lua/palette.lua" "return ${toLua palette}")
-    ]
-    ++ lib.optionals includeConfig [
-      ./config
-    ];
+    ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ]
+    ++ lib.optionals includeConfig [ ./config ];
 
   neovimOrig = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
 
@@ -64,7 +60,7 @@ let
     name = "nvim-with-plugins";
     text = ''
       exec ${lib.getExe neovimOrig} \
-        ${lib.concatMapStringsSep " " (p: "--cmd 'set rtp^=${p}'") plugins} \
+        --cmd 'set rtp^=${lib.concatStringsSep "," (map toString plugins)}' \
         "$@"
     '';
   };
