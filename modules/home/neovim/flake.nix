@@ -47,6 +47,10 @@
       url = "github:ethanholz/nvim-lastplace";
       flake = false;
     };
+    nvim-surround = {
+      url = "github:kylechui/nvim-surround";
+      flake = false;
+    };
   };
 
   outputs =
