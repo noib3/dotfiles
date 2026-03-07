@@ -23,6 +23,7 @@
     neovim = {
       url = "path:./modules/home/neovim";
       inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.neovim-src.follows = "neovim";
     };
     neovim-src = {
       url = "github:neovim/neovim";

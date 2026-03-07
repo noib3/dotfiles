@@ -48,8 +48,8 @@ let
   # Each of these is a valid Neovim rtp entry.
   plugins =
     defaultParsers
-    ++ extraTreesitterParsers
     ++ defaultQueries
+    ++ extraTreesitterParsers
     ++ extraTreesitterQueries
     ++ [
       (writeTextDir "lua/palette.lua" "return ${toLua palette}")
@@ -58,20 +58,19 @@ let
       ./config
     ];
 
-  wrappedNeovim = writeShellApplication {
-    name = "nvim-wrapped";
-    text =
-      let
-        nvim = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
-        setRtp = lib.concatMapStringsSep " " (plugin: "--cmd 'set rtp^=${plugin}'") plugins;
-      in
-      ''
-        exec ${lib.getExe nvim} ${setRtp} "$@"
-      '';
+  neovimOrig = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
+
+  neovimWithPlugins = writeShellApplication {
+    name = "nvim-with-plugins";
+    text = ''
+      exec ${lib.getExe neovimOrig} \
+        ${lib.concatMapStringsSep " " (p: "--cmd 'set rtp^=${p}'") plugins} \
+        "$@"
+    '';
   };
 in
 writeShellApplication {
   name = "nvim";
-  runtimeEnv.NVIM_EXE = lib.getExe wrappedNeovim;
+  runtimeEnv.NVIM_EXE = lib.getExe neovimWithPlugins;
   text = builtins.readFile ./nvim.sh;
 }

@@ -17,7 +17,10 @@
       ];
 
       eachSystem =
-        f: inputs.nixpkgs.lib.genAttrs systems (system: f inputs.nixpkgs.legacyPackages.${system});
+        f:
+        inputs.nixpkgs.lib.genAttrs systems (
+          system: f inputs.nixpkgs.legacyPackages.${system}
+        );
     in
     {
       homeManagerModules.default = import ./module.nix inputs;
@@ -33,7 +36,10 @@
       });
 
       vimRuntime = eachSystem (
-        pkgs: "${inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default}/share/nvim/runtime"
+        pkgs:
+        "${
+          inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default
+        }/share/nvim/runtime"
       );
     };
 
