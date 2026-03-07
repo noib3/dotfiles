@@ -55,6 +55,10 @@
       url = "github:stevearc/conform.nvim";
       flake = false;
     };
+    hop-nvim = {
+      url = "github:smoka7/hop.nvim";
+      flake = false;
+    };
   };
 
   outputs =

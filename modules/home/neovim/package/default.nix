@@ -61,6 +61,7 @@ let
     inputs.nvim-lastplace
     inputs.nvim-surround
     inputs.conform-nvim
+    inputs.hop-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
