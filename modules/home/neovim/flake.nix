@@ -19,6 +19,10 @@
       url = "github:JoosepAlviste/nvim-ts-context-commentstring";
       flake = false;
     };
+    Comment-nvim = {
+      url = "github:numToStr/Comment.nvim";
+      flake = false;
+    };
   };
 
   outputs =
