@@ -2,7 +2,7 @@
   lib,
   stdenvNoCC,
   writeShellApplication,
-  neovim,
+  inputs,
   vimPlugins,
   palette ? import ./palettes/gruvbox.nix,
   includeConfig ? true,
@@ -109,7 +109,7 @@ let
   wrappedNeovim = lib.getExe (writeShellApplication {
     name = "nvim-wrapped";
     text = ''
-      exec ${lib.getExe neovim} \
+      exec ${lib.getExe inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default} \
         --cmd 'set rtp^=${dataDir}/nvim/site'${configRtpCmd} \
         "$@"
     '';

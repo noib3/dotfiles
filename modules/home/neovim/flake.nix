@@ -2,47 +2,38 @@
   description = "noib3's Neovim configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix-community-neovim.url = "github:nix-community/neovim-nightly-overlay";
     neovim-src.follows = "nix-community-neovim/neovim-src";
+    nix-community-neovim.url = "github:nix-community/neovim-nightly-overlay";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs =
     inputs:
     let
-      eachSystem = inputs.nixpkgs.lib.genAttrs [
+      systems = [
         "x86_64-linux"
         "aarch64-linux"
         "aarch64-darwin"
       ];
+
+      eachSystem =
+        f: inputs.nixpkgs.lib.genAttrs systems (system: f inputs.nixpkgs.legacyPackages.${system});
     in
     {
       homeManagerModules.default = import ./module.nix inputs;
 
-      packages = eachSystem (
-        system:
-        let
-          pkgs = inputs.nixpkgs.legacyPackages.${system};
-        in
-        {
-          default = pkgs.callPackage ./package.nix { inherit inputs; };
-        }
-      );
+      packages = eachSystem (pkgs: {
+        default = pkgs.callPackage ./package.nix { inherit inputs; };
+      });
 
-      devShells = eachSystem (
-        system:
-        let
-          pkgs = inputs.nixpkgs.legacyPackages.${system};
-        in
-        {
-          develop-neovim = pkgs.mkShell {
-            name = "develop-neovim";
-          };
-        }
-      );
+      devShells = eachSystem (pkgs: {
+        develop-neovim = pkgs.mkShell {
+          name = "develop-neovim";
+        };
+      });
 
       vimRuntime = eachSystem (
-        system: "${inputs.nix-community-neovim.packages.${system}.default}/share/nvim/runtime"
+        pkgs: "${inputs.nix-community-neovim.packages.${pkgs.stdenv.system}.default}/share/nvim/runtime"
       );
     };
 
