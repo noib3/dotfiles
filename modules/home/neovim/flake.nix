@@ -31,6 +31,10 @@
       url = "github:lewis6991/gitsigns.nvim";
       flake = false;
     };
+    inc-rename-nvim = {
+      url = "github:smjonas/inc-rename.nvim";
+      flake = false;
+    };
   };
 
   outputs =

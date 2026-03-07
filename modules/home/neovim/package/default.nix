@@ -55,6 +55,7 @@ let
     inputs.comment-nvim
     inputs.crates-nvim
     inputs.gitsigns-nvim
+    inputs.inc-rename-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
