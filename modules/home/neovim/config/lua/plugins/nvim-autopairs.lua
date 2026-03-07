@@ -1,5 +1,5 @@
-local npairs = require("nvim-autopairs")
 local Rule = require("nvim-autopairs.rule")
+local npairs = require("nvim-autopairs")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
 npairs.setup({})

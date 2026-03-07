@@ -19,24 +19,19 @@ end
 local selection = require("treesitter-modules.lib.selection")
 local initial_cursor = nil
 
-vim.keymap.set(
-  { "n", "x" },
-  "<Tab>",
-  function()
-    local buf = vim.api.nvim_get_current_buf()
-    local lang = get_language(buf)
+vim.keymap.set({ "n", "x" }, "<Tab>", function()
+  local buf = vim.api.nvim_get_current_buf()
+  local lang = get_language(buf)
 
-    if vim.api.nvim_get_mode().mode == "n" or not initial_cursor then
-      initial_cursor = vim.api.nvim_win_get_cursor(0)
-      ---@diagnostic disable-next-line: invisible
-      selection.nodes:clear(buf)
-      selection.init_selection(buf, lang)
-    else
-      selection.node_incremental(buf, lang)
-    end
-  end,
-  { desc = "Start incremental selection or select larger syntax node" }
-)
+  if vim.api.nvim_get_mode().mode == "n" or not initial_cursor then
+    initial_cursor = vim.api.nvim_win_get_cursor(0)
+    ---@diagnostic disable-next-line: invisible
+    selection.nodes:clear(buf)
+    selection.init_selection(buf, lang)
+  else
+    selection.node_incremental(buf, lang)
+  end
+end, { desc = "Start incremental selection or select larger syntax node" })
 
 vim.keymap.set("x", "<S-Tab>", function()
   if not initial_cursor then return end

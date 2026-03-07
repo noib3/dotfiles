@@ -7,9 +7,7 @@ local trouble = require("trouble")
 vim.keymap.set(
   "n",
   "<C-x><C-t>",
-  function()
-    trouble.toggle({ focus = true, mode = "errors_and_warnings" })
-  end
+  function() trouble.toggle({ focus = true, mode = "errors_and_warnings" }) end
 )
 
 vim.keymap.set(

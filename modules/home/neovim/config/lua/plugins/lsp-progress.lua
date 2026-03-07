@@ -17,9 +17,7 @@ require("lsp-progress").setup({
     if has_title and message and #message > 0 then
       -- For rust-analyzer's "Root Scanned" notifications, strip the
       -- path that comes after "<num_scanned>/<num_total>".
-      if title == "Roots Scanned" then
-        message = message:match("^(%d+/%d+)")
-      end
+      if title == "Roots Scanned" then message = message:match("^(%d+/%d+)") end
       table.insert(components, message)
     end
 
@@ -60,10 +58,7 @@ require("lsp-progress").setup({
   format = function(client_messages)
     local lsp_clients = vim.lsp.get_clients({ bufnr = 0 })
     if #lsp_clients == 0 then return "" end
-    table.sort(
-      lsp_clients,
-      function(lhs, rhs) return lhs.name < rhs.name end
-    )
+    table.sort(lsp_clients, function(lhs, rhs) return lhs.name < rhs.name end)
 
     local progress_map = {}
     for _, client_message in ipairs(client_messages) do

@@ -1,6 +1,6 @@
-local utils = require("utils")
 local lsp_progress = require("lsp-progress")
 local lualine = require("lualine")
+local utils = require("utils")
 
 lualine.setup({
   options = {
@@ -56,8 +56,7 @@ lualine.setup({
       {
         "branch",
         color = {
-          fg = vim.opt.background:get() == "dark" and "#928374"
-            or "#7c6f64",
+          fg = vim.opt.background:get() == "dark" and "#928374" or "#7c6f64",
         },
       },
     },

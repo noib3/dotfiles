@@ -1,5 +1,5 @@
-local incline = require("incline")
 local devicons = require("nvim-web-devicons")
+local incline = require("incline")
 local palette = require("palette")
 
 local bufname = function(bufnr)
@@ -27,8 +27,7 @@ end
 
 local dirty_indicator = function(bufnr)
   local is_dirty = vim.bo[bufnr].modified
-  return is_dirty
-      and { "•", guifg = palette.bright.green, gui = "bold" }
+  return is_dirty and { "•", guifg = palette.bright.green, gui = "bold" }
     or ""
 end
 
