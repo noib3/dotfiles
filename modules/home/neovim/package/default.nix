@@ -49,41 +49,41 @@ let
 
   # Vim plugins added to the rtp.
   nixPlugins = [
-    inputs.bufdelete-nvim
-    inputs.nvim-lspconfig
-    inputs.nvim-ts-context-commentstring
-    inputs.comment-nvim
-    inputs.crates-nvim
-    inputs.gitsigns-nvim
-    inputs.inc-rename-nvim
-    inputs.lsp-progress-nvim
-    inputs.neotab-nvim
-    inputs.nvim-lastplace
-    inputs.nvim-surround
-    inputs.conform-nvim
-    inputs.hop-nvim
-    inputs.nvim-colorizer-lua
-    inputs.nvim-notify
-    inputs.nvim-web-devicons
-    inputs.fzf-lua
-    inputs.toggleterm-nvim
-    inputs.trouble-nvim
-    inputs.incline-nvim
-    inputs.lualine-nvim
-    inputs.nvim-autopairs
-    inputs.neotest
-    inputs.plenary-nvim
-    inputs.nvim-nio
-    inputs.rustaceanvim
-    inputs.nvim-treesitter
-    inputs.treesitter-modules-nvim
-    inputs.nvim-treesitter-endwise
-    inputs.gruvbox-nvim
-    inputs.tokyonight-nvim
     inputs.blink-cmp.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
+    inputs.bufdelete-nvim
     inputs.colorful-menu-nvim
+    inputs.comment-nvim
+    inputs.conform-nvim
+    inputs.crates-nvim
+    inputs.fzf-lua
+    inputs.gitsigns-nvim
+    inputs.gruvbox-nvim
+    inputs.hop-nvim
+    inputs.inc-rename-nvim
+    inputs.incline-nvim
+    inputs.lsp-progress-nvim
+    inputs.lualine-nvim
+    inputs.neotab-nvim
+    inputs.neotest
     inputs.nomad.packages.${stdenvNoCC.system}.neovim-nightly
+    inputs.nvim-autopairs
+    inputs.nvim-colorizer-lua
+    inputs.nvim-lastplace
+    inputs.nvim-lspconfig
+    inputs.nvim-nio
+    inputs.nvim-notify
+    inputs.nvim-surround
+    inputs.nvim-treesitter
+    inputs.nvim-treesitter-endwise
+    inputs.nvim-ts-context-commentstring
+    inputs.nvim-web-devicons
+    inputs.plenary-nvim
+    inputs.rustaceanvim
+    inputs.toggleterm-nvim
+    inputs.tokyonight-nvim
+    inputs.treesitter-modules-nvim
+    inputs.trouble-nvim
   ];
 
   # Each of these is a valid Neovim rtp entry.
