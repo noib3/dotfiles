@@ -164,6 +164,7 @@ in
     neovim.enable = true;
     opencode.enable = true;
     proton-drive.enable = isDarwin;
+    ripgrep.enable = true;
     rust.enable = true;
     selfcontrol.enable = isDarwin;
     signal.enable = true;
@@ -182,7 +183,6 @@ in
     home-manager.enable = true;
     inherit (configs)
       qutebrowser
-      ripgrep
       ;
   };
 
