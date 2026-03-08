@@ -153,11 +153,12 @@ in
     git.enable = true;
     gnupg.enable = true;
     hyprland.enable = isLinux;
+    kanshi.enable = isLinux;
     kubectl.enable = true;
     lf.enable = true;
-    macosDefaults.enable = isDarwin;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
+    macosDefaults.enable = isDarwin;
     mpv.enable = isLinux;
     neovim.enable = true;
     opencode.enable = true;
@@ -187,9 +188,6 @@ in
 
   services = {
     mpris-proxy.enable = isLinux;
-    inherit (configs)
-      kanshi
-      ;
   };
 
   systemd.user.startServices = true;
