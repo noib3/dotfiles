@@ -155,6 +155,7 @@ in
     hyprland.enable = isLinux;
     kanshi.enable = isLinux;
     kubectl.enable = true;
+    lazygit.enable = true;
     lf.enable = true;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
@@ -180,7 +181,6 @@ in
   programs = {
     home-manager.enable = true;
     inherit (configs)
-      lazygit
       qutebrowser
       ripgrep
       ;
