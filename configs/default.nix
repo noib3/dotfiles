@@ -6,7 +6,6 @@
 
 {
   bat = import ./bat;
-  dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };
   fzf = import ./fzf { inherit config lib pkgs; };
