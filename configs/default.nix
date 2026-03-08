@@ -9,7 +9,6 @@
   lazygit = import ./lazygit;
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
-  nix-index = import ./nix-index;
   qutebrowser = import ./qutebrowser { inherit config lib pkgs; };
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };

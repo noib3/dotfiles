@@ -42,5 +42,10 @@
           ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix -- $argv
       end
     '';
+
+    programs.nix-index = {
+      enable = true;
+      enableFishIntegration = true;
+    };
   };
 }

@@ -178,7 +178,6 @@ in
     inherit (configs)
       lazygit
       mpv
-      nix-index
       qutebrowser
       ripgrep
       zathura
