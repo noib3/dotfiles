@@ -1,8 +1,5 @@
 local luacheck = require("lint").linters.luacheck
 
--- Don't register the server if luacheck isn't installed.
-if vim.fn.executable(luacheck.cmd) ~= 1 then return end
-
 local methods = vim.lsp.protocol.Methods
 
 --- Converts a list of `vim.Diagnostic`s into LSP-formatted diagnostics.
@@ -102,13 +99,17 @@ handlers[methods.shutdown] = function(_, callback) callback(nil, nil) end
 ---@type vim.lsp.Config
 return {
   filetypes = { "lua" },
-  root_markers = { ".luacheckrc" },
-  workspace_required = true,
+  -- Only activate if luacheck is in $PATH and a .luacheckrc exists in an
+  -- ancestor directory.
+  root_dir = function(bufnr, on_dir)
+    if vim.fn.executable(luacheck.cmd) ~= 1 then return end
+    local root = vim.fs.root(bufnr, ".luacheckrc")
+    if root then on_dir(root) end
+  end,
   --- @param _ vim.lsp.rpc.Dispatchers
   --- @param config vim.lsp.ClientConfig
   cmd = function(_, config)
-    local root_dir =
-      assert(config.root_dir, "non-nil because `workspace_required = true`")
+    local root_dir = assert(config.root_dir)
 
     local handlers = vim.tbl_extend("force", handlers, {
       [methods.textDocument_diagnostic] = function(params, callback)
