@@ -173,6 +173,7 @@ in
     whatsapp.enable = isDarwin;
     wlsunset.enable = isLinux;
     yabai.enable = isDarwin;
+    zathura.enable = isLinux;
   };
 
   programs = {
@@ -181,7 +182,6 @@ in
       lazygit
       qutebrowser
       ripgrep
-      zathura
       ;
   };
 
@@ -199,7 +199,6 @@ in
     mimeApps = {
       enable = isLinux;
       defaultApplications = {
-        "application/pdf" = [ "org.pwmt.zathura.desktop" ];
         "text/html" = [ "qutebrowser.desktop" ];
         "x-scheme-handler/http" = [ "qutebrowser.desktop" ];
         "x-scheme-handler/https" = [ "qutebrowser.desktop" ];

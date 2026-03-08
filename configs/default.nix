@@ -11,5 +11,4 @@
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
   transmission = import ./transmission;
-  zathura = import ./zathura { inherit config pkgs; };
 }
