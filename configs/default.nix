@@ -6,7 +6,6 @@
 
 {
   bat = import ./bat;
-  calcurse = import ./calcurse;
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
   fuzzel = import ./fuzzel { inherit pkgs; };

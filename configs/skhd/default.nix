@@ -17,9 +17,6 @@
 #     alt - return : alacritty --title "floating"
 #     cmd - f : alacritty -e fish -c "lf $HOME/Downloads"
 #     cmd - p : alacritty -e fish -c "ipython --no-confirm-exit"
-#     cmd - a : alacritty -e calcurse \
-#                 -C ${builtins.toString ../calcurse} \
-#                 -D $SYNCDIR/calcurse
 #     cmd - g : alacritty -e btm
 #     cmd - o : $SCRIPTSDIR/fuzzy-opener/fuzzy-opener
 #     ctrl - w : open -na ~/.nix-profile/Applications/Firefox.app
