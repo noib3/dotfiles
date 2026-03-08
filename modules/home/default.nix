@@ -167,7 +167,6 @@ in
     ssh.enable = true;
     starship.enable = true;
     terminfo.enable = true;
-    udiskie.enable = isLinux;
     whatsapp.enable = isDarwin;
     yabai.enable = isDarwin;
   };
