@@ -174,8 +174,8 @@ in
   };
 
   programs = {
+    home-manager.enable = true;
     inherit (configs)
-      home-manager
       lazygit
       lf
       mpv

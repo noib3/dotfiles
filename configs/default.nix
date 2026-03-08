@@ -5,7 +5,6 @@
 }:
 
 {
-  home-manager = import ./home-manager;
   kanshi = import ./kanshi { inherit pkgs; };
   lazygit = import ./lazygit;
   lf = import ./lf { inherit lib pkgs; };
