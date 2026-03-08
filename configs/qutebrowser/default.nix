@@ -11,10 +11,6 @@ let
     builtins.readFile ./scripts/add-torrent.sh
   );
 
-  fill-bitwarden = pkgs.writers.writePython3Bin "fill-bitwarden" {
-    libraries = [ pkgs.python310Packages.tldextract ];
-  } (builtins.readFile ./scripts/fill-bitwarden.py);
-
   homePage = "https://start.duckduckgo.com";
 in
 {
@@ -263,7 +259,6 @@ in
       "<Super-->" = "zoom-out";
       "<Super-0>" = "zoom";
 
-      ",f" = "spawn --userscript ${fill-bitwarden}/bin/fill-bitwarden";
       ",t" = "hint links userscript ${add-torrent}/bin/add-torrent";
 
       "gh" = "open ${homePage}";
