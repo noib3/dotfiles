@@ -5,7 +5,6 @@
 }:
 
 {
-  fzf = import ./fzf { inherit config lib pkgs; };
   home-manager = import ./home-manager;
   kanshi = import ./kanshi { inherit pkgs; };
   lazygit = import ./lazygit;

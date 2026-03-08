@@ -149,6 +149,7 @@ in
     direnv.enable = true;
     fd.enable = true;
     fish.enable = true;
+    fzf.enable = true;
     ghostty.enable = true;
     git.enable = true;
     gnupg.enable = true;
@@ -174,7 +175,6 @@ in
 
   programs = {
     inherit (configs)
-      fzf
       home-manager
       lazygit
       lf
