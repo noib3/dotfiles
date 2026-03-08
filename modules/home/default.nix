@@ -142,7 +142,6 @@ in
 
   modules = {
     bettermouse.enable = isDarwin;
-    bluetooth-autoconnect.enable = isLinux;
     brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;
