@@ -11,6 +11,5 @@
   ripgrep = import ./ripgrep;
   skhd = import ./skhd { inherit pkgs; };
   transmission = import ./transmission;
-  wlsunset = import ./wlsunset { inherit pkgs; };
   zathura = import ./zathura { inherit config pkgs; };
 }

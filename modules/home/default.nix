@@ -171,6 +171,7 @@ in
     starship.enable = true;
     terminfo.enable = true;
     whatsapp.enable = isDarwin;
+    wlsunset.enable = isLinux;
     yabai.enable = isDarwin;
   };
 
@@ -188,7 +189,6 @@ in
     mpris-proxy.enable = isLinux;
     inherit (configs)
       kanshi
-      wlsunset
       ;
   };
 
