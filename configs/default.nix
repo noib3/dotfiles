@@ -17,7 +17,6 @@
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
   nix-index = import ./nix-index;
-  picom = import ./picom;
   polybar = import ./polybar;
   qutebrowser = import ./qutebrowser { inherit config lib pkgs; };
   ripgrep = import ./ripgrep;
