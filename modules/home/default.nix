@@ -158,6 +158,7 @@ in
     macosDefaults.enable = isDarwin;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
+    mpv.enable = isLinux;
     neovim.enable = true;
     opencode.enable = true;
     proton-drive.enable = isDarwin;
@@ -177,7 +178,6 @@ in
     home-manager.enable = true;
     inherit (configs)
       lazygit
-      mpv
       qutebrowser
       ripgrep
       zathura
