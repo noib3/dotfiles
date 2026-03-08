@@ -185,9 +185,9 @@ in
   };
 
   services = {
+    mpris-proxy.enable = isLinux;
     inherit (configs)
       kanshi
-      mpris-proxy
       wlsunset
       ;
   };
