@@ -27,9 +27,6 @@ in
       cursor-click = "pointer";
       override-redirect = true;
 
-      # Let Polybar be displayed under fullscreen windows
-      wm-restack = "bspwm";
-
       font = [
         "${T1.family}:style=${T1.style}:size=${builtins.toString T1.size};${builtins.toString T1.padding-top}"
         "${T2.family}:style=${T2.style}:size=${builtins.toString T2.size};${builtins.toString T2.padding-top}"

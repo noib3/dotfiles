@@ -6,7 +6,6 @@
 
 {
   bat = import ./bat;
-  bspwm = import ./bspwm;
   calcurse = import ./calcurse;
   dunst = import ./dunst;
   fd = import ./fd { inherit lib pkgs; };
