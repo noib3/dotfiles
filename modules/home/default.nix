@@ -147,6 +147,7 @@ in
     claude.enable = true;
     codex.enable = true;
     direnv.enable = true;
+    fd.enable = true;
     fish.enable = true;
     ghostty.enable = true;
     git.enable = true;
@@ -173,7 +174,6 @@ in
 
   programs = {
     inherit (configs)
-      fd
       fzf
       home-manager
       lazygit
