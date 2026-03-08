@@ -5,7 +5,6 @@
 }:
 
 {
-  bat = import ./bat;
   fd = import ./fd { inherit lib pkgs; };
   fzf = import ./fzf { inherit config lib pkgs; };
   home-manager = import ./home-manager;

@@ -141,6 +141,7 @@ in
   };
 
   modules = {
+    bat.enable = true;
     bettermouse.enable = isDarwin;
     brave.enable = isDarwin;
     claude.enable = true;
@@ -172,7 +173,6 @@ in
 
   programs = {
     inherit (configs)
-      bat
       fd
       fzf
       home-manager
