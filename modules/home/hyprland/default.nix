@@ -128,7 +128,6 @@ in
         # ********** Key Bindings **********
         # See https://wiki.hyprland.org/Configuring/Binds/ for more.
 
-        "$launcher" = "fuzzel";
         # "$browser" = "${lib.getExe config.modules.browser.package}";
         "$browser" = "qutebrowser";
         "$terminal" = "${config.modules.terminals.enabled.launchCommand}";

@@ -174,7 +174,6 @@ in
     inherit (configs)
       bat
       fd
-      fuzzel
       fzf
       home-manager
       lazygit
