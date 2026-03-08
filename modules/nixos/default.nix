@@ -8,5 +8,6 @@
     ./hardware-logitech-mx-master-3s-for-mac.nix
     ./hardware-remarkable-remarkable2.nix
     ./scripts
+    ./transmission
   ];
 }
