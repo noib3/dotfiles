@@ -7,12 +7,6 @@
 
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
-
-  configDir = ../../configs;
-
-  configs = import "${configDir}" {
-    inherit config lib pkgs;
-  };
 in
 {
   # Import all the modules in this directory.
@@ -164,6 +158,7 @@ in
     neovim.enable = true;
     opencode.enable = true;
     proton-drive.enable = isDarwin;
+    qutebrowser.enable = isLinux;
     ripgrep.enable = true;
     rust.enable = true;
     selfcontrol.enable = isDarwin;
@@ -181,9 +176,6 @@ in
 
   programs = {
     home-manager.enable = true;
-    inherit (configs)
-      qutebrowser
-      ;
   };
 
   services = {
@@ -194,13 +186,6 @@ in
 
   xdg = {
     enable = true;
-    mimeApps = {
-      enable = isLinux;
-      defaultApplications = {
-        "text/html" = [ "qutebrowser.desktop" ];
-        "x-scheme-handler/http" = [ "qutebrowser.desktop" ];
-        "x-scheme-handler/https" = [ "qutebrowser.desktop" ];
-      };
-    };
+    mimeApps.enable = isLinux;
   };
 }
