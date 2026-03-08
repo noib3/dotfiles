@@ -47,12 +47,6 @@ in
     #
     #   initrd.verbose = false;
     #
-    #   loader.grub = {
-    #     enable = true;
-    #   } // (import "${configDir}/grub" {
-    #     inherit pkgs machine colorscheme palette hexlib;
-    #   });
-    #
     #   loader.efi.canTouchEfiVariables = true;
     # };
 
