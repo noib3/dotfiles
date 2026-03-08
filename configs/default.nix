@@ -7,7 +7,6 @@
 {
   kanshi = import ./kanshi { inherit pkgs; };
   lazygit = import ./lazygit;
-  lf = import ./lf { inherit lib pkgs; };
   mpris-proxy = import ./mpris-proxy { inherit pkgs; };
   mpv = import ./mpv { inherit pkgs; };
   nix-index = import ./nix-index;

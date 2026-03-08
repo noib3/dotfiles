@@ -128,7 +128,6 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
-      LF_ICONS = (builtins.readFile "${configDir}/lf/LF_ICONS");
       NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
       TEXMFCONFIG = "${config.xdg.configHome}/texmf";
       TEXMFVAR = "${config.xdg.stateHome}/texmf";
@@ -155,6 +154,7 @@ in
     gnupg.enable = true;
     hyprland.enable = isLinux;
     kubectl.enable = true;
+    lf.enable = true;
     macosDefaults.enable = isDarwin;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
@@ -177,7 +177,6 @@ in
     home-manager.enable = true;
     inherit (configs)
       lazygit
-      lf
       mpv
       nix-index
       qutebrowser
