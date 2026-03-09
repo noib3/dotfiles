@@ -43,7 +43,7 @@ lualine.setup({
         },
         sections = { "error", "warn" },
         sources = { "nvim_workspace_diagnostic" },
-        symbols = { error = " ", warn = " " },
+        symbols = { error = " ", warn = " " },
       },
     },
     lualine_c = {},

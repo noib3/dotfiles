@@ -19,8 +19,8 @@ local diagnostics = function(bufnr)
       table.insert(ret, { label, group = "Diagnostic" .. severity })
     end
   end
-  add_diagnostic("Error", "")
-  add_diagnostic("Warn", "")
+  add_diagnostic("Error", "")
+  add_diagnostic("Warn", "")
   if #ret > 0 then table.insert(ret, { " ︳", guifg = "#928374" }) end
   return ret
 end
