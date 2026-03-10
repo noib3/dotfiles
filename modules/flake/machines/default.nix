@@ -95,7 +95,6 @@ in
             inherit (machine) system;
             overlays = [
               inputs.brew-nix.overlays.default
-              inputs.nur.overlays.default
             ];
           };
 

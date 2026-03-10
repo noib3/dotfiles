@@ -39,7 +39,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
     opencode = {
       url = "github:anomalyco/opencode/production";
       inputs.nixpkgs.follows = "nixpkgs";
