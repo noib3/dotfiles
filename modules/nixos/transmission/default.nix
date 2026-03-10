@@ -11,7 +11,7 @@ let
   notify-done = pkgs.writeShellScriptBin "notify-done" (
     import ./notify-done.sh.nix { inherit pkgs; }
   );
-  username = config.modules.desktop.userName;
+  username = config.modules.desktop.username;
 in
 {
   options.modules.transmission = {

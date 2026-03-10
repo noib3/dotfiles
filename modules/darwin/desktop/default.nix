@@ -12,7 +12,7 @@ in
 {
   options.modules.desktop = {
     enable = mkEnableOption "Desktop config";
-    hostName = mkOption {
+    hostname = mkOption {
       type = types.str;
       example = "macbook-pro";
       description = "The hostname of the machine";
@@ -36,10 +36,10 @@ in
       fish.enable = true;
     };
 
-    networking = with cfg; {
-      computerName = hostName;
-      hostName = hostName;
-      localHostName = hostName;
+    networking = {
+      computerName = cfg.hostname;
+      hostName = cfg.hostname;
+      localHostName = cfg.hostname;
     };
 
     nix = {

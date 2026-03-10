@@ -12,12 +12,12 @@ in
 {
   options.modules.desktop = {
     enable = mkEnableOption "Desktop config";
-    hostName = mkOption {
+    hostname = mkOption {
       type = types.str;
       example = "macbook-pro";
       description = "The hostname of the machine";
     };
-    userName = mkOption {
+    username = mkOption {
       type = types.str;
     };
   };
@@ -83,14 +83,14 @@ in
       ];
       trusted-users = [
         "root"
-        cfg.userName
+        cfg.username
       ];
       use-xdg-base-directories = true;
       warn-dirty = false;
     };
 
     networking = {
-      inherit (cfg) hostName;
+      hostName = cfg.hostname;
       networkmanager.enable = true;
     };
 
@@ -122,7 +122,7 @@ in
       ];
     };
 
-    services.getty.autologinUser = cfg.userName;
+    services.getty.autologinUser = cfg.username;
 
     services.libinput = {
       enable = true;
@@ -153,8 +153,8 @@ in
 
     services.gnome.gnome-keyring.enable = true;
 
-    users.users."${cfg.userName}" = {
-      home = "/home/${cfg.userName}";
+    users.users."${cfg.username}" = {
+      home = "/home/${cfg.username}";
       shell = pkgs.fish;
       isNormalUser = true;
       extraGroups = [

@@ -1,16 +1,15 @@
 {
-  hostName,
-  userName,
+  hostname,
   ...
 }:
 
 {
   imports = [
-    ../../modules/darwin
+    ../../../darwin
   ];
 
   modules.desktop = {
     enable = true;
-    inherit hostName userName;
+    inherit hostname;
   };
 }

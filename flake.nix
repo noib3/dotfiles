@@ -56,24 +56,14 @@
 
   outputs =
     inputs:
-    let
-      machines = import ./machines {
-        inherit inputs;
-        colorscheme = "gruvbox";
-        fonts = (import ./fonts).iosevka;
-        userName = "noib3";
-      };
-    in
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = machines.systems;
-
       imports = [ ./modules/flake ];
 
-      flake = machines.forEach (machine: {
-        nixosConfigurations.${machine.name} = machine.nixosConfiguration;
-        darwinConfigurations.${machine.name} = machine.darwinConfiguration;
-        homeConfigurations.${machine.name} = machine.homeConfiguration;
-      });
+      _module.args = {
+        colorscheme = "gruvbox";
+        fonts = (import ./fonts).iosevka;
+        username = "noib3";
+      };
 
       perSystem =
         {
@@ -83,8 +73,8 @@
           ...
         }:
         {
-          # Workaround for https://github.com/NixOS/nix/issues/8881 so that
-          # we can run individual checks with `nix run .#check-<foo>`.
+          # Workaround for https://github.com/NixOS/nix/issues/8881 so that we
+          # can run individual checks with `nix run .#check-<foo>`.
           apps = lib.mapAttrs' (name: check: {
             name = "check-${name}";
             value = {

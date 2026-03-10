@@ -1,13 +1,13 @@
 {
-  hostName,
-  userName,
+  hostname,
+  username,
   ...
 }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/nixos
+    ../../../nixos
   ];
 
   boot = {
@@ -28,10 +28,8 @@
 
   modules.desktop = {
     enable = true;
-    inherit hostName userName;
+    inherit hostname username;
   };
 
-  # This option defines the first version of NixOS installed on this particular
-  # machine, and should NEVER be changed after the initial install.
   system.stateVersion = "24.11";
 }
