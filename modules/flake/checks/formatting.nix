@@ -27,7 +27,7 @@
         };
         programs.stylua = {
           enable = true;
-          settings = builtins.fromTOML (builtins.readFile ../../stylua.toml);
+          settings = builtins.fromTOML (builtins.readFile ../../../stylua.toml);
         };
       };
     };
