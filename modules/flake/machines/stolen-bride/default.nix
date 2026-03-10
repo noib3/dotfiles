@@ -8,14 +8,13 @@ let
   hostname = "stolen-bride";
 in
 {
-  machines."stolen-bride" = {
+  machines."stolen-bride".system = "aarch64-darwin";
+
+  flake.darwinConfigurations."stolen-bride" = inputs.nix-darwin.lib.darwinSystem {
     system = "aarch64-darwin";
-    darwinConfiguration = inputs.nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      modules = [ ./darwin-configuration.nix ];
-      specialArgs = {
-        inherit hostname username;
-      };
+    modules = [ ./darwin-configuration.nix ];
+    specialArgs = {
+      inherit hostname username;
     };
   };
 }

@@ -41,16 +41,16 @@ in
       };
 
       shellAbbrs = {
-        hmn = "home-manager news --flake ${dotfilesDir}#${config.machine.name}";
-        hms = "home-manager switch --flake ${dotfilesDir}#${config.machine.name}";
+        hmn = "home-manager news --flake ${dotfilesDir}#${config.machines.current.name}";
+        hms = "home-manager switch --flake ${dotfilesDir}#${config.machines.current.name}";
         ipy = "ipython";
         lg = "lazygit";
       }
-      // lib.attrsets.optionalAttrs config.machine.hasNixosConfiguration {
-        nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machine.name} --sudo";
+      // lib.attrsets.optionalAttrs config.machines.current.hasNixosConfiguration {
+        nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machines.current.name} --sudo";
       }
-      // lib.attrsets.optionalAttrs config.machine.hasDarwinConfiguration {
-        drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${config.machine.name}";
+      // lib.attrsets.optionalAttrs config.machines.current.hasDarwinConfiguration {
+        drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${config.machines.current.name}";
       };
 
       interactiveShellInit = ''
