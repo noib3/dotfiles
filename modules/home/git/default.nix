@@ -26,6 +26,11 @@ in
 
         push.followTags = true;
 
+        # Pack loose objects once there are more than 100 (default is 6700).
+        # Keeps the number of small files in .git/objects low, which helps with
+        # Proton Drive sync performance.
+        gc.auto = 100;
+
         pager = {
           diff = "delta";
           log = "delta";
