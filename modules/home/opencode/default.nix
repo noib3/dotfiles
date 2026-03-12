@@ -41,8 +41,20 @@ in
       enable = true;
       package = opencodePackage;
       settings = {
-        permission.external_directory = {
-          "/**" = "allow";
+        permission = {
+          external_directory = {
+            "/**" = "allow";
+          };
+          read = {
+            "*" = "allow";
+            "*.env" = "deny";
+            "*.env.*" = "deny";
+          };
+          edit = {
+            "*" = "allow";
+            "*.env" = "deny";
+            "*.env.*" = "deny";
+          };
         };
         tui = {
           cursor_blink = false;
