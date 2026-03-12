@@ -73,7 +73,15 @@ esac
 
 case "$MIME_TYPE" in
   text/* | application/javascript | application/json | application/csv)
-    bat --color=always "$FILE"
+    case "$(basename "$FILE")" in
+      .env | .env.*)
+        # Obscure env variable values to avoid leaking secrets in previews.
+        sed 's/^\([^ =]*\)=.*/\1=***/' "$FILE" | bat --color=always --file-name "$FILE"
+        ;;
+      *)
+        bat --color=always "$FILE"
+        ;;
+    esac
     ;;
   */pdf)
     [ -f "${CACHE}.jpg" ] || pdftoppm -singlefile -f 1 -jpeg "$FILE" "$CACHE"
