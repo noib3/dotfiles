@@ -52,6 +52,7 @@ in
         scripts.rg-pattern
         scripts.rg-preview
         scripts.td
+        signal-desktop
         texliveConTeXt
         tokei
         tree
@@ -162,7 +163,6 @@ in
     ripgrep.enable = true;
     rust.enable = true;
     selfcontrol.enable = isDarwin;
-    signal.enable = true;
     skhd.enable = isDarwin;
     snowstorm-work.enable = true;
     ssh.enable = true;
