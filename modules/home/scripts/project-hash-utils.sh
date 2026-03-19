@@ -45,8 +45,8 @@ sanitize_basename() {
 #
 # If the project is inside $DOCUMENTS, the returned hash input is relative to
 # $DOCUMENTS (with a literal "$DOCUMENTS" prefix to avoid collisions with
-# absolute paths that share the same suffix, for example
-# "$DOCUMENTS/foo" vs "/foo").
+# absolute paths that share the same suffix, for example "$DOCUMENTS/foo" vs
+# "/foo").
 stable_hash_input() {
   local project_root=$1
   local hash_input=$project_root

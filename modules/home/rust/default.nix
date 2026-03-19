@@ -10,6 +10,18 @@ with lib;
 let
   cfg = config.modules.rust;
 
+  cargoTargetDirEnv = pkgs.writeShellApplication {
+    name = "cargo-target-dir-env";
+    runtimeEnv = {
+      DOCUMENTS = config.lib.mine.documentsDir;
+      XDG_STATE_HOME = config.xdg.stateHome;
+    };
+    text = ''
+      ${builtins.readFile ../scripts/project-hash-utils.sh}
+      ${builtins.readFile ./cargo-target-dir-env.sh}
+    '';
+  };
+
   nightlyToolchain = pkgs.rust-bin.selectLatestNightlyWith (
     toolchain:
     toolchain.minimal.override {
@@ -45,6 +57,11 @@ in
 {
   options.modules.rust = {
     enable = mkEnableOption "Rust";
+    cargo-target-dir-env = mkOption {
+      type = types.package;
+      readOnly = true;
+      default = cargoTargetDirEnv;
+    };
   };
 
   config = mkIf cfg.enable {

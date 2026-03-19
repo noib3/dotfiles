@@ -115,7 +115,7 @@ in
         end
 
         function __update_cargo_target_dir --on-variable PWD
-          ${lib.getExe pkgs.scripts.cargo-target-dir-env} --shell fish | source
+          ${lib.getExe config.modules.rust.cargo-target-dir-env} --shell fish | source
         end
 
         __update_cargo_target_dir
