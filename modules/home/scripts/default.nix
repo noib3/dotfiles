@@ -5,6 +5,8 @@
 }:
 
 let
+  projectHashUtils = builtins.readFile ./project-hash-utils.sh;
+
   scripts = {
     cargo-target-dir-env = pkgs.writeShellApplication {
       name = "cargo-target-dir-env";
@@ -12,7 +14,10 @@ let
         DOCUMENTS = config.lib.mine.documentsDir;
         XDG_STATE_HOME = config.xdg.stateHome;
       };
-      text = builtins.readFile ./cargo-target-dir-env.sh;
+      text = ''
+        ${projectHashUtils}
+        ${builtins.readFile ./cargo-target-dir-env.sh}
+      '';
     };
 
     direnv-layout-dir = pkgs.writeShellApplication {
@@ -21,7 +26,10 @@ let
         DOCUMENTS = config.lib.mine.documentsDir;
         XDG_STATE_HOME = config.xdg.stateHome;
       };
-      text = builtins.readFile ./direnv-layout-dir.sh;
+      text = ''
+        ${projectHashUtils}
+        ${builtins.readFile ./direnv-layout-dir.sh}
+      '';
     };
 
     fuzzy-ripgrep = import ./fuzzy-ripgrep.nix { inherit pkgs; };

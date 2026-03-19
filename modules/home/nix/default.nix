@@ -6,6 +6,28 @@
   ...
 }:
 
+let
+  nix = pkgs.nixVersions.latest;
+
+  nixWrapper = pkgs.writeShellApplication {
+    name = "nix";
+    runtimeInputs = [
+      nix
+      pkgs.jq
+    ];
+    runtimeEnv = {
+      DOCUMENTS = config.lib.mine.documentsDir;
+      XDG_STATE_HOME = config.xdg.stateHome;
+    };
+    text = ''
+      ${builtins.readFile ../scripts/project-hash-utils.sh}
+      ${builtins.readFile ./nix-wrapper.sh}
+    '';
+    # A lower priority makes our wrapper have precendece over the real Nix
+    # binary.
+    meta.priority = (nix.meta.priority or 5) - 1;
+  };
+in
 {
   imports = [
     inputs.nix-jettison.homeManagerModules.default
@@ -13,13 +35,16 @@
 
   config = {
     home.packages = with pkgs; [
-      nixVersions.latest
+      # We add the original Nix package because it contains the legacy nix-*
+      # commands used by home-manager.
+      nix
+      nixWrapper
       nixd
       nixfmt
     ];
 
     nix = {
-      package = pkgs.nixVersions.latest;
+      package = nix;
       plugins.jettison.enable = false;
       settings = {
         experimental-features = [
