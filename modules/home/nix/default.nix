@@ -32,20 +32,13 @@
       };
     };
 
-    # Make `nix develop`, `nix shell` and `nix-shell` use fish instead of bash.
+    # Make `nix develop` and `nix shell` use fish instead of bash.
     programs.fish.interactiveShellInit = lib.mkIf config.programs.fish.enable ''
-      function nix-shell --description "Start an interactive shell based on a Nix expression"
-          ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix-shell -- $argv
-      end
-
       function nix --description "Reproducible and declarative configuration management"
           ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix -- $argv
       end
     '';
 
-    programs.nix-index = {
-      enable = true;
-      enableFishIntegration = true;
-    };
+    programs.nix-index.enable = true;
   };
 }

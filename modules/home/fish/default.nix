@@ -20,6 +20,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    home.shell.enableFishIntegration = true;
+
     programs.fish = {
       enable = true;
 

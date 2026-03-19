@@ -76,8 +76,6 @@ in
         "--prompt='Cd> '"
         "--preview='ls --color=always ~/{}'"
       ];
-
-      enableFishIntegration = config.modules.fish.enable;
     };
   };
 }

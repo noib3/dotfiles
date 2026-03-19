@@ -17,8 +17,6 @@ in
 
     enable = true;
 
-    enableFishIntegration = config.programs.fish.enable;
-
     filetypes = {
       core = {
         regular_file = [ "$fi" ];

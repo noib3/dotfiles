@@ -20,7 +20,6 @@ in
     programs.ghostty = {
       inherit package;
       enable = true;
-      enableFishIntegration = config.programs.fish.enable;
       settings = {
         adjust-cursor-thickness = "200%";
         auto-update = "off";

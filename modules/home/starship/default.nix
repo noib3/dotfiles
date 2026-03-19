@@ -16,7 +16,6 @@ in
   config = mkIf cfg.enable {
     programs.starship = {
       enable = true;
-      enableFishIntegration = config.programs.fish.enable;
       settings = {
         format = lib.concatStrings [
           "$username"
