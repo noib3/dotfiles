@@ -45,7 +45,10 @@ local setup_lf = function()
     temp_mtime = vim.uv.fs_stat(temp_file).mtime.sec
     local buf_name = vim.api.nvim_buf_get_name(0)
     local buf_path = vim.uv.fs_stat(buf_name) and buf_name or ""
-    return ("lf -selection-path %s %s"):format(temp_file, buf_path)
+    return ("lf -selection-path %s %s"):format(
+      temp_file,
+      vim.fn.shellescape(buf_path)
+    )
   end
 
   ---The focused window at the time lf was opened.
