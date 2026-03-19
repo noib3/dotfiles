@@ -117,10 +117,6 @@
       url = "github:RRethy/nvim-treesitter-endwise";
       flake = false;
     };
-    nvim-ts-context-commentstring = {
-      url = "github:JoosepAlviste/nvim-ts-context-commentstring";
-      flake = false;
-    };
     nvim-web-devicons = {
       url = "github:nvim-tree/nvim-web-devicons";
       flake = false;

@@ -79,7 +79,6 @@ let
     inputs.nvim-surround
     inputs.nvim-treesitter
     inputs.nvim-treesitter-endwise
-    inputs.nvim-ts-context-commentstring
     inputs.nvim-web-devicons
     inputs.plenary-nvim
     inputs.rustaceanvim
