@@ -8,41 +8,16 @@
 with lib;
 let
   cfg = config.modules.fonts;
-
-  fontModule = import ./font-module.nix { inherit lib; };
-  inherit (fontModule) fontSubmodule;
-
-  # The set of font categories, mapping directory names to option keys.
-  categories = {
-    monospace = "monospace";
-    sans-serif = "sansSerif";
-    serif = "serif";
-    emoji = "emoji";
-  };
-
-  # Auto-discover .nix files in a directory (excluding default.nix).
-  discoverNames =
-    dir:
-    builtins.readDir dir
-    |> attrNames
-    |> filter (n: hasSuffix ".nix" n && n != "default.nix" && n != "font-module.nix")
-    |> map (removeSuffix ".nix");
+  fontSubmodule = import ./font-submodule.nix { inherit lib; };
 in
 {
-  imports =
-    let
-      fontImports =
-        categories
-        |> mapAttrsToList (
-          dirName: _:
-          let
-            dir = ./${dirName};
-          in
-          discoverNames dir |> map (n: dir + "/${n}.nix")
-        )
-        |> concatLists;
-    in
-    [ ./stacks ] ++ fontImports;
+  imports = [
+    ./emoji
+    ./monospace
+    ./sans-serif
+    ./serif
+    ./stacks
+  ];
 
   options.modules.fonts = {
     # Per-category attrsets of all declared fonts. Individual font modules

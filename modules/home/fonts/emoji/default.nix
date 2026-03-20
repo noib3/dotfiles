@@ -1,0 +1,3 @@
+{
+  imports = [ ./noto-color.nix ];
+}

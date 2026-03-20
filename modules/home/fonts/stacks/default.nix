@@ -7,8 +7,27 @@
 with lib;
 let
   cfg = config.modules.fonts;
-  fontModule = import ../font-module.nix { inherit lib; };
-  inherit (fontModule) fontSubmodule wrapFont;
+  fontSubmodule = import ../font-submodule.nix { inherit lib; };
+
+  # A sizes attrset that uses __functor to fall back to `default` for any
+  # program that doesn't have an explicit override.
+  mkSizesFunctor =
+    sizesAttr:
+    let
+      overrides = removeAttrs sizesAttr [ "default" ];
+    in
+    {
+      inherit (sizesAttr) default;
+      __functor = self: program: overrides.${program} or self.default;
+    }
+    // overrides;
+
+  wrapFont =
+    fontDef:
+    fontDef
+    // {
+      sizes = mkSizesFunctor fontDef.sizes;
+    };
 
   stackSubmodule = types.submodule {
     options = {
