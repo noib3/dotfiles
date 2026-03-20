@@ -63,7 +63,7 @@ is_local_installable() {
   esac
 }
 
-# Extracts the attribute name from an installable reference.
+# Extracts a filesystem-safe attribute name from an installable reference.
 # ".#foo"         -> "foo"
 # ".#foo^out"     -> "foo"
 # ".#foo^*"       -> "foo"
@@ -71,7 +71,8 @@ is_local_installable() {
 # ".#"            -> "default"
 # "./sub#bar"     -> "bar"
 # "/abs/path#baz" -> "baz"
-extract_attr_name() {
+# ".#packages.aarch64-darwin.foo" -> "packages-aarch64-darwin-foo"
+fs_safe_attr_name() {
   local ref=$1
 
   case "$ref" in
@@ -82,7 +83,7 @@ extract_attr_name() {
       if [ -z "$attr" ]; then
         printf 'default'
       else
-        printf '%s' "$attr"
+        printf '%s' "$attr" | tr '/' '-'
       fi
       ;;
     *)
@@ -149,17 +150,16 @@ flag_takes_2_args() {
 
 # --- Resolve a local installable to its flake root and build-roots dir ---
 #
-# Sets: flake_root, roots_dir, safe_attr
+# Sets: flake_root, roots_dir
 # Returns 1 if the installable is not local or can't be resolved.
 resolve_local_installable() {
   local installable=$1
-  local attr flake_dir resolved_flake_dir
+  local flake_dir resolved_flake_dir
 
   if ! is_local_installable "$installable"; then
     return 1
   fi
 
-  attr=$(extract_attr_name "$installable")
   flake_dir=$(extract_flake_dir "$installable")
 
   case "$flake_dir" in
@@ -176,7 +176,39 @@ resolve_local_installable() {
   fi
 
   roots_dir=$(project_build_roots_dir "$flake_root") || return 1
-  safe_attr=$(printf '%s' "$attr" | tr '/' '-')
+}
+
+# --- Flake input rooting ---
+
+# Root all flake input sources so they survive garbage collection. Without this,
+# GC would remove the input sources (nixpkgs tarball, etc.) since they're
+# eval-time deps not referenced by any build output, forcing a re-download on
+# the next evaluation.
+root_flake_inputs() {
+  local flake_root=$1
+  local roots_dir=$2
+
+  # Skip if we already rooted inputs for this flake root in this invocation.
+  case " ${_rooted_flakes:-} " in
+    *" $flake_root "*) return ;;
+  esac
+  _rooted_flakes="${_rooted_flakes:-} $flake_root"
+
+  # Run in background to avoid adding latency to the main command. The inputs
+  # are already in the store from the evaluation that's about to happen (or just
+  # happened), so this is just creating GC root symlinks.
+  (
+    # Remove old input roots so removed flake inputs don't stay rooted.
+    rm -f "$roots_dir"/input-* 2>/dev/null
+
+    nix flake archive --json "$flake_root" 2>/dev/null |
+      jq -r '.. | .path? // empty' 2>/dev/null |
+      while IFS= read -r path; do
+        [ -n "$path" ] || continue
+        nix-store --add-root "$roots_dir/input-$(basename "$path")" \
+          --indirect -r "$path" >/dev/null 2>&1 || true
+      done
+  ) &
 }
 
 # --- Subcommand handlers ---
@@ -234,9 +266,15 @@ handle_build() {
     installables=(".")
   fi
 
-  # If user specified --no-link or --out-link, respect their choice and just
-  # pass through (no GC root management).
+  # If user specified --no-link or --out-link, respect their choice and skip
+  # output GC root management, but still root flake inputs.
   if [ "$has_out_link" = true ] || [ "$has_no_link" = true ]; then
+    for inst in "${installables[@]}"; do
+      if resolve_local_installable "$inst"; then
+        mkdir -p "$roots_dir"
+        root_flake_inputs "$flake_root" "$roots_dir"
+      fi
+    done
     exec nix build "${pass_through[@]}" "${installables[@]}"
   fi
 
@@ -257,7 +295,7 @@ handle_build() {
   # build-roots and create result-<attr> symlinks in the flake root.
   # For non-local ones, build normally.
   local exit_code=0
-  local flake_root roots_dir safe_attr
+  local flake_root roots_dir
 
   for inst in "${installables[@]}"; do
     if ! resolve_local_installable "$inst"; then
@@ -265,13 +303,17 @@ handle_build() {
       continue
     fi
 
-    mkdir -p "$roots_dir"
+    local attr_name
+    attr_name=$(fs_safe_attr_name "$inst")
 
-    local root_link="$roots_dir/package-$safe_attr"
+    mkdir -p "$roots_dir"
+    root_flake_inputs "$flake_root" "$roots_dir"
+
+    local root_link="$roots_dir/package-$attr_name"
 
     if nix build "${pass_through[@]}" --out-link "$root_link" "$inst"; then
-      local result_name="result-$safe_attr"
-      if [ "$safe_attr" = "default" ]; then
+      local result_name="result-$attr_name"
+      if [ "$attr_name" = "default" ]; then
         result_name="result"
       fi
 
@@ -346,16 +388,20 @@ handle_develop() {
     exec nix develop "$installable" "${pass_through[@]}"
   fi
 
-  local flake_root roots_dir safe_attr
+  local flake_root roots_dir
 
   if ! resolve_local_installable "$installable"; then
     exec nix develop "$installable" "${pass_through[@]}"
   fi
 
+  local attr_name
+  attr_name=$(fs_safe_attr_name "$installable")
+
   mkdir -p "$roots_dir"
+  root_flake_inputs "$flake_root" "$roots_dir"
 
   exec nix develop \
-    --profile "$roots_dir/devshell-$safe_attr" \
+    --profile "$roots_dir/devshell-$attr_name" \
     "$installable" "${pass_through[@]}"
 }
 
@@ -405,7 +451,7 @@ handle_run() {
     installable="."
   fi
 
-  local flake_root roots_dir safe_attr
+  local flake_root roots_dir
 
   if ! resolve_local_installable "$installable"; then
     if [ ${#run_args[@]} -gt 0 ]; then
@@ -415,13 +461,25 @@ handle_run() {
     fi
   fi
 
+  local attr_name
+  attr_name=$(fs_safe_attr_name "$installable")
+
   mkdir -p "$roots_dir"
+  root_flake_inputs "$flake_root" "$roots_dir"
 
-  local root_link="$roots_dir/app-$safe_attr"
+  local root_link="$roots_dir/app-$attr_name"
 
-  # Pre-build to create the GC root, then run. The second `nix run` will be
-  # a no-op build since it's already in the store.
-  nix build --out-link "$root_link" "${pass_through[@]}" "$installable"
+  # Try `nix build` first (works if the installable is a package). If that
+  # fails (e.g. it's an app, not a package), resolve the app's `program`
+  # store path and root it directly.
+  if ! nix build --out-link "$root_link" "${pass_through[@]}" "$installable" 2>/dev/null; then
+    local program
+    program=$(nix eval --json "${pass_through[@]}" "$installable" 2>/dev/null |
+      jq -r '.program // empty' 2>/dev/null) || true
+    if [ -n "$program" ]; then
+      nix-store --add-root "$root_link" --indirect -r "$program" >/dev/null 2>&1 || true
+    fi
+  fi
 
   if [ ${#run_args[@]} -gt 0 ]; then
     exec nix run "${pass_through[@]}" "$installable" -- "${run_args[@]}"
@@ -477,11 +535,14 @@ handle_shell() {
   fi
 
   # Pre-build each local installable to create GC roots.
-  local flake_root roots_dir safe_attr
+  local flake_root roots_dir
   for inst in "${installables[@]}"; do
     if resolve_local_installable "$inst"; then
+      local attr_name
+      attr_name=$(fs_safe_attr_name "$inst")
       mkdir -p "$roots_dir"
-      nix build --out-link "$roots_dir/package-$safe_attr" \
+      root_flake_inputs "$flake_root" "$roots_dir"
+      nix build --out-link "$roots_dir/package-$attr_name" \
         "$inst" 2>/dev/null || true
     fi
   done
@@ -524,7 +585,7 @@ handle_flake_check() {
     flake_url="."
   fi
 
-  local flake_root roots_dir safe_attr
+  local flake_root roots_dir
 
   if ! is_local_installable "$flake_url"; then
     exec nix flake check "${pass_through[@]}" "$flake_url"
@@ -552,6 +613,7 @@ handle_flake_check() {
   }
 
   mkdir -p "$roots_dir"
+  root_flake_inputs "$flake_root" "$roots_dir"
 
   # Run the actual flake check.
   nix flake check "${pass_through[@]}" "$flake_url"
@@ -593,6 +655,7 @@ handle_fmt() {
   }
 
   mkdir -p "$roots_dir"
+  root_flake_inputs "$flake_root" "$roots_dir"
 
   # Build the formatter to create a GC root, then run fmt.
   local system
