@@ -261,6 +261,7 @@ in
         mtb = "push :make-tarball<space>";
         pc = "$pc";
         td = "$td";
+        tm = "$tm";
         to = "push :touch<space>";
         unm = "unmount-device";
         x = "cut";

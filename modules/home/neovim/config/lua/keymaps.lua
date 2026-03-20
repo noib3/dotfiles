@@ -151,6 +151,9 @@ keymap.set("n", "<D-p>", function() vim.fn.jobstart("pc") end)
 -- Open today's todo.
 keymap.set("n", "td", function() vim.fn.jobstart("td") end)
 
+-- Open tomorrow's todo.
+keymap.set("n", "tm", function() vim.fn.jobstart("tm") end)
+
 --- @param key string
 local fallback = function(key)
   local keys = vim.api.nvim_replace_termcodes(key, true, false, true)

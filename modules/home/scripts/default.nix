@@ -12,7 +12,6 @@ let
 
     pc = pkgs.writeShellApplication {
       name = "pc";
-      runtimeEnv.DOCUMENTS = config.lib.mine.documentsDir;
       text = builtins.readFile ./pc.sh;
     };
 
@@ -22,8 +21,13 @@ let
 
     td = pkgs.writeShellApplication {
       name = "td";
-      runtimeEnv.DOCUMENTS = config.lib.mine.documentsDir;
       text = builtins.readFile ./td.sh;
+    };
+
+    tm = pkgs.writeShellApplication {
+      name = "tm";
+      text = builtins.readFile ./tm.sh;
+      runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
     };
   };
 in

@@ -52,6 +52,7 @@ in
         scripts.rg-pattern
         scripts.rg-preview
         scripts.td
+        scripts.tm
         signal-desktop
         texliveConTeXt
         tokei
