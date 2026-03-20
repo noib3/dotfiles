@@ -42,16 +42,18 @@ types.submodule {
     };
 
     sizes = mkOption {
-      type = types.attrsOf types.float;
+      type = types.submodule {
+        freeformType = types.attrsOf types.float;
+        options.default = mkOption {
+          type = types.float;
+          description = "The default font size, used when no program-specific override exists";
+        };
+      };
       example = {
         default = 16.5;
         ghostty = 14.0;
       };
-      description = ''
-        Font sizes keyed by program name, with a mandatory `default` entry.
-        Accessed as a functor: `font.sizes "ghostty"` returns the
-        ghostty-specific size if defined, otherwise the default.
-      '';
+      description = "Font sizes keyed by program name";
     };
   };
 }

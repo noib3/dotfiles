@@ -20,8 +20,6 @@ in
   ];
 
   options.modules.fonts = {
-    # Per-category attrsets of all declared fonts. Individual font modules
-    # append to these via `config.modules.fonts.<category>.<font-name>`.
     monospace = mkOption {
       type = types.attrsOf fontSubmodule;
       default = { };
