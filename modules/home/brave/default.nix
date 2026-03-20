@@ -25,10 +25,7 @@ let
   };
 in
 {
-  imports = [
-    ./settings.nix
-    ./search-engines.nix
-  ];
+  imports = [ ./profiles.nix ];
 
   options.modules.brave = {
     enable = mkEnableOption "Brave";
@@ -44,6 +41,18 @@ in
       default = { };
       description = "Extensions to install, keyed by a human-readable name.";
     };
+
+    # See https://chromeenterprise.google/policies/ and
+    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
+    # for the available policies.
+    policies = mkOption {
+      type = types.attrs;
+      default = { };
+      description = ''
+        Enterprise policies fed directly into
+        modules.macOSPreferences.apps."com.brave.Browser".forced.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -58,58 +67,67 @@ in
         unhook.id = "khncfooichmfjbepaaaebmommgaepoid";
       };
 
-      searchEngines = {
-        hm = {
-          name = "Home Manager Options";
-          url = "https://home-manager-options.extranix.com/?query={searchTerms}";
-          favicon_url = "https://nixos.org/favicon.ico";
-        };
-        nixo = {
-          name = "NixOS options";
-          url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
-          favicon_url = "https://nixos.org/favicon.ico";
-        };
-        nixp = {
-          name = "Nix packages";
-          url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
-          favicon_url = "https://nixos.org/favicon.ico";
-        };
-        std = {
-          name = "std's docs";
-          url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
-          favicon_url = "https://rust-lang.org/logos/rust-logo-blk.svg";
-        };
+      policies = {
+        AutofillAddressEnabled = false;
+        AutofillCreditCardEnabled = false;
+        BookmarkBarEnabled = false;
+        BraveAIChatEnabled = false;
+        BraveNewsDisabled = true;
+        BraveRewardsDisabled = true;
+        BraveStatsPingEnabled = false;
+        BraveTalkDisabled = true;
+        BraveVPNDisabled = true;
+        BraveWalletDisabled = true;
+        BrowserSignin = 0;
+        HomepageIsNewTabPage = true;
+        NewTabPageLocation = "about:blank";
+        PasswordManagerEnabled = false;
+        SyncDisabled = true;
       };
 
-      settings = {
-        # ── Policies ─────────────────────────────────────────────────────
-        autofill.address = false;
-        autofill.creditCard = false;
-        bookmarkBar = false;
-        braveAIChat = false;
-        braveNews = false;
-        braveRewards = false;
-        braveStatsPing = false;
-        braveTalk = false;
-        braveVPN = false;
-        braveWallet = false;
-        browserSignin = false;
-        homepageIsNewTabPage = true;
-        newTabPageLocation = "about:blank";
-        passwordManager = false;
-        sync = false;
+      profiles.Default = {
+        preferences = {
+          brave = {
+            brave_search."show-ntp-search" = false;
+            new_tab_page = {
+              background = {
+                random = false;
+                selected_value = config.modules.colorschemes.palette.primary.background;
+                show_background_image = true;
+                type = "color";
+              };
+              show_stats = false;
+            };
+            show_bookmarks_button = false;
+            show_side_panel_button = false;
+          };
+          # Yes, the typo in the key is from Brave itself.
+          ntp.shortcust_visible = false;
+          toolbar.pinned_actions = [ ];
+        };
 
-        # ── JSON preferences ─────────────────────────────────────────────
-        ntp.showSearchBox = false;
-        ntp.background.random = false;
-        ntp.background.color = config.modules.colorschemes.palette.primary.background;
-        ntp.background.showImage = true;
-        ntp.background.type = "color";
-        ntp.showStats = false;
-        ntp.showTopSites = false;
-        showBookmarksButton = false;
-        showSidePanelButton = false;
-        toolbar.pinnedActions = [ ];
+        searchEngines = {
+          hm = {
+            name = "Home Manager Options";
+            url = "https://home-manager-options.extranix.com/?query={searchTerms}";
+            favicon_url = "https://nixos.org/favicon.ico";
+          };
+          nixo = {
+            name = "NixOS options";
+            url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
+            favicon_url = "https://nixos.org/favicon.ico";
+          };
+          nixp = {
+            name = "Nix packages";
+            url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
+            favicon_url = "https://nixos.org/favicon.ico";
+          };
+          std = {
+            name = "std's docs";
+            url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
+            favicon_url = "https://rust-lang.org/logos/rust-logo-blk.svg";
+          };
+        };
       };
     };
 
@@ -133,6 +151,8 @@ in
           pkgs.brave;
       extensions = mapAttrsToList (_: ext: { inherit (ext) id; }) cfg.extensions;
     };
+
+    modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies;
 
     home.activation = mkIf isDarwin (
       optionalAttrs cfg.isDefaultBrowser {
