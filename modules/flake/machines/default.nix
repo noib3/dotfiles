@@ -3,7 +3,7 @@
   config,
   lib,
   colorscheme,
-  fonts,
+  fontstack,
   username,
   ...
 }:
@@ -90,23 +90,18 @@ in
       cfg
       |> lib.mapAttrs (
         machineName: machine:
-        inputs.home-manager.lib.homeManagerConfiguration rec {
-          pkgs = import inputs.nixpkgs {
-            inherit (machine) system;
-            overlays = [
-              inputs.brew-nix.overlays.default
-            ];
-          };
+        inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = inputs.nixpkgs.legacyPackages.${machine.system};
 
           modules = [
-            homeManagerMachinesModule
-            ../../../fonts/module.nix
             ../../home
+            homeManagerMachinesModule
             {
-              fonts = fonts pkgs;
               home.username = username;
               machines.current.name = machineName;
               modules.colorscheme.${colorscheme}.enable = true;
+              modules.fonts.stacks.${fontstack}.enable = true;
+              nixpkgs.overlays = [ inputs.brew-nix.overlays.default ];
             }
           ];
 

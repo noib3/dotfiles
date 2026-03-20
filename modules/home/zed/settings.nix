@@ -5,14 +5,14 @@
 }:
 
 let
-  bufferFont = config.fonts.monospace;
+  bufferFont = config.modules.fonts.stacks.current.monospace;
   preferredLineLength = 80;
 in
 {
   auto_update = false;
   autosave = "on_focus_change";
   buffer_font_family = bufferFont.name;
-  buffer_font_size = bufferFont.size config "zed";
+  buffer_font_size = bufferFont.sizes "zed";
   current_line_highlight = "none";
   cursor_blink = false;
   diagnostics.inline.enabled = true;

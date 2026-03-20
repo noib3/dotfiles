@@ -64,7 +64,7 @@
 
       _module.args = {
         colorscheme = "gruvbox";
-        fonts = (import ./fonts).iosevka;
+        fontstack = "iosevka";
         username = "noib3";
       };
 
