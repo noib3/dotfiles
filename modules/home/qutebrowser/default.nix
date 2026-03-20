@@ -9,9 +9,7 @@ with lib;
 let
   cfg = config.modules.qutebrowser;
   colors = import ./colors.nix { inherit config; };
-  add-torrent = pkgs.writeShellScriptBin "add-torrent" (
-    builtins.readFile ./scripts/add-torrent.sh
-  );
+  add-torrent = pkgs.writeShellScriptBin "add-torrent" (builtins.readFile ./scripts/add-torrent.sh);
   homePage = "https://start.duckduckgo.com";
 in
 {
@@ -23,9 +21,7 @@ in
     programs.qutebrowser = {
       enable = true;
 
-      package = lib.mkIf pkgs.stdenv.isLinux (
-        pkgs.qutebrowser.override { enableWideVine = true; }
-      );
+      package = lib.mkIf pkgs.stdenv.isLinux (pkgs.qutebrowser.override { enableWideVine = true; });
 
       searchEngines = {
         "DEFAULT" = "https://duckduckgo.com/?q={}";
@@ -179,7 +175,7 @@ in
 
         fonts =
           let
-            font = config.modules.fonts.current.sansSerif;
+            font = config.modules.fonts.stacks.current.sansSerif;
           in
           {
             default_family = font.name;

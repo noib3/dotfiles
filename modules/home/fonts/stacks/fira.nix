@@ -1,6 +1,13 @@
+{ config, ... }:
+
+let
+  fonts = config.modules.fonts;
+in
 {
-  monospace = "fira-code";
-  sansSerif = "fira-sans";
-  serif = "fira-sans";
-  emoji = "noto-color";
+  modules.fonts.stacks.fira = {
+    monospace = fonts.monospace.fira-code;
+    sansSerif = fonts.sansSerif.fira-sans;
+    serif = fonts.sansSerif.fira-sans;
+    emoji = fonts.emoji.noto-color;
+  };
 }

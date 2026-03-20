@@ -5,7 +5,7 @@
 }:
 
 let
-  bufferFont = config.modules.fonts.current.monospace;
+  bufferFont = config.modules.fonts.stacks.current.monospace;
   preferredLineLength = 80;
 in
 {

@@ -1,6 +1,13 @@
+{ config, ... }:
+
+let
+  fonts = config.modules.fonts;
+in
 {
-  monospace = "blex-mono";
-  sansSerif = "blex-mono";
-  serif = "blex-mono";
-  emoji = "noto-color";
+  modules.fonts.stacks.blex = {
+    monospace = fonts.monospace.blex-mono;
+    sansSerif = fonts.monospace.blex-mono;
+    serif = fonts.monospace.blex-mono;
+    emoji = fonts.emoji.noto-color;
+  };
 }

@@ -3,7 +3,7 @@
   config,
   lib,
   colorscheme,
-  fontStack,
+  fontstack,
   username,
   ...
 }:
@@ -105,7 +105,7 @@ in
               home.username = username;
               machines.current.name = machineName;
               modules.colorscheme.${colorscheme}.enable = true;
-              modules.fonts.${fontStack}.enable = true;
+              modules.fonts.stacks.${fontstack}.enable = true;
             }
           ];
 

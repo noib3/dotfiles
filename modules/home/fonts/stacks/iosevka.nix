@@ -1,6 +1,13 @@
+{ config, ... }:
+
+let
+  fonts = config.modules.fonts;
+in
 {
-  monospace = "iosevka-term";
-  sansSerif = "iosevka-aile";
-  serif = "iosevka-aile";
-  emoji = "noto-color";
+  modules.fonts.stacks.iosevka = {
+    monospace = fonts.monospace.iosevka-term;
+    sansSerif = fonts.sansSerif.iosevka-aile;
+    serif = fonts.sansSerif.iosevka-aile;
+    emoji = fonts.emoji.noto-color;
+  };
 }

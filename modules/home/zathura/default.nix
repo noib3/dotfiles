@@ -32,7 +32,7 @@ in
 
         font =
           let
-            font = config.modules.fonts.current.serif;
+            font = config.modules.fonts.stacks.current.serif;
             size = toString (font.sizes "zathura");
           in
           "${font.name} ${size}";

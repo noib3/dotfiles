@@ -5,7 +5,7 @@
 }:
 
 let
-  font = config.modules.fonts.current.monospace;
+  font = config.modules.fonts.stacks.current.monospace;
 in
 {
   font-family = font.name;
