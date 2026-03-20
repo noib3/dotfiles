@@ -34,7 +34,8 @@ let
       };
     };
 
-  enabledStacks = removeAttrs cfg.stacks [ "current" ] |> filterAttrs (_: stack: stack.enable);
+  enabledStacks =
+    removeAttrs cfg.stacks [ "current" ] |> filterAttrs (_: stack: stack.enable);
 in
 {
   imports = [
