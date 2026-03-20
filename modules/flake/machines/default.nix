@@ -3,7 +3,7 @@
   config,
   lib,
   colorscheme,
-  fonts,
+  fontStack,
   username,
   ...
 }:
@@ -100,13 +100,12 @@ in
 
           modules = [
             homeManagerMachinesModule
-            ../../../fonts/module.nix
             ../../home
             {
-              fonts = fonts pkgs;
               home.username = username;
               machines.current.name = machineName;
               modules.colorscheme.${colorscheme}.enable = true;
+              modules.fonts.${fontStack}.enable = true;
             }
           ];
 

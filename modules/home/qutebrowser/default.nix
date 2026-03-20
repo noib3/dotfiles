@@ -179,11 +179,11 @@ in
 
         fonts =
           let
-            font = config.fonts.sansSerif;
+            font = config.modules.fonts.current.sansSerif;
           in
           {
             default_family = font.name;
-            default_size = toString (font.size config "qutebrowser") + "pt";
+            default_size = toString (font.sizes "qutebrowser") + "pt";
           };
 
         hints = {

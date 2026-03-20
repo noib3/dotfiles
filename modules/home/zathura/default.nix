@@ -32,8 +32,8 @@ in
 
         font =
           let
-            font = config.fonts.serif;
-            size = toString (font.size config "zathura");
+            font = config.modules.fonts.current.serif;
+            size = toString (font.sizes "zathura");
           in
           "${font.name} ${size}";
 

@@ -5,15 +5,15 @@
 }:
 
 let
-  font = config.fonts.monospace;
+  font = config.modules.fonts.current.monospace;
 in
 {
   font-family = font.name;
-  font-size = font.size config "ghostty";
-  font-style = font.normal;
-  font-style-bold = font.bold;
-  font-style-italic = font.italic;
-  font-style-bold-italic = font.bold_italic;
+  font-size = font.sizes "ghostty";
+  font-style = font.styles.normal;
+  font-style-bold = font.styles.bold;
+  font-style-italic = font.styles.italic;
+  font-style-bold-italic = font.styles.boldItalic;
 }
 // lib.optionalAttrs isDarwin {
   font-thicken = true;
