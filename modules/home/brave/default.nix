@@ -10,9 +10,6 @@ let
   cfg = config.modules.brave;
   inherit (pkgs.stdenv) isDarwin isLinux;
 
-  settingsMod = import ./settings.nix { inherit lib; };
-  outputs = settingsMod.mkOutputs cfg.settings;
-
   extensionType = types.submodule {
     options = {
       id = mkOption {
@@ -27,39 +24,15 @@ let
     };
   };
 
-  searchEngineType = types.submodule {
-    options = {
-      name = mkOption {
-        type = types.str;
-        description = "Display name of the search engine.";
-      };
-      url = mkOption {
-        type = types.str;
-        description = "Search URL template. Use {searchTerms} as placeholder.";
-      };
-      favicon_url = mkOption {
-        type = types.str;
-        default = "";
-        description = "URL to the search engine's favicon.";
-      };
-    };
-  };
-
   pinnedExtensionIds = mapAttrsToList (_: ext: ext.id) (
     filterAttrs (_: ext: ext.pinned) cfg.extensions
   );
 
-  # Merge the extension-pinning preference into the preferences coming from
-  # the settings submodule.
-  allPreferences =
-    outputs.preferences
-    ++ optional (pinnedExtensionIds != [ ]) {
-      path = [
-        "extensions"
-        "pinned_extensions"
-      ];
-      value = pinnedExtensionIds;
-    };
+  profile = "Default";
+
+  preferencesPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/${profile}/Preferences";
+
+  dbPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/${profile}/Web Data";
 in
 {
   options.modules.brave = {
@@ -78,15 +51,22 @@ in
     };
 
     searchEngines = mkOption {
-      type = types.attrsOf searchEngineType;
+      type = types.submoduleWith {
+        modules = [ ./search-engines.nix ];
+        specialArgs = { inherit pkgs; };
+      };
       default = { };
-      description = ''
-        Custom search engines. The attribute name is used as the keyword
-        (shortcut) for the engine.
-      '';
+      description = "Custom search engine configuration.";
     };
 
-    settings = settingsMod.options;
+    settings = mkOption {
+      type = types.submoduleWith {
+        modules = [ ./settings.nix ];
+        specialArgs = { inherit pkgs; };
+      };
+      default = { };
+      description = "Brave browser settings.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -101,7 +81,7 @@ in
         unhook.id = "khncfooichmfjbepaaaebmommgaepoid";
       };
 
-      searchEngines = {
+      searchEngines.engines = {
         hm = {
           name = "Home Manager Options";
           url = "https://home-manager-options.extranix.com/?query={searchTerms}";
@@ -125,7 +105,38 @@ in
       };
 
       settings = {
+        # Forward pinned extension IDs into the settings submodule so they
+        # end up in the JSON preference updates.
+        _pinnedExtensionIds = pinnedExtensionIds;
+
+        # ── Policies ─────────────────────────────────────────────────────
+        autofill.address = false;
+        autofill.creditCard = false;
+        bookmarkBar = false;
+        braveAIChat = false;
+        braveNews = false;
+        braveRewards = false;
+        braveStatsPing = false;
+        braveTalk = false;
+        braveVPN = false;
+        braveWallet = false;
+        browserSignin = false;
+        homepageIsNewTabPage = true;
+        newTabPageLocation = "about:blank";
+        passwordManager = false;
+        sync = false;
+
+        # ── JSON preferences ─────────────────────────────────────────────
+        ntp.showSearchBox = false;
+        ntp.background.random = false;
         ntp.background.color = config.modules.colorschemes.palette.primary.background;
+        ntp.background.showImage = true;
+        ntp.background.type = "color";
+        ntp.showStats = false;
+        ntp.showTopSites = false;
+        showBookmarksButton = false;
+        showSidePanelButton = false;
+        toolbar.pinnedActions = [ ];
       };
     };
 
@@ -151,26 +162,104 @@ in
     };
 
     # See https://chromeenterprise.google/policies/ and
-    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy for
-    # the available policies.
-    modules.macOSPreferences.apps."com.brave.Browser" = {
-      forced = outputs.policies;
-    };
+    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
+    # for the available policies.
+    modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.settings._policies;
 
-    home.activation = lib.mkIf isDarwin (
+    home.activation = mkIf isDarwin (
       {
-        setBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-          import ./set-preferences.nix {
-            inherit config pkgs lib;
-            preferences = allPreferences;
+        setBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          is_brave_running() {
+            /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
           }
-        );
-        setBraveSearchEngines = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-          import ./set-search-engines.nix {
-            inherit config pkgs lib;
-            searchEngines = cfg.searchEngines;
+
+          apply_brave_preferences() {
+            # Exit early if Preferences doesn't exist yet.
+            [[ -f "${preferencesPath}" ]] || return 0
+
+            # Generate the checksum of the preference updates.
+            pref_hash=$(echo -n '${cfg.settings._prefUpdates}' | ${pkgs.openssl}/bin/openssl dgst -sha256 | cut -d' ' -f2)
+            hash_file="${config.xdg.cacheHome}/home-manager/brave-preferences.hash"
+
+            # Exit early if the preferences haven't changed.
+            if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$pref_hash" ]]; then
+              echo "Brave preferences already up to date"
+              return 0
+            fi
+
+            # Brave writes the Preferences file on exit, so we need to quit
+            # it first.
+            brave_was_running=0
+            if is_brave_running; then
+              brave_was_running=1
+              run /usr/bin/osascript -e 'quit app "Brave Browser"'
+              while is_brave_running; do /bin/sleep 0.5; done
+            fi
+
+            # Apply each preference update.
+            run ${pkgs.jq}/bin/jq \
+              --argjson updates '${cfg.settings._prefUpdates}' \
+              'reduce $updates[] as $update (.; setpath($update.path; $update.value))' \
+              "${preferencesPath}" > "${preferencesPath}.tmp"
+
+            run mv "${preferencesPath}.tmp" "${preferencesPath}"
+
+            # Restart Brave if it was running.
+            if [[ "$brave_was_running" -eq 1 ]]; then
+              run /usr/bin/open -a "Brave Browser"
+            fi
+
+            # Store the hash.
+            run mkdir -p "$(dirname "$hash_file")"
+            run echo "$pref_hash" > "$hash_file"
           }
-        );
+
+          apply_brave_preferences
+        '';
+
+        setBraveSearchEngines = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          is_brave_running() {
+            /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
+          }
+
+          apply_brave_search_engines() {
+            # Exit early if Brave hasn't yet created the DB.
+            [[ -f "${dbPath}" ]] || return 0
+
+            # Generate the checksum of the SQL script.
+            script_hash=$(${pkgs.openssl}/bin/openssl dgst -sha256 ${cfg.searchEngines._sqlScript} | cut -d' ' -f2)
+            hash_file="${config.xdg.cacheHome}/home-manager/brave-search-engines.hash"
+
+            # Exit early if the search engines haven't changed.
+            if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$script_hash" ]]; then
+              echo "Brave search engines already up to date"
+              return 0
+            fi
+
+            # The database is locked while Brave is running, so we need to
+            # quit it first.
+            brave_was_running=0
+            if is_brave_running; then
+              brave_was_running=1
+              run /usr/bin/osascript -e 'quit app "Brave Browser"'
+              while is_brave_running; do /bin/sleep 0.5; done
+            fi
+
+            # Apply SQL changes.
+            run ${pkgs.sqlite}/bin/sqlite3 "${dbPath}" < ${cfg.searchEngines._sqlScript}
+
+            # Restart Brave if it was running.
+            if [[ "$brave_was_running" -eq 1 ]]; then
+              run /usr/bin/open -a "Brave Browser"
+            fi
+
+            # Store the hash.
+            run mkdir -p "$(dirname "$hash_file")"
+            run echo "$script_hash" > "$hash_file"
+          }
+
+          apply_brave_search_engines
+        '';
       }
       // optionalAttrs cfg.isDefaultBrowser {
         setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -179,7 +268,7 @@ in
       }
     );
 
-    xdg.mimeApps = lib.mkIf (isLinux && cfg.isDefaultBrowser) {
+    xdg.mimeApps = mkIf (isLinux && cfg.isDefaultBrowser) {
       enable = true;
       defaultApplications = {
         "text/html" = [ "brave.desktop" ];

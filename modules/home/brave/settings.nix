@@ -1,17 +1,27 @@
-# Each setting is defined as a typed option together with metadata describing
-# where the value should be applied:
+# Brave settings submodule.
 #
-#   - "policy"  → macOS managed preference (com.brave.Browser forced policy)
-#   - "pref"    → JSON preference file (~/.../Brave-Browser/Default/Preferences)
+# Each setting is a typed option that knows where it needs to be applied:
 #
-# Some policy keys use inverted logic (e.g. BraveNewsDisabled = true means
-# news is *off*), so we track that with `inverted = true`.
+#   - "policy" → macOS managed preference (com.brave.Browser forced policy)
+#   - "pref"   → Brave's JSON Preferences file (~/.../Default/Preferences)
+#
+# The submodule exposes two read-only outputs that the parent module uses
+# to wire into the right destinations:
+#
+#   - _policies     → fed into modules.macOSPreferences
+#   - _prefUpdates  → fed into a home.activation script
 
-{ lib }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 let
-  # Helper: define a setting that maps to a macOS enterprise policy.
+  # ── Helpers ────────────────────────────────────────────────────────────
+
   mkPolicySetting =
     {
       description,
@@ -19,17 +29,17 @@ let
       default,
       policyKey,
       inverted ? false,
+      transform ? null,
     }:
     {
       option = mkOption { inherit description type default; };
       dest = {
         kind = "policy";
         key = policyKey;
-        inherit inverted;
+        inherit inverted transform;
       };
     };
 
-  # Helper: define a setting that maps to a Brave JSON preference.
   mkPrefSetting =
     {
       description,
@@ -45,9 +55,12 @@ let
       };
     };
 
-  # ── Setting definitions ──────────────────────────────────────────────
+  # ── Setting definitions ────────────────────────────────────────────────
 
   settingsDefs = {
+
+    # ── Policies ─────────────────────────────────────────────────────────
+
     autofill.address = mkPolicySetting {
       description = "Whether to enable autofill for addresses.";
       default = false;
@@ -117,6 +130,7 @@ let
       description = "Whether to allow browser sign-in.";
       default = false;
       policyKey = "BrowserSignin";
+      transform = v: if v then 1 else 0;
     };
 
     homepageIsNewTabPage = mkPolicySetting {
@@ -145,7 +159,7 @@ let
       inverted = true;
     };
 
-    # ── New tab page preferences ───────────────────────────────────────
+    # ── JSON preferences ─────────────────────────────────────────────────
 
     ntp.showSearchBox = mkPrefSetting {
       description = "Whether to show the search box in the new tab page.";
@@ -158,7 +172,7 @@ let
     };
 
     ntp.background.random = mkPrefSetting {
-      description = "Whether to use a random background in the new tab page.";
+      description = "Whether to use a random NTP background.";
       default = false;
       prefPath = [
         "brave"
@@ -181,7 +195,7 @@ let
     };
 
     ntp.background.showImage = mkPrefSetting {
-      description = "Whether to show the background image in the new tab page.";
+      description = "Whether to show a background image in the new tab page.";
       default = true;
       prefPath = [
         "brave"
@@ -192,7 +206,7 @@ let
     };
 
     ntp.background.type = mkPrefSetting {
-      description = ''The background type for the new tab page (e.g. "color").'';
+      description = ''The NTP background type (e.g. "color").'';
       type = types.str;
       default = "color";
       prefPath = [
@@ -223,8 +237,6 @@ let
       ];
     };
 
-    # ── Toolbar preferences ────────────────────────────────────────────
-
     showBookmarksButton = mkPrefSetting {
       description = "Whether to show the bookmarks button in the toolbar.";
       default = false;
@@ -254,24 +266,18 @@ let
     };
   };
 
-  # ── Public API ─────────────────────────────────────────────────────────
+  # ── Extract / collect ──────────────────────────────────────────────────
 
-  # Walk the (possibly nested) settingsDefs and extract only the `option`
-  # fields, preserving the nesting structure so it can be used directly in
-  # `options.modules.brave.settings = { ... }`.
   extractOptions = defs: mapAttrs (_: v: if v ? option then v.option else extractOptions v) defs;
 
-  # Collect all dest metadata paired with a thunk that reads the final
-  # value from `cfg.settings`.  Returns a flat list of
-  # { dest = { kind, ... }; value = <the configured value>; }.
   collectEntries =
     cfg: prefix: defs:
     concatLists (
       mapAttrsToList (
         name: v:
         let
-          attrPath = prefix ++ [ name ];
-          value = getAttrFromPath attrPath cfg;
+          path = prefix ++ [ name ];
+          value = getAttrFromPath path cfg;
         in
         if v ? dest then
           [
@@ -281,46 +287,71 @@ let
             }
           ]
         else
-          collectEntries cfg attrPath v
+          collectEntries cfg path v
       ) defs
     );
+
+  entries = collectEntries config [ ] settingsDefs;
+
+  policyEntries = filter (e: e.dest.kind == "policy") entries;
+  prefEntries = filter (e: e.dest.kind == "pref") entries;
 in
 {
-  inherit settingsDefs;
-
-  # The options attrset to splice into the submodule.
-  options = extractOptions settingsDefs;
-
-  # Given the final `cfg.settings` value, derive policies and preferences.
-  mkOutputs =
-    settingsCfg:
-    let
-      entries = collectEntries settingsCfg [ ] settingsDefs;
-
-      policyEntries = filter (e: e.dest.kind == "policy") entries;
-      prefEntries = filter (e: e.dest.kind == "pref") entries;
-    in
-    {
-      policies = listToAttrs (
-        map (
-          e:
-          let
-            raw = e.value;
-            value =
-              if e.dest ? inverted && e.dest.inverted then
-                !raw
-              else if e.dest.key == "BrowserSignin" then
-                (if raw then 1 else 0)
-              else
-                raw;
-          in
-          nameValuePair e.dest.key value
-        ) policyEntries
-      );
-
-      preferences = map (e: {
-        path = e.dest.path;
-        value = e.value;
-      }) prefEntries;
+  options = (extractOptions settingsDefs) // {
+    # Private option set by the parent to forward pinned extension IDs
+    # into the preference updates.
+    _pinnedExtensionIds = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      internal = true;
     };
+
+    # Read-only outputs consumed by the parent module.
+    _policies = mkOption {
+      type = types.attrs;
+      readOnly = true;
+      internal = true;
+      description = "Computed macOS enterprise policies.";
+    };
+
+    _prefUpdates = mkOption {
+      type = types.str;
+      readOnly = true;
+      internal = true;
+      description = "JSON-encoded list of {path, value} preference patches.";
+    };
+  };
+
+  config = {
+    _policies = listToAttrs (
+      map (
+        e:
+        let
+          raw = e.value;
+          value =
+            if e.dest.transform != null then
+              e.dest.transform raw
+            else if e.dest.inverted then
+              !raw
+            else
+              raw;
+        in
+        nameValuePair e.dest.key value
+      ) policyEntries
+    );
+
+    _prefUpdates = builtins.toJSON (
+      (map (e: {
+        inherit (e.dest) path;
+        inherit (e) value;
+      }) prefEntries)
+      ++ optional (config._pinnedExtensionIds != [ ]) {
+        path = [
+          "extensions"
+          "pinned_extensions"
+        ];
+        value = config._pinnedExtensionIds;
+      }
+    );
+  };
 }
