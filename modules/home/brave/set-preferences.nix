@@ -1,5 +1,5 @@
-# Returns a bash script that patches Brave's Preferences JSON file for a
-# single profile using jq.  Quits and relaunches Brave if it's running.
+# A script that patches Brave's Preferences JSON file for a single profile.
+# Quits and relaunches Brave if it's running.
 {
   lib,
   jq,
@@ -14,10 +14,14 @@
 let
   sha = lib.getExe' openssl "openssl";
 
-  pgrep = if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
+  pgrep =
+    if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
 
   quit =
-    if isDarwin then ''/usr/bin/osascript -e 'quit app "Brave Browser"' '' else "pkill -TERM brave";
+    if isDarwin then
+      ''/usr/bin/osascript -e 'quit app "Brave Browser"' ''
+    else
+      "pkill -TERM brave";
 
   relaunch = if isDarwin then ''/usr/bin/open -a "Brave Browser"'' else "brave &";
 in

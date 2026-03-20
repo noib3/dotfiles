@@ -16,18 +16,18 @@ let
     else
       "${config.xdg.configHome}/BraveSoftware/Brave-Browser";
 
-  # ── Types ──────────────────────────────────────────────────────────────
+  # ── Types ──
 
   extensionType = types.submodule {
     options = {
       id = mkOption {
-        type = types.str;
-        description = "Chrome Web Store extension ID.";
+        type = types.singleLineStr;
+        description = "Chrome Web Store extension ID";
       };
       pinned = mkOption {
         type = types.bool;
         default = false;
-        description = "Whether to pin this extension to the toolbar.";
+        description = "Whether to pin this extension to the toolbar";
       };
     };
   };
@@ -35,20 +35,18 @@ let
   searchEngineType = types.submodule {
     options = {
       name = mkOption {
-        type = types.str;
-        description = "Display name of the search engine.";
+        type = types.singleLineStr;
+        description = "Display name of the search engine";
       };
       url = mkOption {
-        type = types.str;
-        description = "Search URL template. Use {searchTerms} as placeholder.";
+        type = types.singleLineStr;
+        description = "Search URL template. Use {searchTerms} as placeholder";
       };
       favicon = mkOption {
         type = types.nullOr types.path;
         default = null;
         description = ''
-          Path to a favicon image (any format ImageMagick can read).
-          Rasterized to a 256x256 PNG at activation time and inserted
-          into Brave's Favicons database.
+          Path to a favicon image, in any format ImageMagick can read
         '';
       };
     };
@@ -59,12 +57,7 @@ let
       preferences = mkOption {
         type = types.attrs;
         default = { };
-        description = ''
-          Nested attrset of Brave JSON preferences for this profile.
-          Keys mirror the structure of the Preferences JSON file (e.g.
-          `brave.new_tab_page.show_stats = false`). Pinned extension IDs
-          are merged automatically.
-        '';
+        description = "Nested attrset of Brave JSON preferences for this profile";
       };
       searchEngines = mkOption {
         type = types.attrsOf searchEngineType;
@@ -77,7 +70,7 @@ let
     };
   };
 
-  # ── Package wrapping ───────────────────────────────────────────────────
+  # ── Package wrapping ──
 
   wrappedBrave =
     let
@@ -107,13 +100,11 @@ let
         '';
       };
 
-  # ── Extension pinning ──────────────────────────────────────────────────
+  # ── Per-profile activation entries ──
 
   pinnedExtensionIds = mapAttrsToList (_: ext: ext.id) (
     filterAttrs (_: ext: ext.pinned) cfg.extensions
   );
-
-  # ── Preferences ────────────────────────────────────────────────────────
 
   flattenPrefs =
     prefix: attrs:
@@ -134,8 +125,6 @@ let
           ]
       ) attrs
     );
-
-  # ── Per-profile activation entries ───────────────────────────────────
 
   mkPreferencesActivation =
     profileName: profileCfg:
@@ -182,35 +171,28 @@ in
     isDefaultBrowser = mkOption {
       type = types.bool;
       default = false;
-      description = "Whether to set Brave as the default browser.";
+      description = "Whether to set Brave as the default browser";
     };
 
     extensions = mkOption {
       type = types.attrsOf extensionType;
       default = { };
-      description = "Extensions to install, keyed by a human-readable name.";
+      description = "Extensions to install, keyed by a human-readable name";
     };
 
     disabledFeatures = mkOption {
       type = types.listOf types.str;
       default = [ ];
-      description = ''
-        Chromium feature flags to disable via --disable-features. When
-        non-empty the Brave binary is wrapped with a makeWrapper that
-        injects the flag.
-      '';
+      description = "Chromium feature flags to disable via --disable-features";
     };
 
     # See https://chromeenterprise.google/policies/ and
-    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
-    # for the available policies.
+    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy for
+    # the available policies.
     policies = mkOption {
       type = types.attrs;
       default = { };
-      description = ''
-        Enterprise policies fed directly into
-        modules.macOSPreferences.apps."com.brave.Browser".forced.
-      '';
+      description = "Enterprise policies";
     };
 
     profiles = mkOption {
@@ -218,7 +200,7 @@ in
       default = { };
       description = ''
         Per-profile Brave configuration. Keys are profile directory names
-        (e.g. "Default", "Profile 1").
+        (e.g. "Default", "Profile-1", etc.).
       '';
     };
   };
@@ -301,17 +283,14 @@ in
             };
             std =
               let
-                # The official Rust favicon uses @media (prefers-color-scheme)
-                # which rsvg-convert doesn't handle, rendering it black.
-                # We recolor it to white at build time.
-                rustFaviconBlk = pkgs.fetchurl {
+                rustFavicon = pkgs.fetchurl {
                   name = "rust-favicon.svg";
                   url = "https://rust-lang.org/static/images/favicon.svg";
                   hash = "sha256-BEvjkUSrMEz56g6QFMP0duDFGUxiqlJbNmnK9dtawIg=";
                 };
-                rustFavicon = pkgs.runCommand "rust-favicon-white.png" { } ''
+                rustFaviconWhite = pkgs.runCommand "rust-favicon-white.png" { } ''
                   ${lib.getExe' pkgs.imagemagick "magick"} \
-                    -density 384 -background none "${rustFaviconBlk}" \
+                    -density 384 -background none "${rustFavicon}" \
                     -fill white -colorize 100 \
                     PNG32:"$out"
                 '';
@@ -319,7 +298,7 @@ in
               {
                 name = "std's docs";
                 url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
-                favicon = rustFavicon;
+                favicon = rustFaviconWhite;
               };
           };
       };

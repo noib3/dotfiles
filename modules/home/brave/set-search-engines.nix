@@ -1,7 +1,6 @@
-# Returns a bash script that writes custom search engines into Brave's
-# "Web Data" SQLite database for a single profile, and optionally inserts
-# favicons into the "Favicons" database.  Quits and relaunches Brave if
-# it's running.
+# A script that writes custom search engines into Brave's "Web Data" SQLite
+# database for a single profile, and optionally inserts favicons into the
+# "Favicons" database.  Quits and relaunches Brave if it's running.
 {
   lib,
   imagemagick,
@@ -19,13 +18,21 @@
 
 let
   nix2Sql =
-    v: if builtins.isString v then "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'" else toString v;
+    v:
+    if builtins.isString v then
+      "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'"
+    else
+      toString v;
 
   enginesList = lib.mapAttrsToList (keyword: engine: {
     inherit keyword;
     short_name = engine.name;
     inherit (engine) url;
-    favicon_url = if engine ? favicon && engine.favicon != null then "nix-managed://${keyword}" else "";
+    favicon_url =
+      if engine ? favicon && engine.favicon != null then
+        "nix-managed://${keyword}"
+      else
+        "";
     safe_for_autoreplace = 0;
     created_by_policy = 1;
     input_encodings = "UTF-8";
@@ -46,23 +53,30 @@ let
     ) enginesList}
   '';
 
-  enginesWithFavicons = lib.filterAttrs (_: e: e ? favicon && e.favicon != null) engines;
-
-  faviconEntries = lib.mapAttrsToList (keyword: engine: {
-    inherit keyword;
-    faviconUrl = "nix-managed://${keyword}";
-    src = engine.favicon;
-  }) enginesWithFavicons;
+  faviconEntries =
+    engines
+    |> lib.filterAttrs (_: engine: engine ? favicon && engine.favicon != null)
+    |> lib.mapAttrsToList (
+      keyword: engine: {
+        inherit keyword;
+        faviconUrl = "nix-managed://${keyword}";
+        src = engine.favicon;
+      }
+    );
 
   sha = lib.getExe' openssl "openssl";
   convert = lib.getExe' imagemagick "magick";
   sqlite3 = lib.getExe sqlite;
   xxd = lib.getExe unixtools.xxd;
 
-  pgrep = if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
+  pgrep =
+    if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
 
   quit =
-    if isDarwin then ''/usr/bin/osascript -e 'quit app "Brave Browser"' '' else "pkill -TERM brave";
+    if isDarwin then
+      ''/usr/bin/osascript -e 'quit app "Brave Browser"' ''
+    else
+      "pkill -TERM brave";
 
   relaunch = if isDarwin then ''/usr/bin/open -a "Brave Browser"'' else "brave &";
 in
