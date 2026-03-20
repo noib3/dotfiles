@@ -1261,6 +1261,23 @@
         "type": "github"
       }
     },
+    "opencode-anthropic-auth": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774001706,
+        "narHash": "sha256-eftvNarzGOROcyCN86xnh/EwyqjYllNi2VRojCH9wlE=",
+        "owner": "Thesam1798",
+        "repo": "opencode-anthropic-auth",
+        "rev": "cd3f731396fcb97cc394c5732e9d672a55cc20e2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Thesam1798",
+        "ref": "fix/claude-code-oauth-compatibility",
+        "repo": "opencode-anthropic-auth",
+        "type": "github"
+      }
+    },
     "plenary-nvim": {
       "flake": false,
       "locked": {
@@ -1291,6 +1308,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
         "opencode": "opencode",
+        "opencode-anthropic-auth": "opencode-anthropic-auth",
         "rust-overlay": "rust-overlay_3",
         "treefmt-nix": "treefmt-nix_2"
       }

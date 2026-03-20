@@ -43,6 +43,10 @@
       url = "github:anomalyco/opencode/production";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    opencode-anthropic-auth = {
+      url = "github:Thesam1798/opencode-anthropic-auth/fix/claude-code-oauth-compatibility";
+      flake = false;
+    };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
