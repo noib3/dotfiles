@@ -47,8 +47,8 @@ let
         default = null;
         description = ''
           Path to a favicon image (any format ImageMagick can read).
-          The image is converted to 16x16 and 32x32 PNGs at activation
-          time and inserted into Brave's Favicons database.
+          Rasterized to a 256x256 PNG at activation time and inserted
+          into Brave's Favicons database.
         '';
       };
     };
@@ -135,6 +135,8 @@ let
       ) attrs
     );
 
+  # ── Per-profile activation entries ───────────────────────────────────
+
   mkPreferencesActivation =
     profileName: profileCfg:
     let
@@ -143,26 +145,23 @@ let
         // optionalAttrs (pinnedExtensionIds != [ ]) {
           extensions.pinned_extensions = pinnedExtensionIds;
         };
-
-      prefUpdates = builtins.toJSON (flattenPrefs [ ] merged);
-      hashName = "brave-preferences-${strings.sanitizeDerivationName profileName}";
+      sanitized = strings.sanitizeDerivationName profileName;
     in
     nameValuePair "setBravePreferences-${profileName}" (
       lib.hm.dag.entryAfter [ "writeBoundary" ] (
         pkgs.callPackage ./set-preferences.nix {
           preferencesPath = "${braveDataDir}/${profileName}/Preferences";
-          inherit prefUpdates hashName isDarwin;
-          cacheHome = config.xdg.cacheHome;
+          prefUpdates = builtins.toJSON (flattenPrefs [ ] merged);
+          hashFile = "${config.xdg.cacheHome}/home-manager/brave-preferences-${sanitized}.hash";
+          inherit isDarwin;
         }
       )
     );
 
-  # ── Search engines ─────────────────────────────────────────────────────
-
   mkSearchEnginesActivation =
     profileName: profileCfg:
     let
-      hashName = "brave-search-engines-${strings.sanitizeDerivationName profileName}";
+      sanitized = strings.sanitizeDerivationName profileName;
     in
     nameValuePair "setBraveSearchEngines-${profileName}" (
       lib.hm.dag.entryAfter [ "writeBoundary" ] (
@@ -170,8 +169,8 @@ let
           engines = profileCfg.searchEngines;
           dbPath = "${braveDataDir}/${profileName}/Web Data";
           faviconsDbPath = "${braveDataDir}/${profileName}/Favicons";
-          inherit hashName isDarwin;
-          cacheHome = config.xdg.cacheHome;
+          hashFile = "${config.xdg.cacheHome}/home-manager/brave-search-engines-${sanitized}.hash";
+          inherit isDarwin;
         }
       )
     );
@@ -277,40 +276,52 @@ in
           toolbar.pinned_actions = [ ];
         };
 
-        searchEngines = {
-          hm = {
-            name = "Home Manager Options";
-            url = "https://home-manager-options.extranix.com/?query={searchTerms}";
-            favicon = pkgs.fetchurl {
-              url = "https://nixos.org/favicon.ico";
-              hash = "sha256-D23q83m1MLh3TuYN2rytTsZ5Aski4LrwA4N16PgYaI4=";
+        searchEngines =
+          let
+            nixFavicon = pkgs.fetchurl {
+              url = "https://nixos.org/favicon.svg";
+              hash = "sha256-UL/Eyk/e7Yrfz8uR9MZwB80a+S4HC9CjixpW8tpJMvY=";
             };
-          };
-          nixo = {
-            name = "NixOS options";
-            url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
-            favicon = pkgs.fetchurl {
-              url = "https://nixos.org/favicon.ico";
-              hash = "sha256-D23q83m1MLh3TuYN2rytTsZ5Aski4LrwA4N16PgYaI4=";
+          in
+          {
+            hm = {
+              name = "Home Manager Options";
+              url = "https://home-manager-options.extranix.com/?query={searchTerms}";
+              favicon = nixFavicon;
             };
-          };
-          nixp = {
-            name = "Nix packages";
-            url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
-            favicon = pkgs.fetchurl {
-              url = "https://nixos.org/favicon.ico";
-              hash = "sha256-D23q83m1MLh3TuYN2rytTsZ5Aski4LrwA4N16PgYaI4=";
+            nixo = {
+              name = "NixOS options";
+              url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
+              favicon = nixFavicon;
             };
-          };
-          std = {
-            name = "std's docs";
-            url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
-            favicon = pkgs.fetchurl {
-              url = "https://rust-lang.org/logos/rust-logo-blk.svg";
-              hash = "sha256-bW4P0p4gFb7Fypvb3BHt4ehPt5LFYFmbWOVkNGgloik=";
+            nixp = {
+              name = "Nix packages";
+              url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
+              favicon = nixFavicon;
             };
+            std =
+              let
+                # The official Rust favicon uses @media (prefers-color-scheme)
+                # which rsvg-convert doesn't handle, rendering it black.
+                # We recolor it to white at build time.
+                rustFaviconBlk = pkgs.fetchurl {
+                  name = "rust-favicon.svg";
+                  url = "https://rust-lang.org/static/images/favicon.svg";
+                  hash = "sha256-BEvjkUSrMEz56g6QFMP0duDFGUxiqlJbNmnK9dtawIg=";
+                };
+                rustFavicon = pkgs.runCommand "rust-favicon-white.png" { } ''
+                  ${lib.getExe' pkgs.imagemagick "magick"} \
+                    -density 384 -background none "${rustFaviconBlk}" \
+                    -fill white -colorize 100 \
+                    PNG32:"$out"
+                '';
+              in
+              {
+                name = "std's docs";
+                url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
+                favicon = rustFavicon;
+              };
           };
-        };
       };
     };
 
@@ -329,7 +340,9 @@ in
         |> mapAttrs' mkPreferencesActivation
       )
       // (
-        cfg.profiles |> filterAttrs (_: p: p.searchEngines != { }) |> mapAttrs' mkSearchEnginesActivation
+        cfg.profiles
+        |> filterAttrs (_: p: p.searchEngines != { })
+        |> mapAttrs' mkSearchEnginesActivation
       )
       // optionalAttrs (isDarwin && cfg.isDefaultBrowser) {
         setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
