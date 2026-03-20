@@ -2,51 +2,23 @@
   config,
   pkgs,
   lib,
+  searchEngines,
 }:
 
 let
-  searchEngines = {
-    hm = {
-      short_name = "Home Manager Options";
-      url = "https://home-manager-options.extranix.com/?query={searchTerms}";
-      favicon_url = "https://nixos.org/favicon.ico";
-    };
-    nixo = {
-      short_name = "NixOS options";
-      url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
-      favicon_url = "https://nixos.org/favicon.ico";
-    };
-    nixp = {
-      short_name = "Nix packages";
-      url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
-      favicon_url = "https://nixos.org/favicon.ico";
-    };
-    std = {
-      short_name = "std's docs";
-      url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
-      favicon_url = "https://rust-lang.org/logos/rust-logo-blk.svg";
-    };
-  };
-
-  searchEnginesList = lib.mapAttrsToList (
-    keyword: attrs:
-    attrs
-    // {
-      inherit keyword;
-      safe_for_autoreplace = 0;
-      created_by_policy = 1;
-      input_encodings = "UTF-8";
-    }
-  ) searchEngines;
+  searchEnginesList = lib.mapAttrsToList (keyword: attrs: {
+    inherit keyword;
+    short_name = attrs.name;
+    inherit (attrs) url favicon_url;
+    safe_for_autoreplace = 0;
+    created_by_policy = 1;
+    input_encodings = "UTF-8";
+  }) searchEngines;
 
   sqlScript =
     let
       nix2Sql =
-        v:
-        if builtins.isString v then
-          "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'"
-        else
-          toString v;
+        v: if builtins.isString v then "'${builtins.replaceStrings [ "'" ] [ "''" ] v}'" else toString v;
     in
     ''
       -- Remove all policy-managed search engines.

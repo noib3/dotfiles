@@ -2,64 +2,15 @@
   config,
   pkgs,
   lib,
+  preferences,
 }:
 
 let
-  # None of these settings are documented anywhere AFAIK. They were found by
-  # copying the current Preferences file, manually changing settings in Brave
-  # via the UI, and then diffing the copied file against the latest version.
-  preferences = {
-    brave = {
-      # Hide the Brave search box in the new tab page.
-      brave_search.show-ntp-search = false;
-      new_tab_page = {
-        background = {
-          random = false;
-          selected_value = config.modules.colorschemes.palette.primary.background;
-          show_background_image = true;
-          type = "color";
-        };
-        show_stats = false;
-      };
-      show_bookmarks_button = false;
-      show_side_panel_button = false;
-    };
-    # Pin the Proton Pass extension to the toolbar.
-    extensions.pinned_extensions = [
-      "ghmbeldphafepmbegfdlkpapadhbakde"
-    ];
-    # Hide the top sites in the new tab page (yes, there's a typo in the key).
-    ntp.shortcust_visible = false;
-    # Remove all buttons from the toolbar.
-    toolbar.pinned_actions = [ ];
-  };
-
   profile = "Default";
 
   preferencesPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/${profile}/Preferences";
 
-  # Flatten nested attrset into list of [{path, value}].
-  flattenPrefs =
-    prefix: attrs:
-    lib.concatLists (
-      lib.mapAttrsToList (
-        k: v:
-        let
-          newPrefix = prefix ++ [ k ];
-        in
-        if lib.isAttrs v then
-          flattenPrefs newPrefix v
-        else
-          [
-            {
-              path = newPrefix;
-              value = v;
-            }
-          ]
-      ) attrs
-    );
-
-  prefUpdates = builtins.toJSON (flattenPrefs [ ] preferences);
+  prefUpdates = builtins.toJSON preferences;
 in
 ''
   is_brave_running() {
