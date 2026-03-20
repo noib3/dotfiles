@@ -1,15 +1,13 @@
-# Brave settings submodule.
+# Brave settings module.
 #
 # Each setting is a typed option that knows where it needs to be applied:
 #
 #   - "policy" → macOS managed preference (com.brave.Browser forced policy)
 #   - "pref"   → Brave's JSON Preferences file (~/.../Default/Preferences)
 #
-# The submodule exposes two read-only outputs that the parent module uses
-# to wire into the right destinations:
-#
-#   - _policies     → fed into modules.macOSPreferences
-#   - _prefUpdates  → fed into a home.activation script
+# The config section wires everything to the right destinations: policies
+# go to modules.macOSPreferences, preferences go to a home.activation
+# script that patches the JSON file with jq.
 
 {
   config,
@@ -20,6 +18,9 @@
 
 with lib;
 let
+  cfg = config.modules.brave;
+  inherit (pkgs.stdenv) isDarwin;
+
   # ── Helpers ────────────────────────────────────────────────────────────
 
   mkPolicySetting =
@@ -271,13 +272,13 @@ let
   extractOptions = defs: mapAttrs (_: v: if v ? option then v.option else extractOptions v) defs;
 
   collectEntries =
-    cfg: prefix: defs:
+    cfgValues: prefix: defs:
     concatLists (
       mapAttrsToList (
         name: v:
         let
           path = prefix ++ [ name ];
-          value = getAttrFromPath path cfg;
+          value = getAttrFromPath path cfgValues;
         in
         if v ? dest then
           [
@@ -287,71 +288,117 @@ let
             }
           ]
         else
-          collectEntries cfg path v
+          collectEntries cfgValues path v
       ) defs
     );
 
-  entries = collectEntries config [ ] settingsDefs;
+  entries = collectEntries cfg.settings [ ] settingsDefs;
 
   policyEntries = filter (e: e.dest.kind == "policy") entries;
   prefEntries = filter (e: e.dest.kind == "pref") entries;
+
+  # ── Policies ───────────────────────────────────────────────────────────
+
+  policies = listToAttrs (
+    map (
+      e:
+      let
+        raw = e.value;
+        value =
+          if e.dest.transform != null then
+            e.dest.transform raw
+          else if e.dest.inverted then
+            !raw
+          else
+            raw;
+      in
+      nameValuePair e.dest.key value
+    ) policyEntries
+  );
+
+  # ── JSON preferences ──────────────────────────────────────────────────
+
+  pinnedExtensionIds = mapAttrsToList (_: ext: ext.id) (
+    filterAttrs (_: ext: ext.pinned) cfg.extensions
+  );
+
+  preferences =
+    (map (e: {
+      inherit (e.dest) path;
+      inherit (e) value;
+    }) prefEntries)
+    ++ optional (pinnedExtensionIds != [ ]) {
+      path = [
+        "extensions"
+        "pinned_extensions"
+      ];
+      value = pinnedExtensionIds;
+    };
+
+  prefUpdates = builtins.toJSON preferences;
+
+  profile = "Default";
+
+  preferencesPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/${profile}/Preferences";
 in
 {
-  options = (extractOptions settingsDefs) // {
-    # Private option set by the parent to forward pinned extension IDs
-    # into the preference updates.
-    _pinnedExtensionIds = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      internal = true;
+  options.modules.brave.settings = extractOptions settingsDefs;
+
+  config = mkIf cfg.enable {
+    # See https://chromeenterprise.google/policies/ and
+    # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy
+    # for the available policies.
+    modules.macOSPreferences.apps."com.brave.Browser".forced = policies;
+
+    home.activation = mkIf isDarwin {
+      setBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        is_brave_running() {
+          /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
+        }
+
+        apply_brave_preferences() {
+          # Exit early if Preferences doesn't exist yet.
+          [[ -f "${preferencesPath}" ]] || return 0
+
+          # Generate the checksum of the preference updates.
+          pref_hash=$(echo -n '${prefUpdates}' | ${pkgs.openssl}/bin/openssl dgst -sha256 | cut -d' ' -f2)
+          hash_file="${config.xdg.cacheHome}/home-manager/brave-preferences.hash"
+
+          # Exit early if the preferences haven't changed.
+          if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$pref_hash" ]]; then
+            echo "Brave preferences already up to date"
+            return 0
+          fi
+
+          # Brave writes the Preferences file on exit, so we need to quit
+          # it first.
+          brave_was_running=0
+          if is_brave_running; then
+            brave_was_running=1
+            run /usr/bin/osascript -e 'quit app "Brave Browser"'
+            while is_brave_running; do /bin/sleep 0.5; done
+          fi
+
+          # Apply each preference update.
+          run ${pkgs.jq}/bin/jq \
+            --argjson updates '${prefUpdates}' \
+            'reduce $updates[] as $update (.; setpath($update.path; $update.value))' \
+            "${preferencesPath}" > "${preferencesPath}.tmp"
+
+          run mv "${preferencesPath}.tmp" "${preferencesPath}"
+
+          # Restart Brave if it was running.
+          if [[ "$brave_was_running" -eq 1 ]]; then
+            run /usr/bin/open -a "Brave Browser"
+          fi
+
+          # Store the hash.
+          run mkdir -p "$(dirname "$hash_file")"
+          run echo "$pref_hash" > "$hash_file"
+        }
+
+        apply_brave_preferences
+      '';
     };
-
-    # Read-only outputs consumed by the parent module.
-    _policies = mkOption {
-      type = types.attrs;
-      readOnly = true;
-      internal = true;
-      description = "Computed macOS enterprise policies.";
-    };
-
-    _prefUpdates = mkOption {
-      type = types.str;
-      readOnly = true;
-      internal = true;
-      description = "JSON-encoded list of {path, value} preference patches.";
-    };
-  };
-
-  config = {
-    _policies = listToAttrs (
-      map (
-        e:
-        let
-          raw = e.value;
-          value =
-            if e.dest.transform != null then
-              e.dest.transform raw
-            else if e.dest.inverted then
-              !raw
-            else
-              raw;
-        in
-        nameValuePair e.dest.key value
-      ) policyEntries
-    );
-
-    _prefUpdates = builtins.toJSON (
-      (map (e: {
-        inherit (e.dest) path;
-        inherit (e) value;
-      }) prefEntries)
-      ++ optional (config._pinnedExtensionIds != [ ]) {
-        path = [
-          "extensions"
-          "pinned_extensions"
-        ];
-        value = config._pinnedExtensionIds;
-      }
-    );
   };
 }
