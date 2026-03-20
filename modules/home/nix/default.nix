@@ -65,21 +65,5 @@ in
     '';
 
     programs.nix-index.enable = true;
-
-    launchd.agents.nix-collect-garbage = lib.mkIf pkgs.stdenv.isDarwin {
-      enable = true;
-      config = {
-        ProgramArguments = [
-          (lib.getExe' nix "nix-collect-garbage")
-          "-d"
-        ];
-        StartCalendarInterval = [
-          {
-            Hour = 4;
-            Minute = 0;
-          }
-        ];
-      };
-    };
   };
 }

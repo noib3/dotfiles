@@ -174,10 +174,6 @@ in
     zathura.enable = isLinux;
   };
 
-  programs = {
-    home-manager.enable = true;
-  };
-
   services = {
     mpris-proxy.enable = isLinux;
   };
