@@ -7,7 +7,7 @@
 with lib;
 let
   cfg = config.modules.hyprland;
-  inherit (config.modules.colorscheme) palette;
+  inherit (config.modules.colorschemes) palette;
 in
 {
   options.modules.hyprland = {

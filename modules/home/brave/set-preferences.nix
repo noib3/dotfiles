@@ -15,7 +15,7 @@ let
       new_tab_page = {
         background = {
           random = false;
-          selected_value = config.modules.colorscheme.palette.primary.background;
+          selected_value = config.modules.colorschemes.palette.primary.background;
           show_background_image = true;
           type = "color";
         };

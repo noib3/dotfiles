@@ -1,7 +1,7 @@
 { config }:
 
 let
-  inherit (config.modules.colorscheme) palette;
+  inherit (config.modules.colorschemes) palette;
 in
 {
   foreground = palette.primary.foreground or palette.normal.white;

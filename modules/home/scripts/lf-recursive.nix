@@ -5,7 +5,7 @@
 
 let
   inherit (config.lib.mine) hex;
-  inherit (config.modules.colorscheme) name palette;
+  inherit (config.modules.colorschemes) name palette;
   old-dirs-col = hex.toANSI palette.normal.blue;
   grayed-out-dirs = {
     "afterglow" = hex.scale 0.85 palette.bright.white;

@@ -99,7 +99,7 @@ in
             {
               home.username = username;
               machines.current.name = machineName;
-              modules.colorscheme.${colorscheme}.enable = true;
+              modules.colorschemes.${colorscheme}.enable = true;
               modules.fonts.stacks.${fontstack}.enable = true;
               nixpkgs.overlays = [ inputs.brew-nix.overlays.default ];
             }

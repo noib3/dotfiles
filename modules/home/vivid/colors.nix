@@ -1,7 +1,7 @@
 { config }:
 
 let
-  inherit (config.modules.colorscheme) name palette;
+  inherit (config.modules.colorschemes) name palette;
   overrides = {
     tokyonight = {
       orange = "#ff9e64";

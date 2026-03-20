@@ -4,7 +4,7 @@ with lib;
 let
   cfg = config.modules.git;
   delta-syntax-theme = (
-    if config.modules.colorscheme.name == "gruvbox" then
+    if config.modules.colorschemes.name == "gruvbox" then
       "gruvbox-dark"
     else
       "TwoDark"

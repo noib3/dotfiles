@@ -6,7 +6,7 @@
 
 with lib;
 let
-  cfg = config.modules.colorscheme;
+  cfg = config.modules.colorschemes;
 
   mkColorschemeOption =
     colorschemeName:
@@ -43,7 +43,7 @@ let
     |> builtins.listToAttrs;
 in
 {
-  options.modules.colorscheme = colorschemeOptions // {
+  options.modules.colorschemes = colorschemeOptions // {
     name = mkOption {
       type = types.str;
       description = "The enabled colorscheme's name";
@@ -77,7 +77,7 @@ in
         }
       ];
 
-      modules.colorscheme = {
+      modules.colorschemes = {
         name = enabledScheme.name;
         palette = enabledScheme.palette;
       };

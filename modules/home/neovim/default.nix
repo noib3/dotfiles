@@ -29,7 +29,7 @@ in
 
     neovim = {
       includeConfig = false;
-      palette = config.modules.colorscheme.palette;
+      palette = config.modules.colorschemes.palette;
     };
 
     xdg.configFile.nvim = {

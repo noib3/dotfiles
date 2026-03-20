@@ -2,7 +2,7 @@
 
 let
   inherit (config.lib.mine) hex;
-  inherit (config.modules.colorscheme) name palette;
+  inherit (config.modules.colorschemes) name palette;
   c = {
     "afterglow" = {
       inputbar.fg = palette.normal.white;
