@@ -1,110 +1,62 @@
+# A script that patches Brave's Preferences JSON file for a single profile.
+# Quits and relaunches Brave if it's running.
 {
-  config,
-  pkgs,
   lib,
+  jq,
+  openssl,
+  # ──
+  preferencesPath,
+  prefUpdates,
+  hashFile,
+  isDarwin,
 }:
 
 let
-  # None of these settings are documented anywhere AFAIK. They were found by
-  # copying the current Preferences file, manually changing settings in Brave
-  # via the UI, and then diffing the copied file against the latest version.
-  preferences = {
-    brave = {
-      # Hide the Brave search box in the new tab page.
-      brave_search.show-ntp-search = false;
-      new_tab_page = {
-        background = {
-          random = false;
-          selected_value = config.modules.colorschemes.palette.primary.background;
-          show_background_image = true;
-          type = "color";
-        };
-        show_stats = false;
-      };
-      show_bookmarks_button = false;
-      show_side_panel_button = false;
-    };
-    # Pin the Proton Pass extension to the toolbar.
-    extensions.pinned_extensions = [
-      "ghmbeldphafepmbegfdlkpapadhbakde"
-    ];
-    # Hide the top sites in the new tab page (yes, there's a typo in the key).
-    ntp.shortcust_visible = false;
-    # Remove all buttons from the toolbar.
-    toolbar.pinned_actions = [ ];
-  };
+  sha = lib.getExe' openssl "openssl";
 
-  profile = "Default";
+  pgrep =
+    if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
 
-  preferencesPath = "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser/${profile}/Preferences";
+  quit =
+    if isDarwin then
+      ''/usr/bin/osascript -e 'quit app "Brave Browser"' ''
+    else
+      "pkill -TERM brave";
 
-  # Flatten nested attrset into list of [{path, value}].
-  flattenPrefs =
-    prefix: attrs:
-    lib.concatLists (
-      lib.mapAttrsToList (
-        k: v:
-        let
-          newPrefix = prefix ++ [ k ];
-        in
-        if lib.isAttrs v then
-          flattenPrefs newPrefix v
-        else
-          [
-            {
-              path = newPrefix;
-              value = v;
-            }
-          ]
-      ) attrs
-    );
-
-  prefUpdates = builtins.toJSON (flattenPrefs [ ] preferences);
+  relaunch = if isDarwin then ''/usr/bin/open -a "Brave Browser"'' else "brave &";
 in
 ''
-  is_brave_running() {
-    /usr/bin/pgrep -x "Brave Browser" > /dev/null 2>&1
-  }
-
-  apply_brave_preferences() {
-    # Exit early if Preferences doesn't exist yet.
+  _set_brave_preferences() {
     [[ -f "${preferencesPath}" ]] || return 0
 
-    # Generate the checksum of the preference updates.
-    pref_hash=$(echo -n '${prefUpdates}' | ${pkgs.openssl}/bin/openssl dgst -sha256 | cut -d' ' -f2)
-    hash_file="${config.xdg.cacheHome}/home-manager/brave-preferences.hash"
+    local pref_hash
+    pref_hash=$(echo -n '${prefUpdates}' | ${sha} dgst -sha256 | cut -d' ' -f2)
 
-    # Exit early if the preferences haven't changed.
-    if [[ -f "$hash_file" ]] && [[ "$(cat "$hash_file")" == "$pref_hash" ]]; then
-      echo "Brave preferences already up to date"
+    if [[ -f "${hashFile}" ]] && [[ "$(cat "${hashFile}")" == "$pref_hash" ]]; then
       return 0
     fi
 
-    # Brave writes the Preferences file on exit, so we need to quit it first.
-    brave_was_running=0
-    if is_brave_running; then
+    local brave_was_running=0
+    if ${pgrep} > /dev/null 2>&1; then
       brave_was_running=1
-      run /usr/bin/osascript -e 'quit app "Brave Browser"'
-      while is_brave_running; do /bin/sleep 0.5; done
+      ${quit}
+      while ${pgrep} > /dev/null 2>&1; do sleep 0.5; done
     fi
 
-    # Apply each preference update.
-    run ${pkgs.jq}/bin/jq \
+    run ${lib.getExe jq} \
       --argjson updates '${prefUpdates}' \
       'reduce $updates[] as $update (.; setpath($update.path; $update.value))' \
       "${preferencesPath}" > "${preferencesPath}.tmp"
 
     run mv "${preferencesPath}.tmp" "${preferencesPath}"
 
-    # Restart Brave if it was running.
     if [[ "$brave_was_running" -eq 1 ]]; then
-      run /usr/bin/open -a "Brave Browser"
+      run ${relaunch}
     fi
 
-    # Store the hash.
-    run mkdir -p "$(dirname "$hash_file")"
-    run echo "$pref_hash" > "$hash_file"
+    run mkdir -p "$(dirname "${hashFile}")"
+    echo "$pref_hash" > "${hashFile}"
   }
 
-  apply_brave_preferences
+  _set_brave_preferences
 ''

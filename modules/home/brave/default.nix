@@ -9,42 +9,217 @@ with lib;
 let
   cfg = config.modules.brave;
   inherit (pkgs.stdenv) isDarwin isLinux;
+
+  braveDataDir =
+    if isDarwin then
+      "${config.home.homeDirectory}/Library/Application Support/BraveSoftware/Brave-Browser"
+    else
+      "${config.xdg.configHome}/BraveSoftware/Brave-Browser";
+
+  # ── Types ──
+
+  extensionType = types.submodule {
+    options = {
+      id = mkOption {
+        type = types.singleLineStr;
+        description = "Chrome Web Store extension ID";
+      };
+      pinned = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Whether to pin this extension to the toolbar";
+      };
+    };
+  };
+
+  searchEngineType = types.submodule {
+    options = {
+      name = mkOption {
+        type = types.singleLineStr;
+        description = "Display name of the search engine";
+      };
+      url = mkOption {
+        type = types.singleLineStr;
+        description = "Search URL template. Use {searchTerms} as placeholder";
+      };
+      favicon = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        description = ''
+          Path to a favicon image, in any format ImageMagick can read
+        '';
+      };
+    };
+  };
+
+  profileType = types.submodule {
+    options = {
+      preferences = mkOption {
+        type = types.attrs;
+        default = { };
+        description = "Nested attrset of Brave JSON preferences for this profile";
+      };
+      searchEngines = mkOption {
+        type = types.attrsOf searchEngineType;
+        default = { };
+        description = ''
+          Custom search engines for this profile. The attribute name is
+          used as the keyword (shortcut).
+        '';
+      };
+    };
+  };
+
+  # ── Package wrapping ──
+
+  wrappedBrave =
+    let
+      disableFlags = concatStringsSep "," cfg.disabledFeatures;
+    in
+    if isDarwin then
+      pkgs.symlinkJoin {
+        name = "brave-wrapped";
+        paths = [ pkgs.brave ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          rm "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+          makeWrapper \
+            "${pkgs.brave}/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+            "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
+            --add-flags "--disable-features=${disableFlags}"
+        '';
+      }
+    else
+      pkgs.symlinkJoin {
+        name = "brave-wrapped";
+        paths = [ pkgs.brave ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram "$out/bin/brave" \
+            --add-flags "--disable-features=${disableFlags}"
+        '';
+      };
+
+  # ── Per-profile activation entries ──
+
+  pinnedExtensionIds = mapAttrsToList (_: ext: ext.id) (
+    filterAttrs (_: ext: ext.pinned) cfg.extensions
+  );
+
+  flattenPrefs =
+    prefix: attrs:
+    concatLists (
+      mapAttrsToList (
+        k: v:
+        let
+          path = prefix ++ [ k ];
+        in
+        if isAttrs v && !(isList v) then
+          flattenPrefs path v
+        else
+          [
+            {
+              inherit path;
+              value = v;
+            }
+          ]
+      ) attrs
+    );
+
+  mkPreferencesActivation =
+    profileName: profileCfg:
+    let
+      merged =
+        profileCfg.preferences
+        // optionalAttrs (pinnedExtensionIds != [ ]) {
+          extensions.pinned_extensions = pinnedExtensionIds;
+        };
+      sanitized = strings.sanitizeDerivationName profileName;
+    in
+    nameValuePair "setBravePreferences-${profileName}" (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] (
+        pkgs.callPackage ./set-preferences.nix {
+          preferencesPath = "${braveDataDir}/${profileName}/Preferences";
+          prefUpdates = builtins.toJSON (flattenPrefs [ ] merged);
+          hashFile = "${config.xdg.cacheHome}/home-manager/brave-preferences-${sanitized}.hash";
+          inherit isDarwin;
+        }
+      )
+    );
+
+  mkSearchEnginesActivation =
+    profileName: profileCfg:
+    let
+      sanitized = strings.sanitizeDerivationName profileName;
+    in
+    nameValuePair "setBraveSearchEngines-${profileName}" (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] (
+        pkgs.callPackage ./set-search-engines.nix {
+          engines = profileCfg.searchEngines;
+          dbPath = "${braveDataDir}/${profileName}/Web Data";
+          faviconsDbPath = "${braveDataDir}/${profileName}/Favicons";
+          hashFile = "${config.xdg.cacheHome}/home-manager/brave-search-engines-${sanitized}.hash";
+          inherit isDarwin;
+        }
+      )
+    );
 in
 {
   options.modules.brave = {
     enable = mkEnableOption "Brave";
-  };
 
-  config = mkIf cfg.enable {
-    programs.brave = {
-      enable = true;
-      package =
-        if isDarwin then
-          pkgs.symlinkJoin {
-            name = "brave-wrapped";
-            paths = [ pkgs.brave ];
-            nativeBuildInputs = [ pkgs.makeWrapper ];
-            postBuild = ''
-              rm "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
-              makeWrapper \
-                "${pkgs.brave}/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
-                "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
-                --add-flags "--disable-features=GlobalMediaControls"
-            '';
-          }
-        else
-          pkgs.brave;
-      extensions = [
-        { id = "ghmbeldphafepmbegfdlkpapadhbakde"; } # Proton Pass
-        { id = "khncfooichmfjbepaaaebmommgaepoid"; } # Unhook
-      ];
+    isDefaultBrowser = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Whether to set Brave as the default browser";
+    };
+
+    extensions = mkOption {
+      type = types.attrsOf extensionType;
+      default = { };
+      description = "Extensions to install, keyed by a human-readable name";
+    };
+
+    disabledFeatures = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "Chromium feature flags to disable via --disable-features";
     };
 
     # See https://chromeenterprise.google/policies/ and
     # https://support.brave.app/hc/en-us/articles/360039248271-Group-Policy for
     # the available policies.
-    modules.macOSPreferences.apps."com.brave.Browser" = {
-      forced = {
+    policies = mkOption {
+      type = types.attrs;
+      default = { };
+      description = "Enterprise policies";
+    };
+
+    profiles = mkOption {
+      type = types.attrsOf profileType;
+      default = { };
+      description = ''
+        Per-profile Brave configuration. Keys are profile directory names
+        (e.g. "Default", "Profile-1", etc.).
+      '';
+    };
+  };
+
+  config = mkIf cfg.enable {
+    modules.brave = {
+      isDefaultBrowser = true;
+
+      disabledFeatures = [ "GlobalMediaControls" ];
+
+      extensions = {
+        proton-pass = {
+          id = "ghmbeldphafepmbegfdlkpapadhbakde";
+          pinned = true;
+        };
+        unhook.id = "khncfooichmfjbepaaaebmommgaepoid";
+      };
+
+      policies = {
         AutofillAddressEnabled = false;
         AutofillCreditCardEnabled = false;
         BookmarkBarEnabled = false;
@@ -61,21 +236,100 @@ in
         PasswordManagerEnabled = false;
         SyncDisabled = true;
       };
+
+      profiles.Default = {
+        preferences = {
+          brave = {
+            brave_search."show-ntp-search" = false;
+            new_tab_page = {
+              background = {
+                random = false;
+                selected_value = config.modules.colorschemes.palette.primary.background;
+                show_background_image = true;
+                type = "color";
+              };
+              show_stats = false;
+            };
+            show_bookmarks_button = false;
+            show_side_panel_button = false;
+          };
+          # Yes, the typo in the key is from Brave itself.
+          ntp.shortcust_visible = false;
+          toolbar.pinned_actions = [ ];
+        };
+
+        searchEngines =
+          let
+            nixFavicon = pkgs.fetchurl {
+              url = "https://nixos.org/favicon.svg";
+              hash = "sha256-UL/Eyk/e7Yrfz8uR9MZwB80a+S4HC9CjixpW8tpJMvY=";
+            };
+          in
+          {
+            hm = {
+              name = "Home Manager Options";
+              url = "https://home-manager-options.extranix.com/?query={searchTerms}";
+              favicon = nixFavicon;
+            };
+            nixo = {
+              name = "NixOS options";
+              url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
+              favicon = nixFavicon;
+            };
+            nixp = {
+              name = "Nix packages";
+              url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
+              favicon = nixFavicon;
+            };
+            std =
+              let
+                rustFavicon = pkgs.fetchurl {
+                  name = "rust-favicon.svg";
+                  url = "https://rust-lang.org/static/images/favicon.svg";
+                  hash = "sha256-BEvjkUSrMEz56g6QFMP0duDFGUxiqlJbNmnK9dtawIg=";
+                };
+                rustFaviconWhite = pkgs.runCommand "rust-favicon-white.png" { } ''
+                  ${lib.getExe' pkgs.imagemagick "magick"} \
+                    -density 384 -background none "${rustFavicon}" \
+                    -fill white -colorize 100 \
+                    PNG32:"$out"
+                '';
+              in
+              {
+                name = "std's docs";
+                url = "https://doc.rust-lang.org/nightly/std/?search={searchTerms}";
+                favicon = rustFaviconWhite;
+              };
+          };
+      };
     };
 
-    home.activation = lib.mkIf isDarwin {
-      setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        run ${pkgs.defaultbrowser}/bin/defaultbrowser browser
-      '';
-      setBravePreferences = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-        import ./set-preferences.nix { inherit config pkgs lib; }
-      );
-      setBraveSearchEngines = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-        import ./set-search-engines.nix { inherit config pkgs lib; }
-      );
+    programs.brave = {
+      enable = true;
+      package = if cfg.disabledFeatures != [ ] then wrappedBrave else pkgs.brave;
+      extensions = mapAttrsToList (_: ext: { inherit (ext) id; }) cfg.extensions;
     };
 
-    xdg.mimeApps = lib.mkIf isLinux {
+    modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies;
+
+    home.activation =
+      (
+        cfg.profiles
+        |> filterAttrs (_: p: p.preferences != { } || pinnedExtensionIds != [ ])
+        |> mapAttrs' mkPreferencesActivation
+      )
+      // (
+        cfg.profiles
+        |> filterAttrs (_: p: p.searchEngines != { })
+        |> mapAttrs' mkSearchEnginesActivation
+      )
+      // optionalAttrs (isDarwin && cfg.isDefaultBrowser) {
+        setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run ${pkgs.defaultbrowser}/bin/defaultbrowser browser
+        '';
+      };
+
+    xdg.mimeApps = mkIf (isLinux && cfg.isDefaultBrowser) {
       enable = true;
       defaultApplications = {
         "text/html" = [ "brave.desktop" ];
