@@ -72,9 +72,16 @@ let
 
   # ── Package wrapping ──
 
+  needsWrapping = cfg.features.enabled != [ ] || cfg.features.disabled != [ ];
+
   wrappedBrave =
     let
-      disableFlags = concatStringsSep "," cfg.disabledFeatures;
+      enableFlags = cfg.features.enabled |> concatStringsSep ",";
+      disableFlags = cfg.features.disabled |> concatStringsSep ",";
+      featuresFlags =
+        optional (cfg.features.enabled != [ ]) "--enable-features=${enableFlags}"
+        ++ optional (cfg.features.disabled != [ ]) "--disable-features=${disableFlags}"
+        |> concatStringsSep " ";
     in
     if isDarwin then
       pkgs.symlinkJoin {
@@ -86,7 +93,7 @@ let
           makeWrapper \
             "${pkgs.brave}/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
             "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
-            --add-flags "--disable-features=${disableFlags}"
+            --add-flags "${featuresFlags}"
         '';
       }
     else
@@ -96,7 +103,7 @@ let
         nativeBuildInputs = [ pkgs.makeWrapper ];
         postBuild = ''
           wrapProgram "$out/bin/brave" \
-            --add-flags "--disable-features=${disableFlags}"
+            --add-flags "${featuresFlags}"
         '';
       };
 
@@ -180,10 +187,17 @@ in
       description = "Extensions to install, keyed by a human-readable name";
     };
 
-    disabledFeatures = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = "Chromium feature flags to disable via --disable-features";
+    features = {
+      enabled = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Chromium feature flags to enable via --enable-features";
+      };
+      disabled = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Chromium feature flags to disable via --disable-features";
+      };
     };
 
     # See https://chromeenterprise.google/policies/ and
@@ -209,7 +223,10 @@ in
     modules.brave = {
       isDefaultBrowser = true;
 
-      disabledFeatures = [ "GlobalMediaControls" ];
+      features = {
+        enabled = [ "BraveEnableAutoTranslate" ];
+        disabled = [ "GlobalMediaControls" ];
+      };
 
       extensions = {
         proton-pass = {
@@ -306,7 +323,7 @@ in
 
     programs.brave = {
       enable = true;
-      package = if cfg.disabledFeatures != [ ] then wrappedBrave else pkgs.brave;
+      package = if needsWrapping then wrappedBrave else pkgs.brave;
       extensions = mapAttrsToList (_: ext: { inherit (ext) id; }) cfg.extensions;
     };
 
