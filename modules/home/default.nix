@@ -148,6 +148,7 @@ in
     ghostty.enable = true;
     git.enable = true;
     gnupg.enable = true;
+    home-manager.enable = true;
     hyprland.enable = isLinux;
     kanshi.enable = isLinux;
     kubectl.enable = true;
