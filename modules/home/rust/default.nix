@@ -12,10 +12,6 @@ let
 
   cargoTargetDirEnv = pkgs.writeShellApplication {
     name = "cargo-target-dir-env";
-    runtimeEnv = {
-      DOCUMENTS = config.lib.mine.documentsDir;
-      XDG_STATE_HOME = config.xdg.stateHome;
-    };
     text = ''
       ${builtins.readFile ../scripts/project-hash-utils.sh}
       ${builtins.readFile ./cargo-target-dir-env.sh}
@@ -68,12 +64,13 @@ in
     home.packages =
       with pkgs;
       [
-        nightlyToolchain
         cargo-criterion
         cargo-deny
         cargo-expand
         cargo-flamegraph
         cargo-fuzz
+        cargoTargetDirEnv
+        nightlyToolchain
       ]
       ++ lib.lists.optionals pkgs.stdenv.isDarwin [
         (lib.hiPrio nightlyToolchainWrapped)
