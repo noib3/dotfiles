@@ -130,7 +130,8 @@ flag_takes_1_arg() {
   case "$1" in
     --out-link | -o | --profile | --eval-store | --include | -I | --expr | \
       --inputs-from | --output-lock-file | --reference-lock-file | --file | \
-      -f | --update-input | --log-format | --arg-from-stdin | --redirect)
+      -f | --update-input | --log-format | --arg-from-stdin | --redirect | \
+      --extra-experimental-features)
       return 0
       ;;
     *) return 1 ;;
