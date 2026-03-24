@@ -85,19 +85,21 @@ in
         wl-clipboard-rs
         xdg-utils
       ]
+      # C/C++.
+      ++ [ clang-tools ]
       # Lua.
       ++ [
         lua-language-server
         stylua
       ]
+      # Markdown.
+      ++ [ marksman ]
       # Shell.
       ++ [
         bash-language-server
         shellcheck
         shfmt
       ]
-      # Markdown.
-      ++ [ marksman ]
       # TOML.
       ++ [
         (taplo.override { withLsp = true; })

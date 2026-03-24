@@ -74,6 +74,7 @@ vim.api.nvim_create_autocmd("LspDetach", {
 })
 
 vim.lsp.enable("bashls")
+vim.lsp.enable("clangd")
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("luacheck")
 vim.lsp.enable("marksman")
