@@ -82,10 +82,16 @@ vim.api.nvim_create_autocmd("User", {
         vim.b[buf].from_nvim_launch = true
         if not file_buf then file_buf = buf end
       end
-      -- Display the first file in all the windows currently showing the
-      -- original buffer.
-      for win in buf_get_wins(orig_buf) do
-        vim.api.nvim_win_set_buf(win, file_buf)
+
+      if orig_buf == vim.api.nvim_get_current_buf() then
+        -- If the original buffer is focused, display the first file in the
+        -- current window.
+        vim.api.nvim_win_set_buf(0, file_buf)
+      else
+        -- Otherwise, display it in all the windows showing the original buffer.
+        for win in buf_get_wins(orig_buf) do
+          vim.api.nvim_win_set_buf(win, file_buf)
+        end
       end
     end
 
