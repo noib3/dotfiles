@@ -28,6 +28,7 @@ trouble.setup({
       },
     },
     errors_and_warnings = {
+      max_items = false,
       mode = "diagnostics",
       filter = function(items)
         return vim.tbl_filter(
