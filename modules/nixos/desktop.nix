@@ -81,6 +81,7 @@ in
         "nix-command"
         "pipe-operators"
       ];
+      keep-outputs = true;
       trusted-users = [
         "root"
         cfg.username

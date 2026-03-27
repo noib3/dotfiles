@@ -52,6 +52,7 @@ in
           "nix-command"
           "pipe-operators"
         ];
+        keep-outputs = true;
         use-xdg-base-directories = true;
         warn-dirty = false;
       };
