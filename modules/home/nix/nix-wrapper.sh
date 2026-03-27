@@ -181,10 +181,10 @@ resolve_local_installable() {
 
 # --- Flake input rooting ---
 
-# Root all flake input sources so they survive garbage collection. Without this,
-# GC would remove the input sources (nixpkgs tarball, etc.) since they're
-# eval-time deps not referenced by any build output, forcing a re-download on
-# the next evaluation.
+# Root the flake source closure so it survives garbage collection. Without this,
+# GC would remove eval-time flake sources (nixpkgs tarball, etc.) when they're
+# not referenced by any build output, forcing a re-download on the next
+# evaluation.
 root_flake_inputs() {
   local flake_root=$1
   local roots_dir=$2
@@ -202,12 +202,26 @@ root_flake_inputs() {
     # Remove old input roots so removed flake inputs don't stay rooted.
     rm -f "$roots_dir"/input-* 2>/dev/null
 
+    # Walk the nested flake-input tree from `nix flake archive --json` and emit
+    # tab-separated pairs of (<input_name>, <store_path>). For example, this:
+    #   {"inputs":{"rust-overlay":{"path":"/nix/store/...-source","inputs":{"nixpkgs":{"path":"/nix/store/...-source"}}}}}
+    # would emit:
+    #   rust-overlay⇥/nix/store/...-source
+    #   rust-overlay.nixpkgs⇥/nix/store/...-source
     nix flake archive --json "$flake_root" 2>/dev/null |
-      jq -r '.. | .path? // empty' 2>/dev/null |
-      while IFS= read -r path; do
-        [ -n "$path" ] || continue
-        nix-store --add-root "$roots_dir/input-$(basename "$path")" \
-          --indirect -r "$path" >/dev/null 2>&1 || true
+      jq -r '
+        def emit($prefix):
+          ([($prefix | join(".")), .path] | @tsv),
+          ((.inputs // {}) | to_entries[] | . as $entry | $entry.value | emit($prefix + [ $entry.key ]));
+
+        (.inputs // {}) | to_entries[] | . as $entry | $entry.value | emit([ $entry.key ])
+      ' 2>/dev/null |
+      while IFS=$'\t' read -r input_name store_path; do
+        # Skip inputs that don't have store paths.
+        [ -n "$store_path" ] || continue
+        input_name=$(sanitize_basename "$input_name")
+        nix-store --add-root "$roots_dir/input-$input_name" \
+          --indirect -r "$store_path" >/dev/null 2>&1 || true
       done
   ) &
 }
