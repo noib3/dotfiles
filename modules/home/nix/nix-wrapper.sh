@@ -322,6 +322,8 @@ handle_build() {
   local -a pass_through=()
   local has_out_link=false
   local has_no_link=false
+  local has_json=false
+  local has_print_out_paths=false
 
   while [ $# -gt 0 ]; do
     case "$1" in
@@ -342,6 +344,16 @@ handle_build() {
         ;;
       --no-link)
         has_no_link=true
+        pass_through+=("$1")
+        shift
+        ;;
+      --json)
+        has_json=true
+        pass_through+=("$1")
+        shift
+        ;;
+      --print-out-paths)
+        has_print_out_paths=true
         pass_through+=("$1")
         shift
         ;;
@@ -394,37 +406,62 @@ handle_build() {
     exec nix build "${pass_through[@]}" "${installables[@]}"
   fi
 
-  # Process each installable. For local ones, build with --out-link into the
-  # build-roots' packages dir and create a single repo-local `result` symlink.
-  # For non-local ones, build normally.
-  local exit_code=0
   local flake_root roots_dir
+  local -a internal_pass_through=()
+  local arg
 
+  for arg in "${pass_through[@]}"; do
+    case "$arg" in
+      --json | --print-out-paths) ;;
+      *) internal_pass_through+=("$arg") ;;
+    esac
+  done
+
+  # Build all installables in one invocation so Nix can schedule work across
+  # them in parallel, then root the realized outputs for local flakes.
   for inst in "${installables[@]}"; do
-    if ! resolve_local_installable "$inst"; then
-      nix build "${pass_through[@]}" "$inst" || exit_code=$?
-      continue
-    fi
-
-    local attr_name
-    attr_name=$(fs_safe_attr_name "$inst")
-
-    mkdir -p "$roots_dir"
-    root_flake_inputs "$flake_root" "$roots_dir"
-
-    local packages_dir="$roots_dir/packages"
-    mkdir -p "$packages_dir"
-
-    local root_link="$packages_dir/$attr_name"
-
-    if nix build "${pass_through[@]}" --out-link "$root_link" "$inst"; then
-      ln -sfn "$packages_dir" "$flake_root/result"
-    else
-      exit_code=$?
+    if resolve_local_installable "$inst"; then
+      mkdir -p "$roots_dir"
+      root_flake_inputs "$flake_root" "$roots_dir"
     fi
   done
 
-  return "$exit_code"
+  local build_json
+  build_json=$(nix build --json --no-link "${internal_pass_through[@]}" "${installables[@]}") || return $?
+
+  local i=0
+  for inst in "${installables[@]}"; do
+    if resolve_local_installable "$inst"; then
+      local attr_name packages_dir output_count
+      attr_name=$(fs_safe_attr_name "$inst")
+      packages_dir="$roots_dir/packages"
+      mkdir -p "$packages_dir"
+
+      output_count=$(printf '%s' "$build_json" | jq ".[$i].outputs | length" 2>/dev/null) || output_count=0
+
+      while IFS=$'\t' read -r output_name store_path; do
+        [ -n "$store_path" ] || continue
+
+        local root_name=$attr_name
+        if [ "$output_name" != "out" ] || [ "$output_count" -gt 1 ]; then
+          root_name="$attr_name-$output_name"
+        fi
+
+        nix-store --add-root "$packages_dir/$root_name" --indirect -r "$store_path" >/dev/null 2>&1 || true
+      done < <(printf '%s' "$build_json" |
+        jq -r ".[$i].outputs | to_entries[] | [.key, .value] | @tsv" 2>/dev/null)
+
+      ln -sfn "$packages_dir" "$flake_root/result"
+    fi
+
+    i=$((i + 1))
+  done
+
+  if [ "$has_json" = true ]; then
+    printf '%s\n' "$build_json"
+  elif [ "$has_print_out_paths" = true ]; then
+    printf '%s' "$build_json" | jq -r '.[] | .outputs | to_entries[] | .value' 2>/dev/null
+  fi
 }
 
 # Handle `nix develop [options] installables...`
