@@ -4,6 +4,12 @@ if [ -n "${NIX_GET_COMPLETIONS:-}" ]; then
   exec nix "$@"
 fi
 
+# Allow `nix -- ...` to bypass the wrapper entirely.
+if [ "${1:-}" = "--" ]; then
+  shift
+  exec nix "$@"
+fi
+
 # Where we store our GC root symlinks.
 build_roots=${XDG_STATE_HOME:?}/nix/build-roots
 
