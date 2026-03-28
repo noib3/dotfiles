@@ -155,6 +155,10 @@ flag_takes_2_args() {
   esac
 }
 
+current_system() {
+  nix eval --raw --impure --expr 'builtins.currentSystem' 2>/dev/null
+}
+
 # --- Resolve a local installable to its flake root and build-roots dir ---
 #
 # Sets: flake_root, roots_dir
@@ -230,6 +234,81 @@ root_flake_inputs() {
           --indirect -r "$store_path" >/dev/null 2>&1 || true
       done
   ) &
+}
+
+# Resolve a local `nix run` installable to the store path `nix run` would
+# realize.
+resolve_run_target_path() {
+  local installable=$1
+  shift
+  local -a options=("$@")
+  local fragment
+  local flake_ref
+  local system
+  local candidate
+
+  system=$(current_system) || return 1
+
+  case "$installable" in
+    *"#"*)
+      flake_ref=${installable%%"#"*}
+      fragment=${installable#*"#"}
+      fragment=${fragment%%"^"*}
+      ;;
+    *)
+      fragment=""
+      ;;
+  esac
+
+  [ -n "$flake_ref" ] || flake_ref='.'
+
+  case "$fragment" in
+    "")
+      candidate="$flake_ref#apps.$system.default"
+      ;;
+    apps.* | defaultApp.*)
+      candidate="$flake_ref#$fragment"
+      ;;
+    packages.* | legacyPackages.*)
+      candidate=""
+      ;;
+    *)
+      candidate="$flake_ref#apps.$system.$fragment"
+      ;;
+  esac
+
+  if [ -n "$candidate" ]; then
+    local target
+    target=$(nix eval --raw "${options[@]}" "$candidate.program" 2>/dev/null) || target=""
+    if [ -n "$target" ]; then
+      printf '%s' "$target"
+      return 0
+    fi
+  fi
+
+  case "$fragment" in
+    "")
+      candidate="$flake_ref#packages.$system.default"
+      ;;
+    packages.* | legacyPackages.*)
+      candidate="$flake_ref#$fragment"
+      ;;
+    apps.* | defaultApp.*)
+      return 1
+      ;;
+    *)
+      candidate="$flake_ref#packages.$system.$fragment"
+      local target
+      target=$(nix eval --raw "${options[@]}" "$candidate.outPath" 2>/dev/null) || target=""
+      if [ -n "$target" ]; then
+        printf '%s' "$target"
+        return 0
+      fi
+      candidate="$flake_ref#legacyPackages.$system.$fragment"
+      ;;
+  esac
+
+  nix eval --raw "${options[@]}" "$candidate.outPath" 2>/dev/null || return 1
 }
 
 # --- Subcommand handlers ---
@@ -429,13 +508,13 @@ handle_develop() {
 # Handle `nix run [options] installables... [-- args...]`
 handle_run() {
   local installable=""
-  local -a pass_through=()
-  local -a run_args=()
+  local -a options=()
+  local -a passthrough_args=()
   local seen_dashdash=false
 
   while [ $# -gt 0 ]; do
     if [ "$seen_dashdash" = true ]; then
-      run_args+=("$1")
+      passthrough_args+=("$1")
       shift
       continue
     fi
@@ -447,13 +526,13 @@ handle_run() {
         ;;
       -*)
         if flag_takes_2_args "$1"; then
-          pass_through+=("$1" "$2" "$3")
+          options+=("$1" "$2" "$3")
           shift 3
         elif flag_takes_1_arg "$1"; then
-          pass_through+=("$1" "$2")
+          options+=("$1" "$2")
           shift 2
         else
-          pass_through+=("$1")
+          options+=("$1")
           shift
         fi
         ;;
@@ -461,7 +540,7 @@ handle_run() {
         if [ -z "$installable" ]; then
           installable=$1
         else
-          run_args+=("$1")
+          passthrough_args+=("$1")
         fi
         shift
         ;;
@@ -475,38 +554,37 @@ handle_run() {
   local flake_root roots_dir
 
   if ! resolve_local_installable "$installable"; then
-    if [ ${#run_args[@]} -gt 0 ]; then
-      exec nix run "${pass_through[@]}" "$installable" -- "${run_args[@]}"
+    if [ ${#passthrough_args[@]} -gt 0 ]; then
+      exec nix run "${options[@]}" "$installable" -- "${passthrough_args[@]}"
     else
-      exec nix run "${pass_through[@]}" "$installable"
+      exec nix run "${options[@]}" "$installable"
     fi
   fi
-
-  local attr_name
-  attr_name=$(fs_safe_attr_name "$installable")
 
   mkdir -p "$roots_dir"
   root_flake_inputs "$flake_root" "$roots_dir"
 
-  local root_link="$roots_dir/app-$attr_name"
-
-  # Try `nix build` first (works if the installable is a package). If that
-  # fails (e.g. it's an app, not a package), resolve the app's `program`
-  # store path and root it directly.
-  if ! nix build --out-link "$root_link" "${pass_through[@]}" "$installable" 2>/dev/null; then
-    local program
-    program=$(nix eval --json "${pass_through[@]}" "$installable" 2>/dev/null |
-      jq -r '.program // empty' 2>/dev/null) || true
-    if [ -n "$program" ]; then
-      nix-store --add-root "$root_link" --indirect -r "$program" >/dev/null 2>&1 || true
-    fi
-  fi
-
-  if [ ${#run_args[@]} -gt 0 ]; then
-    exec nix run "${pass_through[@]}" "$installable" -- "${run_args[@]}"
+  if [ ${#passthrough_args[@]} -gt 0 ]; then
+    nix run "${options[@]}" "$installable" -- "${passthrough_args[@]}"
   else
-    exec nix run "${pass_through[@]}" "$installable"
+    nix run "${options[@]}" "$installable"
   fi
+
+  local run_exit=$?
+
+  # After a successful run, root the resulting store path in the background.
+  if [ "$run_exit" -eq 0 ]; then
+    (
+      local target
+      target=$(resolve_run_target_path "$installable" "${options[@]}") || exit 0
+      [ -n "$target" ] || exit 0
+      local attr_name
+      attr_name=$(fs_safe_attr_name "$installable")
+      nix-store --add-root "$roots_dir/app-$attr_name" --indirect -r "$target" >/dev/null 2>&1 || true
+    ) >/dev/null 2>&1 &
+  fi
+
+  return "$run_exit"
 }
 
 # Handle `nix shell [options] installables...`
@@ -643,7 +721,7 @@ handle_flake_check() {
   # If checks passed, build each check output to create GC roots.
   if [ $check_exit -eq 0 ]; then
     local system
-    system=$(nix eval --raw --impure --expr 'builtins.currentSystem' 2>/dev/null) || system=""
+    system=$(current_system)
 
     if [ -n "$system" ]; then
       local check_names
@@ -680,7 +758,7 @@ handle_fmt() {
 
   # Build the formatter to create a GC root, then run fmt.
   local system
-  system=$(nix eval --raw --impure --expr 'builtins.currentSystem' 2>/dev/null) || system=""
+  system=$(current_system)
 
   if [ -n "$system" ]; then
     nix build --out-link "$roots_dir/formatter" \
