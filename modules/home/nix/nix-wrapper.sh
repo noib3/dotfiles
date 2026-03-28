@@ -198,6 +198,7 @@ resolve_local_installable() {
 root_flake_inputs() {
   local flake_root=$1
   local roots_dir=$2
+  local inputs_dir="$roots_dir/inputs"
 
   # Skip if we already rooted inputs for this flake root in this invocation.
   case " ${_rooted_flakes:-} " in
@@ -209,8 +210,10 @@ root_flake_inputs() {
   # are already in the store from the evaluation that's about to happen (or just
   # happened), so this is just creating GC root symlinks.
   (
+    mkdir -p "$inputs_dir"
+
     # Remove old input roots so removed flake inputs don't stay rooted.
-    rm -f "$roots_dir"/input-* 2>/dev/null
+    rm -f "$inputs_dir"/* 2>/dev/null
 
     # Walk the nested flake-input tree from `nix flake archive --json` and emit
     # tab-separated pairs of (<input_name>, <store_path>). For example, this:
@@ -230,7 +233,7 @@ root_flake_inputs() {
         # Skip inputs that don't have store paths.
         [ -n "$store_path" ] || continue
         input_name=$(sanitize_basename "$input_name")
-        nix-store --add-root "$roots_dir/input-$input_name" \
+        nix-store --add-root "$inputs_dir/$input_name" \
           --indirect -r "$store_path" >/dev/null 2>&1 || true
       done
   ) &
@@ -391,8 +394,8 @@ handle_build() {
     exec nix build "${pass_through[@]}" "${installables[@]}"
   fi
 
-  # Process each installable. For local ones, build with --out-link into
-  # build-roots and create result-<attr> symlinks in the flake root.
+  # Process each installable. For local ones, build with --out-link into the
+  # build-roots' packages dir and create a single repo-local `result` symlink.
   # For non-local ones, build normally.
   local exit_code=0
   local flake_root roots_dir
@@ -409,15 +412,13 @@ handle_build() {
     mkdir -p "$roots_dir"
     root_flake_inputs "$flake_root" "$roots_dir"
 
-    local root_link="$roots_dir/package-$attr_name"
+    local packages_dir="$roots_dir/packages"
+    mkdir -p "$packages_dir"
+
+    local root_link="$packages_dir/$attr_name"
 
     if nix build "${pass_through[@]}" --out-link "$root_link" "$inst"; then
-      local result_name="result-$attr_name"
-      if [ "$attr_name" = "default" ]; then
-        result_name="result"
-      fi
-
-      ln -sfn "$root_link" "$flake_root/$result_name"
+      ln -sfn "$packages_dir" "$flake_root/result"
     else
       exit_code=$?
     fi
@@ -435,7 +436,7 @@ handle_develop() {
   while [ $# -gt 0 ]; do
     case "$1" in
       # `--command`/`-c` consumes all remaining arguments as the command
-      # to run inside the dev shell.
+      # to run inside the devshell.
       --command | -c)
         pass_through+=("$@")
         break
@@ -499,9 +500,10 @@ handle_develop() {
 
   mkdir -p "$roots_dir"
   root_flake_inputs "$flake_root" "$roots_dir"
+  mkdir -p "$roots_dir/devshells"
 
   exec nix develop \
-    --profile "$roots_dir/devshell-$attr_name" \
+    --profile "$roots_dir/devshells/$attr_name" \
     "$installable" "${pass_through[@]}"
 }
 
@@ -574,13 +576,15 @@ handle_run() {
 
   # After a successful run, root the resulting store path in the background.
   if [ "$run_exit" -eq 0 ]; then
+    mkdir -p "$roots_dir/apps"
+
     (
       local target
       target=$(resolve_run_target_path "$installable" "${options[@]}") || exit 0
       [ -n "$target" ] || exit 0
       local attr_name
       attr_name=$(fs_safe_attr_name "$installable")
-      nix-store --add-root "$roots_dir/app-$attr_name" --indirect -r "$target" >/dev/null 2>&1 || true
+      nix-store --add-root "$roots_dir/apps/$attr_name" --indirect -r "$target" >/dev/null 2>&1 || true
     ) >/dev/null 2>&1 &
   fi
 
@@ -641,7 +645,8 @@ handle_shell() {
       attr_name=$(fs_safe_attr_name "$inst")
       mkdir -p "$roots_dir"
       root_flake_inputs "$flake_root" "$roots_dir"
-      nix build --out-link "$roots_dir/package-$attr_name" \
+      mkdir -p "$roots_dir/packages"
+      nix build --out-link "$roots_dir/packages/$attr_name" \
         "$inst" 2>/dev/null || true
     fi
   done
@@ -728,10 +733,12 @@ handle_flake_check() {
       check_names=$(nix flake show "$flake_url" --json 2>/dev/null |
         jq -r ".checks.\"$system\" // {} | keys[]" 2>/dev/null) || check_names=""
 
+      mkdir -p "$roots_dir/checks"
+
       local name safe_name
       for name in $check_names; do
         safe_name=$(printf '%s' "$name" | tr '/' '-')
-        nix build --out-link "$roots_dir/check-$safe_name" \
+        nix build --out-link "$roots_dir/checks/$safe_name" \
           "$flake_url#checks.$system.$name" 2>/dev/null || true
       done
     fi
