@@ -119,8 +119,10 @@ in
     };
 
     sessionVariables = {
+      ANDROID_USER_HOME = "${config.xdg.dataHome}/android";
       COLORTERM = "truecolor";
       DOCUMENTS = config.lib.mine.documentsDir;
+      GRADLE_USER_HOME = "${config.xdg.dataHome}/gradle";
       HISTFILE = "${config.xdg.cacheHome}/bash/bash_history";
       IPYTHONDIR = "${config.xdg.configHome}/ipython";
       LANG = "en_US.UTF-8";
