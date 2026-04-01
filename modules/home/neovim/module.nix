@@ -19,7 +19,8 @@ in
       readOnly = true;
       default = pkgs.callPackage ./package {
         inherit inputs;
-        inherit (cfg) palette includeConfig;
+        inherit (cfg) includeConfig;
+        paletteData = cfg.palette;
       };
     };
 

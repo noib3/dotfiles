@@ -28,6 +28,7 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function() vim.b.copilot_suggestion_auto_trigger = false end,
 })
 
+---@diagnostic disable-next-line: undefined-field
 require("copilot").setup({
   suggestion = {
     auto_trigger = true,

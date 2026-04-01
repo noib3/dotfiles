@@ -1,13 +1,14 @@
 {
-  inputs,
   lib,
   linkFarm,
   stdenvNoCC,
   vimPlugins,
   writeShellApplication,
   writeTextDir,
+  # --
+  inputs,
   includeConfig ? true,
-  palette ? import ../palettes/gruvbox.nix,
+  paletteData ? import ../palettes/gruvbox.nix,
 }:
 
 let
@@ -89,7 +90,7 @@ let
   ]
   ++ treeSitterParsers
   ++ treeSitterQueries
-  ++ [ (writeTextDir "lua/palette.lua" "return ${toLua palette}") ];
+  ++ [ (writeTextDir "lua/palette.lua" "return ${toLua paletteData}") ];
 
   # A directory containing one symlink per plugin, used by lua-language-server
   # to resolve plugin type definitions.
