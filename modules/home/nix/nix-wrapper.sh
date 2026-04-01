@@ -10,6 +10,13 @@ if [ "${1:-}" = "--" ]; then
   exec nix "$@"
 fi
 
+wrapper_bin_dir=$(dirname "$0")
+
+# When entering a shell we call the real `nix` by absolute path because `env
+# PATH=... nix` would resolve `nix` using the new PATH (which has the wrapper
+# first), causing infinite recursion.
+real_nix=$(command -v nix)
+
 # Where we store our GC root symlinks.
 build_roots=${XDG_STATE_HOME:?}/nix/build-roots
 
@@ -523,13 +530,15 @@ handle_develop() {
 
   # If user specified --profile, respect their choice.
   if [ "$has_profile" = true ]; then
-    exec nix develop "$installable" "${pass_through[@]}"
+    exec env PATH="$wrapper_bin_dir:$PATH" "$real_nix" develop \
+      "$installable" "${pass_through[@]}"
   fi
 
   local flake_root roots_dir
 
   if ! resolve_local_installable "$installable"; then
-    exec nix develop "$installable" "${pass_through[@]}"
+    exec env PATH="$wrapper_bin_dir:$PATH" "$real_nix" develop \
+      "$installable" "${pass_through[@]}"
   fi
 
   local attr_name
@@ -539,7 +548,7 @@ handle_develop() {
   root_flake_inputs "$flake_root" "$roots_dir"
   mkdir -p "$roots_dir/devshells"
 
-  exec nix develop \
+  exec env PATH="$wrapper_bin_dir:$PATH" "$real_nix" develop \
     --profile "$roots_dir/devshells/$attr_name" \
     "$installable" "${pass_through[@]}"
 }
@@ -688,7 +697,8 @@ handle_shell() {
     fi
   done
 
-  exec nix shell "${installables[@]}" "${pass_through[@]}"
+  exec env PATH="$wrapper_bin_dir:$PATH" "$real_nix" shell \
+    "${installables[@]}" "${pass_through[@]}"
 }
 
 # Handle `nix flake check [options] [flake-url]`
