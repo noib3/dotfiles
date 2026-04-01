@@ -1,0 +1,23 @@
+Fixes https://github.com/anomalyco/opencode/issues/16885
+
+--- a/packages/opencode/src/index.ts
++++ b/packages/opencode/src/index.ts
+@@ -29,8 +29,6 @@
+ import { PrCommand } from "./cli/cmd/pr"
+ import { SessionCommand } from "./cli/cmd/session"
+ import { DbCommand } from "./cli/cmd/db"
+-import path from "path"
+-import { Global } from "./global"
+ import { JsonMigration } from "./storage/json-migration"
+ import { Database } from "./storage/db"
+ import { errorMessage } from "./util/error"
+@@ -93,8 +91,7 @@
+       args: process.argv.slice(2),
+     })
+ 
+-    const marker = path.join(Global.Path.data, "opencode.db")
+-    if (!(await Filesystem.exists(marker))) {
++    if (!(await Filesystem.exists(Database.Path))) {
+       const tty = process.stderr.isTTY
+       process.stderr.write("Performing one time database migration, may take a few minutes..." + EOL)
+       const width = 36

@@ -63,6 +63,7 @@ let
         patches = (old.patches or [ ]) ++ [
           ./patches/anthropic-provider-label.patch
           ./patches/cursor-style-and-blink.patch
+          ./patches/fix-repeated-json-migration-check.patch
         ];
       });
 in
