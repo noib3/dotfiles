@@ -49,6 +49,7 @@ in
         yabai -m rule --add app="Font Book" manage=off
         yabai -m rule --add app="App Store" manage=off
         yabai -m rule --add app="System Information" manage=off
+        yabai -m rule --add app="qemu-system-aarch64" manage=off # Android emulator
 
         yabai -m rule --add title="floating" manage=off
 
