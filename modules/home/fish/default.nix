@@ -114,6 +114,16 @@ in
           set -gx SHELL (status fish-path)
         end
 
+        function __repair_stale_pwd --on-event fish_prompt
+          if test -n "$PWD"; and not test -d "$PWD"
+            set -l physical_pwd (command pwd -P 2> /dev/null)
+
+            if test -n "$physical_pwd"; and test -d "$physical_pwd"
+              builtin cd "$physical_pwd" 2> /dev/null
+            end
+          end
+        end
+
         function __update_cargo_target_dir --on-variable PWD
           ${config.modules.rust.cargo-target-dir-env.meta.mainProgram} \
             --shell fish | source
