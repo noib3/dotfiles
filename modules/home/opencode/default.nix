@@ -65,6 +65,7 @@ let
           ./patches/cursor-style-and-blink.patch
           ./patches/fix-repeated-json-migration-check.patch
           ./patches/multi-account-profiles.patch
+          ./patches/usage-tracking.patch
         ];
       });
 in

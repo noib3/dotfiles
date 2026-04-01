@@ -1,0 +1,4981 @@
+Port of https://github.com/anomalyco/opencode/pull/9545 (unified usage
+tracking) that applies cleanly on top of the production branch and our other
+patches.
+
+diff --git a/packages/opencode/src/auth/index.ts b/packages/opencode/src/auth/index.ts
+index 0ebac646..9f610284 100644
+--- a/packages/opencode/src/auth/index.ts
++++ b/packages/opencode/src/auth/index.ts
+@@ -16,6 +16,7 @@ export namespace Auth {
+     type: Schema.Literal("oauth"),
+     refresh: Schema.String,
+     access: Schema.String,
++    usage: Schema.optional(Schema.String),
+     expires: Schema.Number,
+     accountId: Schema.optional(Schema.String),
+     enterpriseUrl: Schema.optional(Schema.String),
+diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
+index f42ba15e..4e855e31 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
+@@ -26,6 +26,7 @@ export type CommandOption = DialogSelectOption<string> & {
+   keybind?: string
+   suggested?: boolean
+   slash?: Slash
++  slashDescription?: string
+   hidden?: boolean
+   enabled?: boolean
+ }
+@@ -89,7 +90,7 @@ function init() {
+         if (!slash) return []
+         return {
+           display: "/" + slash.name,
+-          description: option.description ?? option.title,
++          description: option.slashDescription ?? option.description ?? option.title,
+           aliases: slash.aliases?.map((alias) => "/" + alias),
+           onSelect: () => result.trigger(option.value),
+         }
+diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
+new file mode 100644
+index 00000000..37343938
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
+@@ -0,0 +1,154 @@
++import { TextAttributes } from "@opentui/core"
++import { useKeyboard } from "@opentui/solid"
++import { useTheme } from "../context/theme"
++import { useDialog } from "@tui/ui/dialog"
++import { useTuiConfig } from "../context/tui-config"
++import {
++  formatCreditsLabel,
++  formatPlanType,
++  formatUsageResetLong,
++  usageDisplay,
++  type UsageDisplayMode,
++  formatUsageWindowLabel,
++  usageBarColor,
++  usageBarString,
++} from "./usage-format"
++import type { UsageEntry, UsageError, UsageWindow } from "./usage-data"
++import { For, Show, createSignal } from "solid-js"
++
++type Theme = ReturnType<typeof useTheme>["theme"]
++
++export function DialogUsage(props: { entries: UsageEntry[]; errors?: UsageError[]; initialMode?: UsageDisplayMode }) {
++  const { theme } = useTheme()
++  const tuiConfig = useTuiConfig()
++  const dialog = useDialog()
++  const [hover, setHover] = createSignal(false)
++  const mode = () => (tuiConfig.show_usage_value_mode ?? "used") as UsageDisplayMode
++  const [providerIndex, setProviderIndex] = createSignal(-1)
++
++  useKeyboard((evt) => {
++    if (evt.name !== "tab") return
++    evt.preventDefault()
++    if (props.entries.length <= 1) return
++    setProviderIndex((i) => (i + 1 >= props.entries.length ? -1 : i + 1))
++  })
++
++  const visibleEntries = () => {
++    const idx = providerIndex()
++    if (idx === -1) return props.entries
++    return [props.entries[idx]]
++  }
++
++  return (
++    <box paddingLeft={2} paddingRight={2} gap={1} paddingBottom={1} flexDirection="column">
++      <box flexDirection="row" justifyContent="space-between">
++        <text fg={theme.text} attributes={TextAttributes.BOLD}>
++          Usage
++          <Show when={providerIndex() >= 0}>
++            <span style={{ fg: theme.textMuted }}>{` (${providerIndex() + 1}/${props.entries.length})`}</span>
++          </Show>
++        </text>
++        <box flexDirection="row" gap={1} alignItems="center">
++          <Show when={props.entries.length > 1}>
++            <text fg={theme.textMuted}>
++              <span style={{ fg: theme.text }}>tab</span> cycle providers
++            </text>
++          </Show>
++          <box
++            paddingLeft={1}
++            paddingRight={1}
++            backgroundColor={hover() ? theme.primary : undefined}
++            onMouseOver={() => setHover(true)}
++            onMouseOut={() => setHover(false)}
++            onMouseUp={() => dialog.clear()}
++          >
++            <text fg={hover() ? theme.selectedListItemText : theme.textMuted}>esc</text>
++          </box>
++        </box>
++      </box>
++      <Show when={visibleEntries().length > 0} fallback={<text fg={theme.text}>No usage data available.</text>}>
++        <For each={visibleEntries()}>
++          {(entry, index) => {
++            const planType = formatPlanType(entry.snapshot.planType)
++            const entryErrors = (props.errors ?? [])
++              .filter((error) => error.provider === entry.provider)
++              .map((error) => error.message)
++            return (
++              <box flexDirection="column" marginTop={index() === 0 ? 0 : 1} gap={1}>
++                <box flexDirection="column">
++                  <text fg={theme.text} attributes={TextAttributes.BOLD}>
++                    {entry.displayName} Usage
++                    <Show when={planType}>
++                      <span style={{ fg: theme.textMuted }}>{` (${planType})`}</span>
++                    </Show>
++                  </text>
++                  <text fg={theme.textMuted}>{"─".repeat(Math.max(24, entry.displayName.length + 20))}</text>
++                </box>
++                <Show when={entry.snapshot.primary}>
++                  {(window) => (
++                    <box flexDirection="column">{renderWindow(entry.provider, "primary", window(), mode(), theme)}</box>
++                  )}
++                </Show>
++                <Show when={entry.snapshot.secondary}>
++                  {(window) => (
++                    <box flexDirection="column">
++                      {renderWindow(entry.provider, "secondary", window(), mode(), theme)}
++                    </box>
++                  )}
++                </Show>
++                <Show when={entry.snapshot.tertiary}>
++                  {(window) => (
++                    <box flexDirection="column">
++                      {renderWindow(entry.provider, "tertiary", window(), mode(), theme)}
++                    </box>
++                  )}
++                </Show>
++                <Show when={entry.snapshot.credits}>
++                  {(credits) => (
++                    <text fg={theme.text}>
++                      {formatCreditsLabel(entry.provider, credits(), {
++                        mode: mode(),
++                        slot: "secondary",
++                      })}
++                    </text>
++                  )}
++                </Show>
++                <Show when={entryErrors.length > 0}>
++                  <text fg={theme.error} attributes={TextAttributes.DIM}>
++                    {entryErrors.join(" • ")}
++                  </text>
++                </Show>
++              </box>
++            )
++          }}
++        </For>
++      </Show>
++    </box>
++  )
++}
++
++function renderWindow(
++  provider: string,
++  windowType: "primary" | "secondary" | "tertiary",
++  window: UsageWindow,
++  mode: UsageDisplayMode,
++  theme: Theme,
++  showReset = true,
++) {
++  const usedPercent = usageDisplay(window.usedPercent, "used").percent
++  const display = usageDisplay(window.usedPercent, mode)
++  const windowLabel = formatUsageWindowLabel(provider, windowType, window.windowMinutes)
++
++  return (
++    <box flexDirection="column">
++      <text fg={theme.text}>
++        {windowLabel} Limit: [
++        <span style={{ fg: usageBarColor(usedPercent, theme) }}>{usageBarString(display.percent)}</span>]{" "}
++        {display.percent.toFixed(0)}% {display.label}
++      </text>
++      <Show when={showReset && window.resetsAt !== null}>
++        <text fg={theme.textMuted}>Resets {formatUsageResetLong(window.resetsAt!)}</text>
++      </Show>
++    </box>
++  )
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+index 34a0d808..74aec628 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+@@ -33,9 +33,16 @@ import { DialogProvider as DialogProviderConnect } from "../dialog-provider"
+ import { DialogAlert } from "../../ui/dialog-alert"
+ import { useToast } from "../../ui/toast"
+ import { useKV } from "../../context/kv"
++import { DialogUsage } from "../dialog-usage"
++import { fetchUsage } from "../usage-client"
+ import { useTextareaKeybindings } from "../textarea-keybindings"
+ import { DialogSkill } from "../dialog-skill"
+ import { useTuiConfig } from "@tui/context/tui-config"
++import { formatUsageResetLong, formatUsageWindowLabel } from "../usage-format"
++import type { UsageEntry } from "../usage-data"
++import { Log } from "@/util/log"
++import { resolveUsageProvider } from "@/usage/command"
++import { usageRemember, usageShouldRefresh, usageWarning, usageWarningKey } from "../usage-toast"
+
+ export type PromptProps = {
+   sessionID?: string
+@@ -72,6 +79,8 @@ function randomIndex(count: number) {
+   return Math.floor(Math.random() * count)
+ }
+
++const log = Log.create({ service: "tui.prompt" })
++
+ export function Prompt(props: PromptProps) {
+   let input: TextareaRenderable
+   let anchor: BoxRenderable
+@@ -95,6 +104,101 @@ export function Prompt(props: PromptProps) {
+   const shell = createMemo(() => props.placeholders?.shell ?? [])
+
+   const tuiConfig = useTuiConfig()
++  const [usageSuccessAt, setUsageSuccessAt] = createSignal(0)
++  const [usageFailureAt, setUsageFailureAt] = createSignal(0)
++  const [usageRefreshing, setUsageRefreshing] = createSignal(false)
++  const [previousStatus, setPreviousStatus] = createSignal("idle")
++  const usageSnapshot = new Map<string, UsageEntry["snapshot"]>()
++  const usageShown = new Set<string>()
++
++  function usageToast(entries: UsageEntry[]) {
++    for (const entry of entries) {
++      const previous = usageSnapshot.get(entry.provider)
++      usageSnapshot.set(entry.provider, entry.snapshot)
++      const warning = usageWarning(entry, previous)
++      if (!warning) continue
++      const key = usageWarningKey(entry.provider, warning)
++      if (!usageRemember(usageShown, key)) continue
++      const label = formatUsageWindowLabel(entry.provider, warning.window, warning.windowMinutes)
++      const reset = warning.resetsAt ? ` Resets ${formatUsageResetLong(warning.resetsAt)}.` : ""
++      toast.show({
++        title: `${entry.displayName} usage`,
++        message: `${label} reached ${Math.round(warning.usedPercent)}% used.${reset} Run /usage for details.`,
++        variant: warning.threshold >= 95 ? "error" : "warning",
++        duration: 5000,
++      })
++    }
++  }
++
++  createEffect(
++    on(
++      () => status().type,
++      (current) => {
++        const previous = previousStatus()
++        setPreviousStatus(current)
++        if (previous === "idle") return
++        if (current !== "idle") return
++        const provider = resolveUsageProvider({
++          scope: "current",
++          modelProviderID: local.model.current()?.providerID ?? null,
++        })
++        if (!provider) return
++        const now = Date.now()
++        if (
++          !usageShouldRefresh({
++            now,
++            successAt: usageSuccessAt(),
++            failureAt: usageFailureAt(),
++            refreshing: usageRefreshing(),
++          })
++        ) {
++          return
++        }
++        setUsageRefreshing(true)
++        fetchUsage(sdk, { provider, refresh: true })
++          .then((data) => {
++            usageToast(data.entries)
++            setUsageSuccessAt(Date.now())
++          })
++          .catch((error) => {
++            setUsageFailureAt(Date.now())
++            log.debug("usage refresh failed", { provider, error })
++          })
++          .finally(() => {
++            setUsageRefreshing(false)
++          })
++      },
++    ),
++  )
++
++  function firstToken(input: string) {
++    const line = input.split("\n")[0]?.trim()
++    if (!line) return ""
++    return line.split(/\s+/)[0] ?? ""
++  }
++
++  function handleUsageCommand(commandText: string) {
++    fetchUsage(sdk, {
++      command: commandText,
++      modelProviderID: local.model.current()?.providerID,
++      showUsageProviderScope: tuiConfig.show_usage_provider_scope ?? "all",
++      showUsageValueMode: tuiConfig.show_usage_value_mode,
++      refresh: true,
++    })
++      .then((data) => {
++        if (data.entries.length > 0) {
++          dialog.replace(() => <DialogUsage entries={data.entries} errors={data.errors} initialMode={data.mode} />)
++          return
++        }
++        const message = data.error ?? "No usage data available."
++        DialogAlert.show(dialog, "Usage", message)
++      })
++      .catch((error: unknown) => {
++        const message = error instanceof Error ? error.message : String(error)
++        DialogAlert.show(dialog, "Usage", message)
++      })
++  }
++
+   function promptModelWarning() {
+     toast.show({
+       variant: "warning",
+@@ -353,18 +457,32 @@ export function Prompt(props: PromptProps) {
+
+               return part
+             })
+-            .filter((part) => part !== null)
++            .filter(Boolean) as typeof nonTextParts
+
+-          setStore("prompt", {
+-            input: content,
+-            // keep only the non-text parts because the text parts were
+-            // already expanded inline
+-            parts: updatedNonTextParts,
+-          })
++          setStore("prompt", "input", content)
++          setStore("prompt", "parts", updatedNonTextParts)
+           restoreExtmarksFromParts(updatedNonTextParts)
+-          input.cursorOffset = Bun.stringWidth(content)
++          input.gotoBufferEnd()
+         },
+       },
++      ...iife(() => {
++        const customUsageCommand = sync.data.command.some((x) => x.name === "usage")
++        if (customUsageCommand) return []
++        return [
++          {
++            title: "Show usage limits",
++            value: "usage.show",
++            slashDescription: "Show usage limits",
++            category: "Provider",
++            slash: {
++              name: "usage",
++            },
++            onSelect: () => {
++              handleUsageCommand("/usage")
++            },
++          },
++        ]
++      }),
+       {
+         title: "Skills",
+         value: "prompt.skills",
+@@ -577,13 +695,30 @@ export function Prompt(props: PromptProps) {
+
+   async function submit() {
+     if (props.disabled) return
+-    if (autocomplete?.visible) return
++    const promptToken = firstToken(store.prompt.input)
++    const customUsageCommand = sync.data.command.some((x) => x.name === "usage")
++    const isBuiltInUsage = promptToken === "/usage" && !customUsageCommand
++    if (autocomplete?.visible && !isBuiltInUsage) return
+     if (!store.prompt.input) return
+     const trimmed = store.prompt.input.trim()
+     if (trimmed === "exit" || trimmed === "quit" || trimmed === ":q") {
+       exit()
+       return
+     }
++
++    if (isBuiltInUsage && store.mode !== "shell") {
++      handleUsageCommand(store.prompt.input)
++      input.extmarks.clear()
++      setStore("prompt", {
++        input: "",
++        parts: [],
++      })
++      setStore("extmarkToPartIndex", new Map())
++      props.onSubmit?.()
++      input.clear()
++      return
++    }
++
+     const selectedModel = local.model.current()
+     if (!selectedModel) {
+       promptModelWarning()
+@@ -636,7 +771,45 @@ export function Prompt(props: PromptProps) {
+     const currentMode = store.mode
+     const variant = local.model.variant.current()
+
+-    if (store.mode === "shell") {
++    const token = firstToken(inputText)
++    const isUsage = token === "/usage" && !customUsageCommand
++    const isShell = store.mode === "shell"
++    const isCommand = token.startsWith("/") && sync.data.command.some((x) => x.name === token.slice(1))
++
++    const finalizeSubmit = (options?: { history?: boolean }) => {
++      const includeHistory = options?.history ?? true
++      if (includeHistory) {
++        history.append({
++          ...store.prompt,
++          mode: currentMode,
++        })
++      }
++      input.extmarks.clear()
++      setStore("prompt", {
++        input: "",
++        parts: [],
++      })
++      setStore("extmarkToPartIndex", new Map())
++      props.onSubmit?.()
++
++      // temporary hack to make sure the message is sent
++      if (!props.sessionID)
++        setTimeout(() => {
++          route.navigate({
++            type: "session",
++            sessionID,
++          })
++        }, 50)
++      input.clear()
++    }
++
++    if (isUsage && !isShell) {
++      handleUsageCommand(inputText)
++      finalizeSubmit({ history: false })
++      return
++    }
++
++    if (isShell) {
+       sdk.client.session.shell({
+         sessionID,
+         agent: local.agent.current().name,
+@@ -647,14 +820,11 @@ export function Prompt(props: PromptProps) {
+         command: inputText,
+       })
+       setStore("mode", "normal")
+-    } else if (
+-      inputText.startsWith("/") &&
+-      iife(() => {
+-        const firstLine = inputText.split("\n")[0]
+-        const command = firstLine.split(" ")[0].slice(1)
+-        return sync.data.command.some((x) => x.name === command)
+-      })
+-    ) {
++      finalizeSubmit()
++      return
++    }
++
++    if (isCommand) {
+       // Parse command from first line, preserve multi-line content in arguments
+       const firstLineEnd = inputText.indexOf("\n")
+       const firstLine = firstLineEnd === -1 ? inputText : inputText.slice(0, firstLineEnd)
+@@ -677,47 +847,29 @@ export function Prompt(props: PromptProps) {
+             ...x,
+           })),
+       })
+-    } else {
+-      sdk.client.session
+-        .prompt({
+-          sessionID,
+-          ...selectedModel,
+-          messageID,
+-          agent: local.agent.current().name,
+-          model: selectedModel,
+-          variant,
+-          parts: [
+-            {
+-              id: PartID.ascending(),
+-              type: "text",
+-              text: inputText,
+-            },
+-            ...nonTextParts.map(assign),
+-          ],
+-        })
+-        .catch(() => {})
++      finalizeSubmit()
++      return
+     }
+-    history.append({
+-      ...store.prompt,
+-      mode: currentMode,
+-    })
+-    input.extmarks.clear()
+-    setStore("prompt", {
+-      input: "",
+-      parts: [],
+-    })
+-    setStore("extmarkToPartIndex", new Map())
+-    props.onSubmit?.()
+-
+-    // temporary hack to make sure the message is sent
+-    if (!props.sessionID)
+-      setTimeout(() => {
+-        route.navigate({
+-          type: "session",
+-          sessionID,
+-        })
+-      }, 50)
+-    input.clear()
++
++    sdk.client.session
++      .prompt({
++        sessionID,
++        ...selectedModel,
++        messageID,
++        agent: local.agent.current().name,
++        model: selectedModel,
++        variant,
++        parts: [
++          {
++            id: PartID.ascending(),
++            type: "text",
++            text: inputText,
++          },
++          ...nonTextParts.map(assign),
++        ],
++      })
++      .catch(() => {})
++    finalizeSubmit()
+   }
+   const exit = useExit()
+
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-client.ts b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
+new file mode 100644
+index 00000000..359e868f
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
+@@ -0,0 +1,74 @@
++import { createMemo, createResource, onCleanup, type Accessor } from "solid-js"
++import { useLocal } from "@tui/context/local"
++import { useSDK } from "@tui/context/sdk"
++import { useTuiConfig } from "../context/tui-config"
++import type { UsageResult } from "./usage-data"
++import { resolveUsageProvider, type UsageDisplayMode, type UsageScope } from "@/usage/command"
++
++type UsageResource = {
++  data: Accessor<UsageResult | undefined>
++  refetch: () => void
++  scope: () => UsageScope
++  provider: () => string | null
++}
++
++export async function fetchUsage(
++  sdk: ReturnType<typeof useSDK>,
++  params: {
++    provider?: string
++    refresh?: boolean
++    command?: string
++    modelProviderID?: string
++    showUsageProviderScope?: UsageScope
++    showUsageValueMode?: UsageDisplayMode
++  },
++): Promise<UsageResult> {
++  const response = await sdk.client.usage.get(params)
++  const data = response.data as UsageResult | undefined
++  return {
++    entries: data?.entries ?? [],
++    errors: data?.errors ?? [],
++    error: data?.error,
++    mode: data?.mode,
++  }
++}
++
++export function useUsageResource(): UsageResource {
++  const local = useLocal()
++  const sdk = useSDK()
++  const tuiConfig = useTuiConfig()
++
++  const scope = createMemo<UsageScope>(() => tuiConfig.show_usage_provider_scope ?? "current")
++  const provider = createMemo(() =>
++    resolveUsageProvider({
++      scope: scope(),
++      modelProviderID: local.model.current()?.providerID ?? null,
++    }),
++  )
++
++  const [data, { refetch }] = createResource(
++    () => ({ scope: scope(), provider: provider() }),
++    async ({ scope, provider }) => {
++      if (scope === "current" && !provider) {
++        return { entries: [], errors: [] }
++      }
++      return fetchUsage(sdk, { provider: provider ?? undefined, refresh: false })
++    },
++    { initialValue: { entries: [], errors: [] } },
++  )
++
++  const unsubscribe = sdk.event.on("usage.updated", (evt) => {
++    const currentScope = scope()
++    const currentProvider = provider()
++    if (currentScope === "current" && currentProvider && evt.properties.provider !== currentProvider) return
++    refetch()
++  })
++  onCleanup(() => unsubscribe())
++
++  return {
++    data,
++    refetch,
++    scope,
++    provider,
++  }
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-data.ts b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
+new file mode 100644
+index 00000000..9c8223a1
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
+@@ -0,0 +1,39 @@
++export type UsageWindow = {
++  usedPercent: number
++  windowMinutes: number | null
++  resetsAt: number | null
++}
++
++export type UsageEntry = {
++  provider: string
++  displayName: string
++  snapshot: {
++    primary: UsageWindow | null
++    secondary: UsageWindow | null
++    tertiary: UsageWindow | null
++    credits: {
++      hasCredits: boolean
++      unlimited: boolean
++      balance: string | null
++      total?: number | null
++      used?: number | null
++      remaining?: number | null
++    } | null
++    planType: string | null
++    updatedAt: number
++  }
++}
++
++export type UsageError = {
++  provider: string
++  message: string
++}
++
++export type UsageDisplayMode = "used" | "remaining"
++
++export type UsageResult = {
++  entries: UsageEntry[]
++  error?: string
++  errors: UsageError[]
++  mode?: UsageDisplayMode
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-format.ts b/packages/opencode/src/cli/cmd/tui/component/usage-format.ts
+new file mode 100644
+index 00000000..2dea23d0
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-format.ts
+@@ -0,0 +1,182 @@
++type Credits = {
++  hasCredits: boolean
++  unlimited: boolean
++  balance: string | null
++  total?: number | null
++  used?: number | null
++  remaining?: number | null
++}
++
++export type UsageSlot = "primary" | "secondary" | "tertiary"
++export type UsageDisplayMode = "used" | "remaining"
++
++export function formatUsageWindowLabel(provider: string, slot: UsageSlot, windowMinutes: number | null): string {
++  const base = formatUsageSlotLabel(provider, slot)
++  return formatWindowLabel(base, windowMinutes)
++}
++
++export function formatUsageSlotLabel(provider: string, slot: UsageSlot): string {
++  if (provider === "openai") {
++    if (slot === "primary") return "5h"
++    if (slot === "secondary") return "Weekly"
++    return "Usage"
++  }
++  if (provider.startsWith("github-copilot")) {
++    if (slot === "primary") return "Monthly"
++    if (slot === "secondary") return "Premium Requests"
++    return "Usage"
++  }
++  if (provider === "anthropic") {
++    if (slot === "primary") return "5h"
++    if (slot === "secondary") return "Weekly"
++    return "Usage"
++  }
++  return "Usage"
++}
++
++export function formatPlanType(planType: string | null): string | null {
++  if (!planType) return null
++  const normalized = planType.replace(/_/g, " ")
++  const parts: string[] = []
++  for (const part of normalized.split(" ")) {
++    if (!part) continue
++    parts.push(part.slice(0, 1).toUpperCase() + part.slice(1))
++  }
++  return parts.join(" ")
++}
++
++export function formatCreditsLabel(
++  provider: string,
++  credits: Credits,
++  options?: { mode?: UsageDisplayMode; slot?: UsageSlot },
++): string {
++  const mode = options?.mode ?? "used"
++  if (provider.startsWith("github-copilot")) {
++    const slot = options?.slot ?? "secondary"
++    const quotaLabel = formatUsageSlotLabel(provider, slot)
++    if (credits.unlimited) return `${quotaLabel}: Unlimited`
++    const remainingCount = creditCount(credits.remaining) ?? creditCount(parseBalance(credits.balance))
++    const usedCount = creditCount(credits.used)
++
++    if (mode === "remaining") {
++      if (remainingCount !== null) return `${quotaLabel} Remaining: ${remainingCount}`
++      if (!credits.hasCredits) return `${quotaLabel}: Exhausted`
++      return `${quotaLabel}: Available`
++    }
++
++    if (usedCount !== null) return `${quotaLabel} Used: ${usedCount}`
++    if (!credits.hasCredits) return `${quotaLabel} Used: All`
++    return `${quotaLabel} Used: Unknown`
++  }
++  if (provider === "anthropic") return `Extra Usage Balance: ${formatCredits(credits)}`
++  return `Credits Balance: ${formatCredits(credits)}`
++}
++
++type UsageTheme = {
++  error: unknown
++  warning: unknown
++  success: unknown
++}
++
++export function formatUsageResetShort(resetAt: number | null): string {
++  if (!resetAt) return ""
++  const now = Math.floor(Date.now() / 1000)
++  const diff = resetAt - now
++  if (diff <= 0) return "refreshing"
++  if (diff < 60) return `${diff}s`
++  if (diff < 3600) return `${Math.round(diff / 60)}m`
++  if (diff < 86400) return `${Math.round(diff / 3600)}h`
++  return `${Math.round(diff / 86400)}d`
++}
++
++export function formatUsageResetLong(resetAt: number): string {
++  const now = Math.floor(Date.now() / 1000)
++  const diff = resetAt - now
++  if (diff <= 0) return "now"
++  if (diff < 60) return `in ${diff} seconds`
++  if (diff < 3600) return `in ${Math.round(diff / 60)} minutes`
++  if (diff < 86400) return `in ${Math.round(diff / 3600)} hours`
++  return `in ${Math.round(diff / 86400)} days`
++}
++
++export function usageDisplay(
++  usedPercent: number,
++  mode: UsageDisplayMode,
++): { percent: number; label: UsageDisplayMode } {
++  const used = clampPercent(usedPercent)
++  if (mode === "remaining") {
++    return {
++      percent: 100 - used,
++      label: "remaining",
++    }
++  }
++  return {
++    percent: used,
++    label: "used",
++  }
++}
++
++export function usageBarString(percent: number, width = 10): string {
++  const clamped = clampPercent(percent)
++  const filled = Math.round((clamped / 100) * width)
++  return "█".repeat(filled) + "░".repeat(width - filled)
++}
++
++export function usageBarColor<T extends UsageTheme>(
++  percent: number,
++  theme: T,
++): T["error"] | T["warning"] | T["success"] {
++  if (percent >= 90) return theme.error
++  if (percent >= 70) return theme.warning
++  return theme.success
++}
++
++function formatWindowLabel(base: string, windowMinutes: number | null): string {
++  if (!windowMinutes) return base
++  if (base !== "Hourly" && base !== "Weekly") return base
++  const minutesPerHour = 60
++  const minutesPerDay = 24 * minutesPerHour
++  const minutesPerWeek = 7 * minutesPerDay
++  if (windowMinutes >= minutesPerWeek) return "Weekly"
++
++  if (windowMinutes % minutesPerHour === 0) {
++    const hours = Math.max(1, Math.round(windowMinutes / minutesPerHour))
++    if (hours === 1) return "Hourly"
++    return `${hours}h`
++  }
++
++  if (windowMinutes < minutesPerHour) return `${windowMinutes}m`
++  const hours = Math.max(1, Math.round(windowMinutes / minutesPerHour))
++  return `${hours}h`
++}
++
++function clampPercent(value: number): number {
++  if (Number.isNaN(value)) return 0
++  if (value < 0) return 0
++  if (value > 100) return 100
++  return value
++}
++
++function formatCredits(credits: Credits): string {
++  if (!credits.hasCredits) return "None"
++  if (credits.unlimited) return "Unlimited"
++  if (credits.balance) {
++    const numeric = Number(credits.balance)
++    if (!Number.isNaN(numeric)) return String(Math.floor(numeric))
++    return credits.balance
++  }
++  return "Available"
++}
++
++function parseBalance(value: string | null): number | null {
++  if (!value) return null
++  const numeric = Number(value)
++  if (!Number.isFinite(numeric)) return null
++  return numeric
++}
++
++function creditCount(value: number | null | undefined): number | null {
++  if (typeof value !== "number") return null
++  if (!Number.isFinite(value)) return null
++  return Math.max(0, Math.floor(value))
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
+new file mode 100644
+index 00000000..b0f969a0
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
+@@ -0,0 +1,96 @@
++import type { UsageEntry } from "./usage-data"
++
++const windows = ["primary", "secondary", "tertiary"] as const
++
++export const usageWarningThresholds = [80, 90, 95] as const
++export const usageRefreshCooldownMs = 5 * 60 * 1000
++export const usageFailureBackoffMs = 30 * 1000
++export const usageShownMax = 256
++
++export type UsageWarning = {
++  window: "primary" | "secondary" | "tertiary"
++  threshold: number
++  usedPercent: number
++  resetsAt: number | null
++  windowMinutes: number | null
++}
++
++export function usageWarning(entry: UsageEntry, previous: UsageEntry["snapshot"] | undefined): UsageWarning | null {
++  return windows.reduce<UsageWarning | null>((best, window) => {
++    const current = entry.snapshot[window]
++    if (!current) return best
++
++    const previousUsed = usagePercent(previous?.[window]?.usedPercent ?? 0)
++    const currentUsed = usagePercent(current.usedPercent)
++    const threshold = usageWarningThresholds.reduce<number | null>((match, value) => {
++      if (previousUsed >= value) return match
++      if (currentUsed < value) return match
++      return value
++    }, null)
++    if (!threshold) return best
++
++    if (!best) {
++      return {
++        window,
++        threshold,
++        usedPercent: currentUsed,
++        resetsAt: current.resetsAt,
++        windowMinutes: current.windowMinutes,
++      }
++    }
++
++    if (threshold > best.threshold) {
++      return {
++        window,
++        threshold,
++        usedPercent: currentUsed,
++        resetsAt: current.resetsAt,
++        windowMinutes: current.windowMinutes,
++      }
++    }
++
++    if (threshold < best.threshold) return best
++    if (currentUsed <= best.usedPercent) return best
++
++    return {
++      window,
++      threshold,
++      usedPercent: currentUsed,
++      resetsAt: current.resetsAt,
++      windowMinutes: current.windowMinutes,
++    }
++  }, null)
++}
++
++export function usageWarningKey(provider: string, warning: UsageWarning): string {
++  return `${provider}:${warning.window}:${warning.threshold}:${warning.resetsAt ?? "none"}`
++}
++
++export function usageRemember(shown: Set<string>, key: string): boolean {
++  if (shown.has(key)) return false
++  if (shown.size >= usageShownMax) {
++    const oldest = shown.values().next().value
++    if (oldest) shown.delete(oldest)
++  }
++  shown.add(key)
++  return true
++}
++
++export function usageShouldRefresh(input: {
++  now: number
++  successAt: number
++  failureAt: number
++  refreshing: boolean
++}): boolean {
++  if (input.refreshing) return false
++  if (input.failureAt > 0 && input.now - input.failureAt < usageFailureBackoffMs) return false
++  if (input.successAt > 0 && input.now - input.successAt < usageRefreshCooldownMs) return false
++  return true
++}
++
++function usagePercent(value: number): number {
++  if (!Number.isFinite(value)) return 0
++  if (value < 0) return 0
++  if (value > 100) return 100
++  return value
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
+index 66bf82db..f060241a 100644
+--- a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
++++ b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
+@@ -1,65 +1,93 @@
+ import { useSync } from "@tui/context/sync"
+-import { createMemo, Show } from "solid-js"
++import { createMemo, For, Show, createEffect, createSignal, on } from "solid-js"
++import { createStore } from "solid-js/store"
+ import { useTheme } from "../../context/theme"
++import { useTuiConfig } from "../../context/tui-config"
++import { TextAttributes } from "@opentui/core"
+ import { Installation } from "@/installation"
+ import { TuiPluginRuntime } from "../../plugin"
++import { formatCreditsLabel, formatPlanType, formatUsageResetShort, usageDisplay, formatUsageWindowLabel, usageBarColor, usageBarString } from "../../component/usage-format"
++import { useUsageResource } from "../../component/usage-client"
+
+ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
+   const sync = useSync()
++  const tuiConfig = useTuiConfig()
+   const { theme } = useTheme()
+   const session = createMemo(() => sync.session.get(props.sessionID))
++  const [expanded, setExpanded] = createStore({ usage: true })
++  const usage = useUsageResource()
++  const status = createMemo(() => sync.data.session_status?.[props.sessionID] ?? { type: "idle" })
++  const [prevStatus, setPrevStatus] = createSignal<string>("idle")
++
++  createEffect(on(() => status().type, (currentType) => {
++    if (prevStatus() !== "idle" && currentType === "idle") usage.refetch()
++    setPrevStatus(currentType)
++  }))
++
++  const usageSections = createMemo(() => {
++    const entries = usage.data()?.entries ?? []
++    return entries.filter((e) => e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits)
++  })
++  const usageErrors = createMemo(() => usage.data()?.errors ?? [])
++  const usageMode = createMemo(() => tuiConfig.show_usage_value_mode ?? "used")
+
+   return (
+     <Show when={session()}>
+-      <box
+-        backgroundColor={theme.backgroundPanel}
+-        width={42}
+-        height="100%"
+-        paddingTop={1}
+-        paddingBottom={1}
+-        paddingLeft={2}
+-        paddingRight={2}
+-        position={props.overlay ? "absolute" : "relative"}
+-      >
+-        <scrollbox
+-          flexGrow={1}
+-          verticalScrollbarOptions={{
+-            trackOptions: {
+-              backgroundColor: theme.background,
+-              foregroundColor: theme.borderActive,
+-            },
+-          }}
+-        >
++      <box backgroundColor={theme.backgroundPanel} width={42} height="100%" paddingTop={1} paddingBottom={1} paddingLeft={2} paddingRight={2} position={props.overlay ? "absolute" : "relative"}>
++        <scrollbox flexGrow={1} verticalScrollbarOptions={{ trackOptions: { backgroundColor: theme.background, foregroundColor: theme.borderActive } }}>
+           <box flexShrink={0} gap={1} paddingRight={1}>
+-            <TuiPluginRuntime.Slot
+-              name="sidebar_title"
+-              mode="single_winner"
+-              session_id={props.sessionID}
+-              title={session()!.title}
+-              share_url={session()!.share?.url}
+-            >
++            <TuiPluginRuntime.Slot name="sidebar_title" mode="single_winner" session_id={props.sessionID} title={session()!.title} share_url={session()!.share?.url}>
+               <box paddingRight={1}>
+-                <text fg={theme.text}>
+-                  <b>{session()!.title}</b>
+-                </text>
+-                <Show when={session()!.share?.url}>
+-                  <text fg={theme.textMuted}>{session()!.share!.url}</text>
+-                </Show>
++                <text fg={theme.text}><b>{session()!.title}</b></text>
++                <Show when={session()!.share?.url}><text fg={theme.textMuted}>{session()!.share!.url}</text></Show>
+               </box>
+             </TuiPluginRuntime.Slot>
++            <Show when={usageSections().length > 0}>
++              <box>
++                <box flexDirection="row" gap={1} onMouseDown={() => setExpanded("usage", !expanded.usage)}>
++                  <text fg={theme.text}>{expanded.usage ? "▼" : "▶"}</text>
++                  <text fg={theme.text}><b>Usage</b><Show when={usageMode() === "remaining"}><span style={{ fg: theme.textMuted }}> (remaining)</span></Show></text>
++                </box>
++                <Show when={expanded.usage}>
++                  <For each={usageSections()}>
++                    {(entry, index) => {
++                      const planType = formatPlanType(entry.snapshot.planType)
++                      const entryErrors = usageErrors().filter((e) => e.provider === entry.provider).map((e) => e.message)
++                      return (
++                        <box flexDirection="column" gap={0} marginTop={index() === 0 ? 0 : 1}>
++                          <text fg={theme.text}><b>{entry.displayName}</b><Show when={planType}><span style={{ fg: theme.textMuted }}>{` (${planType})`}</span></Show></text>
++                          <Show when={entry.snapshot.primary}>
++                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
++                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "primary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
++                            )}}
++                          </Show>
++                          <Show when={entry.snapshot.secondary}>
++                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
++                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "secondary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
++                            )}}
++                          </Show>
++                          <Show when={entry.snapshot.tertiary}>
++                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
++                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "tertiary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
++                            )}}
++                          </Show>
++                          <Show when={entry.snapshot.credits}>
++                            {(credits) => (<text fg={theme.textMuted}>{formatCreditsLabel(entry.provider, credits(), { mode: usageMode(), slot: "secondary" })}</text>)}
++                          </Show>
++                          <Show when={entryErrors.length > 0}><text fg={theme.error} attributes={TextAttributes.DIM}>{entryErrors.join(" • ")}</text></Show>
++                        </box>
++                      )
++                    }}
++                  </For>
++                </Show>
++              </box>
++            </Show>
+             <TuiPluginRuntime.Slot name="sidebar_content" session_id={props.sessionID} />
+           </box>
+         </scrollbox>
+-
+         <box flexShrink={0} gap={1} paddingTop={1}>
+           <TuiPluginRuntime.Slot name="sidebar_footer" mode="single_winner" session_id={props.sessionID}>
+-            <text fg={theme.textMuted}>
+-              <span style={{ fg: theme.success }}>•</span> <b>Open</b>
+-              <span style={{ fg: theme.text }}>
+-                <b>Code</b>
+-              </span>{" "}
+-              <span>{Installation.VERSION}</span>
+-            </text>
++            <text fg={theme.textMuted}><span style={{ fg: theme.success }}>•</span> <b>Open</b><span style={{ fg: theme.text }}><b>Code</b></span> <span>{Installation.VERSION}</span></text>
+           </TuiPluginRuntime.Slot>
+         </box>
+       </box>
+diff --git a/packages/opencode/src/config/tui-schema.ts b/packages/opencode/src/config/tui-schema.ts
+index e0b36c22..c7da5ddf 100644
+--- a/packages/opencode/src/config/tui-schema.ts
++++ b/packages/opencode/src/config/tui-schema.ts
+@@ -26,6 +26,14 @@ export const TuiOptions = z.object({
+     .describe("Control diff rendering style: 'auto' adapts to terminal width, 'stacked' always shows single column"),
+   cursor_style: CursorStyle.optional().describe("Cursor shape in text inputs: 'block', 'line', or 'underline'"),
+   cursor_blink: z.boolean().optional().describe("Enable cursor blinking in text inputs"),
++  show_usage_provider_scope: z
++    .enum(["current", "all"])
++    .optional()
++    .describe("Show usage for the current provider or all providers"),
++  show_usage_value_mode: z
++    .enum(["used", "remaining"])
++    .optional()
++    .describe("Show usage percentages as used or remaining"),
+ })
+
+ export const TuiInfo = z
+diff --git a/packages/opencode/src/plugin/copilot.ts b/packages/opencode/src/plugin/copilot.ts
+index 44c5289d..6ea23fc6 100644
+--- a/packages/opencode/src/plugin/copilot.ts
++++ b/packages/opencode/src/plugin/copilot.ts
+@@ -1,20 +1,221 @@
+ import type { Hooks, PluginInput } from "@opencode-ai/plugin"
+ import { Installation } from "@/installation"
++import { Log } from "@/util/log"
+ import { iife } from "@/util/iife"
+ import { setTimeout as sleep } from "node:timers/promises"
+
+ const CLIENT_ID = "Ov23li8tweQw6odWQebz"
++const COPILOT_USAGE_CLIENT_ID = "Iv1.b507a08c87ecfe98"
++const COPILOT_USAGE_SCOPE = "read:user"
++const COPILOT_USAGE_TIMEOUT_MS = 30000
++
+ // Add a small safety buffer when polling to avoid hitting the server
+ // slightly too early due to clock skew / timer drift.
+ const OAUTH_POLLING_SAFETY_MARGIN_MS = 3000 // 3 seconds
++const log = Log.create({ service: "copilot-auth" })
++
+ function normalizeDomain(url: string) {
+   return url.replace(/^https?:\/\//, "").replace(/\/$/, "")
+ }
+
++function apiBase(domain: string) {
++  if (domain === "github.com") return "https://api.github.com"
++  return `https://${domain}/api/v3`
++}
++
+ function getUrls(domain: string) {
++  const base = apiBase(domain)
+   return {
+     DEVICE_CODE_URL: `https://${domain}/login/device/code`,
+     ACCESS_TOKEN_URL: `https://${domain}/login/oauth/access_token`,
++    COPILOT_TOKEN_URL: `${base}/copilot_internal/v2/token`,
++  }
++}
++
++type CopilotDeviceCode = {
++  deviceCode: string
++  userCode: string
++  verificationUri: string
++  interval: number
++  expiresIn: number
++}
++
++async function requestCopilotDeviceCode(
++  url: string,
++  clientId: string,
++  scope: string,
++): Promise<CopilotDeviceCode | null> {
++  const response = await fetch(url, {
++    method: "POST",
++    headers: {
++      Accept: "application/json",
++      "Content-Type": "application/json",
++      "User-Agent": `opencode/${Installation.VERSION}`,
++    },
++    body: JSON.stringify({
++      client_id: clientId,
++      scope,
++    }),
++  })
++
++  if (!response.ok) return null
++
++  const data = (await response.json()) as {
++    verification_uri: string
++    user_code: string
++    device_code: string
++    interval: number
++    expires_in?: number
++  }
++
++  if (!data.device_code || !data.user_code || !data.verification_uri) return null
++
++  return {
++    deviceCode: data.device_code,
++    userCode: data.user_code,
++    verificationUri: data.verification_uri,
++    interval: data.interval,
++    expiresIn: data.expires_in ?? 0,
++  }
++}
++
++async function pollCopilotDeviceToken(
++  url: string,
++  device: CopilotDeviceCode,
++  clientId: string,
++  signal?: AbortSignal,
++): Promise<string | null> {
++  const deadline = device.expiresIn > 0 ? Date.now() + device.expiresIn * 1000 : null
++
++  const poll = async (intervalMs: number): Promise<string | null> => {
++    if (signal?.aborted) return null
++    if (deadline && Date.now() >= deadline) return null
++
++    const response = await fetch(url, {
++      method: "POST",
++      headers: {
++        Accept: "application/json",
++        "Content-Type": "application/json",
++        "User-Agent": `opencode/${Installation.VERSION}`,
++      },
++      body: JSON.stringify({
++        client_id: clientId,
++        device_code: device.deviceCode,
++        grant_type: "urn:ietf:params:oauth:grant-type:device_code",
++      }),
++    })
++
++    if (!response.ok) return null
++
++    const data = (await response.json()) as {
++      access_token?: string
++      error?: string
++      interval?: number
++    }
++
++    if (data.access_token) return data.access_token
++    if (data.error === "authorization_pending") {
++      await Bun.sleep(intervalMs + OAUTH_POLLING_SAFETY_MARGIN_MS)
++      return poll(intervalMs)
++    }
++
++    if (data.error === "slow_down") {
++      const next = iife(() => {
++        const server = data.interval
++        if (server && typeof server === "number" && server > 0) {
++          return server * 1000
++        }
++        return (device.interval + 5) * 1000
++      })
++      await Bun.sleep(next + OAUTH_POLLING_SAFETY_MARGIN_MS)
++      return poll(next)
++    }
++
++    if (data.error === "expired_token") return null
++    if (data.error) return null
++
++    await Bun.sleep(intervalMs + OAUTH_POLLING_SAFETY_MARGIN_MS)
++    return poll(intervalMs)
++  }
++
++  return poll(device.interval * 1000)
++}
++
++type CopilotServiceTokenResponse = {
++  token?: string
++  access_token?: string
++  refresh_token?: string
++  expires_at?: number | string
++}
++
++type CopilotServiceToken = {
++  access: string
++  refresh: string
++  expires: number
++}
++
++async function fetchCopilotServiceToken(url: string, accessToken: string): Promise<CopilotServiceToken | null> {
++  const response = await fetch(url, {
++    method: "GET",
++    headers: {
++      Authorization: `token ${accessToken}`,
++      Accept: "application/vnd.github+json",
++      "Editor-Version": "vscode/1.96.2",
++      "Editor-Plugin-Version": "copilot-chat/0.26.7",
++      "User-Agent": `opencode/${Installation.VERSION}`,
++      "X-Github-Api-Version": "2025-04-01",
++    },
++    signal: AbortSignal.timeout(10_000),
++  }).catch((error) => {
++    log.warn("copilot service token request failed", {
++      error: error instanceof Error ? error.message : String(error),
++    })
++    return null
++  })
++
++  if (!response) return null
++  if (!response.ok) {
++    const detail = await response.json().catch(() => null)
++    log.warn("copilot service token request rejected", {
++      status: response.status,
++      detail,
++    })
++    return null
++  }
++
++  const body = (await response.json().catch(() => null)) as CopilotServiceTokenResponse | null
++  if (!body) {
++    log.warn("copilot service token response empty")
++    return null
++  }
++
++  const token = iife(() => {
++    if (typeof body.token === "string") return body.token
++    if (typeof body.access_token === "string") return body.access_token
++    return null
++  })
++  if (!token) {
++    log.warn("copilot service token missing")
++    return null
++  }
++
++  const refresh = typeof body.refresh_token === "string" ? body.refresh_token : token
++  const expires = iife(() => {
++    const value = body.expires_at
++    if (typeof value === "number") return value
++    if (typeof value === "string") {
++      const parsed = Number.parseInt(value, 10)
++      if (!Number.isNaN(parsed)) return parsed
++      const ms = new Date(value).getTime()
++      if (!Number.isNaN(ms)) return Math.floor(ms / 1000)
++    }
++    return 0
++  })
++
++  return {
++    access: token,
++    refresh,
++    expires,
+   }
+ }
+
+@@ -123,7 +324,7 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
+               "x-initiator": isAgent ? "agent" : "user",
+               ...(init?.headers as Record<string, string>),
+               "User-Agent": `opencode/${Installation.VERSION}`,
+-              Authorization: `Bearer ${info.refresh}`,
++              Authorization: `Bearer ${info.access}`,
+               "Openai-Intent": "conversation-edits",
+             }
+
+@@ -185,113 +386,102 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
+             const deploymentType = inputs.deploymentType || "github.com"
+
+             let domain = "github.com"
++            let actualProvider = "github-copilot"
+
+             if (deploymentType === "enterprise") {
+               const enterpriseUrl = inputs.enterpriseUrl
+               domain = normalizeDomain(enterpriseUrl!)
++              actualProvider = "github-copilot-enterprise"
+             }
+
+             const urls = getUrls(domain)
+
+-            const deviceResponse = await fetch(urls.DEVICE_CODE_URL, {
+-              method: "POST",
+-              headers: {
+-                Accept: "application/json",
+-                "Content-Type": "application/json",
+-                "User-Agent": `opencode/${Installation.VERSION}`,
+-              },
+-              body: JSON.stringify({
+-                client_id: CLIENT_ID,
+-                scope: "read:user",
+-              }),
+-            })
++            const deviceData = await requestCopilotDeviceCode(urls.DEVICE_CODE_URL, CLIENT_ID, "read:user")
++            if (!deviceData) throw new Error("Failed to initiate device authorization")
+
+-            if (!deviceResponse.ok) {
+-              throw new Error("Failed to initiate device authorization")
+-            }
++            const usageDeviceData = await requestCopilotDeviceCode(
++              urls.DEVICE_CODE_URL,
++              COPILOT_USAGE_CLIENT_ID,
++              COPILOT_USAGE_SCOPE,
++            ).catch(() => null)
+
+-            const deviceData = (await deviceResponse.json()) as {
+-              verification_uri: string
+-              user_code: string
+-              device_code: string
+-              interval: number
++            if (!usageDeviceData) {
++              log.warn("copilot usage device authorization unavailable")
+             }
+
++            const instructions = iife(() => {
++              if (!usageDeviceData) return `Enter code: ${deviceData.userCode}`
++              return [
++                `Enter code: ${deviceData.userCode}`,
++                "",
++                "To enable usage tracking, also complete:",
++                `Go to: ${usageDeviceData.verificationUri}`,
++                `Enter code: ${usageDeviceData.userCode}`,
++              ].join("\n")
++            })
++
+             return {
+-              url: deviceData.verification_uri,
+-              instructions: `Enter code: ${deviceData.user_code}`,
++              url: deviceData.verificationUri,
++              instructions,
+               method: "auto" as const,
+               async callback() {
+-                while (true) {
+-                  const response = await fetch(urls.ACCESS_TOKEN_URL, {
+-                    method: "POST",
+-                    headers: {
+-                      Accept: "application/json",
+-                      "Content-Type": "application/json",
+-                      "User-Agent": `opencode/${Installation.VERSION}`,
+-                    },
+-                    body: JSON.stringify({
+-                      client_id: CLIENT_ID,
+-                      device_code: deviceData.device_code,
+-                      grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+-                    }),
+-                  })
++                const usageController = usageDeviceData ? new AbortController() : null
++                const usagePromise = usageDeviceData
++                  ? pollCopilotDeviceToken(
++                      urls.ACCESS_TOKEN_URL,
++                      usageDeviceData,
++                      COPILOT_USAGE_CLIENT_ID,
++                      usageController?.signal,
++                    ).catch((error) => {
++                      log.warn("copilot usage token polling failed", {
++                        error: error instanceof Error ? error.message : String(error),
++                      })
++                      return null
++                    })
++                  : null
+
+-                  if (!response.ok) return { type: "failed" as const }
+-
+-                  const data = (await response.json()) as {
+-                    access_token?: string
+-                    error?: string
+-                    interval?: number
+-                  }
+-
+-                  if (data.access_token) {
+-                    const result: {
+-                      type: "success"
+-                      refresh: string
+-                      access: string
+-                      expires: number
+-                      provider?: string
+-                      enterpriseUrl?: string
+-                    } = {
+-                      type: "success",
+-                      refresh: data.access_token,
+-                      access: data.access_token,
+-                      expires: 0,
+-                    }
+-
+-                    if (deploymentType === "enterprise") {
+-                      result.enterpriseUrl = domain
++                try {
++                  const deviceToken = await pollCopilotDeviceToken(urls.ACCESS_TOKEN_URL, deviceData, CLIENT_ID)
++                  if (!deviceToken) return { type: "failed" as const }
++
++                  const usageToken = await iife(async () => {
++                    if (!usagePromise) return null
++                    const timeout = Bun.sleep(COPILOT_USAGE_TIMEOUT_MS).then(() => "timeout" as const)
++                    const result = await Promise.race([usagePromise, timeout])
++                    if (result === "timeout") {
++                      usageController?.abort()
++                      return null
+                     }
+-
+                     return result
+-                  }
++                  })
+
+-                  if (data.error === "authorization_pending") {
+-                    await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
+-                    continue
++                  const serviceToken = await fetchCopilotServiceToken(urls.COPILOT_TOKEN_URL, deviceToken)
++                  const accessToken = serviceToken?.access ?? deviceToken
++                  const refreshToken = serviceToken?.refresh ?? accessToken
++                  const expires = serviceToken?.expires ?? 0
++                  const result: {
++                    type: "success"
++                    refresh: string
++                    access: string
++                    expires: number
++                    usage?: string
++                    provider?: string
++                    enterpriseUrl?: string
++                  } = {
++                    type: "success",
++                    refresh: refreshToken,
++                    access: accessToken,
++                    expires,
++                    ...(usageToken ? { usage: usageToken } : {}),
+                   }
+
+-                  if (data.error === "slow_down") {
+-                    // Based on the RFC spec, we must add 5 seconds to our current polling interval.
+-                    // (See https://www.rfc-editor.org/rfc/rfc8628#section-3.5)
+-                    let newInterval = (deviceData.interval + 5) * 1000
+-
+-                    // GitHub OAuth API may return the new interval in seconds in the response.
+-                    // We should try to use that if provided with safety margin.
+-                    const serverInterval = data.interval
+-                    if (serverInterval && typeof serverInterval === "number" && serverInterval > 0) {
+-                      newInterval = serverInterval * 1000
+-                    }
+-
+-                    await sleep(newInterval + OAUTH_POLLING_SAFETY_MARGIN_MS)
+-                    continue
++                  if (actualProvider === "github-copilot-enterprise") {
++                    result.provider = "github-copilot-enterprise"
++                    result.enterpriseUrl = domain
+                   }
+-
+-                  if (data.error) return { type: "failed" as const }
+-
+-                  await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
+-                  continue
++                  return result
++                } finally {
++                  usageController?.abort()
+                 }
+               },
+             }
+diff --git a/packages/opencode/src/server/instance.ts b/packages/opencode/src/server/instance.ts
+index 4bb6efaf..c1a6ed2d 100644
+--- a/packages/opencode/src/server/instance.ts
++++ b/packages/opencode/src/server/instance.ts
+@@ -24,6 +24,7 @@ import { FileRoutes } from "./routes/file"
+ import { ConfigRoutes } from "./routes/config"
+ import { ExperimentalRoutes } from "./routes/experimental"
+ import { ProviderRoutes } from "./routes/provider"
++import { UsageRoutes } from "./usage"
+ import { EventRoutes } from "./routes/event"
+ import { errorHandler } from "./middleware"
+
+@@ -51,6 +52,7 @@ export const InstanceRoutes = (app?: Hono) =>
+     .route("/permission", PermissionRoutes())
+     .route("/question", QuestionRoutes())
+     .route("/provider", ProviderRoutes())
++    .route("/usage", UsageRoutes())
+     .route("/", FileRoutes())
+     .route("/", EventRoutes())
+     .route("/mcp", McpRoutes())
+diff --git a/packages/opencode/src/server/usage.ts b/packages/opencode/src/server/usage.ts
+new file mode 100644
+index 00000000..9af09607
+--- /dev/null
++++ b/packages/opencode/src/server/usage.ts
+@@ -0,0 +1,304 @@
++import { Hono } from "hono"
++import { describeRoute, resolver, validator } from "hono-openapi"
++import z from "zod"
++import { createHash } from "node:crypto"
++import { Auth } from "../auth"
++import { Usage } from "../usage"
++import type { Snapshot as UsageSnapshot } from "../usage"
++import { parseUsageCommand, resolveUsageProvider } from "../usage/command"
++import { iife } from "../util/iife"
++
++const USAGE_CACHE_TTL_MS = 5 * 60 * 1000
++const inflightUsageFetch = new Map<string, Promise<{ snapshot: UsageSnapshot | null; error?: string }>>()
++
++function fetchProviderUsage(input: {
++  provider: string
++  isCopilot: boolean
++  accessToken: string
++  usageToken: string
++  oauth: {
++    type: "oauth"
++    access: string
++    refresh: string
++    expires: number
++    usage?: string
++    accountId?: string
++    enterpriseUrl?: string
++  }
++  authKey: string
++}) {
++  const key = iife(() => {
++    const account = input.oauth.accountId ?? ""
++    const enterprise = input.oauth.enterpriseUrl ?? ""
++    const access = fingerprint(input.accessToken)
++    const usage = fingerprint(input.usageToken)
++    const refresh = fingerprint(input.oauth.refresh)
++    return `${input.provider}:${input.authKey}:${account}:${enterprise}:${access}:${usage}:${refresh}`
++  })
++  const existing = inflightUsageFetch.get(key)
++  if (existing) return existing
++
++  const task = (async () => {
++    if (input.provider === "openai") {
++      return Usage.fetchChatgptUsage(input.accessToken, input.oauth.accountId)
++    }
++    if (input.isCopilot) {
++      return Usage.fetchCopilotUsage({
++        access: input.accessToken,
++        refresh: input.oauth.refresh,
++        usage: input.usageToken,
++        enterpriseUrl: input.oauth.enterpriseUrl,
++      })
++    }
++    if (input.provider === "anthropic") {
++      return Usage.fetchClaudeUsage(input.authKey, input.oauth)
++    }
++    return {
++      snapshot: null,
++      error: `${input.provider} usage is not supported`,
++    }
++  })().finally(() => {
++    const current = inflightUsageFetch.get(key)
++    if (current === task) inflightUsageFetch.delete(key)
++  })
++
++  inflightUsageFetch.set(key, task)
++  return task
++}
++
++function fingerprint(value: string) {
++  return createHash("sha256").update(value).digest("hex")
++}
++
++const usageResponseSchema = z.object({
++  entries: z.array(
++    z.object({
++      provider: z.string(),
++      displayName: z.string(),
++      snapshot: Usage.snapshotSchema,
++    }),
++  ),
++  error: z.string().optional(),
++  errors: z
++    .array(
++      z.object({
++        provider: z.string(),
++        message: z.string(),
++      }),
++    )
++    .optional(),
++  mode: z.enum(["used", "remaining"]).optional(),
++})
++
++const refreshSchema = z.preprocess((value) => {
++  if (typeof value === "boolean") return value
++  if (typeof value !== "string") return value
++  const normalized = value.trim().toLowerCase()
++  if (normalized === "true" || normalized === "1") return true
++  if (normalized === "false" || normalized === "0") return false
++  return undefined
++}, z.boolean())
++
++export function UsageRoutes() {
++  return new Hono().get(
++    "/",
++    describeRoute({
++      summary: "Get usage",
++      description: "Fetch usage limits for authenticated providers.",
++      operationId: "usage.get",
++      responses: {
++        200: {
++          description: "Usage response",
++          content: {
++            "application/json": {
++              schema: resolver(usageResponseSchema),
++            },
++          },
++        },
++      },
++    }),
++    validator(
++      "query",
++      z.object({
++        provider: z.string().optional(),
++        refresh: refreshSchema.optional(),
++        command: z.string().optional(),
++        modelProviderID: z.string().optional(),
++        showUsageProviderScope: z.enum(["current", "all"]).optional(),
++        showUsageValueMode: z.enum(["used", "remaining"]).optional(),
++      }),
++    ),
++    async (c) => {
++      const query = c.req.valid("query")
++      let providerInput = query.provider?.trim()
++      let refresh = query.refresh ?? false
++      let mode = query.showUsageValueMode
++
++      if (query.command) {
++        const command = parseUsageCommand(query.command, {
++          show_usage_provider_scope: query.showUsageProviderScope,
++          show_usage_value_mode: query.showUsageValueMode,
++        })
++        if ("error" in command) {
++          return c.json({
++            entries: [],
++            error: command.error,
++          })
++        }
++
++        mode = command.mode
++        const commandProvider = resolveUsageProvider({
++          scope: command.scope,
++          providerOverride: command.provider ?? null,
++          modelProviderID: query.modelProviderID ?? null,
++        })
++
++        if (command.scope === "current" && !command.provider && !commandProvider) {
++          return c.json({
++            entries: [],
++            error: "Usage tracking is not available for the current provider.",
++            mode,
++          })
++        }
++
++        providerInput = commandProvider ?? undefined
++        refresh = true
++      }
++
++      const resolved = providerInput ? Usage.resolveProvider(providerInput) : null
++      if (providerInput && !resolved) {
++        return c.json({
++          entries: [],
++          error: `Unknown provider: "${providerInput}"`,
++          mode,
++        })
++      }
++
++      const auth = await Auth.all()
++      const providers = resolved ? [resolved] : await Usage.getAuthenticatedProviders(auth)
++      if (providers.length === 0) {
++        return c.json({
++          entries: [],
++          error: "No OAuth providers with usage tracking are authenticated. Run: opencode auth login",
++          mode,
++        })
++      }
++
++      const providerTasks = providers.map(async (provider) => {
++        const errors: string[] = []
++        const providerErrors: Array<{ provider: string; message: string }> = []
++        const pushError = (message: string) => {
++          errors.push(message)
++          providerErrors.push({ provider, message })
++        }
++
++        const info = Usage.getProviderInfo(provider)
++        if (!info) {
++          pushError(`Provider "${provider}" does not support usage tracking.`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const authEntry = await Usage.getProviderAuth(provider, auth)
++        if (!authEntry) {
++          pushError(`Not authenticated with ${info.displayName}. Run: opencode auth login`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++        const oauthAuth = authEntry.auth.type === "oauth" ? authEntry.auth : null
++        if (info.requiresOAuth && !oauthAuth) {
++          pushError(`Not authenticated with ${info.displayName} OAuth. Run: opencode auth login`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const oauth = oauthAuth
++        if (!oauth) {
++          pushError(`Missing OAuth access token for ${info.displayName}.`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const accessToken = oauth.access
++        if (!accessToken) {
++          pushError(`Missing OAuth access token for ${info.displayName}.`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const isCopilot = provider === "github-copilot" || provider === "github-copilot-enterprise"
++        if (isCopilot && !oauth.usage) {
++          pushError("Copilot usage requires a GitHub OAuth device token. Run: opencode auth login")
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const usageToken = isCopilot ? (oauth.usage ?? null) : accessToken
++        if (!usageToken) {
++          pushError(`Missing OAuth access token for ${info.displayName}.`)
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        const cached = await Usage.getUsage(provider)
++        const stale = !cached || Date.now() - cached.updatedAt > USAGE_CACHE_TTL_MS
++        const snapshot = await (async () => {
++          if (!refresh && !stale) return cached
++
++          const fetched = await fetchProviderUsage({
++            provider,
++            isCopilot,
++            accessToken,
++            usageToken,
++            oauth,
++            authKey: authEntry.key,
++          })
++
++          const fetchedSnapshot = fetched.snapshot
++          const detail = fetched.error ?? `Unable to refresh usage data for ${info.displayName}.`
++
++          if (fetched.error) {
++            if (cached) {
++              pushError(`${detail} Showing cached results.`)
++              return cached
++            }
++            if (fetchedSnapshot) {
++              pushError(detail)
++              await Usage.updateUsage(provider, fetchedSnapshot)
++              return fetchedSnapshot
++            }
++            pushError(detail)
++            return null
++          }
++
++          if (!fetchedSnapshot) {
++            if (cached) {
++              pushError(`${detail} Showing cached results.`)
++              return cached
++            }
++            pushError(detail)
++            return null
++          }
++
++          return Usage.updateUsage(provider, fetchedSnapshot)
++        })()
++
++        if (!snapshot) {
++          return { provider, entry: null, errors, providerErrors }
++        }
++
++        return {
++          provider,
++          entry: { provider, displayName: info.displayName, snapshot },
++          errors,
++          providerErrors,
++        }
++      })
++
++      const results = await Promise.all(providerTasks)
++      const entries = results.flatMap((result) => (result.entry ? [result.entry] : []))
++      const errors = results.flatMap((result) => result.errors)
++      const providerErrors = results.flatMap((result) => result.providerErrors)
++
++      return c.json({
++        entries,
++        error: errors.length > 0 ? errors.join("\n") : undefined,
++        errors: providerErrors.length > 0 ? providerErrors : undefined,
++        mode,
++      })
++    },
++  )
++}
+diff --git a/packages/opencode/src/usage/command.ts b/packages/opencode/src/usage/command.ts
+new file mode 100644
+index 00000000..f12a7ef7
+--- /dev/null
++++ b/packages/opencode/src/usage/command.ts
+@@ -0,0 +1,60 @@
++import { isUsageProvider } from "./registry"
++
++export type UsageScope = "current" | "all"
++export type UsageDisplayMode = "used" | "remaining"
++
++type UsageConfig = {
++  show_usage_provider_scope?: UsageScope
++  show_usage_value_mode?: UsageDisplayMode
++}
++
++export type UsageCommandResult =
++  | {
++      error: string
++    }
++  | {
++      provider: string | undefined
++      scope: UsageScope
++      mode: UsageDisplayMode
++    }
++
++export function parseUsageCommand(command: string, config?: UsageConfig): UsageCommandResult {
++  const args = command.trim().split(/\s+/).slice(1)
++  const provider = args.find((part) => !part.startsWith("-"))
++  const hasAll = args.includes("--all")
++  const hasCurrent = args.includes("--current")
++  const hasUsed = args.includes("--used")
++  const hasRemaining = args.includes("--remaining")
++
++  if (hasAll && hasCurrent) {
++    return {
++      error: "Choose only one of --all or --current.",
++    }
++  }
++
++  if (hasUsed && hasRemaining) {
++    return {
++      error: "Choose only one of --used or --remaining.",
++    }
++  }
++
++  return {
++    provider: hasAll || hasCurrent ? undefined : provider,
++    scope: hasAll ? "all" : hasCurrent ? "current" : (config?.show_usage_provider_scope ?? "current"),
++    mode: hasUsed ? "used" : hasRemaining ? "remaining" : (config?.show_usage_value_mode ?? "used"),
++  }
++}
++
++export function resolveUsageProvider(options: {
++  scope: UsageScope
++  providerOverride?: string | null
++  modelProviderID?: string | null
++}): string | null {
++  if (options.providerOverride) return options.providerOverride
++  if (options.scope !== "current") return null
++  const modelProviderID = options.modelProviderID
++  if (!modelProviderID) return null
++  const normalized = modelProviderID.trim().toLowerCase()
++  if (!isUsageProvider(normalized)) return null
++  return normalized
++}
+diff --git a/packages/opencode/src/usage/index.ts b/packages/opencode/src/usage/index.ts
+new file mode 100644
+index 00000000..b977ce73
+--- /dev/null
++++ b/packages/opencode/src/usage/index.ts
+@@ -0,0 +1,59 @@
++export {
++  planTypeSchema,
++  rateLimitWindowSchema,
++  creditsSnapshotSchema,
++  snapshotSchema,
++  type PlanType,
++  type RateLimitWindow,
++  type CreditsSnapshot,
++  type Snapshot,
++  type UsageFetchResult,
++} from "./types"
++
++export {
++  UsageEvent,
++  getUsage,
++  updateUsage,
++  clearUsage,
++  resolveProvider,
++  getProviderInfo,
++  getAuthenticatedProviders,
++  getProviderAuth,
++} from "./store"
++
++export { fetchChatgptUsage } from "./providers/openai"
++export { fetchClaudeUsage } from "./providers/anthropic"
++export { fetchCopilotUsage, parseCopilotAccessToken, copilotSkuToPlan } from "./providers/github-copilot"
++
++import { fetchChatgptUsage } from "./providers/openai"
++import { fetchClaudeUsage } from "./providers/anthropic"
++import { fetchCopilotUsage, parseCopilotAccessToken, copilotSkuToPlan } from "./providers/github-copilot"
++import {
++  getUsage,
++  updateUsage,
++  clearUsage,
++  resolveProvider,
++  getProviderInfo,
++  getAuthenticatedProviders,
++  getProviderAuth,
++} from "./store"
++import { planTypeSchema, rateLimitWindowSchema, creditsSnapshotSchema, snapshotSchema } from "./types"
++
++export const Usage = {
++  planTypeSchema,
++  rateLimitWindowSchema,
++  creditsSnapshotSchema,
++  snapshotSchema,
++  getUsage,
++  updateUsage,
++  clearUsage,
++  resolveProvider,
++  getProviderInfo,
++  getAuthenticatedProviders,
++  getProviderAuth,
++  fetchChatgptUsage,
++  fetchClaudeUsage,
++  fetchCopilotUsage,
++  parseCopilotAccessToken,
++  copilotSkuToPlan,
++} as const
+diff --git a/packages/opencode/src/usage/providers/anthropic.ts b/packages/opencode/src/usage/providers/anthropic.ts
+new file mode 100644
+index 00000000..5da64919
+--- /dev/null
++++ b/packages/opencode/src/usage/providers/anthropic.ts
+@@ -0,0 +1,278 @@
++import z from "zod"
++import { Auth } from "../../auth"
++import { iife } from "../../util/iife"
++import { Log } from "../../util/log"
++import type { CreditsSnapshot, RateLimitWindow, UsageFetchResult } from "../types"
++
++const log = Log.create({ service: "usage.anthropic" })
++
++const usageEndpoint = "https://api.anthropic.com/api/oauth/usage"
++const tokenEndpoint = "https://console.anthropic.com/v1/oauth/token"
++const clientId = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
++
++type ClaudeUsageWindow = {
++  utilization: number
++  resets_at: string | null
++}
++
++type ClaudeUsageResponse = {
++  five_hour?: ClaudeUsageWindow | null
++  seven_day?: ClaudeUsageWindow | null
++  extra_usage?: {
++    is_enabled?: boolean | null
++    monthly_limit?: number | null
++    used_credits?: number | null
++    utilization?: number | null
++  } | null
++}
++
++type ClaudeAuth = Extract<Auth.Info, { type: "oauth" }>
++
++type ClaudeTokenResponse = {
++  access_token?: string
++  refresh_token?: string
++  expires_in?: number
++}
++
++type ClaudeErrorResponse = {
++  error?: {
++    message?: string
++    details?: {
++      error_code?: string
++    }
++  }
++}
++
++const windowSchema = z.object({
++  utilization: z.number(),
++  resets_at: z.string().nullable(),
++})
++
++const responseSchema = z.object({
++  five_hour: windowSchema.nullish(),
++  seven_day: windowSchema.nullish(),
++  extra_usage: z
++    .object({
++      is_enabled: z.boolean().nullish(),
++      monthly_limit: z.number().nullish(),
++      used_credits: z.number().nullish(),
++      utilization: z.number().nullish(),
++    })
++    .nullish(),
++}) satisfies z.ZodType<ClaudeUsageResponse>
++
++export async function fetchClaudeUsage(authKey: string, auth: ClaudeAuth): Promise<UsageFetchResult> {
++  return fetchClaudeUsageInternal(authKey, auth, false)
++}
++
++async function fetchClaudeUsageInternal(
++  authKey: string,
++  auth: ClaudeAuth,
++  refreshed: boolean,
++): Promise<UsageFetchResult> {
++  const currentAuth = await iife(async () => {
++    if (auth.expires > 0 && Date.now() >= auth.expires) {
++      return refreshAuth(authKey, auth)
++    }
++    return auth
++  })
++
++  if (!currentAuth) {
++    return {
++      snapshot: null,
++      error: fetchError("Claude", "token expired"),
++    }
++  }
++
++  const response = await requestUsage(currentAuth.access)
++  if (!response) {
++    return {
++      snapshot: null,
++      error: fetchError("Claude", "network"),
++    }
++  }
++
++  if (response.status === 401) {
++    const body = (await response.json().catch(() => null)) as ClaudeErrorResponse | null
++    if (isTokenExpired(body) && !refreshed) {
++      const nextAuth = await refreshAuth(authKey, currentAuth)
++      if (!nextAuth) {
++        return {
++          snapshot: null,
++          error: fetchError("Claude", String(response.status)),
++        }
++      }
++      return fetchClaudeUsageInternal(authKey, nextAuth, true)
++    }
++
++    log.warn("claude usage fetch failed", { status: response.status })
++    return {
++      snapshot: null,
++      error: fetchError("Claude", String(response.status)),
++    }
++  }
++
++  if (!response.ok) {
++    log.warn("claude usage fetch failed", { status: response.status })
++    return {
++      snapshot: null,
++      error: fetchError("Claude", String(response.status)),
++    }
++  }
++
++  const body = await response.json().catch(() => null)
++  if (!body) {
++    return {
++      snapshot: null,
++      error: fetchError("Claude", "empty response"),
++    }
++  }
++
++  const parsed = responseSchema.safeParse(body)
++  if (!parsed.success) {
++    log.warn("claude usage parse failed", { issues: parsed.error.issues.length })
++    return {
++      snapshot: null,
++      error: fetchError("Claude", "parse failed"),
++    }
++  }
++
++  const data = parsed.data
++  const primary = toWindow(data.five_hour, 5 * 60)
++  const secondary = toWindow(data.seven_day, 7 * 24 * 60)
++  const credits = toCredits(data.extra_usage)
++
++  return {
++    snapshot: {
++      primary,
++      secondary,
++      tertiary: null,
++      credits,
++      planType: null,
++      updatedAt: Date.now(),
++    },
++  }
++}
++
++async function requestUsage(accessToken: string): Promise<Response | null> {
++  return fetch(usageEndpoint, {
++    method: "GET",
++    headers: {
++      Authorization: `Bearer ${accessToken}`,
++      "anthropic-beta": "oauth-2025-04-20",
++      Accept: "application/json",
++    },
++    signal: AbortSignal.timeout(10_000),
++  }).catch((error) => {
++    log.warn("claude usage fetch failed", {
++      error: error instanceof Error ? error.message : String(error),
++    })
++    return null
++  })
++}
++
++function isTokenExpired(body: ClaudeErrorResponse | null): boolean {
++  if (!body || typeof body !== "object") return false
++  const error = body.error
++  if (!error) return false
++  const code = error.details?.error_code
++  if (code === "token_expired") return true
++  if (error.message?.toLowerCase().includes("expired")) return true
++  return false
++}
++
++async function refreshAuth(authKey: string, auth: ClaudeAuth): Promise<ClaudeAuth | null> {
++  const response = await fetch(tokenEndpoint, {
++    method: "POST",
++    headers: {
++      "Content-Type": "application/json",
++    },
++    body: JSON.stringify({
++      grant_type: "refresh_token",
++      refresh_token: auth.refresh,
++      client_id: clientId,
++    }),
++    signal: AbortSignal.timeout(10_000),
++  }).catch((error) => {
++    log.warn("claude token refresh failed", {
++      error: error instanceof Error ? error.message : String(error),
++    })
++    return null
++  })
++
++  if (!response) return null
++  if (!response.ok) {
++    log.warn("claude token refresh failed", { status: response.status })
++    return null
++  }
++
++  const body = (await response.json().catch(() => null)) as ClaudeTokenResponse | null
++  if (!body) return null
++
++  const access = typeof body.access_token === "string" ? body.access_token : null
++  if (!access) return null
++
++  const refresh = typeof body.refresh_token === "string" ? body.refresh_token : auth.refresh
++  const expires = typeof body.expires_in === "number" ? Date.now() + body.expires_in * 1000 : auth.expires
++  const next: Auth.Info = {
++    type: "oauth",
++    refresh,
++    access,
++    expires,
++    ...(auth.accountId ? { accountId: auth.accountId } : {}),
++    ...(auth.enterpriseUrl ? { enterpriseUrl: auth.enterpriseUrl } : {}),
++    ...(auth.usage ? { usage: auth.usage } : {}),
++  }
++
++  await Auth.set(authKey, next)
++  return next
++}
++
++function fetchError(provider: string, detail: string | null): string {
++  if (!detail) return `${provider} usage request failed`
++  return `${provider} usage request failed (${detail})`
++}
++
++function toWindow(window: ClaudeUsageWindow | null | undefined, windowMinutes: number | null): RateLimitWindow | null {
++  if (!window) return null
++
++  const resetsAt = iife(() => {
++    if (!window.resets_at) return null
++    const ms = new Date(window.resets_at).getTime()
++    if (Number.isNaN(ms)) return null
++    return Math.floor(ms / 1000)
++  })
++
++  return {
++    usedPercent: window.utilization,
++    windowMinutes,
++    resetsAt,
++  }
++}
++
++function toCredits(extra: ClaudeUsageResponse["extra_usage"]): CreditsSnapshot | null {
++  if (!extra) return null
++  if (extra.is_enabled === false) return null
++
++  const limit = typeof extra.monthly_limit === "number" ? extra.monthly_limit : null
++  const used = typeof extra.used_credits === "number" ? extra.used_credits : null
++  if (limit !== null && used !== null) {
++    const remaining = Math.max(0, Math.round((limit - used) * 100) / 100)
++    return {
++      hasCredits: remaining > 0,
++      unlimited: false,
++      balance: String(remaining),
++    }
++  }
++
++  const utilization = typeof extra.utilization === "number" ? extra.utilization : null
++  if (utilization !== null) {
++    return {
++      hasCredits: utilization < 100,
++      unlimited: false,
++      balance: null,
++    }
++  }
++
++  return null
++}
+diff --git a/packages/opencode/src/usage/providers/github-copilot.ts b/packages/opencode/src/usage/providers/github-copilot.ts
+new file mode 100644
+index 00000000..8de9a286
+--- /dev/null
++++ b/packages/opencode/src/usage/providers/github-copilot.ts
+@@ -0,0 +1,265 @@
++import z from "zod"
++import { iife } from "../../util/iife"
++import { Log } from "../../util/log"
++import type { PlanType, RateLimitWindow, Snapshot, UsageFetchResult } from "../types"
++
++const log = Log.create({ service: "usage.github-copilot" })
++
++const usageEndpoint = "https://api.github.com/copilot_internal/user"
++
++const skuPlan: Record<string, PlanType> = {
++  free_limited_copilot: "free",
++  copilot_for_individual: "pro",
++  copilot_individual: "pro",
++  copilot_business: "business",
++  copilot_enterprise: "enterprise",
++  copilot_for_business: "business",
++}
++
++const quotaSchema = z.object({
++  entitlement: z.number(),
++  remaining: z.number(),
++  percent_remaining: z.number(),
++  quota_id: z.string(),
++})
++
++const responseSchema = z.object({
++  quota_snapshots: z.object({
++    premium_interactions: quotaSchema.nullish(),
++    chat: quotaSchema.nullish(),
++  }),
++  copilot_plan: z.string().optional(),
++  assigned_date: z.string().optional(),
++  quota_reset_date: z.string().optional(),
++})
++
++type CopilotTokenMetadata = {
++  tid?: string
++  exp?: number
++  sku?: string
++  proxyEndpoint?: string
++  quotaLimit?: number
++  resetDate?: number
++}
++
++type CopilotAuthInfo = {
++  access: string
++  refresh: string
++  usage: string
++  enterpriseUrl?: string
++}
++
++export function parseCopilotAccessToken(accessToken: string): CopilotTokenMetadata {
++  const result: CopilotTokenMetadata = {}
++  const parts = accessToken.split(";")
++
++  for (const part of parts) {
++    const eqIndex = part.indexOf("=")
++    if (eqIndex === -1) continue
++    const key = part.slice(0, eqIndex)
++    const value = part.slice(eqIndex + 1)
++
++    switch (key) {
++      case "tid":
++        result.tid = value
++        break
++      case "exp":
++        result.exp = Number.parseInt(value, 10)
++        break
++      case "sku":
++        result.sku = value
++        break
++      case "proxy-ep":
++        result.proxyEndpoint = value
++        break
++      case "cq":
++        result.quotaLimit = Number.parseInt(value, 10)
++        break
++      case "rd": {
++        const colon = value.indexOf(":")
++        if (colon > 0) {
++          result.resetDate = Number.parseInt(value.slice(0, colon), 10)
++        }
++        break
++      }
++    }
++  }
++
++  return result
++}
++
++export function copilotSkuToPlan(sku: string | undefined): PlanType | null {
++  if (!sku) return null
++  return skuPlan[sku] ?? fallbackPlan(sku)
++}
++
++export async function fetchCopilotUsage(auth: CopilotAuthInfo): Promise<UsageFetchResult> {
++  const token = parseCopilotAccessToken(auth.access)
++  const fallback = snapshotFromToken(token)
++
++  const response = await fetch(resolveUsageUrl(auth.enterpriseUrl), {
++    method: "GET",
++    headers: {
++      Authorization: `token ${auth.usage}`,
++      Accept: "application/json",
++      "Editor-Version": "vscode/1.96.2",
++      "Editor-Plugin-Version": "copilot-chat/0.26.7",
++      "User-Agent": "GitHubCopilotChat/0.26.7",
++      "X-Github-Api-Version": "2025-04-01",
++    },
++    signal: AbortSignal.timeout(10_000),
++  }).catch((error) => {
++    log.warn("copilot usage fetch failed", {
++      error: error instanceof Error ? error.message : String(error),
++    })
++    return null
++  })
++
++  if (!response) {
++    return {
++      snapshot: fallback,
++      error: fetchError("Copilot", "network"),
++    }
++  }
++
++  if (!response.ok) {
++    log.warn("copilot usage fetch failed", { status: response.status })
++    return {
++      snapshot: fallback,
++      error: fetchError("Copilot", String(response.status)),
++    }
++  }
++
++  const body = await response.json().catch(() => null)
++  if (!body) {
++    return {
++      snapshot: fallback,
++      error: fetchError("Copilot", "empty response"),
++    }
++  }
++
++  const parsed = responseSchema.safeParse(body)
++  if (!parsed.success) {
++    log.warn("copilot usage parse failed", { issues: parsed.error.issues.length })
++    return {
++      snapshot: fallback,
++      error: fetchError("Copilot", "parse failed"),
++    }
++  }
++
++  const data = parsed.data
++  const premium = data.quota_snapshots.premium_interactions ?? null
++  const resetAt = parseResetDate(data.quota_reset_date) ?? token.resetDate ?? null
++  const planType = copilotSkuToPlan(data.copilot_plan) ?? copilotSkuToPlan(token.sku)
++  const usageCounts = iife(() => {
++    if (!premium) return null
++    const total = Math.max(0, Math.floor(premium.entitlement))
++    const remaining = Math.max(0, Math.floor(premium.remaining))
++    const used = Math.max(0, total - remaining)
++    return {
++      total,
++      used,
++      remaining,
++    }
++  })
++
++  const primary: RateLimitWindow | null = iife(() => {
++    if (!premium) return null
++    return {
++      usedPercent: clampPercent(100 - premium.percent_remaining),
++      windowMinutes: null,
++      resetsAt: resetAt,
++    }
++  })
++
++  const quota = iife(() => {
++    if (usageCounts) return usageCounts.remaining
++    return token.quotaLimit ?? null
++  })
++
++  const credits =
++    quota !== null
++      ? {
++          hasCredits: quota > 0,
++          unlimited: false,
++          balance: String(quota),
++          total: usageCounts?.total ?? null,
++          used: usageCounts?.used ?? null,
++          remaining: usageCounts?.remaining ?? quota,
++        }
++      : null
++
++  return {
++    snapshot: {
++      primary,
++      secondary: null,
++      tertiary: null,
++      credits,
++      planType,
++      updatedAt: Date.now(),
++    },
++  }
++}
++
++function fetchError(provider: string, detail: string | null): string {
++  if (!detail) return `${provider} usage request failed`
++  return `${provider} usage request failed (${detail})`
++}
++
++function resolveUsageUrl(enterpriseUrl: string | undefined): string {
++  if (!enterpriseUrl) return usageEndpoint
++  const base = enterpriseUrl.startsWith("http") ? enterpriseUrl : `https://${enterpriseUrl}`
++  const trimmed = base.replace(/\/$/, "")
++  if (trimmed.endsWith("/api/v3")) return `${trimmed}/copilot_internal/user`
++  return `${trimmed}/api/v3/copilot_internal/user`
++}
++
++function parseResetDate(value: string | undefined): number | null {
++  if (!value) return null
++  const ms = new Date(value).getTime()
++  if (Number.isNaN(ms)) return null
++  return Math.floor(ms / 1000)
++}
++
++function snapshotFromToken(token: CopilotTokenMetadata): Snapshot | null {
++  const planType = copilotSkuToPlan(token.sku)
++  const quotaLimit = typeof token.quotaLimit === "number" && Number.isFinite(token.quotaLimit) ? token.quotaLimit : null
++  const credits =
++    quotaLimit !== null
++      ? {
++          hasCredits: quotaLimit > 0,
++          unlimited: false,
++          balance: String(quotaLimit),
++          total: null,
++          used: null,
++          remaining: quotaLimit,
++        }
++      : null
++
++  if (!credits && !planType) return null
++
++  return {
++    primary: null,
++    secondary: null,
++    tertiary: null,
++    credits,
++    planType,
++    updatedAt: Date.now(),
++  }
++}
++
++function fallbackPlan(sku: string): PlanType | null {
++  const normalized = sku.toLowerCase()
++  if (normalized.includes("free")) return "free"
++  if (normalized.includes("individual") || normalized.includes("pro")) return "pro"
++  if (normalized.includes("business")) return "business"
++  if (normalized.includes("enterprise")) return "enterprise"
++  return null
++}
++
++function clampPercent(value: number): number {
++  if (Number.isNaN(value)) return 0
++  if (value < 0) return 0
++  if (value > 100) return 100
++  return value
++}
+diff --git a/packages/opencode/src/usage/providers/openai.ts b/packages/opencode/src/usage/providers/openai.ts
+new file mode 100644
+index 00000000..98f1a3a4
+--- /dev/null
++++ b/packages/opencode/src/usage/providers/openai.ts
+@@ -0,0 +1,155 @@
++import z from "zod"
++import { iife } from "../../util/iife"
++import { planTypeSchema } from "../types"
++import type { CreditsSnapshot, PlanType, RateLimitWindow, UsageFetchResult } from "../types"
++import { Log } from "../../util/log"
++
++const log = Log.create({ service: "usage.openai" })
++
++const endpoint = "https://chatgpt.com/backend-api/wham/usage"
++
++type ChatgptUsageResponseWindow = {
++  used_percent: number
++  limit_window_seconds: number
++  reset_after_seconds: number
++  reset_at: number
++}
++
++type ChatgptUsageResponse = {
++  plan_type: string | null
++  rate_limit: {
++    allowed: boolean
++    limit_reached: boolean
++    primary_window: ChatgptUsageResponseWindow | null
++    secondary_window: ChatgptUsageResponseWindow | null
++  }
++  credits: {
++    has_credits: boolean
++    unlimited: boolean
++    balance: string | null
++  } | null
++}
++
++const windowSchema = z.object({
++  used_percent: z.number(),
++  limit_window_seconds: z.number(),
++  reset_after_seconds: z.number(),
++  reset_at: z.number(),
++})
++
++const responseSchema = z.object({
++  plan_type: z.string().nullable(),
++  rate_limit: z.object({
++    allowed: z.boolean(),
++    limit_reached: z.boolean(),
++    primary_window: windowSchema.nullable(),
++    secondary_window: windowSchema.nullable(),
++  }),
++  credits: z
++    .object({
++      has_credits: z.boolean(),
++      unlimited: z.boolean(),
++      balance: z.string().nullable(),
++    })
++    .nullable(),
++}) satisfies z.ZodType<ChatgptUsageResponse>
++
++export async function fetchChatgptUsage(accessToken: string, accountId?: string): Promise<UsageFetchResult> {
++  const headers = iife(() => {
++    const base = {
++      Authorization: `Bearer ${accessToken}`,
++      Accept: "application/json",
++    }
++    if (!accountId) return base
++    return { ...base, "ChatGPT-Account-Id": accountId }
++  })
++
++  const response = await fetch(endpoint, {
++    headers,
++    signal: AbortSignal.timeout(10_000),
++  }).catch((error) => {
++    log.warn("usage fetch failed", {
++      error: error instanceof Error ? error.message : String(error),
++    })
++    return null
++  })
++
++  if (!response) {
++    return {
++      snapshot: null,
++      error: fetchError("OpenAI ChatGPT", "network"),
++    }
++  }
++
++  if (!response.ok) {
++    log.warn("usage fetch failed", { status: response.status })
++    return {
++      snapshot: null,
++      error: fetchError("OpenAI ChatGPT", String(response.status)),
++    }
++  }
++
++  const body = await response.json().catch(() => null)
++  if (!body) {
++    return {
++      snapshot: null,
++      error: fetchError("OpenAI ChatGPT", "empty response"),
++    }
++  }
++
++  const parsed = responseSchema.safeParse(body)
++  if (!parsed.success) {
++    log.warn("usage fetch parse failed", { issues: parsed.error.issues.length })
++    return {
++      snapshot: null,
++      error: fetchError("OpenAI ChatGPT", "parse failed"),
++    }
++  }
++
++  const rateLimit = parsed.data.rate_limit
++  const primary = toWindow(rateLimit.primary_window)
++  const secondary = toWindow(rateLimit.secondary_window)
++  const credits = toCredits(parsed.data.credits)
++  const planType = toPlanType(parsed.data.plan_type)
++
++  return {
++    snapshot: {
++      primary,
++      secondary,
++      tertiary: null,
++      credits,
++      planType,
++      updatedAt: Date.now(),
++    },
++  }
++}
++
++function fetchError(provider: string, detail: string | null): string {
++  if (!detail) return `${provider} usage request failed`
++  return `${provider} usage request failed (${detail})`
++}
++
++function toWindow(window: ChatgptUsageResponseWindow | null): RateLimitWindow | null {
++  if (!window) return null
++  return {
++    usedPercent: window.used_percent,
++    windowMinutes: Math.round(window.limit_window_seconds / 60),
++    resetsAt: window.reset_at,
++  }
++}
++
++function toCredits(credits: ChatgptUsageResponse["credits"]): CreditsSnapshot | null {
++  if (!credits) return null
++  return {
++    hasCredits: credits.has_credits,
++    unlimited: credits.unlimited,
++    balance: credits.balance,
++  }
++}
++
++function toPlanType(value: ChatgptUsageResponse["plan_type"]): PlanType | null {
++  if (!value) return null
++  const parsed = planTypeSchema.safeParse(value)
++  if (!parsed.success) return null
++  return parsed.data
++}
+diff --git a/packages/opencode/src/usage/registry.ts b/packages/opencode/src/usage/registry.ts
+new file mode 100644
+index 00000000..8ec8aeef
+--- /dev/null
++++ b/packages/opencode/src/usage/registry.ts
+@@ -0,0 +1,44 @@
++export type UsageProviderInfo = {
++  authKeys: readonly string[]
++  displayName: string
++  requiresOAuth: boolean
++}
++
++export const usageProviders = {
++  openai: {
++    authKeys: ["openai"],
++    displayName: "OpenAI ChatGPT",
++    requiresOAuth: true,
++  },
++  "github-copilot": {
++    authKeys: ["github-copilot"],
++    displayName: "GitHub Copilot",
++    requiresOAuth: true,
++  },
++  "github-copilot-enterprise": {
++    authKeys: ["github-copilot-enterprise"],
++    displayName: "GitHub Copilot Enterprise",
++    requiresOAuth: true,
++  },
++  anthropic: {
++    authKeys: ["anthropic"],
++    displayName: "Anthropic Claude",
++    requiresOAuth: true,
++  },
++} as const
++
++export type UsageProviderId = keyof typeof usageProviders
++
++export function isUsageProvider(provider: string): provider is UsageProviderId {
++  return provider in usageProviders
++}
++
++export function getUsageProviderInfo(provider: string): UsageProviderInfo | null {
++  if (!isUsageProvider(provider)) return null
++  return usageProviders[provider]
++}
++
++export function listUsageProviders(): Array<{ id: UsageProviderId } & UsageProviderInfo> {
++  const providers = Object.keys(usageProviders) as UsageProviderId[]
++  return providers.map((id) => ({ id, ...usageProviders[id] }))
++}
+diff --git a/packages/opencode/src/usage/store.ts b/packages/opencode/src/usage/store.ts
+new file mode 100644
+index 00000000..dbff4981
+--- /dev/null
++++ b/packages/opencode/src/usage/store.ts
+@@ -0,0 +1,105 @@
++import z from "zod"
++import { Auth } from "../auth"
++import { Bus } from "../bus"
++import { BusEvent } from "../bus/bus-event"
++import { Storage } from "../storage/storage"
++import { Log } from "../util/log"
++import { getUsageProviderInfo, isUsageProvider, listUsageProviders, type UsageProviderInfo } from "./registry"
++import { snapshotSchema, type Snapshot } from "./types"
++
++const log = Log.create({ service: "usage" })
++
++export const UsageEvent = {
++  Updated: BusEvent.define(
++    "usage.updated",
++    z.object({
++      provider: z.string(),
++      snapshot: snapshotSchema,
++    }),
++  ),
++}
++
++export async function getUsage(provider: string): Promise<Snapshot | null> {
++  return Storage.read<Snapshot>(storageKey(provider)).catch(() => null)
++}
++
++export async function updateUsage(provider: string, update: Partial<Snapshot>): Promise<Snapshot> {
++  const existing = await getUsage(provider)
++  const primary = update.primary !== undefined ? update.primary : (existing?.primary ?? null)
++  const secondary = update.secondary !== undefined ? update.secondary : (existing?.secondary ?? null)
++  const tertiary = update.tertiary !== undefined ? update.tertiary : (existing?.tertiary ?? null)
++  const credits = update.credits !== undefined ? update.credits : (existing?.credits ?? null)
++  const planType = update.planType !== undefined ? update.planType : (existing?.planType ?? null)
++  const snapshot: Snapshot = {
++    primary,
++    secondary,
++    tertiary,
++    credits,
++    planType,
++    updatedAt: Date.now(),
++  }
++
++  await Storage.write(storageKey(provider), snapshot).catch((error) => {
++    log.debug("usage write failed", { provider, error })
++  })
++
++  await Bus.publish(UsageEvent.Updated, { provider, snapshot }).catch((error) => {
++    log.debug("usage publish failed", { provider, error })
++  })
++
++  return snapshot
++}
++
++export async function clearUsage(provider: string): Promise<void> {
++  await Storage.remove(storageKey(provider))
++}
++
++export function resolveProvider(input: string): string | null {
++  const normalized = input.trim().toLowerCase()
++  if (isUsageProvider(normalized)) return normalized
++  return null
++}
++
++export function getProviderInfo(provider: string): UsageProviderInfo | null {
++  return getUsageProviderInfo(provider)
++}
++
++export async function getAuthenticatedProviders(auth?: Record<string, Auth.Info>): Promise<string[]> {
++  const entries = auth ?? (await Auth.all())
++  const providers = listUsageProviders()
++  const result: string[] = []
++
++  for (const provider of providers) {
++    const matched = provider.authKeys.some((key) => {
++      const providerAuth = entries[key]
++      if (!providerAuth) return false
++      if (provider.requiresOAuth && providerAuth.type !== "oauth") return false
++      return true
++    })
++    if (matched) result.push(provider.id)
++  }
++
++  return result
++}
++
++export async function getProviderAuth(
++  provider: string,
++  auth?: Record<string, Auth.Info>,
++): Promise<{ key: string; auth: Auth.Info } | null> {
++  const info = getUsageProviderInfo(provider)
++  if (!info) return null
++  const entries = auth ?? (await Auth.all())
++
++  for (const key of info.authKeys) {
++    const providerAuth = entries[key]
++    if (!providerAuth) continue
++    if (info.requiresOAuth && providerAuth.type !== "oauth") continue
++    return { key, auth: providerAuth }
++  }
++
++  return null
++}
++
++function storageKey(provider: string): string[] {
++  return ["usage", provider]
++}
+diff --git a/packages/opencode/src/usage/types.ts b/packages/opencode/src/usage/types.ts
+new file mode 100644
+index 00000000..12da90ac
+--- /dev/null
++++ b/packages/opencode/src/usage/types.ts
+@@ -0,0 +1,50 @@
++import z from "zod"
++
++export const planTypeSchema = z.enum([
++  "guest",
++  "free",
++  "go",
++  "plus",
++  "pro",
++  "free_workspace",
++  "team",
++  "business",
++  "education",
++  "quorum",
++  "k12",
++  "enterprise",
++  "edu",
++])
++export type PlanType = z.infer<typeof planTypeSchema>
++
++export const rateLimitWindowSchema = z.object({
++  usedPercent: z.number(),
++  windowMinutes: z.number().nullable(),
++  resetsAt: z.number().nullable(),
++})
++export type RateLimitWindow = z.infer<typeof rateLimitWindowSchema>
++
++export const creditsSnapshotSchema = z.object({
++  hasCredits: z.boolean(),
++  unlimited: z.boolean(),
++  balance: z.string().nullable(),
++  total: z.number().nullable().optional(),
++  used: z.number().nullable().optional(),
++  remaining: z.number().nullable().optional(),
++})
++export type CreditsSnapshot = z.infer<typeof creditsSnapshotSchema>
++
++export const snapshotSchema = z.object({
++  primary: rateLimitWindowSchema.nullable(),
++  secondary: rateLimitWindowSchema.nullable(),
++  tertiary: rateLimitWindowSchema.nullable(),
++  credits: creditsSnapshotSchema.nullable(),
++  planType: planTypeSchema.nullable(),
++  updatedAt: z.number(),
++})
++export type Snapshot = z.infer<typeof snapshotSchema>
++
++export type UsageFetchResult = {
++  snapshot: Snapshot | null
++  error?: string
++}
+diff --git a/packages/opencode/test/cli/tui/usage-command.test.ts b/packages/opencode/test/cli/tui/usage-command.test.ts
+new file mode 100644
+index 00000000..c18d85ff
+--- /dev/null
++++ b/packages/opencode/test/cli/tui/usage-command.test.ts
+@@ -0,0 +1,51 @@
++import { describe, expect, test } from "bun:test"
++import { parseUsageCommand } from "../../../src/usage/command"
++
++describe("usage command", () => {
++  test("uses config defaults when flags are omitted", () => {
++    const result = parseUsageCommand("/usage", {
++      show_usage_provider_scope: "all",
++      show_usage_value_mode: "remaining",
++    })
++    if ("error" in result) throw new Error(result.error)
++    expect(result).toEqual({
++      provider: undefined,
++      scope: "all",
++      mode: "remaining",
++    })
++  })
++
++  test("parses provider with mode override", () => {
++    const result = parseUsageCommand("/usage openai --remaining")
++    if ("error" in result) throw new Error(result.error)
++    expect(result).toEqual({
++      provider: "openai",
++      scope: "current",
++      mode: "remaining",
++    })
++  })
++
++  test("drops provider when scope flag is explicit", () => {
++    const result = parseUsageCommand("/usage openai --all")
++    if ("error" in result) throw new Error(result.error)
++    expect(result).toEqual({
++      provider: undefined,
++      scope: "all",
++      mode: "used",
++    })
++  })
++
++  test("rejects conflicting scope flags", () => {
++    const result = parseUsageCommand("/usage --all --current")
++    expect(result).toEqual({
++      error: "Choose only one of --all or --current.",
++    })
++  })
++
++  test("rejects conflicting mode flags", () => {
++    const result = parseUsageCommand("/usage --used --remaining")
++    expect(result).toEqual({
++      error: "Choose only one of --used or --remaining.",
++    })
++  })
++})
+diff --git a/packages/opencode/test/cli/tui/usage-format.test.ts b/packages/opencode/test/cli/tui/usage-format.test.ts
+new file mode 100644
+index 00000000..42e480a7
+--- /dev/null
++++ b/packages/opencode/test/cli/tui/usage-format.test.ts
+@@ -0,0 +1,95 @@
++import { describe, expect, test } from "bun:test"
++import {
++  formatCreditsLabel,
++  formatUsageSlotLabel,
++  formatUsageWindowLabel,
++  usageBarString,
++  usageDisplay,
++} from "../../../src/cli/cmd/tui/component/usage-format"
++
++describe("usage format", () => {
++  test("returns used mode percent and label", () => {
++    const result = usageDisplay(64.2, "used")
++    expect(result).toEqual({
++      percent: 64.2,
++      label: "used",
++    })
++  })
++
++  test("returns remaining mode percent and label", () => {
++    const result = usageDisplay(64.2, "remaining")
++    expect(result).toEqual({
++      percent: 35.8,
++      label: "remaining",
++    })
++  })
++
++  test("clamps invalid values before used/remaining conversion", () => {
++    expect(usageDisplay(-10, "used").percent).toBe(0)
++    expect(usageDisplay(250, "used").percent).toBe(100)
++    expect(usageDisplay(Number.NaN, "used").percent).toBe(0)
++    expect(usageDisplay(250, "remaining").percent).toBe(0)
++  })
++
++  test("clamps usage bar rendering", () => {
++    expect(usageBarString(250, 10)).toBe("██████████")
++    expect(usageBarString(-10, 10)).toBe("░░░░░░░░░░")
++  })
++
++  test("labels providers explicitly", () => {
++    expect(formatUsageWindowLabel("openai", "primary", null)).toBe("5h")
++    expect(formatUsageWindowLabel("openai", "secondary", null)).toBe("Weekly")
++    expect(formatUsageWindowLabel("anthropic", "primary", null)).toBe("5h")
++    expect(formatUsageWindowLabel("anthropic", "secondary", null)).toBe("Weekly")
++    expect(formatUsageWindowLabel("github-copilot", "primary", null)).toBe("Monthly")
++    expect(formatUsageSlotLabel("github-copilot", "secondary")).toBe("Premium Requests")
++  })
++
++  test("formats copilot quota for remaining mode", () => {
++    expect(
++      formatCreditsLabel(
++        "github-copilot",
++        {
++          hasCredits: true,
++          unlimited: false,
++          balance: "73",
++          total: 300,
++          used: 247,
++          remaining: 53,
++        },
++        { mode: "remaining" },
++      ),
++    ).toBe("Premium Requests Remaining: 53")
++  })
++
++  test("formats copilot quota for used mode", () => {
++    expect(
++      formatCreditsLabel(
++        "github-copilot",
++        {
++          hasCredits: true,
++          unlimited: false,
++          balance: "73",
++          total: 300,
++          used: 247,
++          remaining: 53,
++        },
++        { mode: "used" },
++      ),
++    ).toBe("Premium Requests Used: 247")
++  })
++
++  test("formats copilot used mode without counts as unknown", () => {
++    expect(
++      formatCreditsLabel(
++        "github-copilot",
++        {
++          hasCredits: true,
++          unlimited: false,
++          balance: "73",
++        },
++        { mode: "used" },
++      ),
++    ).toBe("Premium Requests Used: Unknown")
++  })
++})
+diff --git a/packages/opencode/test/cli/tui/usage-toast.test.ts b/packages/opencode/test/cli/tui/usage-toast.test.ts
+new file mode 100644
+index 00000000..20a8147f
+--- /dev/null
++++ b/packages/opencode/test/cli/tui/usage-toast.test.ts
+@@ -0,0 +1,162 @@
++import { describe, expect, test } from "bun:test"
++import {
++  usageFailureBackoffMs,
++  usageRefreshCooldownMs,
++  usageRemember,
++  usageShouldRefresh,
++  usageShownMax,
++  usageWarning,
++  usageWarningKey,
++} from "../../../src/cli/cmd/tui/component/usage-toast"
++import type { UsageEntry } from "../../../src/cli/cmd/tui/component/usage-data"
++
++function entry(input: {
++  provider?: string
++  primary?: number | null
++  secondary?: number | null
++  tertiary?: number | null
++}): UsageEntry {
++  const window = (value: number | null | undefined) => {
++    if (value === null || value === undefined) return null
++    return {
++      usedPercent: value,
++      windowMinutes: 60,
++      resetsAt: 1_700_000_000,
++    }
++  }
++
++  return {
++    provider: input.provider ?? "openai",
++    displayName: "OpenAI",
++    snapshot: {
++      primary: window(input.primary),
++      secondary: window(input.secondary),
++      tertiary: window(input.tertiary),
++      credits: null,
++      planType: null,
++      updatedAt: Date.now(),
++    },
++  }
++}
++
++describe("usage toast", () => {
++  test("detects threshold crossings", () => {
++    const current = entry({ primary: 80 })
++    const previous = entry({ primary: 79 }).snapshot
++    const warning = usageWarning(current, previous)
++    expect(warning?.window).toBe("primary")
++    expect(warning?.threshold).toBe(80)
++  })
++
++  test("returns null when no new threshold is crossed", () => {
++    const current = entry({ primary: 89 })
++    const previous = entry({ primary: 85 }).snapshot
++    expect(usageWarning(current, previous)).toBeNull()
++  })
++
++  test("prefers stronger threshold across windows", () => {
++    const current = entry({ primary: 82, secondary: 91 })
++    const previous = entry({ primary: 79, secondary: 89 }).snapshot
++    const warning = usageWarning(current, previous)
++    expect(warning?.window).toBe("secondary")
++    expect(warning?.threshold).toBe(90)
++  })
++
++  test("prefers larger usage percent for equal threshold", () => {
++    const current = entry({ primary: 82, secondary: 88 })
++    const previous = entry({ primary: 79, secondary: 79 }).snapshot
++    const warning = usageWarning(current, previous)
++    expect(warning?.window).toBe("secondary")
++    expect(warning?.threshold).toBe(80)
++  })
++
++  test("sanitizes non-finite and out-of-range usage values", () => {
++    const invalid = usageWarning(entry({ primary: Number.NaN }), entry({ primary: 79 }).snapshot)
++    expect(invalid).toBeNull()
++
++    const high = usageWarning(entry({ primary: 150 }), entry({ primary: 79 }).snapshot)
++    expect(high?.threshold).toBe(95)
++    expect(high?.usedPercent).toBe(100)
++  })
++
++  test("checks refresh cooldown and failure backoff", () => {
++    const now = 1_000_000
++    expect(
++      usageShouldRefresh({
++        now,
++        successAt: 0,
++        failureAt: 0,
++        refreshing: true,
++      }),
++    ).toBeFalse()
++
++    expect(
++      usageShouldRefresh({
++        now,
++        successAt: now - usageRefreshCooldownMs + 1,
++        failureAt: 0,
++        refreshing: false,
++      }),
++    ).toBeFalse()
++
++    expect(
++      usageShouldRefresh({
++        now,
++        successAt: 0,
++        failureAt: now - usageFailureBackoffMs + 1,
++        refreshing: false,
++      }),
++    ).toBeFalse()
++
++    expect(
++      usageShouldRefresh({
++        now,
++        successAt: now - usageRefreshCooldownMs - 1,
++        failureAt: now - usageFailureBackoffMs - 1,
++        refreshing: false,
++      }),
++    ).toBeTrue()
++  })
++
++  test("dedupes and evicts oldest key when full", () => {
++    const shown = new Set<string>()
++    const first = usageWarningKey("openai", {
++      window: "primary",
++      threshold: 80,
++      usedPercent: 80,
++      resetsAt: 1,
++      windowMinutes: 60,
++    })
++
++    expect(usageRemember(shown, first)).toBeTrue()
++    expect(usageRemember(shown, first)).toBeFalse()
++
++    for (let index = 1; index < usageShownMax; index++) {
++      usageRemember(
++        shown,
++        usageWarningKey("openai", {
++          window: "primary",
++          threshold: 80,
++          usedPercent: 80 + index,
++          resetsAt: index + 1,
++          windowMinutes: 60,
++        }),
++      )
++    }
++
++    expect(shown.size).toBe(usageShownMax)
++    expect(shown.has(first)).toBeTrue()
++
++    const next = usageWarningKey("openai", {
++      window: "secondary",
++      threshold: 90,
++      usedPercent: 90,
++      resetsAt: 9_999,
++      windowMinutes: 60,
++    })
++    expect(usageRemember(shown, next)).toBeTrue()
++    expect(shown.size).toBe(usageShownMax)
++    expect(shown.has(first)).toBeFalse()
++    expect(shown.has(next)).toBeTrue()
++  })
++})
+diff --git a/packages/opencode/test/plugin/copilot-auth.test.ts b/packages/opencode/test/plugin/copilot-auth.test.ts
+new file mode 100644
+index 00000000..7e9c3768
+--- /dev/null
++++ b/packages/opencode/test/plugin/copilot-auth.test.ts
+@@ -0,0 +1,276 @@
++import { describe, expect, test } from "bun:test"
++import { CopilotAuthPlugin } from "../../src/plugin/copilot"
++import type { PluginInput } from "@opencode-ai/plugin"
++
++const CLIENT_ID = "Ov23li8tweQw6odWQebz"
++const USAGE_CLIENT_ID = "Iv1.b507a08c87ecfe98"
++
++function createInput(): PluginInput {
++  return {
++    client: {
++      session: {
++        get: async () => ({ data: { parentID: null } }),
++      },
++    } as unknown as PluginInput["client"],
++    project: {} as PluginInput["project"],
++    directory: "/",
++    worktree: "/",
++    serverUrl: new URL("http://localhost"),
++    $: Bun.$,
++  }
++}
++
++function mockCopilotDeviceFlow(options: {
++  usageToken?: string | null
++  usageNetworkError?: boolean
++  usagePending?: boolean
++  usageInterval?: number
++  mainToken?: string | null
++  serviceAccessToken?: string
++  serviceRefreshToken?: string
++  onUsagePoll?: () => void
++}) {
++  const originalFetch = globalThis.fetch
++
++  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
++    const url = input.toString()
++    const body = init?.body ? JSON.parse(init.body.toString()) : {}
++
++    if (url.endsWith("/login/device/code")) {
++      if (body.client_id === CLIENT_ID) {
++        return new Response(
++          JSON.stringify({
++            verification_uri: "https://github.com/login/device",
++            user_code: "MAIN-CODE",
++            device_code: "main-device",
++            interval: 1,
++            expires_in: 600,
++          }),
++          { status: 200 },
++        )
++      }
++      if (body.client_id === USAGE_CLIENT_ID) {
++        return new Response(
++          JSON.stringify({
++            verification_uri: "https://github.com/login/device",
++            user_code: "USAGE-CODE",
++            device_code: "usage-device",
++            interval: options.usageInterval ?? 1,
++            expires_in: 600,
++          }),
++          { status: 200 },
++        )
++      }
++    }
++
++    if (url.endsWith("/login/oauth/access_token")) {
++      if (body.client_id === CLIENT_ID) {
++        if (options.mainToken === null) {
++          return new Response(JSON.stringify({ error: "expired_token" }), { status: 200 })
++        }
++        return new Response(JSON.stringify({ access_token: options.mainToken ?? "device-token" }), { status: 200 })
++      }
++      if (body.client_id === USAGE_CLIENT_ID) {
++        options.onUsagePoll?.()
++        if (options.usageNetworkError) {
++          throw new Error("usage poll network failure")
++        }
++        if (options.usagePending) {
++          return new Response(JSON.stringify({ error: "authorization_pending" }), { status: 200 })
++        }
++        if (options.usageToken) {
++          return new Response(JSON.stringify({ access_token: options.usageToken }), { status: 200 })
++        }
++        return new Response(JSON.stringify({ error: "expired_token" }), { status: 200 })
++      }
++    }
++
++    if (url.endsWith("/copilot_internal/v2/token")) {
++      if (options.serviceAccessToken || options.serviceRefreshToken) {
++        return new Response(
++          JSON.stringify({
++            access_token: options.serviceAccessToken ?? "service-token",
++            refresh_token: options.serviceRefreshToken,
++            expires_at: 1_700_000_000,
++          }),
++          { status: 200 },
++        )
++      }
++      return new Response(JSON.stringify({ token: "service-token" }), { status: 200 })
++    }
++
++    return new Response("", { status: 404 })
++  }) as typeof fetch
++
++  return () => {
++    globalThis.fetch = originalFetch
++  }
++}
++
++describe("Copilot auth", () => {
++  test("returns usage token when device flow completes", async () => {
++    const restore = mockCopilotDeviceFlow({ usageToken: "usage-token" })
++    try {
++      const hooks = await CopilotAuthPlugin(createInput())
++      const method = hooks.auth?.methods[0]
++      const authorize = method?.authorize
++      if (!authorize) throw new Error("Missing authorize handler")
++
++      const authorizeResult = await authorize({})
++      if (!("callback" in authorizeResult)) throw new Error("Expected oauth authorize result")
++      if (authorizeResult.method !== "auto") throw new Error("Expected auto OAuth flow")
++      expect(authorizeResult.instructions).toContain("To enable usage tracking")
++
++      const result = await authorizeResult.callback()
++      if (result.type !== "success") throw new Error("Expected success")
++      if (!("access" in result)) throw new Error("Expected access token")
++
++      expect(result.access).toBe("service-token")
++      expect(result.usage).toBe("usage-token")
++    } finally {
++      restore()
++    }
++  })
++
++  test("succeeds without usage token when device flow expires", async () => {
++    const restore = mockCopilotDeviceFlow({ usageToken: null })
++    try {
++      const hooks = await CopilotAuthPlugin(createInput())
++      const method = hooks.auth?.methods[0]
++      const authorize = method?.authorize
++      if (!authorize) throw new Error("Missing authorize handler")
++
++      const authorizeResult = await authorize({})
++      if (!("callback" in authorizeResult)) throw new Error("Expected oauth authorize result")
++      if (authorizeResult.method !== "auto") throw new Error("Expected auto OAuth flow")
++      expect(authorizeResult.instructions).toContain("To enable usage tracking")
++
++      const result = await authorizeResult.callback()
++      if (result.type !== "success") throw new Error("Expected success")
++      if (!("access" in result)) throw new Error("Expected access token")
++
++      expect(result.access).toBe("service-token")
++      expect(result.usage).toBeUndefined()
++    } finally {
++      restore()
++    }
++  })
++
++  test("succeeds when optional usage polling fails", async () => {
++    const restore = mockCopilotDeviceFlow({ usageNetworkError: true })
++    try {
++      const hooks = await CopilotAuthPlugin(createInput())
++      const method = hooks.auth?.methods[0]
++      const authorize = method?.authorize
++      if (!authorize) throw new Error("Missing authorize handler")
++
++      const authorizeResult = await authorize({})
++      if (!("callback" in authorizeResult)) throw new Error("Expected oauth authorize result")
++      if (authorizeResult.method !== "auto") throw new Error("Expected auto OAuth flow")
++
++      const result = await authorizeResult.callback()
++      if (result.type !== "success") throw new Error("Expected success")
++      if (!("access" in result)) throw new Error("Expected access token")
++
++      expect(result.access).toBe("service-token")
++      expect(result.usage).toBeUndefined()
++    } finally {
++      restore()
++    }
++  })
++
++  test("stops optional usage polling when main auth fails", async () => {
++    let polls = 0
++    const restore = mockCopilotDeviceFlow({
++      mainToken: null,
++      usagePending: true,
++      usageInterval: 0,
++      onUsagePoll: () => {
++        polls += 1
++      },
++    })
++    try {
++      const hooks = await CopilotAuthPlugin(createInput())
++      const method = hooks.auth?.methods[0]
++      const authorize = method?.authorize
++      if (!authorize) throw new Error("Missing authorize handler")
++
++      const authorizeResult = await authorize({})
++      if (!("callback" in authorizeResult)) throw new Error("Expected oauth authorize result")
++      if (authorizeResult.method !== "auto") throw new Error("Expected auto OAuth flow")
++
++      const result = await authorizeResult.callback()
++      expect(result.type).toBe("failed")
++
++      const count = polls
++      await Bun.sleep(3_500)
++      expect(polls).toBe(count)
++    } finally {
++      restore()
++    }
++  })
++
++  test("loader fetch uses access token when tokens diverge", async () => {
++    const restore = mockCopilotDeviceFlow({
++      serviceAccessToken: "service-access",
++      serviceRefreshToken: "service-refresh",
++    })
++    try {
++      const hooks = await CopilotAuthPlugin(createInput())
++      const method = hooks.auth?.methods[0]
++      const authorize = method?.authorize
++      if (!authorize) throw new Error("Missing authorize handler")
++
++      const authorizeResult = await authorize({})
++      if (!("callback" in authorizeResult)) throw new Error("Expected oauth authorize result")
++      if (authorizeResult.method !== "auto") throw new Error("Expected auto OAuth flow")
++
++      const result = await authorizeResult.callback()
++      if (result.type !== "success") throw new Error("Expected success")
++      if (!("access" in result)) throw new Error("Expected access token")
++
++      expect(result.access).toBe("service-access")
++      expect(result.refresh).toBe("service-refresh")
++
++      const loader = hooks.auth?.loader
++      if (!loader) throw new Error("Missing auth loader")
++
++      const loaded = await loader(
++        async () => ({
++          type: "oauth",
++          access: result.access,
++          refresh: result.refresh,
++          expires: result.expires,
++        }),
++        { models: {} } as any,
++      )
++      if (!loaded.fetch) throw new Error("Missing loader fetch")
++
++      const previousFetch = globalThis.fetch
++      let authHeader = ""
++      globalThis.fetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
++        authHeader = new Headers(init?.headers ?? {}).get("Authorization") ?? ""
++        return new Response("{}", { status: 200 })
++      }) as typeof fetch
++
++      try {
++        await loaded.fetch("https://api.githubcopilot.com/v1/completions", {
++          body: JSON.stringify({
++            messages: [
++              {
++                role: "user",
++                content: "hello",
++              },
++            ],
++          }),
++        })
++      } finally {
++        globalThis.fetch = previousFetch
++      }
++
++      expect(authHeader).toBe("Bearer service-access")
++    } finally {
++      restore()
++    }
++  })
++})
+diff --git a/packages/opencode/test/server/usage-copilot.test.ts b/packages/opencode/test/server/usage-copilot.test.ts
+new file mode 100644
+index 00000000..573734c4
+--- /dev/null
++++ b/packages/opencode/test/server/usage-copilot.test.ts
+@@ -0,0 +1,33 @@
++import { describe, expect, test } from "bun:test"
++import { Usage } from "../../src/usage"
++
++describe("copilot usage fallback", () => {
++  test("keeps zero quota from token metadata", async () => {
++    const originalFetch = globalThis.fetch
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://api.github.com/copilot_internal/user") {
++        return Promise.resolve(new Response("", { status: 500 }))
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      const result = await Usage.fetchCopilotUsage({
++        access: "sku=copilot_for_individual;cq=0",
++        refresh: "copilot-refresh",
++        usage: "copilot-usage-token",
++      })
++
++      expect(result.snapshot?.credits?.balance).toBe("0")
++      expect(result.snapshot?.credits?.hasCredits).toBe(false)
++      expect(result.snapshot?.credits?.remaining).toBe(0)
++      expect(result.snapshot?.credits?.used).toBeNull()
++      expect(result.snapshot?.credits?.total).toBeNull()
++      expect(result.error).toContain("Copilot usage request failed")
++    } finally {
++      globalThis.fetch = originalFetch
++    }
++  })
++})
+diff --git a/packages/opencode/test/server/usage.test.ts b/packages/opencode/test/server/usage.test.ts
+new file mode 100644
+index 00000000..4f6daa5e
+--- /dev/null
++++ b/packages/opencode/test/server/usage.test.ts
+@@ -0,0 +1,555 @@
++import { describe, expect, test } from "bun:test"
++import { Usage, type Snapshot } from "../../src/usage"
++import { Auth } from "../../src/auth"
++import { Log } from "../../src/util/log"
++import { Storage } from "../../src/storage/storage"
++import { Server } from "../../src/server/server"
++import { Instance } from "../../src/project/instance"
++import { iife } from "../../src/util/iife"
++
++Log.init({ print: false })
++const app = Server.Default()
++const authHeader = iife(() => {
++  const password = process.env.OPENCODE_SERVER_PASSWORD
++  if (!password) return null
++  const username = process.env.OPENCODE_SERVER_USERNAME ?? "opencode"
++  return `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
++})
++
++function request(path: string, init?: RequestInit) {
++  if (!authHeader) return app.request(path, init)
++  const headers = new Headers(init?.headers ?? {})
++  headers.set("Authorization", authHeader)
++  return app.request(path, {
++    ...init,
++    headers,
++  })
++}
++
++const openaiUsageResponse = {
++  plan_type: "plus",
++  rate_limit: {
++    allowed: true,
++    limit_reached: false,
++    primary_window: {
++      used_percent: 10,
++      limit_window_seconds: 5 * 60 * 60,
++      reset_after_seconds: 60,
++      reset_at: 1_700_000_000,
++    },
++    secondary_window: {
++      used_percent: 25,
++      limit_window_seconds: 7 * 24 * 60 * 60,
++      reset_after_seconds: 120,
++      reset_at: 1_700_604_800,
++    },
++  },
++  credits: {
++    has_credits: true,
++    unlimited: false,
++    balance: "12.34",
++  },
++}
++
++function cachedOpenaiSnapshot(): Snapshot {
++  return {
++    primary: { usedPercent: 10, windowMinutes: 300, resetsAt: 1_700_000_000 },
++    secondary: null,
++    tertiary: null,
++    credits: null,
++    planType: "plus",
++    updatedAt: Date.now(),
++  }
++}
++
++async function withInstance(run: () => Promise<void>) {
++  const originalProvide = Instance.provide
++  Instance.provide = async (input) => input.fn()
++  try {
++    await run()
++  } finally {
++    Instance.provide = originalProvide
++  }
++}
++
++describe("/usage", () => {
++  test("returns openai usage with org header", async () => {
++    const originalFetch = globalThis.fetch
++    const accountId = "acct_123"
++    const seen = { accountId: "" }
++
++    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        const headers = new Headers(init?.headers ?? {})
++        seen.accountId = headers.get("ChatGPT-Account-Id") ?? ""
++        return Promise.resolve(new Response(JSON.stringify(openaiUsageResponse), { status: 200 }))
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      const result = await Usage.fetchChatgptUsage("codex-token", accountId)
++      const snapshot = result.snapshot
++      expect(snapshot?.primary?.usedPercent).toBe(10)
++      expect(snapshot?.secondary?.usedPercent).toBe(25)
++      expect(seen.accountId).toBe(accountId)
++    } finally {
++      globalThis.fetch = originalFetch
++    }
++  })
++
++  test("refresh=false uses cache without calling fetch", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++    const calls = { count: 0 }
++
++    Auth.all = (async () => ({
++      openai: {
++        type: "oauth" as const,
++        access: "codex-token",
++        refresh: "codex-refresh",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        calls.count += 1
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("openai")
++        await Storage.write(["usage", "openai"], cachedOpenaiSnapshot())
++
++        const response = await request("/usage?provider=openai&refresh=false")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as { entries: Array<{ snapshot: { planType: string | null } }> }
++        expect(body.entries.length).toBe(1)
++        expect(body.entries[0].snapshot.planType).toBe("plus")
++        expect(calls.count).toBe(0)
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("missing auth suggests login command", async () => {
++    const originalAuthAll = Auth.all
++
++    Auth.all = (async () => ({})) as typeof Auth.all
++
++    try {
++      await withInstance(async () => {
++        const response = await request("/usage?provider=openai")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as { error?: string }
++        expect(body.error).toContain("opencode auth login")
++        expect(body.error).not.toContain("opencode auth add")
++      })
++    } finally {
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("server parses usage command query and returns mode", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++
++    Auth.all = (async () => ({
++      openai: {
++        type: "oauth" as const,
++        access: "codex-token",
++        refresh: "codex-refresh",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        return Promise.resolve(new Response(JSON.stringify(openaiUsageResponse), { status: 200 }))
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("openai")
++        const response = await request(
++          "/usage?command=%2Fusage%20--remaining%20--current&modelProviderID=openai&showUsageProviderScope=current&showUsageValueMode=used",
++        )
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as {
++          entries: Array<{ provider: string }>
++          mode?: string
++          error?: string
++        }
++        expect(body.error).toBeUndefined()
++        expect(body.mode).toBe("remaining")
++        expect(body.entries.length).toBe(1)
++        expect(body.entries[0].provider).toBe("openai")
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("server returns usage command parse errors", async () => {
++    await withInstance(async () => {
++      const response = await request("/usage?command=%2Fusage%20--all%20--current")
++      expect(response.status).toBe(200)
++      const body = (await response.json()) as { entries: Array<unknown>; error?: string }
++      expect(body.entries.length).toBe(0)
++      expect(body.error).toContain("Choose only one of --all or --current")
++    })
++  })
++
++  test("concurrent refresh requests share one provider fetch", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++    const calls = { count: 0 }
++
++    Auth.all = (async () => ({
++      openai: {
++        type: "oauth" as const,
++        access: "codex-token",
++        refresh: "codex-refresh",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = (async (input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        calls.count += 1
++        await Bun.sleep(25)
++        return new Response(JSON.stringify(openaiUsageResponse), { status: 200 })
++      }
++      return new Response("", { status: 404 })
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("openai")
++
++        const [first, second] = await Promise.all([
++          request("/usage?provider=openai&refresh=true"),
++          request("/usage?provider=openai&refresh=true"),
++        ])
++
++        expect(first.status).toBe(200)
++        expect(second.status).toBe(200)
++        expect(calls.count).toBe(1)
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("concurrent refresh requests with rotated auth do not dedupe", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++    const calls = { count: 0 }
++    let authCalls = 0
++
++    Auth.all = (async () => {
++      authCalls += 1
++      return {
++        openai: {
++          type: "oauth" as const,
++          access: "codex-token",
++          refresh: authCalls === 1 ? "refresh-a" : "refresh-b",
++          expires: 0,
++        },
++      }
++    }) as typeof Auth.all
++
++    globalThis.fetch = (async (input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        calls.count += 1
++        await Bun.sleep(25)
++        return new Response(JSON.stringify(openaiUsageResponse), { status: 200 })
++      }
++      return new Response("", { status: 404 })
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("openai")
++
++        const [first, second] = await Promise.all([
++          request("/usage?provider=openai&refresh=true"),
++          request("/usage?provider=openai&refresh=true"),
++        ])
++
++        expect(first.status).toBe(200)
++        expect(second.status).toBe(200)
++        expect(calls.count).toBe(2)
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("copilot uses copilot_internal usage with reset date", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++    const resetDate = "2026-02-01T00:00:00Z"
++    const resetAt = Math.floor(new Date(resetDate).getTime() / 1000)
++    const seen = { auth: "" }
++
++    Auth.all = (async () => ({
++      "github-copilot": {
++        type: "oauth" as const,
++        access: "copilot-token",
++        refresh: "copilot-token",
++        usage: "copilot-usage-token",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
++      const url = input.toString()
++      if (url === "https://api.github.com/copilot_internal/user") {
++        const headers = new Headers(init?.headers ?? {})
++        seen.auth = headers.get("Authorization") ?? ""
++        return Promise.resolve(
++          new Response(
++            JSON.stringify({
++              quota_snapshots: {
++                premium_interactions: {
++                  entitlement: 100,
++                  remaining: 40,
++                  percent_remaining: 40,
++                  quota_id: "premium",
++                },
++                chat: {
++                  entitlement: 200,
++                  remaining: 50,
++                  percent_remaining: 25,
++                  quota_id: "chat",
++                },
++              },
++              copilot_plan: "copilot_for_individual",
++              quota_reset_date: resetDate,
++            }),
++            { status: 200 },
++          ),
++        )
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("github-copilot")
++        const response = await request("/usage?provider=github-copilot")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as {
++          entries: Array<{ snapshot: Snapshot }>
++        }
++        expect(body.entries.length).toBe(1)
++        const snapshot = body.entries[0].snapshot
++        expect(snapshot.primary?.usedPercent).toBe(60)
++        expect(snapshot.primary?.resetsAt).toBe(resetAt)
++        expect(snapshot.credits?.balance).toBe("40")
++        expect(snapshot.credits?.total).toBe(100)
++        expect(snapshot.credits?.used).toBe(60)
++        expect(snapshot.credits?.remaining).toBe(40)
++        expect(seen.auth).toBe("token copilot-usage-token")
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("copilot requires usage token", async () => {
++    const originalAuthAll = Auth.all
++
++    Auth.all = (async () => ({
++      "github-copilot": {
++        type: "oauth" as const,
++        access: "copilot-token",
++        refresh: "copilot-token",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("github-copilot")
++        const response = await request("/usage?provider=github-copilot")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as { entries: Array<unknown>; error?: string }
++        expect(body.entries.length).toBe(0)
++        expect(body.error).toContain("Copilot usage requires a GitHub OAuth device token")
++      })
++    } finally {
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("fetch failure returns cached snapshot with error line", async () => {
++    const originalFetch = globalThis.fetch
++    const originalAuthAll = Auth.all
++
++    Auth.all = (async () => ({
++      openai: {
++        type: "oauth" as const,
++        access: "codex-token",
++        refresh: "codex-refresh",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://chatgpt.com/backend-api/wham/usage") {
++        return Promise.resolve(new Response("", { status: 500 }))
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.clearUsage("openai")
++        await Storage.write(["usage", "openai"], cachedOpenaiSnapshot())
++
++        const response = await request("/usage?provider=openai&refresh=true")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as {
++          entries: Array<unknown>
++          error?: string
++          errors?: Array<{ provider: string; message: string }>
++        }
++        expect(body.entries.length).toBe(1)
++        expect(body.error).toContain("Showing cached results")
++        expect(body.errors?.[0].provider).toBe("openai")
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("copilot fallback does not overwrite cache", async () => {
++    const originalAuthAll = Auth.all
++    const originalFetch = globalThis.fetch
++
++    Auth.all = (async () => ({
++      "github-copilot": {
++        type: "oauth" as const,
++        access: "sku=copilot_for_individual;cq=80",
++        refresh: "copilot-token",
++        usage: "copilot-usage-token",
++        expires: 0,
++      },
++    })) as typeof Auth.all
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://api.github.com/copilot_internal/user") {
++        return Promise.resolve(new Response("", { status: 500 }))
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      await withInstance(async () => {
++        await Usage.updateUsage("github-copilot", {
++          primary: { usedPercent: 10, windowMinutes: 60, resetsAt: 1 },
++        })
++
++        const response = await request("/usage?provider=github-copilot&refresh=true")
++        expect(response.status).toBe(200)
++        const body = (await response.json()) as {
++          entries: Array<{ snapshot: Snapshot }>
++          errors?: Array<{ provider: string; message: string }>
++        }
++        expect(body.entries[0].snapshot.primary?.usedPercent).toBe(10)
++        expect(body.errors?.[0].message).toContain("Copilot usage request failed")
++
++        const stored = await Usage.getUsage("github-copilot")
++        expect(stored?.primary?.usedPercent).toBe(10)
++      })
++    } finally {
++      globalThis.fetch = originalFetch
++      Auth.all = originalAuthAll
++    }
++  })
++
++  test("updateUsage overwrites null fields", async () => {
++    await Usage.clearUsage("openai")
++    await Usage.updateUsage("openai", {
++      primary: { usedPercent: 10, windowMinutes: 60, resetsAt: 123 },
++      secondary: { usedPercent: 20, windowMinutes: 120, resetsAt: 456 },
++      credits: { hasCredits: true, unlimited: false, balance: "50" },
++      planType: "plus",
++    })
++
++    const updated = await Usage.updateUsage("openai", {
++      secondary: null,
++      credits: null,
++    })
++
++    expect(updated.secondary).toBeNull()
++    expect(updated.credits).toBeNull()
++    const stored = await Usage.getUsage("openai")
++    expect(stored?.secondary).toBeNull()
++    expect(stored?.credits).toBeNull()
++  })
++
++  test("claude extra usage maps to credits", async () => {
++    const originalFetch = globalThis.fetch
++    const auth = {
++      type: "oauth" as const,
++      access: "claude-token",
++      refresh: "claude-refresh",
++      expires: 0,
++    }
++
++    globalThis.fetch = ((input: RequestInfo | URL) => {
++      const url = input.toString()
++      if (url === "https://api.anthropic.com/api/oauth/usage") {
++        return Promise.resolve(
++          new Response(
++            JSON.stringify({
++              five_hour: { utilization: 0, resets_at: null },
++              seven_day: { utilization: 50, resets_at: null },
++              extra_usage: {
++                is_enabled: true,
++                monthly_limit: 2000,
++                used_credits: 1900,
++                utilization: 95,
++              },
++            }),
++            { status: 200 },
++          ),
++        )
++      }
++      return Promise.resolve(new Response("", { status: 404 }))
++    }) as typeof fetch
++
++    try {
++      const result = await Usage.fetchClaudeUsage("anthropic", auth)
++      const snapshot = result.snapshot
++      expect(snapshot?.primary?.usedPercent).toBe(0)
++      expect(snapshot?.secondary?.usedPercent).toBe(50)
++      expect(snapshot?.credits?.balance).toBe("100")
++      expect(snapshot?.credits?.hasCredits).toBe(true)
++    } finally {
++      globalThis.fetch = originalFetch
++    }
++  })
++})
+diff --git a/packages/plugin/src/index.ts b/packages/plugin/src/index.ts
+index a264cf5a..4f3cdc0d 100644
+--- a/packages/plugin/src/index.ts
++++ b/packages/plugin/src/index.ts
+@@ -140,8 +140,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
+                 refresh: string
+                 access: string
+                 expires: number
+-                accountId?: string
++                usage?: string
+                 enterpriseUrl?: string
++                accountId?: string
+               }
+             | { key: string }
+           ))
+@@ -161,8 +162,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
+                 refresh: string
+                 access: string
+                 expires: number
+-                accountId?: string
++                usage?: string
+                 enterpriseUrl?: string
++                accountId?: string
+               }
+             | { key: string }
+           ))
+diff --git a/packages/sdk/js/src/v2/gen/sdk.gen.ts b/packages/sdk/js/src/v2/gen/sdk.gen.ts
+index 527584e7..a1a44925 100644
+--- a/packages/sdk/js/src/v2/gen/sdk.gen.ts
++++ b/packages/sdk/js/src/v2/gen/sdk.gen.ts
+@@ -175,6 +175,7 @@ import type {
+   TuiSelectSessionResponses,
+   TuiShowToastResponses,
+   TuiSubmitPromptResponses,
++  UsageGetResponses,
+   VcsGetResponses,
+   WorktreeCreateErrors,
+   WorktreeCreateInput,
+@@ -2637,6 +2638,50 @@ export class Question extends HeyApiClient {
+   }
+ }
+
++export class Usage extends HeyApiClient {
++  /**
++   * Get usage
++   *
++   * Fetch usage limits for authenticated providers.
++   */
++  public get<ThrowOnError extends boolean = false>(
++    parameters?: {
++      directory?: string
++      workspace?: string
++      provider?: string
++      refresh?: boolean
++      command?: string
++      modelProviderID?: string
++      showUsageProviderScope?: "current" | "all"
++      showUsageValueMode?: "used" | "remaining"
++    },
++    options?: Options<never, ThrowOnError>,
++  ) {
++    const params = buildClientParams(
++      [parameters],
++      [
++        {
++          args: [
++            { in: "query", key: "directory" },
++            { in: "query", key: "workspace" },
++            { in: "query", key: "provider" },
++            { in: "query", key: "refresh" },
++            { in: "query", key: "command" },
++            { in: "query", key: "modelProviderID" },
++            { in: "query", key: "showUsageProviderScope" },
++            { in: "query", key: "showUsageValueMode" },
++          ],
++        },
++      ],
++    )
++    return (options?.client ?? this.client).get<UsageGetResponses, unknown, ThrowOnError>({
++      url: "/usage",
++      ...options,
++      ...params,
++    })
++  }
++}
++
+ export class Oauth extends HeyApiClient {
+   /**
+    * OAuth authorize
+@@ -4017,6 +4062,11 @@ export class OpencodeClient extends HeyApiClient {
+     return (this._question ??= new Question({ client: this.client }))
+   }
+
++  private _usage?: Usage
++  get usage(): Usage {
++    return (this._usage ??= new Usage({ client: this.client }))
++  }
++
+   private _provider?: Provider
+   get provider(): Provider {
+     return (this._provider ??= new Provider({ client: this.client }))
+diff --git a/packages/sdk/js/src/v2/gen/types.gen.ts b/packages/sdk/js/src/v2/gen/types.gen.ts
+index 290c6fd5..351bf99e 100644
+--- a/packages/sdk/js/src/v2/gen/types.gen.ts
++++ b/packages/sdk/js/src/v2/gen/types.gen.ts
+@@ -515,6 +515,54 @@ export type EventWorktreeFailed = {
+   }
+ }
+
++export type EventUsageUpdated = {
++  type: "usage.updated"
++  properties: {
++    provider: string
++    snapshot: {
++      primary: {
++        usedPercent: number
++        windowMinutes: number | null
++        resetsAt: number | null
++      } | null
++      secondary: {
++        usedPercent: number
++        windowMinutes: number | null
++        resetsAt: number | null
++      } | null
++      tertiary: {
++        usedPercent: number
++        windowMinutes: number | null
++        resetsAt: number | null
++      } | null
++      credits: {
++        hasCredits: boolean
++        unlimited: boolean
++        balance: string | null
++        total?: number | null
++        used?: number | null
++        remaining?: number | null
++      } | null
++      planType:
++        | "guest"
++        | "free"
++        | "go"
++        | "plus"
++        | "pro"
++        | "free_workspace"
++        | "team"
++        | "business"
++        | "education"
++        | "quorum"
++        | "k12"
++        | "enterprise"
++        | "edu"
++        | null
++      updatedAt: number
++    }
++  }
++}
++
+ export type OutputFormatText = {
+   type: "text"
+ }
+@@ -1002,6 +1050,7 @@ export type Event =
+   | EventPtyDeleted
+   | EventWorktreeReady
+   | EventWorktreeFailed
++  | EventUsageUpdated
+   | EventMessageUpdated
+   | EventMessageRemoved
+   | EventMessagePartUpdated
+@@ -1631,6 +1680,7 @@ export type OAuth = {
+   type: "oauth"
+   refresh: string
+   access: string
++  usage?: string
+   expires: number
+   accountId?: string
+   enterpriseUrl?: string
+@@ -4110,6 +4160,83 @@ export type QuestionRejectResponses = {
+
+ export type QuestionRejectResponse = QuestionRejectResponses[keyof QuestionRejectResponses]
+
++export type UsageGetData = {
++  body?: never
++  path?: never
++  query?: {
++    directory?: string
++    workspace?: string
++    provider?: string
++    refresh?: boolean
++    command?: string
++    modelProviderID?: string
++    showUsageProviderScope?: "current" | "all"
++    showUsageValueMode?: "used" | "remaining"
++  }
++  url: "/usage"
++}
++
++export type UsageGetResponses = {
++  /**
++   * Usage response
++   */
++  200: {
++    entries: Array<{
++      provider: string
++      displayName: string
++      snapshot: {
++        primary: {
++          usedPercent: number
++          windowMinutes: number | null
++          resetsAt: number | null
++        } | null
++        secondary: {
++          usedPercent: number
++          windowMinutes: number | null
++          resetsAt: number | null
++        } | null
++        tertiary: {
++          usedPercent: number
++          windowMinutes: number | null
++          resetsAt: number | null
++        } | null
++        credits: {
++          hasCredits: boolean
++          unlimited: boolean
++          balance: string | null
++          total?: number | null
++          used?: number | null
++          remaining?: number | null
++        } | null
++        planType:
++          | "guest"
++          | "free"
++          | "go"
++          | "plus"
++          | "pro"
++          | "free_workspace"
++          | "team"
++          | "business"
++          | "education"
++          | "quorum"
++          | "k12"
++          | "enterprise"
++          | "edu"
++          | null
++        updatedAt: number
++      }
++    }>
++    error?: string
++    errors?: Array<{
++      provider: string
++      message: string
++    }>
++    mode?: "used" | "remaining"
++  }
++}
++
++export type UsageGetResponse = UsageGetResponses[keyof UsageGetResponses]
++
+ export type ProviderListData = {
+   body?: never
+   path?: never
+diff --git a/packages/sdk/openapi.json b/packages/sdk/openapi.json
+index ba7188af..da04c2d8 100644
+--- a/packages/sdk/openapi.json
++++ b/packages/sdk/openapi.json
+@@ -4566,6 +4566,332 @@
+         ]
+       }
+     },
++    "/usage": {
++      "get": {
++        "operationId": "usage.get",
++        "parameters": [
++          {
++            "in": "query",
++            "name": "directory",
++            "schema": {
++              "type": "string"
++            }
++          },
++          {
++            "in": "query",
++            "name": "workspace",
++            "schema": {
++              "type": "string"
++            }
++          },
++          {
++            "in": "query",
++            "name": "provider",
++            "schema": {
++              "type": "string"
++            }
++          },
++          {
++            "in": "query",
++            "name": "refresh",
++            "schema": {
++              "type": "boolean"
++            }
++          },
++          {
++            "in": "query",
++            "name": "command",
++            "schema": {
++              "type": "string"
++            }
++          },
++          {
++            "in": "query",
++            "name": "modelProviderID",
++            "schema": {
++              "type": "string"
++            }
++          },
++          {
++            "in": "query",
++            "name": "showUsageProviderScope",
++            "schema": {
++              "type": "string",
++              "enum": ["current", "all"]
++            }
++          },
++          {
++            "in": "query",
++            "name": "showUsageValueMode",
++            "schema": {
++              "type": "string",
++              "enum": ["used", "remaining"]
++            }
++          }
++        ],
++        "summary": "Get usage",
++        "description": "Fetch usage limits for authenticated providers.",
++        "responses": {
++          "200": {
++            "description": "Usage response",
++            "content": {
++              "application/json": {
++                "schema": {
++                  "type": "object",
++                  "properties": {
++                    "entries": {
++                      "type": "array",
++                      "items": {
++                        "type": "object",
++                        "properties": {
++                          "provider": {
++                            "type": "string"
++                          },
++                          "displayName": {
++                            "type": "string"
++                          },
++                          "snapshot": {
++                            "type": "object",
++                            "properties": {
++                              "primary": {
++                                "anyOf": [
++                                  {
++                                    "type": "object",
++                                    "properties": {
++                                      "usedPercent": {
++                                        "type": "number"
++                                      },
++                                      "windowMinutes": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "resetsAt": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      }
++                                    },
++                                    "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                                  },
++                                  {
++                                    "type": "null"
++                                  }
++                                ]
++                              },
++                              "secondary": {
++                                "anyOf": [
++                                  {
++                                    "type": "object",
++                                    "properties": {
++                                      "usedPercent": {
++                                        "type": "number"
++                                      },
++                                      "windowMinutes": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "resetsAt": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      }
++                                    },
++                                    "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                                  },
++                                  {
++                                    "type": "null"
++                                  }
++                                ]
++                              },
++                              "tertiary": {
++                                "anyOf": [
++                                  {
++                                    "type": "object",
++                                    "properties": {
++                                      "usedPercent": {
++                                        "type": "number"
++                                      },
++                                      "windowMinutes": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "resetsAt": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      }
++                                    },
++                                    "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                                  },
++                                  {
++                                    "type": "null"
++                                  }
++                                ]
++                              },
++                              "credits": {
++                                "anyOf": [
++                                  {
++                                    "type": "object",
++                                    "properties": {
++                                      "hasCredits": {
++                                        "type": "boolean"
++                                      },
++                                      "unlimited": {
++                                        "type": "boolean"
++                                      },
++                                      "balance": {
++                                        "anyOf": [
++                                          {
++                                            "type": "string"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "total": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "used": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      },
++                                      "remaining": {
++                                        "anyOf": [
++                                          {
++                                            "type": "number"
++                                          },
++                                          {
++                                            "type": "null"
++                                          }
++                                        ]
++                                      }
++                                    },
++                                    "required": ["hasCredits", "unlimited", "balance"]
++                                  },
++                                  {
++                                    "type": "null"
++                                  }
++                                ]
++                              },
++                              "planType": {
++                                "anyOf": [
++                                  {
++                                    "type": "string",
++                                    "enum": [
++                                      "guest",
++                                      "free",
++                                      "go",
++                                      "plus",
++                                      "pro",
++                                      "free_workspace",
++                                      "team",
++                                      "business",
++                                      "education",
++                                      "quorum",
++                                      "k12",
++                                      "enterprise",
++                                      "edu"
++                                    ]
++                                  },
++                                  {
++                                    "type": "null"
++                                  }
++                                ]
++                              },
++                              "updatedAt": {
++                                "type": "number"
++                              }
++                            },
++                            "required": ["primary", "secondary", "tertiary", "credits", "planType", "updatedAt"]
++                          }
++                        },
++                        "required": ["provider", "displayName", "snapshot"]
++                      }
++                    },
++                    "error": {
++                      "type": "string"
++                    },
++                    "errors": {
++                      "type": "array",
++                      "items": {
++                        "type": "object",
++                        "properties": {
++                          "provider": {
++                            "type": "string"
++                          },
++                          "message": {
++                            "type": "string"
++                          }
++                        },
++                        "required": ["provider", "message"]
++                      }
++                    },
++                    "mode": {
++                      "type": "string",
++                      "enum": ["used", "remaining"]
++                    }
++                  },
++                  "required": ["entries"]
++                }
++              }
++            }
++          }
++        },
++        "x-codeSamples": [
++          {
++            "lang": "js",
++            "source": "import { createOpencodeClient } from \"@opencode-ai/sdk\n\nconst client = createOpencodeClient()\nawait client.usage.get({\n  ...\n})"
++          }
++        ]
++      }
++    },
+     "/provider": {
+       "get": {
+         "operationId": "provider.list",
+@@ -8370,6 +8696,226 @@
+         },
+         "required": ["type", "properties"]
+       },
++      "Event.usage.updated": {
++        "type": "object",
++        "properties": {
++          "type": {
++            "type": "string",
++            "const": "usage.updated"
++          },
++          "properties": {
++            "type": "object",
++            "properties": {
++              "provider": {
++                "type": "string"
++              },
++              "snapshot": {
++                "type": "object",
++                "properties": {
++                  "primary": {
++                    "anyOf": [
++                      {
++                        "type": "object",
++                        "properties": {
++                          "usedPercent": {
++                            "type": "number"
++                          },
++                          "windowMinutes": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "resetsAt": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          }
++                        },
++                        "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                      },
++                      {
++                        "type": "null"
++                      }
++                    ]
++                  },
++                  "secondary": {
++                    "anyOf": [
++                      {
++                        "type": "object",
++                        "properties": {
++                          "usedPercent": {
++                            "type": "number"
++                          },
++                          "windowMinutes": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "resetsAt": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          }
++                        },
++                        "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                      },
++                      {
++                        "type": "null"
++                      }
++                    ]
++                  },
++                  "tertiary": {
++                    "anyOf": [
++                      {
++                        "type": "object",
++                        "properties": {
++                          "usedPercent": {
++                            "type": "number"
++                          },
++                          "windowMinutes": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "resetsAt": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          }
++                        },
++                        "required": ["usedPercent", "windowMinutes", "resetsAt"]
++                      },
++                      {
++                        "type": "null"
++                      }
++                    ]
++                  },
++                  "credits": {
++                    "anyOf": [
++                      {
++                        "type": "object",
++                        "properties": {
++                          "hasCredits": {
++                            "type": "boolean"
++                          },
++                          "unlimited": {
++                            "type": "boolean"
++                          },
++                          "balance": {
++                            "anyOf": [
++                              {
++                                "type": "string"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "total": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "used": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          },
++                          "remaining": {
++                            "anyOf": [
++                              {
++                                "type": "number"
++                              },
++                              {
++                                "type": "null"
++                              }
++                            ]
++                          }
++                        },
++                        "required": ["hasCredits", "unlimited", "balance"]
++                      },
++                      {
++                        "type": "null"
++                      }
++                    ]
++                  },
++                  "planType": {
++                    "anyOf": [
++                      {
++                        "type": "string",
++                        "enum": [
++                          "guest",
++                          "free",
++                          "go",
++                          "plus",
++                          "pro",
++                          "free_workspace",
++                          "team",
++                          "business",
++                          "education",
++                          "quorum",
++                          "k12",
++                          "enterprise",
++                          "edu"
++                        ]
++                      },
++                      {
++                        "type": "null"
++                      }
++                    ]
++                  },
++                  "updatedAt": {
++                    "type": "number"
++                  }
++                },
++                "required": ["primary", "secondary", "tertiary", "credits", "planType", "updatedAt"]
++              }
++            },
++            "required": ["provider", "snapshot"]
++          }
++        },
++        "required": ["type", "properties"]
++      },
+       "OutputFormatText": {
+         "type": "object",
+         "properties": {
+@@ -9847,6 +10393,9 @@
+           {
+             "$ref": "#/components/schemas/Event.worktree.failed"
+           },
++          {
++            "$ref": "#/components/schemas/Event.usage.updated"
++          },
+           {
+             "$ref": "#/components/schemas/Event.message.updated"
+           },
+@@ -11355,6 +11904,9 @@
+           "access": {
+             "type": "string"
+           },
++          "usage": {
++            "type": "string"
++          },
+           "expires": {
+             "type": "number"
+           },
