@@ -64,6 +64,7 @@ let
           ./patches/anthropic-provider-label.patch
           ./patches/cursor-style-and-blink.patch
           ./patches/fix-repeated-json-migration-check.patch
+          ./patches/multi-account-profiles.patch
         ];
       });
 in

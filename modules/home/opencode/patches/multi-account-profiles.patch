@@ -1,0 +1,1058 @@
+Port of https://github.com/anomalyco/opencode/pull/13218 (multi-account profile
+support per provider). The original PR targeted the pre-Effect-TS codebase, so
+the auth core had to be rewritten.
+
+Adds a /profile TUI slash command to switch between profiles (with `r` to
+rename), and `opencode auth profile {create,use,list,remove,rename}` CLI
+subcommands. Creating new profiles is also integrated into the /connect flow:
+when connecting a provider that already has credentials, it prompts for a
+profile name first.
+
+diff --git a/packages/opencode/src/auth/index.ts b/packages/opencode/src/auth/index.ts
+index b6d340cc..0ebac646 100644
+--- a/packages/opencode/src/auth/index.ts
++++ b/packages/opencode/src/auth/index.ts
+@@ -36,54 +36,189 @@ export namespace Auth {
+   export const Info = Object.assign(_Info, { zod: zod(_Info) })
+   export type Info = Schema.Schema.Type<typeof _Info>
+
++  // Profile-based provider storage
++  export interface ProviderData {
++    profiles: Record<string, Info>
++    currentProfile?: string
++  }
++
+   export class AuthError extends Schema.TaggedErrorClass<AuthError>()("AuthError", {
+     message: Schema.String,
+     cause: Schema.optional(Schema.Defect),
+   }) {}
+
+   export interface Interface {
+-    readonly get: (providerID: string) => Effect.Effect<Info | undefined, AuthError>
++    readonly get: (providerID: string, profileID?: string) => Effect.Effect<Info | undefined, AuthError>
+     readonly all: () => Effect.Effect<Record<string, Info>, AuthError>
++    readonly allWithProfiles: () => Effect.Effect<Record<string, ProviderData>, AuthError>
+     readonly set: (key: string, info: Info) => Effect.Effect<void, AuthError>
+     readonly remove: (key: string) => Effect.Effect<void, AuthError>
++    readonly addProfile: (providerID: string, profileID: string, info: Info) => Effect.Effect<void, AuthError>
++    readonly removeProfile: (providerID: string, profileID: string) => Effect.Effect<void, AuthError>
++    readonly setActiveProfile: (providerID: string, profileID: string, opts?: { create?: boolean }) => Effect.Effect<void, AuthError>
++    readonly listProfiles: (providerID: string) => Effect.Effect<Record<string, Info>, AuthError>
++    readonly renameProfile: (providerID: string, oldName: string, newName: string) => Effect.Effect<void, AuthError>
+   }
+
+   export class Service extends ServiceMap.Service<Service, Interface>()("@opencode/Auth") {}
+
++  function normalizeToInternal(data: Record<string, unknown>, decode: (v: unknown) => Info | undefined): Record<string, ProviderData> {
++    const result: Record<string, ProviderData> = {}
++    for (const [key, value] of Object.entries(data)) {
++      if (value && typeof value === "object" && "profiles" in value && typeof (value as any).profiles === "object") {
++        // Already profile-based format
++        const prov = value as { profiles: Record<string, unknown>; currentProfile?: string }
++        const profiles: Record<string, Info> = {}
++        for (const [pid, pval] of Object.entries(prov.profiles)) {
++          const decoded = decode(pval)
++          if (decoded) profiles[pid] = decoded
++        }
++        if (Object.keys(profiles).length > 0) {
++          result[key] = { profiles, currentProfile: prov.currentProfile }
++        }
++      } else {
++        // Legacy single-credential format
++        const decoded = decode(value)
++        if (decoded) {
++          result[key] = { profiles: { default: decoded }, currentProfile: "default" }
++        }
++      }
++    }
++    return result
++  }
++
+   export const layer = Layer.effect(
+     Service,
+     Effect.gen(function* () {
+       const fsys = yield* AppFileSystem.Service
+-      const decode = Schema.decodeUnknownOption(Info)
++      const decodeOpt = Schema.decodeUnknownOption(Info)
++      const decode = (v: unknown): Info | undefined => {
++        const r = decodeOpt(v)
++        return r._tag === "Some" ? r.value : undefined
++      }
++
++      const readRaw = Effect.fn("Auth.readRaw")(function* () {
++        return (yield* fsys.readJson(file).pipe(Effect.orElseSucceed(() => ({})))) as Record<string, unknown>
++      })
++
++      const readNormalized = Effect.fn("Auth.readNormalized")(function* () {
++        const data = yield* readRaw()
++        return normalizeToInternal(data, decode)
++      })
++
++      const writeNormalized = Effect.fn("Auth.writeNormalized")(function* (data: Record<string, ProviderData>) {
++        yield* fsys
++          .writeJson(file, data, 0o600)
++          .pipe(Effect.mapError(fail("Failed to write auth data")))
++      })
++
++      const allWithProfiles = Effect.fn("Auth.allWithProfiles")(function* () {
++        return yield* readNormalized()
++      })
+
+       const all = Effect.fn("Auth.all")(function* () {
+-        const data = (yield* fsys.readJson(file).pipe(Effect.orElseSucceed(() => ({})))) as Record<string, unknown>
+-        return Record.filterMap(data, (value) => Result.fromOption(decode(value), () => undefined))
++        const data = yield* readNormalized()
++        const result: Record<string, Info> = {}
++        for (const [providerID, provider] of Object.entries(data)) {
++          const profile = provider.currentProfile || "default"
++          const info = provider.profiles[profile]
++          if (info) result[providerID] = info
++        }
++        return result
+       })
+
+-      const get = Effect.fn("Auth.get")(function* (providerID: string) {
+-        return (yield* all())[providerID]
++      const get = Effect.fn("Auth.get")(function* (providerID: string, profileID?: string) {
++        const data = yield* readNormalized()
++        const provider = data[providerID]
++        if (!provider) return undefined
++        if (profileID) return provider.profiles[profileID]
++        const current = provider.currentProfile || "default"
++        return provider.profiles[current]
+       })
+
+       const set = Effect.fn("Auth.set")(function* (key: string, info: Info) {
+         const norm = key.replace(/\/+$/, "")
+-        const data = yield* all()
++        const data = yield* readNormalized()
+         if (norm !== key) delete data[key]
+         delete data[norm + "/"]
+-        yield* fsys
+-          .writeJson(file, { ...data, [norm]: info }, 0o600)
+-          .pipe(Effect.mapError(fail("Failed to write auth data")))
++        if (!data[norm]) {
++          data[norm] = { profiles: {}, currentProfile: "default" }
++        }
++        data[norm].profiles[data[norm].currentProfile || "default"] = info
++        yield* writeNormalized(data)
+       })
+
+       const remove = Effect.fn("Auth.remove")(function* (key: string) {
+         const norm = key.replace(/\/+$/, "")
+-        const data = yield* all()
++        const data = yield* readNormalized()
+         delete data[key]
+         delete data[norm]
+-        yield* fsys.writeJson(file, data, 0o600).pipe(Effect.mapError(fail("Failed to write auth data")))
++        yield* writeNormalized(data)
++      })
++
++      const addProfile = Effect.fn("Auth.addProfile")(function* (providerID: string, profileID: string, info: Info) {
++        const data = yield* readNormalized()
++        if (!data[providerID]) {
++          data[providerID] = { profiles: {}, currentProfile: profileID }
++        }
++        data[providerID].profiles[profileID] = info
++        if (!data[providerID].currentProfile) {
++          data[providerID].currentProfile = profileID
++        }
++        yield* writeNormalized(data)
++      })
++
++      const removeProfile = Effect.fn("Auth.removeProfile")(function* (providerID: string, profileID: string) {
++        const data = yield* readNormalized()
++        const provider = data[providerID]
++        if (!provider) return
++        delete provider.profiles[profileID]
++        if (provider.currentProfile === profileID) {
++          const remaining = Object.keys(provider.profiles)
++          if (remaining.length > 0) {
++            provider.currentProfile = remaining[0]
++          } else {
++            delete data[providerID]
++          }
++        }
++        yield* writeNormalized(data)
++      })
++
++      const setActiveProfile = Effect.fn("Auth.setActiveProfile")(function* (providerID: string, profileID: string, opts?: { create?: boolean }) {
++        const data = yield* readNormalized()
++        if (!data[providerID]) {
++          if (opts?.create) {
++            data[providerID] = { profiles: {}, currentProfile: profileID }
++          } else {
++            return yield* Effect.fail(new AuthError({ message: `Provider "${providerID}" not found` }))
++          }
++        }
++        const provider = data[providerID]
++        if (!provider.profiles[profileID] && !opts?.create) {
++          return yield* Effect.fail(new AuthError({ message: `Profile "${profileID}" not found for provider "${providerID}"` }))
++        }
++        provider.currentProfile = profileID
++        yield* writeNormalized(data)
++      })
++
++      const listProfiles = Effect.fn("Auth.listProfiles")(function* (providerID: string) {
++        const data = yield* readNormalized()
++        return data[providerID]?.profiles || {}
+       })
+
+-      return Service.of({ get, all, set, remove })
++      const renameProfile = Effect.fn("Auth.renameProfile")(function* (providerID: string, oldName: string, newName: string) {
++        const data = yield* readNormalized()
++        const provider = data[providerID]
++        if (!provider) return yield* Effect.fail(new AuthError({ message: `Provider "${providerID}" not found` }))
++        if (!provider.profiles[oldName]) return yield* Effect.fail(new AuthError({ message: `Profile "${oldName}" not found` }))
++        if (provider.profiles[newName]) return yield* Effect.fail(new AuthError({ message: `Profile "${newName}" already exists` }))
++        provider.profiles[newName] = provider.profiles[oldName]
++        delete provider.profiles[oldName]
++        if (provider.currentProfile === oldName) provider.currentProfile = newName
++        yield* writeNormalized(data)
++      })
++
++      return Service.of({ get, all, allWithProfiles, set, remove, addProfile, removeProfile, setActiveProfile, listProfiles, renameProfile })
+     }),
+   )
+
+@@ -91,14 +226,18 @@ export namespace Auth {
+
+   const { runPromise } = makeRuntime(Service, defaultLayer)
+
+-  export async function get(providerID: string) {
+-    return runPromise((service) => service.get(providerID))
++  export async function get(providerID: string, profileID?: string) {
++    return runPromise((service) => service.get(providerID, profileID))
+   }
+
+   export async function all(): Promise<Record<string, Info>> {
+     return runPromise((service) => service.all())
+   }
+
++  export async function allWithProfiles(): Promise<Record<string, ProviderData>> {
++    return runPromise((service) => service.allWithProfiles())
++  }
++
+   export async function set(key: string, info: Info) {
+     return runPromise((service) => service.set(key, info))
+   }
+@@ -106,4 +245,24 @@ export namespace Auth {
+   export async function remove(key: string) {
+     return runPromise((service) => service.remove(key))
+   }
++
++  export async function addProfile(providerID: string, profileID: string, info: Info) {
++    return runPromise((service) => service.addProfile(providerID, profileID, info))
++  }
++
++  export async function removeProfile(providerID: string, profileID: string) {
++    return runPromise((service) => service.removeProfile(providerID, profileID))
++  }
++
++  export async function setActiveProfile(providerID: string, profileID: string, opts?: { create?: boolean }) {
++    return runPromise((service) => service.setActiveProfile(providerID, profileID, opts))
++  }
++
++  export async function listProfiles(providerID: string): Promise<Record<string, Info>> {
++    return runPromise((service) => service.listProfiles(providerID))
++  }
++
++  export async function renameProfile(providerID: string, oldName: string, newName: string) {
++    return runPromise((service) => service.renameProfile(providerID, oldName, newName))
++  }
+ }
+diff --git a/packages/opencode/src/cli/cmd/providers.ts b/packages/opencode/src/cli/cmd/providers.ts
+index 581809e9..1d40b4b5 100644
+--- a/packages/opencode/src/cli/cmd/providers.ts
++++ b/packages/opencode/src/cli/cmd/providers.ts
+@@ -196,12 +196,263 @@ export function resolvePluginProviders(input: {
+   return result
+ }
+
++export const ProvidersProfileCommand = cmd({
++  command: "profile",
++  describe: "manage account profiles",
++  builder: (yargs) =>
++    yargs
++      .command(ProvidersProfileCreateCommand)
++      .command(ProvidersProfileUseCommand)
++      .command(ProvidersProfileListCommand)
++      .command(ProvidersProfileRemoveCommand)
++      .command(ProvidersProfileRenameCommand)
++      .demandCommand(),
++  async handler() {},
++})
++
++const ProvidersProfileCreateCommand = cmd({
++  command: "create <provider>",
++  describe: "create a new profile for a provider",
++  builder: (yargs) =>
++    yargs.positional("provider", { describe: "provider name", type: "string", demandOption: true }),
++  async handler(args) {
++    await Instance.provide({
++      directory: process.cwd(),
++      async fn() {
++        UI.empty()
++        const providerID = args.provider
++        const database = await ModelsDev.get()
++        if (!database[providerID]) {
++          prompts.log.error(`Provider "${providerID}" not found`)
++          prompts.log.info("Available providers: " + Object.keys(database).join(", "))
++          return
++        }
++        const existingProfiles = await Auth.listProfiles(providerID)
++        const profileName = await prompts.text({
++          message: "Enter profile name:",
++          placeholder: "personal",
++          validate: (name) => {
++            if (!name || !name.trim()) return "Profile name cannot be empty"
++            if (name.length > 50) return "Profile name too long (max 50 characters)"
++            if (existingProfiles[name.trim()]) return `Profile "${name.trim()}" already exists for ${providerID}`
++            return undefined
++          },
++        })
++        if (prompts.isCancel(profileName)) throw new UI.CancelledError()
++        const finalName = profileName.trim()
++        prompts.log.info(`Creating profile "${finalName}" for ${database[providerID]?.name || providerID}`)
++        const plugin = await Plugin.list().then((x) => x.findLast((x) => x.auth?.provider === providerID))
++        if (plugin && plugin.auth) {
++          // For plugin auth, save result under the new profile name
++          const handled = await handlePluginAuth({ auth: plugin.auth }, providerID)
++          if (handled) {
++            // The plugin auth saved to "default" via Auth.set, move it to the new profile
++            const defaultAuth = await Auth.get(providerID)
++            if (defaultAuth) {
++              await Auth.addProfile(providerID, finalName, defaultAuth)
++              await Auth.setActiveProfile(providerID, finalName)
++            }
++            return
++          }
++        }
++        const key = await prompts.password({
++          message: `Enter your ${database[providerID]?.name || providerID} API key:`,
++          validate: (x) => (x && x.length > 0 ? undefined : "Required"),
++        })
++        if (prompts.isCancel(key)) throw new UI.CancelledError()
++        await Auth.addProfile(providerID, finalName, { type: "api", key })
++        await Auth.setActiveProfile(providerID, finalName)
++        prompts.log.success(`Profile "${finalName}" created for ${database[providerID]?.name || providerID}`)
++        prompts.outro("Done")
++      },
++    })
++  },
++})
++
++const ProvidersProfileUseCommand = cmd({
++  command: "use <provider>",
++  describe: "switch active profile for a provider",
++  builder: (yargs) =>
++    yargs.positional("provider", { describe: "provider name", type: "string", demandOption: true }),
++  async handler(args) {
++    await Instance.provide({
++      directory: process.cwd(),
++      async fn() {
++        UI.empty()
++        const providerID = args.provider
++        const profiles = await Auth.listProfiles(providerID)
++        const profileNames = Object.keys(profiles)
++        if (profileNames.length === 0) {
++          prompts.log.error(`No profiles found for provider "${providerID}"`)
++          return
++        }
++        const database = await ModelsDev.get()
++        const selected = await prompts.select({
++          message: `Select profile for ${database[providerID]?.name || providerID}:`,
++          options: profileNames.map((name) => ({ label: name, value: name })),
++        })
++        if (prompts.isCancel(selected)) throw new UI.CancelledError()
++        await Auth.setActiveProfile(providerID, selected)
++        prompts.log.success(`Switched to profile "${selected}" for ${providerID}`)
++        prompts.outro("Done")
++      },
++    })
++  },
++})
++
++const ProvidersProfileListCommand = cmd({
++  command: "list [provider]",
++  aliases: ["ls"],
++  describe: "list profiles for a provider (or all providers)",
++  builder: (yargs) => yargs.positional("provider", { describe: "provider name", type: "string" }),
++  async handler(args) {
++    await Instance.provide({
++      directory: process.cwd(),
++      async fn() {
++        UI.empty()
++        if (args.provider) {
++          const profiles = await Auth.listProfiles(args.provider)
++          const profileNames = Object.keys(profiles)
++          if (profileNames.length === 0) {
++            prompts.log.info(`No profiles found for provider "${args.provider}"`)
++            return
++          }
++          const database = await ModelsDev.get()
++          const authData = await Auth.allWithProfiles()
++          const currentProfile = authData[args.provider]?.currentProfile || "default"
++          prompts.intro(`Profiles for ${database[args.provider]?.name || args.provider}:`)
++          for (const name of profileNames) {
++            const auth = profiles[name]
++            const indicator = name === currentProfile ? "\u2192" : " "
++            prompts.log.info(`${indicator}  ${name}: ${auth.type}`)
++          }
++          prompts.outro(`${profileNames.length} profile${profileNames.length === 1 ? "" : "s"}`)
++        } else {
++          prompts.intro("All profiles:")
++          const authData = await Auth.allWithProfiles()
++          const database = await ModelsDev.get()
++          for (const [providerID, provider] of Object.entries(authData)) {
++            const providerName = database[providerID]?.name || providerID
++            const currentProfile = provider.currentProfile || "default"
++            const profileNames = Object.keys(provider.profiles)
++            prompts.log.info(`${providerName} ${UI.Style.TEXT_DIM}(${profileNames.length} profile${profileNames.length === 1 ? "" : "s"}, active: ${currentProfile})`)
++            for (const name of profileNames) {
++              const auth = provider.profiles[name]
++              const indicator = name === currentProfile ? "\u2192" : " "
++              prompts.log.info(`${indicator}  ${name}: ${auth.type}`)
++            }
++          }
++          prompts.outro(`${Object.keys(authData).length} provider${Object.keys(authData).length === 1 ? "" : "s"}`)
++        }
++      },
++    })
++  },
++})
++
++const ProvidersProfileRemoveCommand = cmd({
++  command: "remove <provider>",
++  describe: "remove a profile from a provider",
++  builder: (yargs) =>
++    yargs
++      .positional("provider", { describe: "provider name", type: "string", demandOption: true })
++      .option("profile", { alias: "p", type: "string", describe: "profile name to remove" }),
++  async handler(args) {
++    await Instance.provide({
++      directory: process.cwd(),
++      async fn() {
++        UI.empty()
++        const profiles = await Auth.listProfiles(args.provider)
++        const profileNames = Object.keys(profiles)
++        if (profileNames.length === 0) {
++          prompts.log.error(`No profiles found for provider "${args.provider}"`)
++          return
++        }
++        let target = args.profile
++        if (!target) {
++          const selected = await prompts.select({
++            message: "Select profile to remove:",
++            options: profileNames.map((name) => ({ label: name, value: name })),
++          })
++          if (prompts.isCancel(selected)) throw new UI.CancelledError()
++          target = selected
++        }
++        if (!profiles[target]) {
++          prompts.log.error(`Profile "${target}" not found for provider "${args.provider}"`)
++          return
++        }
++        const database = await ModelsDev.get()
++        await Auth.removeProfile(args.provider, target)
++        prompts.log.success(`Removed profile "${target}" from ${database[args.provider]?.name || args.provider}`)
++        prompts.outro("Done")
++      },
++    })
++  },
++})
++
++const ProvidersProfileRenameCommand = cmd({
++  command: "rename <provider>",
++  describe: "rename a profile",
++  builder: (yargs) =>
++    yargs
++      .positional("provider", { describe: "provider name", type: "string", demandOption: true })
++      .option("from", { type: "string", describe: "current profile name" })
++      .option("to", { type: "string", describe: "new profile name" }),
++  async handler(args) {
++    await Instance.provide({
++      directory: process.cwd(),
++      async fn() {
++        UI.empty()
++        const profiles = await Auth.listProfiles(args.provider)
++        const profileNames = Object.keys(profiles)
++        if (profileNames.length === 0) {
++          prompts.log.error(`No profiles found for provider "${args.provider}"`)
++          return
++        }
++        let from = args.from
++        if (!from) {
++          const selected = await prompts.select({
++            message: "Select profile to rename:",
++            options: profileNames.map((name) => ({ label: name, value: name })),
++          })
++          if (prompts.isCancel(selected)) throw new UI.CancelledError()
++          from = selected
++        }
++        if (!profiles[from]) {
++          prompts.log.error(`Profile "${from}" not found`)
++          return
++        }
++        let to = args.to
++        if (!to) {
++          const value = await prompts.text({
++            message: `New name for "${from}":`,
++            validate: (name) => {
++              if (!name || !name.trim()) return "Profile name cannot be empty"
++              if (profiles[name.trim()]) return `Profile "${name.trim()}" already exists`
++              return undefined
++            },
++          })
++          if (prompts.isCancel(value)) throw new UI.CancelledError()
++          to = value.trim()
++        }
++        await Auth.renameProfile(args.provider, from, to)
++        prompts.log.success(`Renamed profile "${from}" to "${to}"`)
++        prompts.outro("Done")
++      },
++    })
++  },
++})
++
+ export const ProvidersCommand = cmd({
+   command: "providers",
+   aliases: ["auth"],
+   describe: "manage AI providers and credentials",
+   builder: (yargs) =>
+-    yargs.command(ProvidersListCommand).command(ProvidersLoginCommand).command(ProvidersLogoutCommand).demandCommand(),
++    yargs
++      .command(ProvidersListCommand)
++      .command(ProvidersLoginCommand)
++      .command(ProvidersLogoutCommand)
++      .command(ProvidersProfileCommand)
++      .demandCommand(),
+   async handler() {},
+ })
+
+diff --git a/packages/opencode/src/cli/cmd/tui/app.tsx b/packages/opencode/src/cli/cmd/tui/app.tsx
+index ec048f86..4938835b 100644
+--- a/packages/opencode/src/cli/cmd/tui/app.tsx
++++ b/packages/opencode/src/cli/cmd/tui/app.tsx
+@@ -34,6 +34,7 @@ import { DialogThemeList } from "@tui/component/dialog-theme-list"
+ import { DialogHelp } from "./ui/dialog-help"
+ import { CommandProvider, useCommandDialog } from "@tui/component/dialog-command"
+ import { DialogAgent } from "@tui/component/dialog-agent"
++import { DialogProfile } from "@tui/component/dialog-profile"
+ import { DialogSessionList } from "@tui/component/dialog-session-list"
+ import { DialogWorkspaceList } from "@tui/component/dialog-workspace-list"
+ import { KeybindProvider, useKeybind } from "@tui/context/keybind"
+@@ -623,6 +624,17 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
+       },
+       category: "Provider",
+     },
++    {
++      title: "Switch profile",
++      value: "profile.switch",
++      category: "Provider",
++      slash: {
++        name: "profile",
++      },
++      onSelect: () => {
++        dialog.replace(() => <DialogProfile />)
++      },
++    },
+     {
+       title: "View status",
+       keybind: "status_view",
+diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-profile.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-profile.tsx
+new file mode 100644
+index 00000000..7b4ee87c
+--- /dev/null
++++ b/packages/opencode/src/cli/cmd/tui/component/dialog-profile.tsx
+@@ -0,0 +1,85 @@
++import { createMemo, createResource, createSignal } from "solid-js"
++import { useSDK } from "@tui/context/sdk"
++import { useSync } from "@tui/context/sync"
++import { useLocal } from "@tui/context/local"
++import { DialogSelect } from "@tui/ui/dialog-select"
++import { DialogPrompt } from "@tui/ui/dialog-prompt"
++import { useDialog } from "@tui/ui/dialog"
++
++export function DialogProfile() {
++  const sdk = useSDK()
++  const sync = useSync()
++  const local = useLocal()
++  const dialog = useDialog()
++
++  const providerID = createMemo(() => local.model.current()?.providerID ?? "")
++  const name = createMemo(() => local.model.parsed().provider)
++
++  const [version, setVersion] = createSignal(0)
++
++  const [profiles] = createResource(
++    () => ({ id: providerID(), v: version() }),
++    async ({ id }) => {
++      if (!id) return undefined
++      const res = await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(id)}/profiles`)
++      if (!res.ok) return undefined
++      return (await res.json()) as { profiles: string[]; active?: string }
++    },
++  )
++
++  const options = createMemo(() => {
++    const data = profiles()
++    if (!data) return []
++    return data.profiles.map((p: string) => ({
++      value: p,
++      title: p,
++      description: p === data.active ? "active" : undefined,
++    }))
++  })
++
++  return (
++    <DialogSelect
++      title={`Switch profile \u00b7 ${name()}`}
++      current={profiles()?.active}
++      options={options()}
++      onSelect={async (option) => {
++        const id = providerID()
++        await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(id)}/profile`, {
++          method: "PATCH",
++          headers: { "Content-Type": "application/json" },
++          body: JSON.stringify({ profileID: option.value }),
++        })
++        sync.set("active_profiles", id, option.value)
++        dialog.clear()
++      }}
++      keybind={[
++        {
++          keybind: { name: "r", ctrl: false, meta: false, shift: false, super: false, leader: false },
++          title: "rename",
++          onTrigger: (option) => {
++            dialog.replace(() => (
++              <DialogPrompt
++                title={`Rename "${option.value}"`}
++                placeholder="New name"
++                onConfirm={async (newName) => {
++                  if (!newName?.trim()) return
++                  const id = providerID()
++                  await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(id)}/profile/rename`, {
++                    method: "PATCH",
++                    headers: { "Content-Type": "application/json" },
++                    body: JSON.stringify({ oldName: option.value, newName: newName.trim() }),
++                  })
++                  if (sync.data.active_profiles[id] === option.value) {
++                    sync.set("active_profiles", id, newName.trim())
++                  }
++                  setVersion((v) => v + 1)
++                  dialog.replace(() => <DialogProfile />)
++                }}
++              />
++            ))
++          },
++        },
++      ]}
++    />
++  )
++}
+diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx
+index 635ed71f..a140f990 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx
+@@ -43,6 +43,26 @@ export function createDialogProviderOptions() {
+         }[provider.id],
+         category: provider.id in PROVIDER_PRIORITY ? "Popular" : "Other",
+         async onSelect() {
++          // If provider already has credentials, ask for a profile name
++          let profileID: string | undefined
++          const isConnected = sync.data.provider_next.connected.includes(provider.id)
++          if (isConnected) {
++            const name = await new Promise<string | null>((resolve) => {
++              dialog.replace(
++                () => (
++                  <DialogPrompt
++                    title="Profile name"
++                    placeholder="e.g. work, personal"
++                    onConfirm={(value) => resolve(value?.trim() || null)}
++                  />
++                ),
++                () => resolve(null),
++              )
++            })
++            if (name === null) return
++            profileID = name
++          }
++
+           const methods = sync.data.provider_auth[provider.id] ?? [
+             {
+               type: "api",
+@@ -95,17 +115,17 @@ export function createDialogProviderOptions() {
+             }
+             if (result.data?.method === "code") {
+               dialog.replace(() => (
+-                <CodeMethod providerID={provider.id} title={method.label} index={index} authorization={result.data!} />
++                <CodeMethod providerID={provider.id} title={method.label} index={index} authorization={result.data!} profileID={profileID} />
+               ))
+             }
+             if (result.data?.method === "auto") {
+               dialog.replace(() => (
+-                <AutoMethod providerID={provider.id} title={method.label} index={index} authorization={result.data!} />
++                <AutoMethod providerID={provider.id} title={method.label} index={index} authorization={result.data!} profileID={profileID} />
+               ))
+             }
+           }
+           if (method.type === "api") {
+-            return dialog.replace(() => <ApiMethod providerID={provider.id} title={method.label} />)
++            return dialog.replace(() => <ApiMethod providerID={provider.id} title={method.label} profileID={profileID} />)
+           }
+         },
+       })),
+@@ -124,6 +144,7 @@ interface AutoMethodProps {
+   providerID: string
+   title: string
+   authorization: ProviderAuthAuthorization
++  profileID?: string
+ }
+ function AutoMethod(props: AutoMethodProps) {
+   const { theme } = useTheme()
+@@ -142,6 +163,13 @@ function AutoMethod(props: AutoMethodProps) {
+   })
+
+   onMount(async () => {
++    if (props.profileID) {
++      await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(props.providerID)}/profile`, {
++        method: "PATCH",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({ profileID: props.profileID, create: true }),
++      })
++    }
+     const result = await sdk.client.provider.oauth.callback({
+       providerID: props.providerID,
+       method: props.index,
+@@ -182,6 +210,7 @@ interface CodeMethodProps {
+   title: string
+   providerID: string
+   authorization: ProviderAuthAuthorization
++  profileID?: string
+ }
+ function CodeMethod(props: CodeMethodProps) {
+   const { theme } = useTheme()
+@@ -195,6 +224,13 @@ function CodeMethod(props: CodeMethodProps) {
+       title={props.title}
+       placeholder="Authorization code"
+       onConfirm={async (value) => {
++        if (props.profileID) {
++          await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(props.providerID)}/profile`, {
++            method: "PATCH",
++            headers: { "Content-Type": "application/json" },
++            body: JSON.stringify({ profileID: props.profileID, create: true }),
++          })
++        }
+         const { error } = await sdk.client.provider.oauth.callback({
+           providerID: props.providerID,
+           method: props.index,
+@@ -224,6 +260,7 @@ function CodeMethod(props: CodeMethodProps) {
+ interface ApiMethodProps {
+   providerID: string
+   title: string
++  profileID?: string
+ }
+ function ApiMethod(props: ApiMethodProps) {
+   const dialog = useDialog()
+@@ -263,12 +300,11 @@ function ApiMethod(props: ApiMethodProps) {
+       }
+       onConfirm={async (value) => {
+         if (!value) return
+-        await sdk.client.auth.set({
+-          providerID: props.providerID,
+-          auth: {
+-            type: "api",
+-            key: value,
+-          },
++        const profileQuery = props.profileID ? `?profileID=${encodeURIComponent(props.profileID)}` : ""
++        await sdk.fetch(`${sdk.url}/auth/${encodeURIComponent(props.providerID)}${profileQuery}`, {
++          method: "PUT",
++          headers: { "Content-Type": "application/json" },
++          body: JSON.stringify({ type: "api", key: value }),
+         })
+         await sdk.client.instance.dispose()
+         await sync.bootstrap()
+diff --git a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+index 96563b88..3663b99c 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+@@ -1070,6 +1070,21 @@ export function Prompt(props: PromptProps) {
+                     {local.model.parsed().model}
+                   </text>
+                   <text fg={theme.textMuted}>{local.model.parsed().provider}</text>
++                  <Show
++                    when={(() => {
++                      const pid = local.model.current()?.providerID
++                      if (!pid) return false
++                      const name = sync.data.active_profiles[pid]
++                      if (!name) return false
++                      const count = sync.data.profile_counts[pid] ?? 0
++                      return count >= 2 || name !== "default"
++                    })()}
++                  >
++                    <text fg={theme.textMuted}>{"\u00b7"}</text>
++                    <text fg={theme.primary}>
++                      {sync.data.active_profiles[local.model.current()!.providerID]}
++                    </text>
++                  </Show>
+                   <Show when={showVariant()}>
+                     <text fg={theme.textMuted}>·</text>
+                     <text>
+diff --git a/packages/opencode/src/cli/cmd/tui/context/sync.tsx b/packages/opencode/src/cli/cmd/tui/context/sync.tsx
+index 3b296a92..9789c4b7 100644
+--- a/packages/opencode/src/cli/cmd/tui/context/sync.tsx
++++ b/packages/opencode/src/cli/cmd/tui/context/sync.tsx
+@@ -39,6 +39,8 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
+       provider_default: Record<string, string>
+       provider_next: ProviderListResponse
+       provider_auth: Record<string, ProviderAuthMethod[]>
++      active_profiles: Record<string, string>
++      profile_counts: Record<string, number>
+       agent: Agent[]
+       command: Command[]
+       permission: {
+@@ -82,6 +84,8 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
+         connected: [],
+       },
+       provider_auth: {},
++      active_profiles: {},
++      profile_counts: {},
+       config: {},
+       status: "loading",
+       agent: [],
+@@ -400,6 +404,15 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
+               setStore("provider", reconcile(providers.providers))
+               setStore("provider_default", reconcile(providers.default))
+               setStore("provider_next", reconcile(providerList))
++              const profileData = providerList.profiles ?? {}
++              const activeProfiles: Record<string, string> = {}
++              const profileCounts: Record<string, number> = {}
++              for (const [pid, info] of Object.entries(profileData)) {
++                if (info.active) activeProfiles[pid] = info.active
++                profileCounts[pid] = info.all.length
++              }
++              setStore("active_profiles", reconcile(activeProfiles))
++              setStore("profile_counts", reconcile(profileCounts))
+               setStore("agent", reconcile(agents))
+               setStore("config", reconcile(config))
+               if (sessions !== undefined) setStore("session", reconcile(sessions))
+diff --git a/packages/opencode/src/server/routes/provider.ts b/packages/opencode/src/server/routes/provider.ts
+index 64fe34f4..9cd48286 100644
+--- a/packages/opencode/src/server/routes/provider.ts
++++ b/packages/opencode/src/server/routes/provider.ts
+@@ -5,6 +5,7 @@ import { Config } from "../../config/config"
+ import { Provider } from "../../provider/provider"
+ import { ModelsDev } from "../../provider/models"
+ import { ProviderAuth } from "../../provider/auth"
++import { Auth } from "../../auth"
+ import { ProviderID } from "../../provider/schema"
+ import { mapValues } from "remeda"
+ import { errors } from "../error"
+@@ -31,6 +32,10 @@ export const ProviderRoutes = lazy(() =>
+                     all: ModelsDev.Provider.array(),
+                     default: z.record(z.string(), z.string()),
+                     connected: z.array(z.string()),
++                    profiles: z.record(z.string(), z.object({
++                      active: z.string().optional(),
++                      all: z.array(z.string()),
++                    })).optional(),
+                   }),
+                 ),
+               },
+@@ -56,10 +61,19 @@ export const ProviderRoutes = lazy(() =>
+           mapValues(filteredProviders, (x) => Provider.fromModelsDevProvider(x)),
+           connected,
+         )
++        const authData = await Auth.allWithProfiles()
++        const profiles: Record<string, { active?: string; all: string[] }> = {}
++        for (const [providerID, data] of Object.entries(authData)) {
++          profiles[providerID] = {
++            active: data.currentProfile,
++            all: Object.keys(data.profiles),
++          }
++        }
+         return c.json({
+           all: Object.values(providers),
+           default: mapValues(providers, (item) => Provider.sort(Object.values(item.models))[0].id),
+           connected: Object.keys(connected),
++          profiles,
+         })
+       },
+     )
+diff --git a/packages/opencode/src/server/server.ts b/packages/opencode/src/server/server.ts
+index ec245ed5..9fa88fee 100644
+--- a/packages/opencode/src/server/server.ts
++++ b/packages/opencode/src/server/server.ts
+@@ -122,11 +122,23 @@ export namespace Server {
+             providerID: ProviderID.zod,
+           }),
+         ),
++        validator(
++          "query",
++          z.object({
++            profileID: z.string().optional(),
++          }),
++        ),
+         validator("json", Auth.Info.zod),
+         async (c) => {
+           const providerID = c.req.valid("param").providerID
+           const info = c.req.valid("json")
+-          await Auth.set(providerID, info)
++          const { profileID } = c.req.valid("query")
++          if (profileID) {
++            await Auth.addProfile(providerID, profileID, info)
++            await Auth.setActiveProfile(providerID, profileID)
++          } else {
++            await Auth.set(providerID, info)
++          }
+           return c.json(true)
+         },
+       )
+@@ -134,7 +146,7 @@ export namespace Server {
+         "/auth/:providerID",
+         describeRoute({
+           summary: "Remove auth credentials",
+-          description: "Remove authentication credentials",
++          description: "Remove authentication credentials for a provider or specific profile",
+           operationId: "auth.remove",
+           responses: {
+             200: {
+@@ -154,9 +166,136 @@ export namespace Server {
+             providerID: ProviderID.zod,
+           }),
+         ),
++        validator(
++          "query",
++          z.object({
++            profileID: z.string().optional(),
++          }),
++        ),
++        async (c) => {
++          const providerID = c.req.valid("param").providerID
++          const { profileID } = c.req.valid("query")
++          if (profileID) {
++            await Auth.removeProfile(providerID, profileID)
++          } else {
++            await Auth.remove(providerID)
++          }
++          return c.json(true)
++        },
++      )
++      .get(
++        "/auth/:providerID/profiles",
++        describeRoute({
++          summary: "List profiles",
++          description: "List all profiles for a provider",
++          operationId: "auth.profiles",
++          responses: {
++            200: {
++              description: "Profile list with active profile",
++              content: {
++                "application/json": {
++                  schema: resolver(
++                    z.object({
++                      profiles: z.array(z.string()),
++                      active: z.string().optional(),
++                    }),
++                  ),
++                },
++              },
++            },
++            ...errors(400),
++          },
++        }),
++        validator(
++          "param",
++          z.object({
++            providerID: ProviderID.zod,
++          }),
++        ),
++        async (c) => {
++          const providerID = c.req.valid("param").providerID
++          const all = await Auth.allWithProfiles()
++          const provider = all[providerID]
++          if (!provider) return c.json({ profiles: [], active: undefined })
++          return c.json({
++            profiles: Object.keys(provider.profiles),
++            active: provider.currentProfile,
++          })
++        },
++      )
++      .patch(
++        "/auth/:providerID/profile",
++        describeRoute({
++          summary: "Switch profile",
++          description: "Switch the active profile for a provider",
++          operationId: "auth.profile.switch",
++          responses: {
++            200: {
++              description: "Successfully switched profile",
++              content: {
++                "application/json": {
++                  schema: resolver(z.boolean()),
++                },
++              },
++            },
++            ...errors(400),
++          },
++        }),
++        validator(
++          "param",
++          z.object({
++            providerID: ProviderID.zod,
++          }),
++        ),
++        validator(
++          "json",
++          z.object({
++            profileID: z.string(),
++            create: z.boolean().optional(),
++          }),
++        ),
++        async (c) => {
++          const providerID = c.req.valid("param").providerID
++          const { profileID, create } = c.req.valid("json")
++          await Auth.setActiveProfile(providerID, profileID, { create })
++          return c.json(true)
++        },
++      )
++      .patch(
++        "/auth/:providerID/profile/rename",
++        describeRoute({
++          summary: "Rename profile",
++          description: "Rename a profile for a provider",
++          operationId: "auth.profile.rename",
++          responses: {
++            200: {
++              description: "Successfully renamed profile",
++              content: {
++                "application/json": {
++                  schema: resolver(z.boolean()),
++                },
++              },
++            },
++            ...errors(400),
++          },
++        }),
++        validator(
++          "param",
++          z.object({
++            providerID: ProviderID.zod,
++          }),
++        ),
++        validator(
++          "json",
++          z.object({
++            oldName: z.string(),
++            newName: z.string(),
++          }),
++        ),
+         async (c) => {
+           const providerID = c.req.valid("param").providerID
+-          await Auth.remove(providerID)
++          const { oldName, newName } = c.req.valid("json")
++          await Auth.renameProfile(providerID, oldName, newName)
+           return c.json(true)
+         },
+       )
