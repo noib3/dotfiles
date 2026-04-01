@@ -44,7 +44,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     opencode-anthropic-auth = {
-      url = "github:Thesam1798/opencode-anthropic-auth/fix/claude-code-oauth-compatibility";
+      url = "github:ex-machina-co/opencode-anthropic-auth";
       flake = false;
     };
     rust-overlay = {

@@ -51,9 +51,14 @@ let
   opencodePackage =
     (inputs.opencode.packages.${pkgs.stdenv.system}.default).overrideAttrs
       (old: {
-        # Workaround for https://github.com/anomalyco/opencode/issues/18227
         node_modules = old.node_modules.overrideAttrs {
-          outputHash = "sha256-kZGUAE0fxFkFYrarWLQ6e40r5ZAF+GkRF2oZM8/erOM=";
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out
+            find . -path './node_modules/.bun' -prune -o -type d -name node_modules -exec cp -R --parents {} $out \;
+            runHook postInstall
+          '';
+          outputHash = "sha256-vN0sXYs7pLtpq7U9SorR2z6st/wMfHA3dybOnwIh1pU=";
         };
         patches = (old.patches or [ ]) ++ [
           ./patches/anthropic-provider-label.patch
