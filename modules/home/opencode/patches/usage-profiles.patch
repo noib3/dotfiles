@@ -1,0 +1,758 @@
+Profile-aware follow-up to the /usage command that allows showing usage data for
+all provider/profiler pairs, using tab and shift-tab to cycle through them.
+
+diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
+index 460ffca6..4196f0bd 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
+@@ -14,7 +14,7 @@ import {
+   usageBarString,
+ } from "./usage-format"
+ import type { UsageEntry, UsageError, UsageWindow } from "./usage-data"
+-import { For, Show, createSignal } from "solid-js"
++import { Show, createSignal } from "solid-js"
+
+ type Theme = ReturnType<typeof useTheme>["theme"]
+
+@@ -23,20 +23,24 @@ export function DialogUsage(props: { entries: UsageEntry[]; errors?: UsageError[
+   const tuiConfig = useTuiConfig()
+   const dialog = useDialog()
+   const [hover, setHover] = createSignal(false)
+-  const mode = () => (tuiConfig.show_usage_value_mode ?? "used") as UsageDisplayMode
+-  const [providerIndex, setProviderIndex] = createSignal(-1)
++  const mode = () => (props.initialMode ?? tuiConfig.show_usage_value_mode ?? "used") as UsageDisplayMode
++  const initialIndex = Math.max(
++    0,
++    props.entries.findIndex((entry) => entry.isCurrent),
++  )
++  const [providerIndex, setProviderIndex] = createSignal(initialIndex)
+
+   useKeyboard((evt) => {
+     if (evt.name !== "tab") return
+     evt.preventDefault()
+     if (props.entries.length <= 1) return
+-    setProviderIndex((i) => (i + 1 >= props.entries.length ? -1 : i + 1))
++    setProviderIndex((i) => (i + (evt.shift ? -1 : 1) + props.entries.length) % props.entries.length)
+   })
+
+-  const visibleEntries = () => {
+-    const idx = providerIndex()
+-    if (idx === -1) return props.entries
+-    return [props.entries[idx]]
++  const selectedEntry = () => props.entries[providerIndex()] ?? props.entries[0]
++  const selectedProfile = () => {
++    const profileID = selectedEntry()?.profileID
++    return profileID && profileID !== "default" ? profileID : undefined
+   }
+
+   return (
+@@ -44,7 +48,7 @@ export function DialogUsage(props: { entries: UsageEntry[]; errors?: UsageError[
+       <box flexDirection="row" justifyContent="space-between">
+         <text fg={theme.text} attributes={TextAttributes.BOLD}>
+           Usage
+-          <Show when={providerIndex() >= 0}>
++          <Show when={props.entries.length > 1}>
+             <span style={{ fg: theme.textMuted }}>{` (${providerIndex() + 1}/${props.entries.length})`}</span>
+           </Show>
+         </text>
+@@ -66,62 +70,66 @@ export function DialogUsage(props: { entries: UsageEntry[]; errors?: UsageError[
+           </box>
+         </box>
+       </box>
+-      <Show when={visibleEntries().length > 0} fallback={<text fg={theme.text}>No usage data available.</text>}>
+-        <For each={visibleEntries()}>
+-          {(entry, index) => {
+-            const planType = formatPlanType(entry.snapshot.planType)
+-            const entryErrors = (props.errors ?? [])
+-              .filter((error) => error.provider === entry.provider)
+-              .map((error) => error.message)
+-            return (
+-              <box flexDirection="column" marginTop={index() === 0 ? 0 : 1} gap={1}>
+-                <box flexDirection="column">
+-                  <text fg={theme.text} attributes={TextAttributes.BOLD}>
+-                    {entry.displayName} Usage
+-                    <Show when={planType}>
+-                      <span style={{ fg: theme.textMuted }}>{` (${planType})`}</span>
+-                    </Show>
+-                  </text>
+-                  <text fg={theme.textMuted}>{"─".repeat(Math.max(24, entry.displayName.length + 20))}</text>
+-                </box>
+-                <Show when={entry.snapshot.primary}>
+-                  {(window) => (
+-                    <box flexDirection="column">{renderWindow(entry.provider, "primary", window(), mode(), theme)}</box>
+-                  )}
+-                </Show>
+-                <Show when={entry.snapshot.secondary}>
+-                  {(window) => (
+-                    <box flexDirection="column">
+-                      {renderWindow(entry.provider, "secondary", window(), mode(), theme)}
+-                    </box>
+-                  )}
+-                </Show>
+-                <Show when={entry.snapshot.tertiary}>
+-                  {(window) => (
+-                    <box flexDirection="column">
+-                      {renderWindow(entry.provider, "tertiary", window(), mode(), theme)}
+-                    </box>
+-                  )}
+-                </Show>
+-                <Show when={entry.snapshot.credits}>
+-                  {(credits) => (
+-                    <text fg={theme.text}>
+-                      {formatCreditsLabel(entry.provider, credits(), {
+-                        mode: mode(),
+-                        slot: "secondary",
+-                      })}
+-                    </text>
+-                  )}
+-                </Show>
+-                <Show when={entryErrors.length > 0}>
+-                  <text fg={theme.error} attributes={TextAttributes.DIM}>
+-                    {entryErrors.join(" • ")}
+-                  </text>
+-                </Show>
++      <Show when={selectedEntry()} fallback={<text fg={theme.text}>No usage data available.</text>}>
++        {(entry) => {
++          const planType = formatPlanType(entry().snapshot?.planType ?? null)
++          const entryErrors = (props.errors ?? [])
++            .filter((error) => error.provider === entry().provider && error.profileID === entry().profileID)
++            .map((error) => error.message)
++          return (
++            <box flexDirection="column" gap={1}>
++              <box flexDirection="column">
++                <text fg={theme.text} attributes={TextAttributes.BOLD}>
++                  {entry().displayName} Usage
++                  <Show when={planType}>
++                    <span style={{ fg: theme.textMuted }}>{` (${planType})`}</span>
++                  </Show>
++                </text>
++                <text fg={theme.textMuted}>{"─".repeat(Math.max(24, entry().displayName.length + 20))}</text>
+               </box>
+-            )
+-          }}
+-        </For>
++              <Show when={entry().snapshot?.primary}>
++                {(window) => (
++                  <box flexDirection="column">{renderWindow(entry().provider, "primary", window(), mode(), theme)}</box>
++                )}
++              </Show>
++              <Show when={entry().snapshot?.secondary}>
++                {(window) => (
++                  <box flexDirection="column">{renderWindow(entry().provider, "secondary", window(), mode(), theme)}</box>
++                )}
++              </Show>
++              <Show when={entry().snapshot?.tertiary}>
++                {(window) => (
++                  <box flexDirection="column">{renderWindow(entry().provider, "tertiary", window(), mode(), theme)}</box>
++                )}
++              </Show>
++              <Show when={entry().snapshot?.credits}>
++                {(credits) => (
++                  <text fg={theme.text}>
++                    {formatCreditsLabel(entry().provider, credits(), {
++                      mode: mode(),
++                      slot: "secondary",
++                    })}
++                  </text>
++                )}
++              </Show>
++              <Show when={!entry().snapshot}>
++                <text fg={theme.textMuted}>No usage data available for this provider/profile pair.</text>
++              </Show>
++              <Show when={entryErrors.length > 0}>
++                <text fg={theme.error} attributes={TextAttributes.DIM}>
++                  {entryErrors.join(" • ")}
++                </text>
++              </Show>
++            </box>
++          )
++        }}
++      </Show>
++      <Show when={selectedProfile()}>
++        {(profile) => (
++          <box justifyContent="flex-end">
++            <text fg={theme.textMuted}>{profile()}</text>
++          </box>
++        )}
+       </Show>
+     </box>
+   )
+diff --git a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+index be77b64b..ee0887ae 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
++++ b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
+@@ -110,14 +110,16 @@ export function Prompt(props: PromptProps) {
+   const [previousStatus, setPreviousStatus] = createSignal("idle")
+   const usageSnapshot = new Map<string, UsageEntry["snapshot"]>()
+   const usageShown = new Set<string>()
++  const usageEntryKey = (entry: Pick<UsageEntry, "provider" | "profileID">) => `${entry.provider}:${entry.profileID ?? "default"}`
+
+   function usageToast(entries: UsageEntry[]) {
+     for (const entry of entries) {
+-      const previous = usageSnapshot.get(entry.provider)
+-      usageSnapshot.set(entry.provider, entry.snapshot)
++      const entryKey = usageEntryKey(entry)
++      const previous = usageSnapshot.get(entryKey)
++      usageSnapshot.set(entryKey, entry.snapshot)
+       const warning = usageWarning(entry, previous)
+       if (!warning) continue
+-      const key = usageWarningKey(entry.provider, warning)
++      const key = usageWarningKey(entry.provider, warning, entry.profileID)
+       if (!usageRemember(usageShown, key)) continue
+       const label = formatUsageWindowLabel(entry.provider, warning.window, warning.windowMinutes)
+       const reset = warning.resetsAt ? ` Resets ${formatUsageResetLong(warning.resetsAt)}.` : ""
+@@ -183,6 +185,7 @@ export function Prompt(props: PromptProps) {
+       modelProviderID: local.model.current()?.providerID,
+       showUsageProviderScope: tuiConfig.show_usage_provider_scope ?? "all",
+       showUsageValueMode: tuiConfig.show_usage_value_mode,
++      includeAllProfiles: true,
+       refresh: true,
+     })
+       .then((data) => {
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-client.ts b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
+index 359e868f..b230e636 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
+@@ -21,10 +21,20 @@ export async function fetchUsage(
+     modelProviderID?: string
+     showUsageProviderScope?: UsageScope
+     showUsageValueMode?: UsageDisplayMode
++    includeAllProfiles?: boolean
+   },
+ ): Promise<UsageResult> {
+-  const response = await sdk.client.usage.get(params)
+-  const data = response.data as UsageResult | undefined
++  const query = new URLSearchParams()
++  if (params.provider) query.set("provider", params.provider)
++  if (params.refresh !== undefined) query.set("refresh", String(params.refresh))
++  if (params.command) query.set("command", params.command)
++  if (params.modelProviderID) query.set("modelProviderID", params.modelProviderID)
++  if (params.showUsageProviderScope) query.set("showUsageProviderScope", params.showUsageProviderScope)
++  if (params.showUsageValueMode) query.set("showUsageValueMode", params.showUsageValueMode)
++  if (params.includeAllProfiles !== undefined) query.set("includeAllProfiles", String(params.includeAllProfiles))
++
++  const response = await sdk.fetch(`${sdk.url}/usage?${query.toString()}`)
++  const data = (await response.json()) as UsageResult | undefined
+   return {
+     entries: data?.entries ?? [],
+     errors: data?.errors ?? [],
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-data.ts b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
+index 9c8223a1..dc5d194a 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
+@@ -7,6 +7,8 @@ export type UsageWindow = {
+ export type UsageEntry = {
+   provider: string
+   displayName: string
++  profileID?: string
++  isCurrent?: boolean
+   snapshot: {
+     primary: UsageWindow | null
+     secondary: UsageWindow | null
+@@ -21,11 +23,12 @@ export type UsageEntry = {
+     } | null
+     planType: string | null
+     updatedAt: number
+-  }
++  } | null
+ }
+
+ export type UsageError = {
+   provider: string
++  profileID?: string
+   message: string
+ }
+
+diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
+index b0f969a0..dbc256d5 100644
+--- a/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
++++ b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
+@@ -16,6 +16,7 @@ export type UsageWarning = {
+ }
+
+ export function usageWarning(entry: UsageEntry, previous: UsageEntry["snapshot"] | undefined): UsageWarning | null {
++  if (!entry.snapshot) return null
+   return windows.reduce<UsageWarning | null>((best, window) => {
+     const current = entry.snapshot[window]
+     if (!current) return best
+@@ -62,8 +63,8 @@ export function usageWarning(entry: UsageEntry, previous: UsageEntry["snapshot"]
+   }, null)
+ }
+
+-export function usageWarningKey(provider: string, warning: UsageWarning): string {
+-  return `${provider}:${warning.window}:${warning.threshold}:${warning.resetsAt ?? "none"}`
++export function usageWarningKey(provider: string, warning: UsageWarning, profileID?: string): string {
++  return `${provider}:${profileID ?? "default"}:${warning.window}:${warning.threshold}:${warning.resetsAt ?? "none"}`
+ }
+
+ export function usageRemember(shown: Set<string>, key: string): boolean {
+diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
+index f060241a..585889cf 100644
+--- a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
++++ b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
+@@ -26,7 +26,7 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
+
+   const usageSections = createMemo(() => {
+     const entries = usage.data()?.entries ?? []
+-    return entries.filter((e) => e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits)
++    return entries.filter((e) => e.snapshot && (e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits))
+   })
+   const usageErrors = createMemo(() => usage.data()?.errors ?? [])
+   const usageMode = createMemo(() => tuiConfig.show_usage_value_mode ?? "used")
+@@ -51,27 +51,27 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
+                 <Show when={expanded.usage}>
+                   <For each={usageSections()}>
+                     {(entry, index) => {
+-                      const planType = formatPlanType(entry.snapshot.planType)
++                      const planType = formatPlanType(entry.snapshot?.planType ?? null)
+                       const entryErrors = usageErrors().filter((e) => e.provider === entry.provider).map((e) => e.message)
+                       return (
+                         <box flexDirection="column" gap={0} marginTop={index() === 0 ? 0 : 1}>
+                           <text fg={theme.text}><b>{entry.displayName}</b><Show when={planType}><span style={{ fg: theme.textMuted }}>{` (${planType})`}</span></Show></text>
+-                          <Show when={entry.snapshot.primary}>
++                          <Show when={entry.snapshot?.primary}>
+                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
+                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "primary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
+                             )}}
+                           </Show>
+-                          <Show when={entry.snapshot.secondary}>
++                          <Show when={entry.snapshot?.secondary}>
+                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
+                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "secondary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
+                             )}}
+                           </Show>
+-                          <Show when={entry.snapshot.tertiary}>
++                          <Show when={entry.snapshot?.tertiary}>
+                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
+                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "tertiary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
+                             )}}
+                           </Show>
+-                          <Show when={entry.snapshot.credits}>
++                          <Show when={entry.snapshot?.credits}>
+                             {(credits) => (<text fg={theme.textMuted}>{formatCreditsLabel(entry.provider, credits(), { mode: usageMode(), slot: "secondary" })}</text>)}
+                           </Show>
+                           <Show when={entryErrors.length > 0}><text fg={theme.error} attributes={TextAttributes.DIM}>{entryErrors.join(" • ")}</text></Show>
+diff --git a/packages/opencode/src/server/usage.ts b/packages/opencode/src/server/usage.ts
+index 9af09607..b65d371b 100644
+--- a/packages/opencode/src/server/usage.ts
++++ b/packages/opencode/src/server/usage.ts
+@@ -75,7 +75,9 @@ const usageResponseSchema = z.object({
+     z.object({
+       provider: z.string(),
+       displayName: z.string(),
+-      snapshot: Usage.snapshotSchema,
++      profileID: z.string().optional(),
++      isCurrent: z.boolean().optional(),
++      snapshot: Usage.snapshotSchema.nullable(),
+     }),
+   ),
+   error: z.string().optional(),
+@@ -83,6 +85,7 @@ const usageResponseSchema = z.object({
+     .array(
+       z.object({
+         provider: z.string(),
++        profileID: z.string().optional(),
+         message: z.string(),
+       }),
+     )
+@@ -126,6 +129,7 @@ export function UsageRoutes() {
+         modelProviderID: z.string().optional(),
+         showUsageProviderScope: z.enum(["current", "all"]).optional(),
+         showUsageValueMode: z.enum(["used", "remaining"]).optional(),
++        includeAllProfiles: refreshSchema.optional(),
+       }),
+     ),
+     async (c) => {
+@@ -133,6 +137,7 @@ export function UsageRoutes() {
+       let providerInput = query.provider?.trim()
+       let refresh = query.refresh ?? false
+       let mode = query.showUsageValueMode
++      const includeAllProfiles = query.includeAllProfiles ?? false
+
+       if (query.command) {
+         const command = parseUsageCommand(query.command, {
+@@ -175,7 +180,12 @@ export function UsageRoutes() {
+       }
+
+       const auth = await Auth.all()
+-      const providers = resolved ? [resolved] : await Usage.getAuthenticatedProviders(auth)
++      const authProfiles = await Auth.allWithProfiles()
++      const providers = resolved
++        ? [resolved]
++        : includeAllProfiles
++          ? await Usage.getAuthenticatedProvidersWithProfiles(authProfiles)
++          : await Usage.getAuthenticatedProviders(auth)
+       if (providers.length === 0) {
+         return c.json({
+           entries: [],
+@@ -184,115 +194,141 @@ export function UsageRoutes() {
+         })
+       }
+
++      const currentProvider = Usage.resolveProvider(query.modelProviderID ?? "")
++
+       const providerTasks = providers.map(async (provider) => {
+         const errors: string[] = []
+-        const providerErrors: Array<{ provider: string; message: string }> = []
+-        const pushError = (message: string) => {
++        const providerErrors: Array<{ provider: string; profileID?: string; message: string }> = []
++        const pushError = (message: string, profileID?: string) => {
+           errors.push(message)
+-          providerErrors.push({ provider, message })
++          providerErrors.push({ provider, profileID, message })
+         }
+
+         const info = Usage.getProviderInfo(provider)
+         if (!info) {
+           pushError(`Provider "${provider}" does not support usage tracking.`)
+-          return { provider, entry: null, errors, providerErrors }
++          return { provider, entries: [], errors, providerErrors }
+         }
+
+-        const authEntry = await Usage.getProviderAuth(provider, auth)
+-        if (!authEntry) {
++        const normalizedAuthEntries = includeAllProfiles
++          ? await Usage.getProviderAuthEntries(provider, authProfiles, { includeAllProfiles: true })
++          : await (async () => {
++              const authEntry = await Usage.getProviderAuth(provider, auth)
++              if (!authEntry) return []
++              const currentProfile = authProfiles[authEntry.key]?.currentProfile ?? "default"
++              return [{ ...authEntry, profileID: currentProfile, isCurrent: true }]
++            })()
++        if (normalizedAuthEntries.length === 0) {
+           pushError(`Not authenticated with ${info.displayName}. Run: opencode auth login`)
+-          return { provider, entry: null, errors, providerErrors }
+-        }
+-        const oauthAuth = authEntry.auth.type === "oauth" ? authEntry.auth : null
+-        if (info.requiresOAuth && !oauthAuth) {
+-          pushError(`Not authenticated with ${info.displayName} OAuth. Run: opencode auth login`)
+-          return { provider, entry: null, errors, providerErrors }
++          return { provider, entries: [], errors, providerErrors }
+         }
+
+-        const oauth = oauthAuth
+-        if (!oauth) {
+-          pushError(`Missing OAuth access token for ${info.displayName}.`)
+-          return { provider, entry: null, errors, providerErrors }
+-        }
++        const profileTasks = normalizedAuthEntries.map(async (authEntry) => {
++          const oauthAuth = authEntry.auth.type === "oauth" ? authEntry.auth : null
++          if (info.requiresOAuth && !oauthAuth) {
++            pushError(`Not authenticated with ${info.displayName} OAuth. Run: opencode auth login`, authEntry.profileID)
++            return null
++          }
+
+-        const accessToken = oauth.access
+-        if (!accessToken) {
+-          pushError(`Missing OAuth access token for ${info.displayName}.`)
+-          return { provider, entry: null, errors, providerErrors }
+-        }
++          const oauth = oauthAuth
++          if (!oauth) {
++            pushError(`Missing OAuth access token for ${info.displayName}.`, authEntry.profileID)
++            return null
++          }
+
+-        const isCopilot = provider === "github-copilot" || provider === "github-copilot-enterprise"
+-        if (isCopilot && !oauth.usage) {
+-          pushError("Copilot usage requires a GitHub OAuth device token. Run: opencode auth login")
+-          return { provider, entry: null, errors, providerErrors }
+-        }
++          const accessToken = oauth.access
++          if (!accessToken) {
++            pushError(`Missing OAuth access token for ${info.displayName}.`, authEntry.profileID)
++            return null
++          }
+
+-        const usageToken = isCopilot ? (oauth.usage ?? null) : accessToken
+-        if (!usageToken) {
+-          pushError(`Missing OAuth access token for ${info.displayName}.`)
+-          return { provider, entry: null, errors, providerErrors }
+-        }
++          const isCopilot = provider === "github-copilot" || provider === "github-copilot-enterprise"
++          if (isCopilot && !oauth.usage) {
++            pushError("Copilot usage requires a GitHub OAuth device token. Run: opencode auth login", authEntry.profileID)
++            return null
++          }
++
++          const usageToken = isCopilot ? (oauth.usage ?? null) : accessToken
++          if (!usageToken) {
++            pushError(`Missing OAuth access token for ${info.displayName}.`, authEntry.profileID)
++            return null
++          }
+
+-        const cached = await Usage.getUsage(provider)
+-        const stale = !cached || Date.now() - cached.updatedAt > USAGE_CACHE_TTL_MS
+-        const snapshot = await (async () => {
+-          if (!refresh && !stale) return cached
++          const cached = await Usage.getUsage(provider, authEntry.profileID)
++          const stale = !cached || Date.now() - cached.updatedAt > USAGE_CACHE_TTL_MS
++          const snapshot = await (async () => {
++            if (!refresh && !stale) return cached
+
+-          const fetched = await fetchProviderUsage({
+-            provider,
+-            isCopilot,
+-            accessToken,
+-            usageToken,
+-            oauth,
+-            authKey: authEntry.key,
+-          })
++            const fetched = await fetchProviderUsage({
++              provider,
++              isCopilot,
++              accessToken,
++              usageToken,
++              oauth,
++              authKey: authEntry.key,
++            })
+
+-          const fetchedSnapshot = fetched.snapshot
+-          const detail = fetched.error ?? `Unable to refresh usage data for ${info.displayName}.`
++            const fetchedSnapshot = fetched.snapshot
++            const detail = fetched.error ?? `Unable to refresh usage data for ${info.displayName}.`
+
+-          if (fetched.error) {
+-            if (cached) {
+-              pushError(`${detail} Showing cached results.`)
+-              return cached
++            if (fetched.error) {
++              if (cached) {
++                pushError(`${detail} Showing cached results.`, authEntry.profileID)
++                return cached
++              }
++              if (fetchedSnapshot) {
++                pushError(detail, authEntry.profileID)
++                await Usage.updateUsage(provider, fetchedSnapshot, authEntry.profileID)
++                return fetchedSnapshot
++              }
++              pushError(detail, authEntry.profileID)
++              return null
+             }
+-            if (fetchedSnapshot) {
+-              pushError(detail)
+-              await Usage.updateUsage(provider, fetchedSnapshot)
+-              return fetchedSnapshot
+-            }
+-            pushError(detail)
+-            return null
+-          }
+
+-          if (!fetchedSnapshot) {
+-            if (cached) {
+-              pushError(`${detail} Showing cached results.`)
+-              return cached
++            if (!fetchedSnapshot) {
++              if (cached) {
++                pushError(`${detail} Showing cached results.`, authEntry.profileID)
++                return cached
++              }
++              pushError(detail, authEntry.profileID)
++              return null
+             }
+-            pushError(detail)
+-            return null
+-          }
+
+-          return Usage.updateUsage(provider, fetchedSnapshot)
+-        })()
++            return Usage.updateUsage(provider, fetchedSnapshot, authEntry.profileID)
++          })()
+
+-        if (!snapshot) {
+-          return { provider, entry: null, errors, providerErrors }
+-        }
++          return {
++            provider,
++            displayName: info.displayName,
++            profileID: authEntry.profileID,
++            isCurrent: provider === currentProvider && authEntry.isCurrent,
++            snapshot,
++          }
++        })
+
++        const profileEntries = (await Promise.all(profileTasks)).filter(
++          (entry): entry is NonNullable<typeof entry> => Boolean(entry),
++        )
+         return {
+           provider,
+-          entry: { provider, displayName: info.displayName, snapshot },
++          entries: profileEntries,
+           errors,
+           providerErrors,
+         }
+       })
+
+       const results = await Promise.all(providerTasks)
+-      const entries = results.flatMap((result) => (result.entry ? [result.entry] : []))
++      const entries = results.flatMap((result) => result.entries)
+       const errors = results.flatMap((result) => result.errors)
+       const providerErrors = results.flatMap((result) => result.providerErrors)
+
++      entries.sort((a, b) => {
++        if (a.isCurrent && !b.isCurrent) return -1
++        if (!a.isCurrent && b.isCurrent) return 1
++        if (a.provider !== b.provider) return a.provider.localeCompare(b.provider)
++        return (a.profileID ?? "default").localeCompare(b.profileID ?? "default")
++      })
++
+       return c.json({
+         entries,
+         error: errors.length > 0 ? errors.join("\n") : undefined,
+diff --git a/packages/opencode/src/usage/index.ts b/packages/opencode/src/usage/index.ts
+index b977ce73..a9bbca24 100644
+--- a/packages/opencode/src/usage/index.ts
++++ b/packages/opencode/src/usage/index.ts
+@@ -18,7 +18,9 @@ export {
+   resolveProvider,
+   getProviderInfo,
+   getAuthenticatedProviders,
++  getAuthenticatedProvidersWithProfiles,
+   getProviderAuth,
++  getProviderAuthEntries,
+ } from "./store"
+
+ export { fetchChatgptUsage } from "./providers/openai"
+@@ -35,7 +37,9 @@ import {
+   resolveProvider,
+   getProviderInfo,
+   getAuthenticatedProviders,
++  getAuthenticatedProvidersWithProfiles,
+   getProviderAuth,
++  getProviderAuthEntries,
+ } from "./store"
+ import { planTypeSchema, rateLimitWindowSchema, creditsSnapshotSchema, snapshotSchema } from "./types"
+
+@@ -50,7 +54,9 @@ export const Usage = {
+   resolveProvider,
+   getProviderInfo,
+   getAuthenticatedProviders,
++  getAuthenticatedProvidersWithProfiles,
+   getProviderAuth,
++  getProviderAuthEntries,
+   fetchChatgptUsage,
+   fetchClaudeUsage,
+   fetchCopilotUsage,
+diff --git a/packages/opencode/src/usage/store.ts b/packages/opencode/src/usage/store.ts
+index dbff4981..77c878fd 100644
+--- a/packages/opencode/src/usage/store.ts
++++ b/packages/opencode/src/usage/store.ts
+@@ -14,17 +14,18 @@ export const UsageEvent = {
+     "usage.updated",
+     z.object({
+       provider: z.string(),
++      profileID: z.string().optional(),
+       snapshot: snapshotSchema,
+     }),
+   ),
+ }
+
+-export async function getUsage(provider: string): Promise<Snapshot | null> {
+-  return Storage.read<Snapshot>(storageKey(provider)).catch(() => null)
++export async function getUsage(provider: string, profileID?: string): Promise<Snapshot | null> {
++  return Storage.read<Snapshot>(storageKey(provider, profileID)).catch(() => null)
+ }
+
+-export async function updateUsage(provider: string, update: Partial<Snapshot>): Promise<Snapshot> {
+-  const existing = await getUsage(provider)
++export async function updateUsage(provider: string, update: Partial<Snapshot>, profileID?: string): Promise<Snapshot> {
++  const existing = await getUsage(provider, profileID)
+   const primary = update.primary !== undefined ? update.primary : (existing?.primary ?? null)
+   const secondary = update.secondary !== undefined ? update.secondary : (existing?.secondary ?? null)
+   const tertiary = update.tertiary !== undefined ? update.tertiary : (existing?.tertiary ?? null)
+@@ -39,19 +40,19 @@ export async function updateUsage(provider: string, update: Partial<Snapshot>):
+     updatedAt: Date.now(),
+   }
+
+-  await Storage.write(storageKey(provider), snapshot).catch((error) => {
+-    log.debug("usage write failed", { provider, error })
++  await Storage.write(storageKey(provider, profileID), snapshot).catch((error) => {
++    log.debug("usage write failed", { provider, profileID, error })
+   })
+
+-  await Bus.publish(UsageEvent.Updated, { provider, snapshot }).catch((error) => {
+-    log.debug("usage publish failed", { provider, error })
++  await Bus.publish(UsageEvent.Updated, { provider, profileID, snapshot }).catch((error) => {
++    log.debug("usage publish failed", { provider, profileID, error })
+   })
+
+   return snapshot
+ }
+
+-export async function clearUsage(provider: string): Promise<void> {
+-  await Storage.remove(storageKey(provider))
++export async function clearUsage(provider: string, profileID?: string): Promise<void> {
++  await Storage.remove(storageKey(provider, profileID))
+ }
+
+ export function resolveProvider(input: string): string | null {
+@@ -82,6 +83,26 @@ export async function getAuthenticatedProviders(auth?: Record<string, Auth.Info>
+   return result
+ }
+
++export async function getAuthenticatedProvidersWithProfiles(auth?: Record<string, Auth.ProviderData>): Promise<string[]> {
++  const entries = auth ?? (await Auth.allWithProfiles())
++  const providers = listUsageProviders()
++  const result: string[] = []
++
++  for (const provider of providers) {
++    const matched = provider.authKeys.some((key) => {
++      const providerAuth = entries[key]
++      if (!providerAuth) return false
++      return Object.values(providerAuth.profiles).some((profileAuth) => {
++        if (provider.requiresOAuth && profileAuth.type !== "oauth") return false
++        return true
++      })
++    })
++    if (matched) result.push(provider.id)
++  }
++
++  return result
++}
++
+ export async function getProviderAuth(
+   provider: string,
+   auth?: Record<string, Auth.Info>,
+@@ -100,6 +121,40 @@ export async function getProviderAuth(
+   return null
+ }
+
+-function storageKey(provider: string): string[] {
+-  return ["usage", provider]
++export async function getProviderAuthEntries(
++  provider: string,
++  auth?: Record<string, Auth.ProviderData>,
++  options?: { includeAllProfiles?: boolean },
++): Promise<Array<{ key: string; profileID: string; auth: Auth.Info; isCurrent: boolean }>> {
++  const info = getUsageProviderInfo(provider)
++  if (!info) return []
++  const entries = auth ?? (await Auth.allWithProfiles())
++  const result: Array<{ key: string; profileID: string; auth: Auth.Info; isCurrent: boolean }> = []
++
++  for (const key of info.authKeys) {
++    const providerAuth = entries[key]
++    if (!providerAuth) continue
++
++    const profileEntries = options?.includeAllProfiles
++      ? Object.entries(providerAuth.profiles)
++      : providerAuth.currentProfile && providerAuth.profiles[providerAuth.currentProfile]
++        ? [[providerAuth.currentProfile, providerAuth.profiles[providerAuth.currentProfile]]]
++        : []
++
++    for (const [profileID, profileAuth] of profileEntries) {
++      if (info.requiresOAuth && profileAuth.type !== "oauth") continue
++      result.push({
++        key,
++        profileID,
++        auth: profileAuth,
++        isCurrent: profileID === providerAuth.currentProfile,
++      })
++    }
++  }
++
++  return result
++}
++
++function storageKey(provider: string, profileID?: string): string[] {
++  return profileID ? ["usage", provider, profileID] : ["usage", provider]
+ }

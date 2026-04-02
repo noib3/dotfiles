@@ -66,6 +66,7 @@ let
           ./patches/fix-repeated-json-migration-check.patch
           ./patches/multi-account-profiles.patch
           ./patches/usage-tracking.patch
+          ./patches/usage-profiles.patch
         ];
       });
 in
