@@ -42,7 +42,7 @@ in
         cmd - return : ${config.modules.terminals.enabled.launchCommand}
 
         # Toggle fullscreen.
-        alt - f : skhd --key "ctrl + cmd - f"
+        alt - f : ${lib.getExe config.services.skhd.package} --key "ctrl + cmd - f"
 
         # Screenshot either the whole screen or a portion of it and send a
         # notification.
