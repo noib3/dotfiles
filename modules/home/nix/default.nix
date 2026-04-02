@@ -61,7 +61,15 @@ in
     # Make `nix develop` and `nix shell` use fish instead of bash.
     programs.fish.interactiveShellInit = lib.mkIf config.programs.fish.enable ''
       function nix --description "Reproducible and declarative configuration management"
-          ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix -- $argv
+          # The absolute path to the pkgs.nix-your-shell package could be stale
+          # if the package has been garbage-collected after fish loaded its
+          # config, so check that it still exists or we'd get infinite
+          # recursion.
+          if test -x ${pkgs.nix-your-shell}/bin/nix-your-shell
+              ${pkgs.nix-your-shell}/bin/nix-your-shell fish nix -- $argv
+          else
+              command nix $argv
+          end
       end
     '';
 
