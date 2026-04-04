@@ -71,6 +71,7 @@ is_local_installable() {
   local ref=$1
 
   case "$ref" in
+    /nix/store/*) return 1 ;;
     . | .#* | ./* | /* | path:*) return 0 ;;
     *) return 1 ;;
   esac
