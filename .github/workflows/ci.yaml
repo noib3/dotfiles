@@ -35,6 +35,18 @@ jobs:
           nix_conf: |
             accept-flake-config = true
             experimental-features = pipe-operators
+      - name: Checkout sub60/cache-action
+        uses: actions/checkout@v6
+        with:
+          repository: sub60/cache-action
+          ref: v0.0.5
+          ssh-key: ${{ secrets.SUB60_CACHE_ACTION_DEPLOY_TOKEN }}
+          path: ./.github/actions/cache-action
+      - name: Setup Nix cache
+        uses: ./.github/actions/cache-action/js
+        with:
+          auth-token: ${{ secrets.SUB60_AUTH_TOKEN }}
+          github-token: ${{ secrets.SUB60_CACHE_ACTION_RELEASE_ARTIFACT_FETCH_TOKEN }}
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
 
