@@ -25,5 +25,10 @@ in
     home.packages = [
       pkgs.brewCasks.whatsapp
     ];
+
+    modules.macOSPreferences.apps."net.whatsapp.WhatsApp".forced = {
+      SUAutomaticallyUpdate = false;
+      SUEnableAutomaticChecks = false;
+    };
   };
 }
