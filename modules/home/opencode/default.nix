@@ -85,15 +85,19 @@ in
           "file://${opencodeAnthropicAuth}"
         ];
         permission = {
-          external_directory = {
-            "/**" = "allow";
+          bash = {
+            "home-manager switch*" = "ask";
+            "nix build*" = "ask";
           };
-          read = {
+          edit = {
             "*" = "allow";
             "*.env" = "deny";
             "*.env.*" = "deny";
           };
-          edit = {
+          external_directory = {
+            "/**" = "allow";
+          };
+          read = {
             "*" = "allow";
             "*.env" = "deny";
             "*.env.*" = "deny";
