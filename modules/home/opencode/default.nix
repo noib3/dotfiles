@@ -80,6 +80,7 @@ in
       enable = true;
       package = opencodePackage;
       settings = {
+        autoupdate = "notify";
         plugin = [
           "file://${opencodeAnthropicAuth}"
         ];
