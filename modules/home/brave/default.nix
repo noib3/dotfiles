@@ -87,14 +87,24 @@ let
       pkgs.symlinkJoin {
         name = "brave-wrapped";
         paths = [ pkgs.brave ];
-        nativeBuildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-          rm "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
-          makeWrapper \
-            "${pkgs.brave}/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
-            "$out/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" \
-            --add-flags "${featuresFlags}"
-        '';
+        postBuild =
+          let
+            darwinLauncher = pkgs.runCommandCC "brave-darwin-launcher" { } ''
+              $CC -DBRAVE_FEATURES_FLAGS=${escapeShellArg (builtins.toJSON featuresFlags)} \
+                "${./darwin-launcher.c}" -o "$out"
+            '';
+          in
+          ''
+            appBundle="$out/Applications/Brave Browser.app"
+            appExecutable="$appBundle/Contents/MacOS/Brave Browser"
+            originalExecutable="$appBundle/Contents/MacOS/Brave Browser.orig"
+
+            cp --dereference "$appExecutable" "$originalExecutable"
+            rm "$appExecutable"
+            cp "${darwinLauncher}" "$appExecutable"
+
+            chmod 755 "$appExecutable"
+          '';
       }
     else
       pkgs.symlinkJoin {
@@ -340,6 +350,20 @@ in
         |> filterAttrs (_: p: p.searchEngines != { })
         |> mapAttrs' mkSearchEnginesActivation
       )
+      // optionalAttrs (isDarwin && needsWrapping) {
+        codesignBraveAppBundle = lib.hm.dag.entryAfter [ "copyApps" ] (
+          let
+            braveAppBundlePath = "${config.home.homeDirectory}/Applications/Home Manager Apps/Brave Browser.app";
+          in
+          ''
+            if [[ -d "${braveAppBundlePath}" ]]; then
+              if ! /usr/bin/codesign --verify --deep --strict --verbose=0 "${braveAppBundlePath}" >/dev/null 2>&1; then
+                run /usr/bin/codesign --force --deep --sign - "${braveAppBundlePath}" >/dev/null 2>&1
+              fi
+            fi
+          ''
+        );
+      }
       // optionalAttrs (isDarwin && cfg.isDefaultBrowser) {
         setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run ${pkgs.defaultbrowser}/bin/defaultbrowser browser
