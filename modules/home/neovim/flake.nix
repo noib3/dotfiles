@@ -172,7 +172,8 @@
         import nixpkgs {
           inherit system;
           config = {
-            allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
+            allowUnfreePredicate =
+              pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
           };
         };
 

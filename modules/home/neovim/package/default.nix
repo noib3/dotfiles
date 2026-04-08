@@ -17,10 +17,10 @@ let
   toLua =
     value:
     if builtins.isAttrs value then
-      value
-      |> lib.mapAttrsToList (k: v: "${k} = ${toLua v}")
-      |> builtins.concatStringsSep ", "
-      |> (str: "{ ${str} }")
+      let
+        attrs = lib.mapAttrsToList (k: v: "${k} = ${toLua v}") value;
+      in
+      "{ ${builtins.concatStringsSep ", " attrs} }"
     else if builtins.isString value then
       "'${value}'"
     else
