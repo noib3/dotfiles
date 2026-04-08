@@ -107,6 +107,12 @@ in
         # become active.
         source ~/.config/fish/conf.d/plugin-pisces.fish
 
+        # The fzf module's fish integration adds `fzf --fish` to the config,
+        # which, among other things, sets shift-tab to show shell completions
+        # via fzf. I want shift-tab to select the previous completion.
+        bind -M insert \cX\cT fzf-completion
+        bind -M insert shift-tab 'if commandline --paging-mode; commandline -f complete-and-search; end'
+
         ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
 
         # Workaround for https://github.com/NixOS/nix/issues/5131
