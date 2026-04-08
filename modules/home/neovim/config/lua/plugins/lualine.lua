@@ -2,6 +2,42 @@ local lsp_progress = require("lsp-progress")
 local lualine = require("lualine")
 local utils = require("utils")
 
+--- Returns diagnostic counts across all the LSP clients attached to the current
+--- buffer.
+---@return { error: integer, warn: integer, info: integer, hint: integer }
+local current_workspace_diagnostics = function()
+  local workspace_namespaces = vim
+    .iter(vim.lsp.get_clients({ bufnr = 0 }))
+    :fold({}, function(acc, client)
+      acc[vim.lsp.diagnostic.get_namespace(client.id)] = true
+      client:_provider_foreach("textDocument/diagnostic", function(cap)
+        local identifier = type(cap) == "table" and cap.identifier or "nil"
+        acc[vim.lsp.diagnostic.get_namespace(client.id, identifier)] = true
+      end)
+      return acc
+    end)
+
+  if vim.tbl_isempty(workspace_namespaces) then
+    return { error = 0, warn = 0, info = 0, hint = 0 }
+  end
+
+  local counts = { 0, 0, 0, 0 }
+
+  for _, diagnostic in ipairs(vim.diagnostic.get()) do
+    if workspace_namespaces[diagnostic.namespace] then
+      local severity = diagnostic.severity
+      counts[severity] = counts[severity] + 1
+    end
+  end
+
+  return {
+    error = counts[vim.diagnostic.severity.ERROR],
+    warn = counts[vim.diagnostic.severity.WARN],
+    info = counts[vim.diagnostic.severity.INFO],
+    hint = counts[vim.diagnostic.severity.HINT],
+  }
+end
+
 lualine.setup({
   options = {
     component_separators = "",
@@ -42,7 +78,7 @@ lualine.setup({
           warn = "DiagnosticWarn",
         },
         sections = { "error", "warn" },
-        sources = { "nvim_workspace_diagnostic" },
+        sources = { current_workspace_diagnostics },
         symbols = { error = " ", warn = " " },
       },
     },
@@ -70,3 +106,14 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "LspProgressStatusUpdated",
   callback = lualine.refresh --[[@as fun()]],
 })
+
+vim.api.nvim_create_autocmd(
+  { "BufEnter", "DiagnosticChanged", "LspAttach", "LspDetach" },
+  {
+    group = vim.api.nvim_create_augroup(
+      "noib3/lualine-diagnostics",
+      { clear = true }
+    ),
+    callback = lualine.refresh --[[@as fun()]],
+  }
+)
