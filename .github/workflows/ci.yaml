@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: sub60/cache-action
-          ref: v0.0.5
+          ref: v0.0.10
           ssh-key: ${{ secrets.SUB60_CACHE_ACTION_DEPLOY_TOKEN }}
           path: ./.github/actions/cache-action
       - name: Setup Nix cache
@@ -47,6 +47,8 @@ jobs:
         with:
           auth-token: ${{ secrets.SUB60_AUTH_TOKEN }}
           github-token: ${{ secrets.SUB60_CACHE_ACTION_RELEASE_ARTIFACT_FETCH_TOKEN }}
+          user: noib3
+          cache: dotfiles
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
 
