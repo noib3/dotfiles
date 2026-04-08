@@ -1,4 +1,4 @@
-inputs:
+{ inputs, mkPkgs }:
 
 {
   config,
@@ -10,6 +10,7 @@ inputs:
 with lib;
 let
   cfg = config.neovim;
+  pkgsForNeovim = mkPkgs { inherit (pkgs.stdenv.hostPlatform) system; };
 in
 {
   options.neovim = {
@@ -17,7 +18,7 @@ in
       type = types.package;
       description = "The fully configured Neovim package";
       readOnly = true;
-      default = pkgs.callPackage ./package {
+      default = pkgsForNeovim.callPackage ./package {
         inherit inputs;
         inherit (cfg) includeConfig;
         paletteData = cfg.palette;

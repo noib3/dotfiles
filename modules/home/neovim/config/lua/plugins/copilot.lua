@@ -1,26 +1,3 @@
-local is_enabled = false
-
-if not is_enabled then return end
-
---- @param key string
-local fallback = function(key)
-  local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
-  vim.api.nvim_feedkeys(keys, "n", false)
-end
-
-local suggestion = require("copilot.suggestion")
-
-vim.api.nvim_set_keymap("i", "<Right>", "", {
-  desc = "Select the entire Copilot suggestion or fallback",
-  callback = function()
-    if suggestion.is_visible() then
-      suggestion.accept()
-    else
-      fallback("<Right>")
-    end
-  end,
-})
-
 -- By default, disable suggestions in markdown buffers (can be re-enabled
 -- with `:Copilot suggestion toggle_auto_trigger`).
 vim.api.nvim_create_autocmd("FileType", {
@@ -28,10 +5,22 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function() vim.b.copilot_suggestion_auto_trigger = false end,
 })
 
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "CopilotSuggestion", { link = "Comment" })
+  end,
+})
+
 ---@diagnostic disable-next-line: undefined-field
 require("copilot").setup({
   suggestion = {
     auto_trigger = true,
+    keymap = {
+      accept = "<Right>",
+    },
+    -- Don't trigger a new suggestion request on <Right> when no suggestion is
+    -- visible, just pass the keystroke through.
+    trigger_on_accept = false,
   },
   filetypes = {
     markdown = function()
@@ -41,6 +30,6 @@ require("copilot").setup({
   },
   server = {
     type = "binary",
-    -- custom_server_filepath = require("generated.tools").copilot,
+    custom_server_filepath = vim.env.COPILOT_SERVER_PATH,
   },
 })

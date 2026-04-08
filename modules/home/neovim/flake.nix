@@ -161,12 +161,32 @@
         "aarch64-darwin"
       ];
 
+      unfreePackages = [
+        "copilot-language-server"
+      ];
+
+      mkPkgs =
+        {
+          system,
+        }:
+        import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
+          };
+        };
+
       eachSystem =
         fun:
-        nixpkgs.lib.genAttrs systems (system: fun nixpkgs.legacyPackages.${system});
+        nixpkgs.lib.genAttrs systems (
+          system:
+          fun (mkPkgs {
+            inherit system;
+          })
+        );
     in
     {
-      homeManagerModules.default = import ./module.nix inputs;
+      homeManagerModules.default = import ./module.nix { inherit inputs mkPkgs; };
 
       packages = eachSystem (pkgs: {
         default = pkgs.callPackage ./package { inherit inputs; };

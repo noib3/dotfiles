@@ -2,9 +2,10 @@
   lib,
   linkFarm,
   stdenvNoCC,
-  vimPlugins,
   writeShellApplication,
   writeTextDir,
+  copilot-language-server,
+  vimPlugins,
   # --
   inputs,
   includeConfig ? true,
@@ -121,7 +122,10 @@ let
 in
 writeShellApplication {
   name = "nvim";
-  runtimeEnv.NVIM_EXE = lib.getExe neovimWithPlugins;
+  runtimeEnv = {
+    COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
+    NVIM_EXE = lib.getExe neovimWithPlugins;
+  };
   passthru = { inherit pluginsDir; };
   text = builtins.readFile ./nvim.sh;
 }
