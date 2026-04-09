@@ -29,7 +29,7 @@
       flake = false;
     };
     copilot-lua = {
-      url = "github:zbirenbaum/copilot.lua";
+      url = "github:noib3/copilot.lua/fix-insert-special-key-passthrough";
       flake = false;
     };
     crates-nvim = {
