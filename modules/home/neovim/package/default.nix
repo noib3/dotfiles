@@ -1,4 +1,5 @@
 {
+  coreutils,
   lib,
   linkFarm,
   stdenvNoCC,
@@ -122,6 +123,7 @@ let
 in
 writeShellApplication {
   name = "nvim";
+  runtimeInputs = [ coreutils ];
   runtimeEnv = {
     COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
     NVIM_EXE = lib.getExe neovimWithPlugins;

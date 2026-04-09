@@ -25,11 +25,7 @@ done
 
 filepaths=""
 for arg in "$@"; do
-  filepath="$arg"
-  if [[ $filepath != /* ]]; then
-    filepath="$PWD/$filepath"
-  fi
-
+  filepath=$(realpath -m -- "$arg")
   escaped_filepath=${filepath//\\/\\\\}
   escaped_filepath=${escaped_filepath//\"/\\\"}
   filepaths+="\"$escaped_filepath\","

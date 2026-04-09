@@ -57,8 +57,17 @@ vim.api.nvim_create_autocmd("User", {
     local orig_buf = ev.buf
     local orig_buf_is_terminal = vim.bo[orig_buf].buftype == "terminal"
 
-    local filepaths = ev.data.filepaths
+    -- Map of buffer names to buffer numbers for all currently open buffers.
+    local buf_names_to_bufnr = vim
+      .iter(vim.api.nvim_list_bufs())
+      :fold({}, function(acc, bufnr)
+        if not vim.api.nvim_buf_is_valid(bufnr) then return acc end
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        if name ~= "" then acc[name] = bufnr end
+        return acc
+      end)
 
+    local filepaths = ev.data.filepaths
     local file_buf
 
     if #filepaths == 0 then
@@ -68,7 +77,13 @@ vim.api.nvim_create_autocmd("User", {
     else
       -- Create new buffers for each file.
       for _, filepath in ipairs(filepaths) do
-        local buf = vim.fn.bufadd(filepath)
+        local buf = buf_names_to_bufnr[filepath]
+        -- Skip creating a new buffer if one already exists for the file.
+        if buf then
+          if not file_buf then file_buf = buf end
+          goto continue
+        end
+        buf = vim.fn.bufadd(filepath)
         vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
         vim.fn.bufload(buf)
         -- Set the buffer's filetype.
@@ -81,6 +96,7 @@ vim.api.nvim_create_autocmd("User", {
         end
         vim.b[buf].from_nvim_launch = true
         if not file_buf then file_buf = buf end
+        ::continue::
       end
 
       if orig_buf == vim.api.nvim_get_current_buf() then
