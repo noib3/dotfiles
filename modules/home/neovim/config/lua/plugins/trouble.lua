@@ -6,13 +6,13 @@ local trouble = require("trouble")
 
 vim.keymap.set(
   "n",
-  "<C-x><C-t>",
+  "<D-t>",
   function() trouble.toggle({ focus = true, mode = "errors_and_warnings" }) end
 )
 
 vim.keymap.set(
   "n",
-  "<C-x><C-x>",
+  "<D-x>",
   function() trouble.toggle({ focus = true, mode = "call_sites" }) end
 )
 

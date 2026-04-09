@@ -59,25 +59,23 @@ end
 -- Disable `s`.
 keymap.set({ "n", "v" }, "s", "")
 
--- Disable `<C-w>d`.
-keymap.del("n", "<C-w>d")
-
--- Disable `<C-w><C-d>`.
-keymap.del("n", "<C-w><C-d>")
-
 -- Save the file.
-keymap.set({ "n", "v" }, "<C-s>", utils.buffer.save)
+keymap.set({ "n", "v" }, "<D-s>", utils.buffer.save)
 
 -- Close the current buffer/window.
-keymap.set("n", "<C-w>", close)
+keymap.set("n", "<D-w>", close)
+
+-- Scroll up/down by half a page.
+keymap.set({ "n", "v" }, "<D-Up>", "<C-u>")
+keymap.set({ "n", "v" }, "<D-Down>", "<C-d>")
 
 -- Jump to the first non-whitepspace character in the displayed line.
-keymap.set({ "n", "v" }, "<C-a>", "g^")
-keymap.set("i", "<C-a>", "<C-o>g^")
+keymap.set({ "n", "v" }, "<D-Left>", "g^")
+keymap.set("i", "<D-Left>", "<C-o>g^")
 
 -- Jump to the end of the displayed line.
-keymap.set({ "n", "v" }, "<C-e>", "g$")
-keymap.set("i", "<C-e>", "<C-o>g$")
+keymap.set({ "n", "v" }, "<D-Right>", "g$")
+keymap.set("i", "<D-Right>", "<C-o>g$")
 
 -- Move between displayed lines instead of physical ones (i.e. take count of
 -- soft-wrapping).
@@ -98,8 +96,9 @@ keymap.set({ "n", "v" }, "<S-Down>", "<C-w>j", { noremap = true })
 keymap.set({ "n", "v" }, "<S-Left>", "<C-w>h", { noremap = true })
 keymap.set({ "n", "v" }, "<S-Right>", "<C-w>l", { noremap = true })
 
--- Jump to the beginning of the line in command mode.
-keymap.set("c", "<C-a>", "<C-b>")
+-- Jump to the beginning/end of the line in command mode.
+keymap.set("c", "<D-Left>", "<C-b>")
+keymap.set("c", "<D-Right>", "<C-e>")
 
 -- Navigate to the next/previous diagnostic.
 keymap.set(
@@ -131,8 +130,26 @@ keymap.set("v", "ss", ":s///g<Left><Left><Left>")
 keymap.set("n", "?", vim.diagnostic.open_float)
 
 -- Escape terminal mode.
--- TODO: this should be bound to Super + Esc
 keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
+
+-- Send a literal <Esc> to the terminal app.
+keymap.set("t", "<D><Esc>", "<C-\\><Esc>", { noremap = true })
+
+-- Forward super-modified keys directly to terminal jobs because libvterm drops
+-- the super modifier when re-encoding terminal-mode input.
+local chansend = function(keys)
+  return function() vim.fn.chansend(vim.b.terminal_job_id, keys) end
+end
+keymap.set("t", "<D-Left>", chansend("\x1b[1;9D"))
+keymap.set("t", "<D-Right>", chansend("\x1b[1;9C"))
+keymap.set("t", "<D-w>", chansend("\x1b[119;9u"))
+keymap.set("t", "<D-l>", chansend("\x1b[108;9u"))
+keymap.set("t", "<D-d>", chansend("\x1b[100;9u"))
+keymap.set("t", "<D-e>", chansend("\x1b[101;9u"))
+keymap.set("t", "<D-h>", chansend("\x1b[104;9u"))
+keymap.set("t", "<D-k>", chansend("\x1b[107;9u"))
+keymap.set("t", "<D-r>", chansend("\x1b[114;9u"))
+keymap.set("t", "<D-s>", chansend("\x1b[115;9u"))
 
 -- Open a terminal in the current window.
 keymap.set("n", "tt", function() vim.cmd("terminal") end)
@@ -237,7 +254,7 @@ local fzf_files = function(search_root)
   })
 end
 
-vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
+vim.api.nvim_set_keymap("n", "<D-e>", "", {
   desc = "Fuzzy find files in the current git repo",
   callback = function()
     local git_root =
@@ -246,7 +263,7 @@ vim.api.nvim_set_keymap("n", "<C-x><C-e>", "", {
   end,
 })
 
-vim.api.nvim_set_keymap("n", "<C-x><C-f>", "", {
+vim.api.nvim_set_keymap("n", "<D-h>", "", {
   desc = "Fuzzy find files in the home directory",
   callback = function() fzf_files(vim.env.HOME) end,
 })
@@ -301,7 +318,7 @@ local fzf_live_ripgrep = function(search_root)
   })
 end
 
-vim.api.nvim_set_keymap("n", "<C-x><C-r>", "", {
+vim.api.nvim_set_keymap("n", "<D-r>", "", {
   desc = "Execute a live ripgrep search in the current git repo",
   callback = function()
     local git_root =

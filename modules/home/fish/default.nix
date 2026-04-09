@@ -82,26 +82,26 @@ in
 
         fish_vi_key_bindings
 
-        bind \cA beginning-of-line
-        bind \cE end-of-line
+        bind super-left beginning-of-line
+        bind super-right end-of-line
         bind yy fish_clipboard_copy
         bind Y fish_clipboard_copy
         bind p fish_clipboard_paste
 
-        bind -M visual \cA beginning-of-line
-        bind -M visual \cE end-of-line
+        bind -M visual super-left beginning-of-line
+        bind -M visual super-right end-of-line
 
-        bind -M insert \cA beginning-of-line
-        bind -M insert \cE end-of-line
+        bind -M insert super-left beginning-of-line
+        bind -M insert super-right end-of-line
         bind -M insert \e\x7F backward-kill-word
-        bind -M insert \cW exit
-        bind -M insert \cG 'clear; commandline -f repaint'
-        bind -M insert \cX\cD fuzzy-cd
-        bind -M insert \cX\cE fuzzy-edit
-        bind -M insert \cX\cF fuzzy-history
-        bind -M insert \cX\cG fuzzy-kill
-        bind -M insert \cX\cR fuzzy-ripgrep-fish
-        bind -M insert \cS fuzzy-search
+        bind -M insert super-w exit
+        bind -M insert super-l 'clear; commandline -f repaint'
+        bind -M insert super-d fuzzy-cd
+        bind -M insert super-e fuzzy-edit
+        bind -M insert super-h fuzzy-history
+        bind -M insert super-k fuzzy-kill
+        bind -M insert super-r fuzzy-ripgrep-fish
+        bind -M insert super-s fuzzy-search
 
         # For some reason the pisces plugin needs to be sourced manually to
         # become active.
@@ -110,7 +110,7 @@ in
         # The fzf module's fish integration adds `fzf --fish` to the config,
         # which, among other things, sets shift-tab to show shell completions
         # via fzf. I want shift-tab to select the previous completion.
-        bind -M insert \cX\cT fzf-completion
+        bind -M insert super-t fzf-completion
         bind -M insert shift-tab 'if commandline --paging-mode; commandline -f complete-and-search; end'
 
         ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
@@ -123,7 +123,6 @@ in
         function __repair_stale_pwd --on-event fish_prompt
           if test -n "$PWD"; and not test -d "$PWD"
             set -l physical_pwd (command pwd -P 2> /dev/null)
-
             if test -n "$physical_pwd"; and test -d "$physical_pwd"
               builtin cd "$physical_pwd" 2> /dev/null
             end
