@@ -155,7 +155,7 @@ in
         fuzzy-edit = builtins.readFile ./functions/fuzzy-edit.fish;
         fuzzy-history = builtins.readFile ./functions/fuzzy-history.fish;
         fuzzy-kill = builtins.readFile ./functions/fuzzy-kill.fish;
-        fuzzy-ripgrep-fish = "fuzzy-ripgrep && commandline -f repaint";
+        fuzzy-ripgrep-fish = "fuzzy-ripgrep; commandline -f repaint";
         fuzzy-search = builtins.readFile ./functions/fuzzy-search.fish;
         gri = builtins.readFile ./functions/gri.fish;
       };
