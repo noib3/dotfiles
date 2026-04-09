@@ -9,7 +9,7 @@ with lib;
 let
   cfg = config.modules.lf;
   inherit (pkgs.stdenv) isDarwin isLinux;
-  preview = lib.getExe pkgs.scripts.preview;
+  preview = lib.getExe config.modules.scripts.preview;
   chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
 in
 {

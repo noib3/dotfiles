@@ -45,14 +45,6 @@ in
         pfetch
         python312Packages.ipython
         ripgrep
-        scripts.fuzzy-ripgrep
-        scripts.lf-recursive
-        scripts.pc
-        scripts.preview
-        scripts.rg-pattern
-        scripts.rg-preview
-        scripts.td
-        scripts.tm
         signal-desktop
         texliveConTeXt
         tokei

@@ -22,7 +22,7 @@ in
     programs.fzf = {
       enable = true;
 
-      defaultCommand = "${lib.getExe pkgs.scripts.lf-recursive} $HOME";
+      defaultCommand = "${lib.getExe config.modules.scripts.lf-recursive} $HOME";
 
       defaultOptions = [
         "--reverse"

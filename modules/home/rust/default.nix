@@ -18,7 +18,9 @@ let
     '';
   };
 
-  nightlyToolchain = pkgs.rust-bin.selectLatestNightlyWith (
+  rustBin = inputs.rust-overlay.lib.mkRustBin { } pkgs;
+
+  nightlyToolchain = rustBin.selectLatestNightlyWith (
     toolchain:
     toolchain.minimal.override {
       extensions = [
@@ -82,9 +84,5 @@ in
       CARGO_HOME = "${config.xdg.dataHome}/cargo";
       RUSTUP_HOME = "${config.xdg.dataHome}/rustup";
     };
-
-    nixpkgs.overlays = [
-      inputs.rust-overlay.overlays.default
-    ];
   };
 }
