@@ -888,11 +888,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1769384867,
-        "narHash": "sha256-JG5L4EfhAJbo9EtL5EoQMS4CqWT38KBbuF/bDGEgkfc=",
+        "lastModified": 1776095654,
+        "narHash": "sha256-D3AMJPGdkiMgVczpr8AH3YNhgcIVfWr8iGyAtaT13/0=",
         "ref": "refs/heads/main",
-        "rev": "06ffba5706fda3f1573ff5973cc5057c0605ff2e",
-        "revCount": 469,
+        "rev": "cefb16933a34e0474804589ae42dba530f26eb2e",
+        "revCount": 479,
         "type": "git",
         "url": "ssh://git@github.com/noib3/nix-jettison"
       },
@@ -1360,11 +1360,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767408057,
-        "narHash": "sha256-0TD2PNTt6olOonFgcvZJcNGiU3x5cX+RMzrfWfHB9Jw=",
+        "lastModified": 1775790837,
+        "narHash": "sha256-RAHjn8sjgfF3D17BaV8iv69o3P+L9aCuE36PFwzoqHU=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "294198315a13d6d130565ad08e97685df7b0d458",
+        "rev": "c913e0b9525311f103b7e1463ebb0f28c6865d8d",
         "type": "github"
       },
       "original": {

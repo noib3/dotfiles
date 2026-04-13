@@ -45,7 +45,7 @@ in
 
     nix = {
       package = nix;
-      plugins.jettison.enable = false;
+      plugins.jettison.enable = true;
       settings = {
         experimental-features = [
           "flakes"
