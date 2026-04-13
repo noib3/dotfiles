@@ -10,6 +10,8 @@ with lib;
 let
   cfg = config.modules.opencode;
 
+  inherit (pkgs.stdenv.hostPlatform) system isDarwin isx86_64;
+
   opencodeAnthropicAuthDeps = pkgs.stdenvNoCC.mkDerivation {
     pname = "opencode-anthropic-auth-deps";
     version = "0.1.0";
@@ -25,7 +27,14 @@ let
     '';
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-ik8TVMjmjQgBCF/wjukBx0BrEp4rNkMl200jCZL2HDQ=";
+    outputHash =
+      {
+        aarch64-darwin = "sha256-ik8TVMjmjQgBCF/wjukBx0BrEp4rNkMl200jCZL2HDQ=";
+        aarch64-linux = lib.fakeHash;
+        x86_64-darwin = "sha256-o0WtvID32y0SHMv3FmmxCpAI0mYb3QQ1OHeJGbDrqJ8=";
+        x86_64-linux = lib.fakeHash;
+      }
+      .${system};
   };
 
   opencodeAnthropicAuth = pkgs.stdenvNoCC.mkDerivation {
@@ -58,7 +67,14 @@ let
             find . -path './node_modules/.bun' -prune -o -type d -name node_modules -exec cp -R --parents {} $out \;
             runHook postInstall
           '';
-          outputHash = "sha256-vN0sXYs7pLtpq7U9SorR2z6st/wMfHA3dybOnwIh1pU=";
+          outputHash =
+            {
+              aarch64-darwin = "sha256-vN0sXYs7pLtpq7U9SorR2z6st/wMfHA3dybOnwIh1pU=";
+              aarch64-linux = lib.fakeHash;
+              x86_64-darwin = "sha256-P8fgyBcZJmY5VbNxNer/EL4r/F28dNxaqheaqNZH488=";
+              x86_64-linux = lib.fakeHash;
+            }
+            .${system};
         };
         patches = (old.patches or [ ]) ++ [
           ./patches/anthropic-provider-label.patch
@@ -68,6 +84,11 @@ let
           ./patches/usage-tracking.patch
           ./patches/usage-profiles.patch
         ];
+        nativeBuildInputs =
+          (old.nativeBuildInputs or [ ])
+          ++ lib.optionals (isDarwin && isx86_64) [
+            pkgs.sysctl
+          ];
       });
 in
 {
