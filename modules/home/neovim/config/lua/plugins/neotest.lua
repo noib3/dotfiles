@@ -3,6 +3,7 @@ vim.g.rustaceanvim = { server = { auto_attach = false } }
 local neotest = require("neotest")
 local palette = require("palette")
 
+---@diagnostic disable-next-line: undefined-field
 neotest.setup({
   adapters = {
     require("rustaceanvim.neotest"),
@@ -13,10 +14,12 @@ neotest.setup({
   },
 })
 
+---@diagnostic disable-next-line: undefined-field
 vim.keymap.set("n", "<D-c><D-c>", neotest.run.run, {
   desc = "Run the test nearest to the current cursor position",
 })
 
+---@diagnostic disable-next-line: undefined-field
 vim.keymap.set("n", "<D-c>l", neotest.run.run_last, {
   desc = "Re-run the last test",
 })

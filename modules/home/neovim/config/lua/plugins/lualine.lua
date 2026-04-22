@@ -12,7 +12,8 @@ local current_workspace_diagnostics = function()
       acc[vim.lsp.diagnostic.get_namespace(client.id)] = true
       client:_provider_foreach("textDocument/diagnostic", function(cap)
         local identifier = type(cap) == "table" and cap.identifier or "nil"
-        acc[vim.lsp.diagnostic.get_namespace(client.id, identifier)] = true
+        acc[vim.lsp.diagnostic.get_namespace(client.id, true, identifier)] =
+          true
       end)
       return acc
     end)

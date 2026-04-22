@@ -4,10 +4,10 @@ OAuth and API key auth, so the label is misleading.
 
 --- a/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx
 +++ b/packages/opencode/src/cli/cmd/tui/component/dialog-provider.tsx
-@@ -37,7 +37,6 @@
-         description: {
-           opencode: "(Recommended)",
--          anthropic: "(API key)",
-           openai: "(ChatGPT Plus/Pro or API key)",
-           "opencode-go": "Low cost subscription for everyone",
-         }[provider.id],
+@@ -43,7 +43,6 @@ export function createDialogProviderOptions() {
+           description: {
+             opencode: "(Recommended)",
+-            anthropic: "(API key)",
+             openai: "(ChatGPT Plus/Pro or API key)",
+             "opencode-go": "Low cost subscription for everyone",
+           }[provider.id],

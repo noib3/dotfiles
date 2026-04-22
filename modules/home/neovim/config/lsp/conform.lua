@@ -46,7 +46,6 @@ return {
   cmd = function()
     local next_request_id = 0
 
-    ---@type vim.lsp.rpc.PublicClient
     return {
       request = function(method, params, callback, notify_reply_callback)
         local request_id = next_request_id

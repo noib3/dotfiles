@@ -286,52 +286,6 @@ index b0f969a0..dbc256d5 100644
  }
 
  export function usageRemember(shown: Set<string>, key: string): boolean {
-diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-index f060241a..585889cf 100644
---- a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-+++ b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-@@ -26,7 +26,7 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
-
-   const usageSections = createMemo(() => {
-     const entries = usage.data()?.entries ?? []
--    return entries.filter((e) => e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits)
-+    return entries.filter((e) => e.snapshot && (e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits))
-   })
-   const usageErrors = createMemo(() => usage.data()?.errors ?? [])
-   const usageMode = createMemo(() => tuiConfig.show_usage_value_mode ?? "used")
-@@ -51,27 +51,27 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
-                 <Show when={expanded.usage}>
-                   <For each={usageSections()}>
-                     {(entry, index) => {
--                      const planType = formatPlanType(entry.snapshot.planType)
-+                      const planType = formatPlanType(entry.snapshot?.planType ?? null)
-                       const entryErrors = usageErrors().filter((e) => e.provider === entry.provider).map((e) => e.message)
-                       return (
-                         <box flexDirection="column" gap={0} marginTop={index() === 0 ? 0 : 1}>
-                           <text fg={theme.text}><b>{entry.displayName}</b><Show when={planType}><span style={{ fg: theme.textMuted }}>{` (${planType})`}</span></Show></text>
--                          <Show when={entry.snapshot.primary}>
-+                          <Show when={entry.snapshot?.primary}>
-                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "primary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-                             )}}
-                           </Show>
--                          <Show when={entry.snapshot.secondary}>
-+                          <Show when={entry.snapshot?.secondary}>
-                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "secondary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-                             )}}
-                           </Show>
--                          <Show when={entry.snapshot.tertiary}>
-+                          <Show when={entry.snapshot?.tertiary}>
-                             {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-                               <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "tertiary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-                             )}}
-                           </Show>
--                          <Show when={entry.snapshot.credits}>
-+                          <Show when={entry.snapshot?.credits}>
-                             {(credits) => (<text fg={theme.textMuted}>{formatCreditsLabel(entry.provider, credits(), { mode: usageMode(), slot: "secondary" })}</text>)}
-                           </Show>
-                           <Show when={entryErrors.length > 0}><text fg={theme.error} attributes={TextAttributes.DIM}>{entryErrors.join(" • ")}</text></Show>
 diff --git a/packages/opencode/src/server/usage.ts b/packages/opencode/src/server/usage.ts
 index 9af09607..b65d371b 100644
 --- a/packages/opencode/src/server/usage.ts
@@ -686,7 +640,7 @@ index dbff4981..77c878fd 100644
  }
 
  export function resolveProvider(input: string): string | null {
-@@ -82,6 +83,26 @@ export async function getAuthenticatedProviders(auth?: Record<string, Auth.Info>
+@@ -82,6 +83,23 @@ export async function getAuthenticatedProviders(auth?: Record<string, Auth.Info>
    return result
  }
 
@@ -699,10 +653,7 @@ index dbff4981..77c878fd 100644
 +    const matched = provider.authKeys.some((key) => {
 +      const providerAuth = entries[key]
 +      if (!providerAuth) return false
-+      return Object.values(providerAuth.profiles).some((profileAuth) => {
-+        if (provider.requiresOAuth && profileAuth.type !== "oauth") return false
-+        return true
-+      })
++      return Object.keys(providerAuth.profiles).length > 0
 +    })
 +    if (matched) result.push(provider.id)
 +  }
@@ -713,7 +664,7 @@ index dbff4981..77c878fd 100644
  export async function getProviderAuth(
    provider: string,
    auth?: Record<string, Auth.Info>,
-@@ -100,6 +121,40 @@ export async function getProviderAuth(
+@@ -100,6 +118,39 @@ export async function getProviderAuth(
    return null
  }
 
@@ -740,7 +691,6 @@ index dbff4981..77c878fd 100644
 +        : []
 +
 +    for (const [profileID, profileAuth] of profileEntries) {
-+      if (info.requiresOAuth && profileAuth.type !== "oauth") continue
 +      result.push({
 +        key,
 +        profileID,

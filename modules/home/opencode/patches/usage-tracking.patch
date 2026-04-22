@@ -1,21 +1,20 @@
 Port of https://github.com/anomalyco/opencode/pull/9545 (unified usage
-tracking) that applies cleanly on top of the production branch and our other
-patches.
+tracking), refreshed for the current production branch and route layout.
 
 diff --git a/packages/opencode/src/auth/index.ts b/packages/opencode/src/auth/index.ts
-index 0ebac646..9f610284 100644
+index 13ef4e0..1c2605b 100644
 --- a/packages/opencode/src/auth/index.ts
 +++ b/packages/opencode/src/auth/index.ts
-@@ -16,6 +16,7 @@ export namespace Auth {
-     type: Schema.Literal("oauth"),
-     refresh: Schema.String,
-     access: Schema.String,
-+    usage: Schema.optional(Schema.String),
-     expires: Schema.Number,
-     accountId: Schema.optional(Schema.String),
-     enterpriseUrl: Schema.optional(Schema.String),
+@@ -14,6 +14,7 @@ export class Oauth extends Schema.Class<Oauth>("OAuth")({
+   type: Schema.Literal("oauth"),
+   refresh: Schema.String,
+   access: Schema.String,
++  usage: Schema.optional(Schema.String),
+   expires: Schema.Number,
+   accountId: Schema.optional(Schema.String),
+   enterpriseUrl: Schema.optional(Schema.String),
 diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
-index f42ba15e..4e855e31 100644
+index 49bf42c..e6ab380 100644
 --- a/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
 +++ b/packages/opencode/src/cli/cmd/tui/component/dialog-command.tsx
 @@ -26,6 +26,7 @@ export type CommandOption = DialogSelectOption<string> & {
@@ -26,7 +25,7 @@ index f42ba15e..4e855e31 100644
    hidden?: boolean
    enabled?: boolean
  }
-@@ -89,7 +90,7 @@ function init() {
+@@ -90,7 +91,7 @@ function init() {
          if (!slash) return []
          return {
            display: "/" + slash.name,
@@ -37,7 +36,7 @@ index f42ba15e..4e855e31 100644
          }
 diff --git a/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
 new file mode 100644
-index 00000000..37343938
+index 0000000..460ffca
 --- /dev/null
 +++ b/packages/opencode/src/cli/cmd/tui/component/dialog-usage.tsx
 @@ -0,0 +1,154 @@
@@ -196,39 +195,42 @@ index 00000000..37343938
 +  )
 +}
 diff --git a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
-index 34a0d808..74aec628 100644
+index 6542eeb..f88a2b6 100644
 --- a/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
 +++ b/packages/opencode/src/cli/cmd/tui/component/prompt/index.tsx
-@@ -33,9 +33,16 @@ import { DialogProvider as DialogProviderConnect } from "../dialog-provider"
- import { DialogAlert } from "../../ui/dialog-alert"
+@@ -37,12 +37,19 @@ import { DialogAlert } from "../../ui/dialog-alert"
  import { useToast } from "../../ui/toast"
  import { useKV } from "../../context/kv"
+ import { createFadeIn } from "../../util/signal"
 +import { DialogUsage } from "../dialog-usage"
 +import { fetchUsage } from "../usage-client"
  import { useTextareaKeybindings } from "../textarea-keybindings"
  import { DialogSkill } from "../dialog-skill"
+ import { DialogWorkspaceCreate, restoreWorkspaceSession } from "../dialog-workspace-create"
+ import { DialogWorkspaceUnavailable } from "../dialog-workspace-unavailable"
+ import { useArgs } from "@tui/context/args"
  import { useTuiConfig } from "@tui/context/tui-config"
 +import { formatUsageResetLong, formatUsageWindowLabel } from "../usage-format"
 +import type { UsageEntry } from "../usage-data"
-+import { Log } from "@/util/log"
++import { Log } from "@/util"
 +import { resolveUsageProvider } from "@/usage/command"
 +import { usageRemember, usageShouldRefresh, usageWarning, usageWarningKey } from "../usage-toast"
-
+ 
  export type PromptProps = {
    sessionID?: string
-@@ -72,6 +79,8 @@ function randomIndex(count: number) {
-   return Math.floor(Math.random() * count)
- }
-
+@@ -86,6 +93,8 @@ function fadeColor(color: RGBA, alpha: number) {
+ 
+ let stashed: { prompt: PromptInfo; cursor: number } | undefined
+ 
 +const log = Log.create({ service: "tui.prompt" })
 +
  export function Prompt(props: PromptProps) {
    let input: TextareaRenderable
    let anchor: BoxRenderable
-@@ -95,6 +104,101 @@ export function Prompt(props: PromptProps) {
-   const shell = createMemo(() => props.placeholders?.shell ?? [])
-
-   const tuiConfig = useTuiConfig()
+@@ -114,6 +123,100 @@ export function Prompt(props: PromptProps) {
+   const [auto, setAuto] = createSignal<AutocompleteRef>()
+   const currentProviderLabel = createMemo(() => local.model.parsed().provider)
+   const hasRightContent = createMemo(() => Boolean(props.right))
 +  const [usageSuccessAt, setUsageSuccessAt] = createSignal(0)
 +  const [usageFailureAt, setUsageFailureAt] = createSignal(0)
 +  const [usageRefreshing, setUsageRefreshing] = createSignal(false)
@@ -323,17 +325,16 @@ index 34a0d808..74aec628 100644
 +        DialogAlert.show(dialog, "Usage", message)
 +      })
 +  }
-+
+ 
    function promptModelWarning() {
      toast.show({
-       variant: "warning",
-@@ -353,18 +457,32 @@ export function Prompt(props: PromptProps) {
-
+@@ -379,18 +482,32 @@ export function Prompt(props: PromptProps) {
+ 
                return part
              })
 -            .filter((part) => part !== null)
 +            .filter(Boolean) as typeof nonTextParts
-
+ 
 -          setStore("prompt", {
 -            input: content,
 -            // keep only the non-text parts because the text parts were
@@ -368,20 +369,21 @@ index 34a0d808..74aec628 100644
        {
          title: "Skills",
          value: "prompt.skills",
-@@ -577,13 +695,30 @@ export function Prompt(props: PromptProps) {
-
-   async function submit() {
-     if (props.disabled) return
--    if (autocomplete?.visible) return
+@@ -637,7 +754,10 @@ export function Prompt(props: PromptProps) {
+       syncExtmarksWithPromptParts()
+     }
+     if (props.disabled) return false
+-    if (autocomplete?.visible) return false
 +    const promptToken = firstToken(store.prompt.input)
 +    const customUsageCommand = sync.data.command.some((x) => x.name === "usage")
 +    const isBuiltInUsage = promptToken === "/usage" && !customUsageCommand
-+    if (autocomplete?.visible && !isBuiltInUsage) return
-     if (!store.prompt.input) return
-     const trimmed = store.prompt.input.trim()
-     if (trimmed === "exit" || trimmed === "quit" || trimmed === ":q") {
-       exit()
-       return
++    if (autocomplete?.visible && !isBuiltInUsage) return false
+     if (!store.prompt.input) return false
+     const agent = local.agent.current()
+     if (!agent) return false
+@@ -646,6 +766,20 @@ export function Prompt(props: PromptProps) {
+       void exit()
+       return true
      }
 +
 +    if (isBuiltInUsage && store.mode !== "shell") {
@@ -394,17 +396,16 @@ index 34a0d808..74aec628 100644
 +      setStore("extmarkToPartIndex", new Map())
 +      props.onSubmit?.()
 +      input.clear()
-+      return
++      return true
 +    }
 +
      const selectedModel = local.model.current()
      if (!selectedModel) {
-       promptModelWarning()
-@@ -636,7 +771,45 @@ export function Prompt(props: PromptProps) {
+       void promptModelWarning()
+@@ -723,8 +857,45 @@ export function Prompt(props: PromptProps) {
+     // Capture mode before it gets reset
      const currentMode = store.mode
      const variant = local.model.variant.current()
-
--    if (store.mode === "shell") {
 +    const token = firstToken(inputText)
 +    const isUsage = token === "/usage" && !customUsageCommand
 +    const isShell = store.mode === "shell"
@@ -436,18 +437,19 @@ index 34a0d808..74aec628 100644
 +        }, 50)
 +      input.clear()
 +    }
-+
+ 
+-    if (store.mode === "shell") {
 +    if (isUsage && !isShell) {
 +      handleUsageCommand(inputText)
 +      finalizeSubmit({ history: false })
-+      return
++      return true
 +    }
 +
 +    if (isShell) {
-       sdk.client.session.shell({
+       void sdk.client.session.shell({
          sessionID,
-         agent: local.agent.current().name,
-@@ -647,14 +820,11 @@ export function Prompt(props: PromptProps) {
+         agent: agent.name,
+@@ -735,14 +906,11 @@ export function Prompt(props: PromptProps) {
          command: inputText,
        })
        setStore("mode", "normal")
@@ -460,14 +462,14 @@ index 34a0d808..74aec628 100644
 -      })
 -    ) {
 +      finalizeSubmit()
-+      return
++      return true
 +    }
 +
 +    if (isCommand) {
        // Parse command from first line, preserve multi-line content in arguments
        const firstLineEnd = inputText.indexOf("\n")
        const firstLine = firstLineEnd === -1 ? inputText : inputText.slice(0, firstLineEnd)
-@@ -677,47 +847,29 @@ export function Prompt(props: PromptProps) {
+@@ -765,47 +933,29 @@ export function Prompt(props: PromptProps) {
              ...x,
            })),
        })
@@ -477,7 +479,7 @@ index 34a0d808..74aec628 100644
 -          sessionID,
 -          ...selectedModel,
 -          messageID,
--          agent: local.agent.current().name,
+-          agent: agent.name,
 -          model: selectedModel,
 -          variant,
 -          parts: [
@@ -491,7 +493,7 @@ index 34a0d808..74aec628 100644
 -        })
 -        .catch(() => {})
 +      finalizeSubmit()
-+      return
++      return true
      }
 -    history.append({
 -      ...store.prompt,
@@ -520,7 +522,7 @@ index 34a0d808..74aec628 100644
 +        sessionID,
 +        ...selectedModel,
 +        messageID,
-+        agent: local.agent.current().name,
++        agent: agent.name,
 +        model: selectedModel,
 +        variant,
 +        parts: [
@@ -534,12 +536,12 @@ index 34a0d808..74aec628 100644
 +      })
 +      .catch(() => {})
 +    finalizeSubmit()
+     return true
    }
    const exit = useExit()
-
 diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-client.ts b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
 new file mode 100644
-index 00000000..359e868f
+index 0000000..359e868
 --- /dev/null
 +++ b/packages/opencode/src/cli/cmd/tui/component/usage-client.ts
 @@ -0,0 +1,74 @@
@@ -619,7 +621,7 @@ index 00000000..359e868f
 +}
 diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-data.ts b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
 new file mode 100644
-index 00000000..9c8223a1
+index 0000000..9c8223a
 --- /dev/null
 +++ b/packages/opencode/src/cli/cmd/tui/component/usage-data.ts
 @@ -0,0 +1,39 @@
@@ -664,7 +666,7 @@ index 00000000..9c8223a1
 +}
 diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-format.ts b/packages/opencode/src/cli/cmd/tui/component/usage-format.ts
 new file mode 100644
-index 00000000..2dea23d0
+index 0000000..2dea23d
 --- /dev/null
 +++ b/packages/opencode/src/cli/cmd/tui/component/usage-format.ts
 @@ -0,0 +1,182 @@
@@ -852,7 +854,7 @@ index 00000000..2dea23d0
 +}
 diff --git a/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
 new file mode 100644
-index 00000000..b0f969a0
+index 0000000..b0f969a
 --- /dev/null
 +++ b/packages/opencode/src/cli/cmd/tui/component/usage-toast.ts
 @@ -0,0 +1,96 @@
@@ -952,151 +954,12 @@ index 00000000..b0f969a0
 +  if (value > 100) return 100
 +  return value
 +}
-diff --git a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-index 66bf82db..f060241a 100644
---- a/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-+++ b/packages/opencode/src/cli/cmd/tui/routes/session/sidebar.tsx
-@@ -1,65 +1,93 @@
- import { useSync } from "@tui/context/sync"
--import { createMemo, Show } from "solid-js"
-+import { createMemo, For, Show, createEffect, createSignal, on } from "solid-js"
-+import { createStore } from "solid-js/store"
- import { useTheme } from "../../context/theme"
-+import { useTuiConfig } from "../../context/tui-config"
-+import { TextAttributes } from "@opentui/core"
- import { Installation } from "@/installation"
- import { TuiPluginRuntime } from "../../plugin"
-+import { formatCreditsLabel, formatPlanType, formatUsageResetShort, usageDisplay, formatUsageWindowLabel, usageBarColor, usageBarString } from "../../component/usage-format"
-+import { useUsageResource } from "../../component/usage-client"
-
- export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
-   const sync = useSync()
-+  const tuiConfig = useTuiConfig()
-   const { theme } = useTheme()
-   const session = createMemo(() => sync.session.get(props.sessionID))
-+  const [expanded, setExpanded] = createStore({ usage: true })
-+  const usage = useUsageResource()
-+  const status = createMemo(() => sync.data.session_status?.[props.sessionID] ?? { type: "idle" })
-+  const [prevStatus, setPrevStatus] = createSignal<string>("idle")
-+
-+  createEffect(on(() => status().type, (currentType) => {
-+    if (prevStatus() !== "idle" && currentType === "idle") usage.refetch()
-+    setPrevStatus(currentType)
-+  }))
-+
-+  const usageSections = createMemo(() => {
-+    const entries = usage.data()?.entries ?? []
-+    return entries.filter((e) => e.snapshot.primary || e.snapshot.secondary || e.snapshot.tertiary || e.snapshot.credits)
-+  })
-+  const usageErrors = createMemo(() => usage.data()?.errors ?? [])
-+  const usageMode = createMemo(() => tuiConfig.show_usage_value_mode ?? "used")
-
-   return (
-     <Show when={session()}>
--      <box
--        backgroundColor={theme.backgroundPanel}
--        width={42}
--        height="100%"
--        paddingTop={1}
--        paddingBottom={1}
--        paddingLeft={2}
--        paddingRight={2}
--        position={props.overlay ? "absolute" : "relative"}
--      >
--        <scrollbox
--          flexGrow={1}
--          verticalScrollbarOptions={{
--            trackOptions: {
--              backgroundColor: theme.background,
--              foregroundColor: theme.borderActive,
--            },
--          }}
--        >
-+      <box backgroundColor={theme.backgroundPanel} width={42} height="100%" paddingTop={1} paddingBottom={1} paddingLeft={2} paddingRight={2} position={props.overlay ? "absolute" : "relative"}>
-+        <scrollbox flexGrow={1} verticalScrollbarOptions={{ trackOptions: { backgroundColor: theme.background, foregroundColor: theme.borderActive } }}>
-           <box flexShrink={0} gap={1} paddingRight={1}>
--            <TuiPluginRuntime.Slot
--              name="sidebar_title"
--              mode="single_winner"
--              session_id={props.sessionID}
--              title={session()!.title}
--              share_url={session()!.share?.url}
--            >
-+            <TuiPluginRuntime.Slot name="sidebar_title" mode="single_winner" session_id={props.sessionID} title={session()!.title} share_url={session()!.share?.url}>
-               <box paddingRight={1}>
--                <text fg={theme.text}>
--                  <b>{session()!.title}</b>
--                </text>
--                <Show when={session()!.share?.url}>
--                  <text fg={theme.textMuted}>{session()!.share!.url}</text>
--                </Show>
-+                <text fg={theme.text}><b>{session()!.title}</b></text>
-+                <Show when={session()!.share?.url}><text fg={theme.textMuted}>{session()!.share!.url}</text></Show>
-               </box>
-             </TuiPluginRuntime.Slot>
-+            <Show when={usageSections().length > 0}>
-+              <box>
-+                <box flexDirection="row" gap={1} onMouseDown={() => setExpanded("usage", !expanded.usage)}>
-+                  <text fg={theme.text}>{expanded.usage ? "▼" : "▶"}</text>
-+                  <text fg={theme.text}><b>Usage</b><Show when={usageMode() === "remaining"}><span style={{ fg: theme.textMuted }}> (remaining)</span></Show></text>
-+                </box>
-+                <Show when={expanded.usage}>
-+                  <For each={usageSections()}>
-+                    {(entry, index) => {
-+                      const planType = formatPlanType(entry.snapshot.planType)
-+                      const entryErrors = usageErrors().filter((e) => e.provider === entry.provider).map((e) => e.message)
-+                      return (
-+                        <box flexDirection="column" gap={0} marginTop={index() === 0 ? 0 : 1}>
-+                          <text fg={theme.text}><b>{entry.displayName}</b><Show when={planType}><span style={{ fg: theme.textMuted }}>{` (${planType})`}</span></Show></text>
-+                          <Show when={entry.snapshot.primary}>
-+                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-+                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "primary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-+                            )}}
-+                          </Show>
-+                          <Show when={entry.snapshot.secondary}>
-+                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-+                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "secondary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-+                            )}}
-+                          </Show>
-+                          <Show when={entry.snapshot.tertiary}>
-+                            {(w) => { const up = usageDisplay(w().usedPercent, "used").percent; const dp = usageDisplay(w().usedPercent, usageMode()).percent; return (
-+                              <text fg={theme.textMuted}>{formatUsageWindowLabel(entry.provider, "tertiary", w().windowMinutes)} <span style={{ fg: usageBarColor(up, theme) }}>{usageBarString(dp, 10)}</span> {Math.round(dp)}% <Show when={w().resetsAt !== null}>({formatUsageResetShort(w().resetsAt)})</Show></text>
-+                            )}}
-+                          </Show>
-+                          <Show when={entry.snapshot.credits}>
-+                            {(credits) => (<text fg={theme.textMuted}>{formatCreditsLabel(entry.provider, credits(), { mode: usageMode(), slot: "secondary" })}</text>)}
-+                          </Show>
-+                          <Show when={entryErrors.length > 0}><text fg={theme.error} attributes={TextAttributes.DIM}>{entryErrors.join(" • ")}</text></Show>
-+                        </box>
-+                      )
-+                    }}
-+                  </For>
-+                </Show>
-+              </box>
-+            </Show>
-             <TuiPluginRuntime.Slot name="sidebar_content" session_id={props.sessionID} />
-           </box>
-         </scrollbox>
--
-         <box flexShrink={0} gap={1} paddingTop={1}>
-           <TuiPluginRuntime.Slot name="sidebar_footer" mode="single_winner" session_id={props.sessionID}>
--            <text fg={theme.textMuted}>
--              <span style={{ fg: theme.success }}>•</span> <b>Open</b>
--              <span style={{ fg: theme.text }}>
--                <b>Code</b>
--              </span>{" "}
--              <span>{Installation.VERSION}</span>
--            </text>
-+            <text fg={theme.textMuted}><span style={{ fg: theme.success }}>•</span> <b>Open</b><span style={{ fg: theme.text }}><b>Code</b></span> <span>{Installation.VERSION}</span></text>
-           </TuiPluginRuntime.Slot>
-         </box>
-       </box>
-diff --git a/packages/opencode/src/config/tui-schema.ts b/packages/opencode/src/config/tui-schema.ts
-index e0b36c22..c7da5ddf 100644
---- a/packages/opencode/src/config/tui-schema.ts
-+++ b/packages/opencode/src/config/tui-schema.ts
-@@ -26,6 +26,14 @@ export const TuiOptions = z.object({
-     .describe("Control diff rendering style: 'auto' adapts to terminal width, 'stacked' always shows single column"),
+diff --git a/packages/opencode/src/cli/cmd/tui/config/tui-schema.ts b/packages/opencode/src/cli/cmd/tui/config/tui-schema.ts
+index 7cb73a9..9862850 100644
+--- a/packages/opencode/src/cli/cmd/tui/config/tui-schema.ts
++++ b/packages/opencode/src/cli/cmd/tui/config/tui-schema.ts
+@@ -28,6 +28,14 @@ export const TuiOptions = z.object({
+   mouse: z.boolean().optional().describe("Enable or disable mouse capture (default: true)"),
    cursor_style: CursorStyle.optional().describe("Cursor shape in text inputs: 'block', 'line', or 'underline'"),
    cursor_blink: z.boolean().optional().describe("Enable cursor blinking in text inputs"),
 +  show_usage_provider_scope: z
@@ -1108,454 +971,31 @@ index e0b36c22..c7da5ddf 100644
 +    .optional()
 +    .describe("Show usage percentages as used or remaining"),
  })
-
+ 
  export const TuiInfo = z
-diff --git a/packages/opencode/src/plugin/copilot.ts b/packages/opencode/src/plugin/copilot.ts
-index 44c5289d..6ea23fc6 100644
---- a/packages/opencode/src/plugin/copilot.ts
-+++ b/packages/opencode/src/plugin/copilot.ts
-@@ -1,20 +1,221 @@
- import type { Hooks, PluginInput } from "@opencode-ai/plugin"
- import { Installation } from "@/installation"
-+import { Log } from "@/util/log"
- import { iife } from "@/util/iife"
- import { setTimeout as sleep } from "node:timers/promises"
-
- const CLIENT_ID = "Ov23li8tweQw6odWQebz"
-+const COPILOT_USAGE_CLIENT_ID = "Iv1.b507a08c87ecfe98"
-+const COPILOT_USAGE_SCOPE = "read:user"
-+const COPILOT_USAGE_TIMEOUT_MS = 30000
-+
- // Add a small safety buffer when polling to avoid hitting the server
- // slightly too early due to clock skew / timer drift.
- const OAUTH_POLLING_SAFETY_MARGIN_MS = 3000 // 3 seconds
-+const log = Log.create({ service: "copilot-auth" })
-+
- function normalizeDomain(url: string) {
-   return url.replace(/^https?:\/\//, "").replace(/\/$/, "")
- }
-
-+function apiBase(domain: string) {
-+  if (domain === "github.com") return "https://api.github.com"
-+  return `https://${domain}/api/v3`
-+}
-+
- function getUrls(domain: string) {
-+  const base = apiBase(domain)
-   return {
-     DEVICE_CODE_URL: `https://${domain}/login/device/code`,
-     ACCESS_TOKEN_URL: `https://${domain}/login/oauth/access_token`,
-+    COPILOT_TOKEN_URL: `${base}/copilot_internal/v2/token`,
-+  }
-+}
-+
-+type CopilotDeviceCode = {
-+  deviceCode: string
-+  userCode: string
-+  verificationUri: string
-+  interval: number
-+  expiresIn: number
-+}
-+
-+async function requestCopilotDeviceCode(
-+  url: string,
-+  clientId: string,
-+  scope: string,
-+): Promise<CopilotDeviceCode | null> {
-+  const response = await fetch(url, {
-+    method: "POST",
-+    headers: {
-+      Accept: "application/json",
-+      "Content-Type": "application/json",
-+      "User-Agent": `opencode/${Installation.VERSION}`,
-+    },
-+    body: JSON.stringify({
-+      client_id: clientId,
-+      scope,
-+    }),
-+  })
-+
-+  if (!response.ok) return null
-+
-+  const data = (await response.json()) as {
-+    verification_uri: string
-+    user_code: string
-+    device_code: string
-+    interval: number
-+    expires_in?: number
-+  }
-+
-+  if (!data.device_code || !data.user_code || !data.verification_uri) return null
-+
-+  return {
-+    deviceCode: data.device_code,
-+    userCode: data.user_code,
-+    verificationUri: data.verification_uri,
-+    interval: data.interval,
-+    expiresIn: data.expires_in ?? 0,
-+  }
-+}
-+
-+async function pollCopilotDeviceToken(
-+  url: string,
-+  device: CopilotDeviceCode,
-+  clientId: string,
-+  signal?: AbortSignal,
-+): Promise<string | null> {
-+  const deadline = device.expiresIn > 0 ? Date.now() + device.expiresIn * 1000 : null
-+
-+  const poll = async (intervalMs: number): Promise<string | null> => {
-+    if (signal?.aborted) return null
-+    if (deadline && Date.now() >= deadline) return null
-+
-+    const response = await fetch(url, {
-+      method: "POST",
-+      headers: {
-+        Accept: "application/json",
-+        "Content-Type": "application/json",
-+        "User-Agent": `opencode/${Installation.VERSION}`,
-+      },
-+      body: JSON.stringify({
-+        client_id: clientId,
-+        device_code: device.deviceCode,
-+        grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-+      }),
-+    })
-+
-+    if (!response.ok) return null
-+
-+    const data = (await response.json()) as {
-+      access_token?: string
-+      error?: string
-+      interval?: number
-+    }
-+
-+    if (data.access_token) return data.access_token
-+    if (data.error === "authorization_pending") {
-+      await Bun.sleep(intervalMs + OAUTH_POLLING_SAFETY_MARGIN_MS)
-+      return poll(intervalMs)
-+    }
-+
-+    if (data.error === "slow_down") {
-+      const next = iife(() => {
-+        const server = data.interval
-+        if (server && typeof server === "number" && server > 0) {
-+          return server * 1000
-+        }
-+        return (device.interval + 5) * 1000
-+      })
-+      await Bun.sleep(next + OAUTH_POLLING_SAFETY_MARGIN_MS)
-+      return poll(next)
-+    }
-+
-+    if (data.error === "expired_token") return null
-+    if (data.error) return null
-+
-+    await Bun.sleep(intervalMs + OAUTH_POLLING_SAFETY_MARGIN_MS)
-+    return poll(intervalMs)
-+  }
-+
-+  return poll(device.interval * 1000)
-+}
-+
-+type CopilotServiceTokenResponse = {
-+  token?: string
-+  access_token?: string
-+  refresh_token?: string
-+  expires_at?: number | string
-+}
-+
-+type CopilotServiceToken = {
-+  access: string
-+  refresh: string
-+  expires: number
-+}
-+
-+async function fetchCopilotServiceToken(url: string, accessToken: string): Promise<CopilotServiceToken | null> {
-+  const response = await fetch(url, {
-+    method: "GET",
-+    headers: {
-+      Authorization: `token ${accessToken}`,
-+      Accept: "application/vnd.github+json",
-+      "Editor-Version": "vscode/1.96.2",
-+      "Editor-Plugin-Version": "copilot-chat/0.26.7",
-+      "User-Agent": `opencode/${Installation.VERSION}`,
-+      "X-Github-Api-Version": "2025-04-01",
-+    },
-+    signal: AbortSignal.timeout(10_000),
-+  }).catch((error) => {
-+    log.warn("copilot service token request failed", {
-+      error: error instanceof Error ? error.message : String(error),
-+    })
-+    return null
-+  })
-+
-+  if (!response) return null
-+  if (!response.ok) {
-+    const detail = await response.json().catch(() => null)
-+    log.warn("copilot service token request rejected", {
-+      status: response.status,
-+      detail,
-+    })
-+    return null
-+  }
-+
-+  const body = (await response.json().catch(() => null)) as CopilotServiceTokenResponse | null
-+  if (!body) {
-+    log.warn("copilot service token response empty")
-+    return null
-+  }
-+
-+  const token = iife(() => {
-+    if (typeof body.token === "string") return body.token
-+    if (typeof body.access_token === "string") return body.access_token
-+    return null
-+  })
-+  if (!token) {
-+    log.warn("copilot service token missing")
-+    return null
-+  }
-+
-+  const refresh = typeof body.refresh_token === "string" ? body.refresh_token : token
-+  const expires = iife(() => {
-+    const value = body.expires_at
-+    if (typeof value === "number") return value
-+    if (typeof value === "string") {
-+      const parsed = Number.parseInt(value, 10)
-+      if (!Number.isNaN(parsed)) return parsed
-+      const ms = new Date(value).getTime()
-+      if (!Number.isNaN(ms)) return Math.floor(ms / 1000)
-+    }
-+    return 0
-+  })
-+
-+  return {
-+    access: token,
-+    refresh,
-+    expires,
-   }
- }
-
-@@ -123,7 +324,7 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
-               "x-initiator": isAgent ? "agent" : "user",
-               ...(init?.headers as Record<string, string>),
-               "User-Agent": `opencode/${Installation.VERSION}`,
--              Authorization: `Bearer ${info.refresh}`,
-+              Authorization: `Bearer ${info.access}`,
-               "Openai-Intent": "conversation-edits",
-             }
-
-@@ -185,113 +386,102 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
-             const deploymentType = inputs.deploymentType || "github.com"
-
-             let domain = "github.com"
-+            let actualProvider = "github-copilot"
-
-             if (deploymentType === "enterprise") {
-               const enterpriseUrl = inputs.enterpriseUrl
-               domain = normalizeDomain(enterpriseUrl!)
-+              actualProvider = "github-copilot-enterprise"
-             }
-
-             const urls = getUrls(domain)
-
--            const deviceResponse = await fetch(urls.DEVICE_CODE_URL, {
--              method: "POST",
--              headers: {
--                Accept: "application/json",
--                "Content-Type": "application/json",
--                "User-Agent": `opencode/${Installation.VERSION}`,
--              },
--              body: JSON.stringify({
--                client_id: CLIENT_ID,
--                scope: "read:user",
--              }),
--            })
-+            const deviceData = await requestCopilotDeviceCode(urls.DEVICE_CODE_URL, CLIENT_ID, "read:user")
-+            if (!deviceData) throw new Error("Failed to initiate device authorization")
-
--            if (!deviceResponse.ok) {
--              throw new Error("Failed to initiate device authorization")
--            }
-+            const usageDeviceData = await requestCopilotDeviceCode(
-+              urls.DEVICE_CODE_URL,
-+              COPILOT_USAGE_CLIENT_ID,
-+              COPILOT_USAGE_SCOPE,
-+            ).catch(() => null)
-
--            const deviceData = (await deviceResponse.json()) as {
--              verification_uri: string
--              user_code: string
--              device_code: string
--              interval: number
-+            if (!usageDeviceData) {
-+              log.warn("copilot usage device authorization unavailable")
-             }
-
-+            const instructions = iife(() => {
-+              if (!usageDeviceData) return `Enter code: ${deviceData.userCode}`
-+              return [
-+                `Enter code: ${deviceData.userCode}`,
-+                "",
-+                "To enable usage tracking, also complete:",
-+                `Go to: ${usageDeviceData.verificationUri}`,
-+                `Enter code: ${usageDeviceData.userCode}`,
-+              ].join("\n")
-+            })
-+
-             return {
--              url: deviceData.verification_uri,
--              instructions: `Enter code: ${deviceData.user_code}`,
-+              url: deviceData.verificationUri,
-+              instructions,
-               method: "auto" as const,
-               async callback() {
--                while (true) {
--                  const response = await fetch(urls.ACCESS_TOKEN_URL, {
--                    method: "POST",
--                    headers: {
--                      Accept: "application/json",
--                      "Content-Type": "application/json",
--                      "User-Agent": `opencode/${Installation.VERSION}`,
--                    },
--                    body: JSON.stringify({
--                      client_id: CLIENT_ID,
--                      device_code: deviceData.device_code,
--                      grant_type: "urn:ietf:params:oauth:grant-type:device_code",
--                    }),
--                  })
-+                const usageController = usageDeviceData ? new AbortController() : null
-+                const usagePromise = usageDeviceData
-+                  ? pollCopilotDeviceToken(
-+                      urls.ACCESS_TOKEN_URL,
-+                      usageDeviceData,
-+                      COPILOT_USAGE_CLIENT_ID,
-+                      usageController?.signal,
-+                    ).catch((error) => {
-+                      log.warn("copilot usage token polling failed", {
-+                        error: error instanceof Error ? error.message : String(error),
-+                      })
-+                      return null
-+                    })
-+                  : null
-
--                  if (!response.ok) return { type: "failed" as const }
--
--                  const data = (await response.json()) as {
--                    access_token?: string
--                    error?: string
--                    interval?: number
--                  }
--
--                  if (data.access_token) {
--                    const result: {
--                      type: "success"
--                      refresh: string
--                      access: string
--                      expires: number
--                      provider?: string
--                      enterpriseUrl?: string
--                    } = {
--                      type: "success",
--                      refresh: data.access_token,
--                      access: data.access_token,
--                      expires: 0,
--                    }
--
--                    if (deploymentType === "enterprise") {
--                      result.enterpriseUrl = domain
-+                try {
-+                  const deviceToken = await pollCopilotDeviceToken(urls.ACCESS_TOKEN_URL, deviceData, CLIENT_ID)
-+                  if (!deviceToken) return { type: "failed" as const }
-+
-+                  const usageToken = await iife(async () => {
-+                    if (!usagePromise) return null
-+                    const timeout = Bun.sleep(COPILOT_USAGE_TIMEOUT_MS).then(() => "timeout" as const)
-+                    const result = await Promise.race([usagePromise, timeout])
-+                    if (result === "timeout") {
-+                      usageController?.abort()
-+                      return null
-                     }
--
-                     return result
--                  }
-+                  })
-
--                  if (data.error === "authorization_pending") {
--                    await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
--                    continue
-+                  const serviceToken = await fetchCopilotServiceToken(urls.COPILOT_TOKEN_URL, deviceToken)
-+                  const accessToken = serviceToken?.access ?? deviceToken
-+                  const refreshToken = serviceToken?.refresh ?? accessToken
-+                  const expires = serviceToken?.expires ?? 0
-+                  const result: {
-+                    type: "success"
-+                    refresh: string
-+                    access: string
-+                    expires: number
-+                    usage?: string
-+                    provider?: string
-+                    enterpriseUrl?: string
-+                  } = {
-+                    type: "success",
-+                    refresh: refreshToken,
-+                    access: accessToken,
-+                    expires,
-+                    ...(usageToken ? { usage: usageToken } : {}),
-                   }
-
--                  if (data.error === "slow_down") {
--                    // Based on the RFC spec, we must add 5 seconds to our current polling interval.
--                    // (See https://www.rfc-editor.org/rfc/rfc8628#section-3.5)
--                    let newInterval = (deviceData.interval + 5) * 1000
--
--                    // GitHub OAuth API may return the new interval in seconds in the response.
--                    // We should try to use that if provided with safety margin.
--                    const serverInterval = data.interval
--                    if (serverInterval && typeof serverInterval === "number" && serverInterval > 0) {
--                      newInterval = serverInterval * 1000
--                    }
--
--                    await sleep(newInterval + OAUTH_POLLING_SAFETY_MARGIN_MS)
--                    continue
-+                  if (actualProvider === "github-copilot-enterprise") {
-+                    result.provider = "github-copilot-enterprise"
-+                    result.enterpriseUrl = domain
-                   }
--
--                  if (data.error) return { type: "failed" as const }
--
--                  await sleep(deviceData.interval * 1000 + OAUTH_POLLING_SAFETY_MARGIN_MS)
--                  continue
-+                  return result
-+                } finally {
-+                  usageController?.abort()
-                 }
-               },
-             }
-diff --git a/packages/opencode/src/server/instance.ts b/packages/opencode/src/server/instance.ts
-index 4bb6efaf..c1a6ed2d 100644
---- a/packages/opencode/src/server/instance.ts
-+++ b/packages/opencode/src/server/instance.ts
-@@ -24,6 +24,7 @@ import { FileRoutes } from "./routes/file"
- import { ConfigRoutes } from "./routes/config"
- import { ExperimentalRoutes } from "./routes/experimental"
- import { ProviderRoutes } from "./routes/provider"
-+import { UsageRoutes } from "./usage"
- import { EventRoutes } from "./routes/event"
- import { errorHandler } from "./middleware"
-
-@@ -51,6 +52,7 @@ export const InstanceRoutes = (app?: Hono) =>
+diff --git a/packages/opencode/src/server/routes/instance/index.ts b/packages/opencode/src/server/routes/instance/index.ts
+index e8a038f..6077c6d 100644
+--- a/packages/opencode/src/server/routes/instance/index.ts
++++ b/packages/opencode/src/server/routes/instance/index.ts
+@@ -28,6 +28,7 @@ import { EventRoutes } from "./event"
+ import { SyncRoutes } from "./sync"
+ import { InstanceMiddleware } from "./middleware"
+ import { jsonRequest } from "./trace"
++import { UsageRoutes } from "../../usage"
+ 
+ export const InstanceRoutes = (upgrade: UpgradeWebSocket): Hono => {
+   const app = new Hono()
+@@ -59,6 +60,7 @@ export const InstanceRoutes = (upgrade: UpgradeWebSocket): Hono => {
      .route("/permission", PermissionRoutes())
      .route("/question", QuestionRoutes())
      .route("/provider", ProviderRoutes())
 +    .route("/usage", UsageRoutes())
+     .route("/sync", SyncRoutes())
      .route("/", FileRoutes())
      .route("/", EventRoutes())
-     .route("/mcp", McpRoutes())
 diff --git a/packages/opencode/src/server/usage.ts b/packages/opencode/src/server/usage.ts
 new file mode 100644
-index 00000000..9af09607
+index 0000000..9af0960
 --- /dev/null
 +++ b/packages/opencode/src/server/usage.ts
 @@ -0,0 +1,304 @@
@@ -1865,7 +1305,7 @@ index 00000000..9af09607
 +}
 diff --git a/packages/opencode/src/usage/command.ts b/packages/opencode/src/usage/command.ts
 new file mode 100644
-index 00000000..f12a7ef7
+index 0000000..f12a7ef
 --- /dev/null
 +++ b/packages/opencode/src/usage/command.ts
 @@ -0,0 +1,60 @@
@@ -1931,7 +1371,7 @@ index 00000000..f12a7ef7
 +}
 diff --git a/packages/opencode/src/usage/index.ts b/packages/opencode/src/usage/index.ts
 new file mode 100644
-index 00000000..b977ce73
+index 0000000..b977ce7
 --- /dev/null
 +++ b/packages/opencode/src/usage/index.ts
 @@ -0,0 +1,59 @@
@@ -1996,14 +1436,14 @@ index 00000000..b977ce73
 +} as const
 diff --git a/packages/opencode/src/usage/providers/anthropic.ts b/packages/opencode/src/usage/providers/anthropic.ts
 new file mode 100644
-index 00000000..5da64919
+index 0000000..5da6491
 --- /dev/null
 +++ b/packages/opencode/src/usage/providers/anthropic.ts
 @@ -0,0 +1,278 @@
 +import z from "zod"
 +import { Auth } from "../../auth"
 +import { iife } from "../../util/iife"
-+import { Log } from "../../util/log"
++import { Log } from "../../util"
 +import type { CreditsSnapshot, RateLimitWindow, UsageFetchResult } from "../types"
 +
 +const log = Log.create({ service: "usage.anthropic" })
@@ -2280,13 +1720,13 @@ index 00000000..5da64919
 +}
 diff --git a/packages/opencode/src/usage/providers/github-copilot.ts b/packages/opencode/src/usage/providers/github-copilot.ts
 new file mode 100644
-index 00000000..8de9a286
+index 0000000..8de9a28
 --- /dev/null
 +++ b/packages/opencode/src/usage/providers/github-copilot.ts
 @@ -0,0 +1,265 @@
 +import z from "zod"
 +import { iife } from "../../util/iife"
-+import { Log } from "../../util/log"
++import { Log } from "../../util"
 +import type { PlanType, RateLimitWindow, Snapshot, UsageFetchResult } from "../types"
 +
 +const log = Log.create({ service: "usage.github-copilot" })
@@ -2551,7 +1991,7 @@ index 00000000..8de9a286
 +}
 diff --git a/packages/opencode/src/usage/providers/openai.ts b/packages/opencode/src/usage/providers/openai.ts
 new file mode 100644
-index 00000000..98f1a3a4
+index 0000000..98f1a3a
 --- /dev/null
 +++ b/packages/opencode/src/usage/providers/openai.ts
 @@ -0,0 +1,155 @@
@@ -2559,7 +1999,7 @@ index 00000000..98f1a3a4
 +import { iife } from "../../util/iife"
 +import { planTypeSchema } from "../types"
 +import type { CreditsSnapshot, PlanType, RateLimitWindow, UsageFetchResult } from "../types"
-+import { Log } from "../../util/log"
++import { Log } from "../../util"
 +
 +const log = Log.create({ service: "usage.openai" })
 +
@@ -2712,7 +2152,7 @@ index 00000000..98f1a3a4
 +}
 diff --git a/packages/opencode/src/usage/registry.ts b/packages/opencode/src/usage/registry.ts
 new file mode 100644
-index 00000000..8ec8aeef
+index 0000000..8ec8aee
 --- /dev/null
 +++ b/packages/opencode/src/usage/registry.ts
 @@ -0,0 +1,44 @@
@@ -2762,7 +2202,7 @@ index 00000000..8ec8aeef
 +}
 diff --git a/packages/opencode/src/usage/store.ts b/packages/opencode/src/usage/store.ts
 new file mode 100644
-index 00000000..dbff4981
+index 0000000..dbff498
 --- /dev/null
 +++ b/packages/opencode/src/usage/store.ts
 @@ -0,0 +1,105 @@
@@ -2770,8 +2210,8 @@ index 00000000..dbff4981
 +import { Auth } from "../auth"
 +import { Bus } from "../bus"
 +import { BusEvent } from "../bus/bus-event"
-+import { Storage } from "../storage/storage"
-+import { Log } from "../util/log"
++import { Storage } from "../storage"
++import { Log } from "../util"
 +import { getUsageProviderInfo, isUsageProvider, listUsageProviders, type UsageProviderInfo } from "./registry"
 +import { snapshotSchema, type Snapshot } from "./types"
 +
@@ -2873,7 +2313,7 @@ index 00000000..dbff4981
 +}
 diff --git a/packages/opencode/src/usage/types.ts b/packages/opencode/src/usage/types.ts
 new file mode 100644
-index 00000000..12da90ac
+index 0000000..12da90a
 --- /dev/null
 +++ b/packages/opencode/src/usage/types.ts
 @@ -0,0 +1,50 @@
@@ -2929,7 +2369,7 @@ index 00000000..12da90ac
 +}
 diff --git a/packages/opencode/test/cli/tui/usage-command.test.ts b/packages/opencode/test/cli/tui/usage-command.test.ts
 new file mode 100644
-index 00000000..c18d85ff
+index 0000000..c18d85f
 --- /dev/null
 +++ b/packages/opencode/test/cli/tui/usage-command.test.ts
 @@ -0,0 +1,51 @@
@@ -2986,7 +2426,7 @@ index 00000000..c18d85ff
 +})
 diff --git a/packages/opencode/test/cli/tui/usage-format.test.ts b/packages/opencode/test/cli/tui/usage-format.test.ts
 new file mode 100644
-index 00000000..42e480a7
+index 0000000..42e480a
 --- /dev/null
 +++ b/packages/opencode/test/cli/tui/usage-format.test.ts
 @@ -0,0 +1,95 @@
@@ -3087,7 +2527,7 @@ index 00000000..42e480a7
 +})
 diff --git a/packages/opencode/test/cli/tui/usage-toast.test.ts b/packages/opencode/test/cli/tui/usage-toast.test.ts
 new file mode 100644
-index 00000000..20a8147f
+index 0000000..20a8147
 --- /dev/null
 +++ b/packages/opencode/test/cli/tui/usage-toast.test.ts
 @@ -0,0 +1,162 @@
@@ -3255,7 +2695,7 @@ index 00000000..20a8147f
 +})
 diff --git a/packages/opencode/test/plugin/copilot-auth.test.ts b/packages/opencode/test/plugin/copilot-auth.test.ts
 new file mode 100644
-index 00000000..7e9c3768
+index 0000000..7e9c376
 --- /dev/null
 +++ b/packages/opencode/test/plugin/copilot-auth.test.ts
 @@ -0,0 +1,276 @@
@@ -3537,7 +2977,7 @@ index 00000000..7e9c3768
 +})
 diff --git a/packages/opencode/test/server/usage-copilot.test.ts b/packages/opencode/test/server/usage-copilot.test.ts
 new file mode 100644
-index 00000000..573734c4
+index 0000000..573734c
 --- /dev/null
 +++ b/packages/opencode/test/server/usage-copilot.test.ts
 @@ -0,0 +1,33 @@
@@ -3576,15 +3016,15 @@ index 00000000..573734c4
 +})
 diff --git a/packages/opencode/test/server/usage.test.ts b/packages/opencode/test/server/usage.test.ts
 new file mode 100644
-index 00000000..4f6daa5e
+index 0000000..4f6daa5
 --- /dev/null
 +++ b/packages/opencode/test/server/usage.test.ts
 @@ -0,0 +1,555 @@
 +import { describe, expect, test } from "bun:test"
 +import { Usage, type Snapshot } from "../../src/usage"
 +import { Auth } from "../../src/auth"
-+import { Log } from "../../src/util/log"
-+import { Storage } from "../../src/storage/storage"
++import { Log } from "../../src/util"
++import { Storage } from "../../src/storage"
 +import { Server } from "../../src/server/server"
 +import { Instance } from "../../src/project/instance"
 +import { iife } from "../../src/util/iife"
@@ -4136,10 +3576,10 @@ index 00000000..4f6daa5e
 +  })
 +})
 diff --git a/packages/plugin/src/index.ts b/packages/plugin/src/index.ts
-index a264cf5a..4f3cdc0d 100644
+index 71a3278..84f06a4 100644
 --- a/packages/plugin/src/index.ts
 +++ b/packages/plugin/src/index.ts
-@@ -140,8 +140,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
+@@ -174,8 +174,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
                  refresh: string
                  access: string
                  expires: number
@@ -4150,7 +3590,7 @@ index a264cf5a..4f3cdc0d 100644
                }
              | { key: string }
            ))
-@@ -161,8 +162,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
+@@ -195,8 +196,9 @@ export type AuthOAuthResult = { url: string; instructions: string } & (
                  refresh: string
                  access: string
                  expires: number
@@ -4162,21 +3602,21 @@ index a264cf5a..4f3cdc0d 100644
              | { key: string }
            ))
 diff --git a/packages/sdk/js/src/v2/gen/sdk.gen.ts b/packages/sdk/js/src/v2/gen/sdk.gen.ts
-index 527584e7..a1a44925 100644
+index 6248eb8..f1d7103 100644
 --- a/packages/sdk/js/src/v2/gen/sdk.gen.ts
 +++ b/packages/sdk/js/src/v2/gen/sdk.gen.ts
-@@ -175,6 +175,7 @@ import type {
+@@ -186,6 +186,7 @@ import type {
    TuiSelectSessionResponses,
    TuiShowToastResponses,
    TuiSubmitPromptResponses,
 +  UsageGetResponses,
+   VcsDiffResponses,
    VcsGetResponses,
    WorktreeCreateErrors,
-   WorktreeCreateInput,
-@@ -2637,6 +2638,50 @@ export class Question extends HeyApiClient {
+@@ -2850,6 +2851,50 @@ export class Question extends HeyApiClient {
    }
  }
-
+ 
 +export class Usage extends HeyApiClient {
 +  /**
 +   * Get usage
@@ -4224,10 +3664,10 @@ index 527584e7..a1a44925 100644
  export class Oauth extends HeyApiClient {
    /**
     * OAuth authorize
-@@ -4017,6 +4062,11 @@ export class OpencodeClient extends HeyApiClient {
+@@ -4395,6 +4440,11 @@ export class OpencodeClient extends HeyApiClient {
      return (this._question ??= new Question({ client: this.client }))
    }
-
+ 
 +  private _usage?: Usage
 +  get usage(): Usage {
 +    return (this._usage ??= new Usage({ client: this.client }))
@@ -4237,13 +3677,13 @@ index 527584e7..a1a44925 100644
    get provider(): Provider {
      return (this._provider ??= new Provider({ client: this.client }))
 diff --git a/packages/sdk/js/src/v2/gen/types.gen.ts b/packages/sdk/js/src/v2/gen/types.gen.ts
-index 290c6fd5..351bf99e 100644
+index 1fcab2e..c1ae016 100644
 --- a/packages/sdk/js/src/v2/gen/types.gen.ts
 +++ b/packages/sdk/js/src/v2/gen/types.gen.ts
-@@ -515,6 +515,54 @@ export type EventWorktreeFailed = {
+@@ -538,6 +538,54 @@ export type EventWorkspaceStatus = {
    }
  }
-
+ 
 +export type EventUsageUpdated = {
 +  type: "usage.updated"
 +  properties: {
@@ -4295,15 +3735,7 @@ index 290c6fd5..351bf99e 100644
  export type OutputFormatText = {
    type: "text"
  }
-@@ -1002,6 +1050,7 @@ export type Event =
-   | EventPtyDeleted
-   | EventWorktreeReady
-   | EventWorktreeFailed
-+  | EventUsageUpdated
-   | EventMessageUpdated
-   | EventMessageRemoved
-   | EventMessagePartUpdated
-@@ -1631,6 +1680,7 @@ export type OAuth = {
+@@ -1692,6 +1740,7 @@ export type OAuth = {
    type: "oauth"
    refresh: string
    access: string
@@ -4311,10 +3743,18 @@ index 290c6fd5..351bf99e 100644
    expires: number
    accountId?: string
    enterpriseUrl?: string
-@@ -4110,6 +4160,83 @@ export type QuestionRejectResponses = {
-
+@@ -2075,6 +2124,7 @@ export type Event =
+   | EventWorkspaceFailed
+   | EventWorkspaceRestore
+   | EventWorkspaceStatus
++  | EventUsageUpdated
+   | EventMessageUpdated
+   | EventMessageRemoved
+   | EventMessagePartUpdated
+@@ -4380,6 +4430,83 @@ export type QuestionRejectResponses = {
+ 
  export type QuestionRejectResponse = QuestionRejectResponses[keyof QuestionRejectResponses]
-
+ 
 +export type UsageGetData = {
 +  body?: never
 +  path?: never
@@ -4396,10 +3836,10 @@ index 290c6fd5..351bf99e 100644
    body?: never
    path?: never
 diff --git a/packages/sdk/openapi.json b/packages/sdk/openapi.json
-index ba7188af..da04c2d8 100644
+index d9954d9..5855ac0 100644
 --- a/packages/sdk/openapi.json
 +++ b/packages/sdk/openapi.json
-@@ -4566,6 +4566,332 @@
+@@ -4926,6 +4926,332 @@
          ]
        }
      },
@@ -4732,7 +4172,7 @@ index ba7188af..da04c2d8 100644
      "/provider": {
        "get": {
          "operationId": "provider.list",
-@@ -8370,6 +8696,226 @@
+@@ -8880,6 +9206,226 @@
          },
          "required": ["type", "properties"]
        },
@@ -4959,17 +4399,17 @@ index ba7188af..da04c2d8 100644
        "OutputFormatText": {
          "type": "object",
          "properties": {
-@@ -9847,6 +10393,9 @@
+@@ -9988,6 +10534,9 @@
            {
-             "$ref": "#/components/schemas/Event.worktree.failed"
+             "$ref": "#/components/schemas/RetryPart"
            },
 +          {
 +            "$ref": "#/components/schemas/Event.usage.updated"
 +          },
            {
-             "$ref": "#/components/schemas/Event.message.updated"
-           },
-@@ -11355,6 +11904,9 @@
+             "$ref": "#/components/schemas/CompactionPart"
+           }
+@@ -11956,6 +12505,9 @@
            "access": {
              "type": "string"
            },

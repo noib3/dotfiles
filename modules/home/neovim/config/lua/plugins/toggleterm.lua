@@ -95,6 +95,7 @@ local setup_lf = function()
   vim.keymap.set("n", "ll", open_lf, { silent = true })
 end
 
+---@diagnostic disable-next-line: undefined-field
 require("toggleterm").setup({
   autochdir = true,
   direction = "float",
