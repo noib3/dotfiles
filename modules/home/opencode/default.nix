@@ -51,30 +51,41 @@ let
   opencodePackage =
     (inputs.opencode.packages.${pkgs.stdenv.system}.default).overrideAttrs
       (old: {
-        node_modules = old.node_modules.overrideAttrs {
-          installPhase = ''
-            runHook preInstall
-            mkdir -p $out
-            find . -path './node_modules/.bun' -prune -o -type d -name node_modules -exec cp -R --parents {} $out \;
-            runHook postInstall
-          '';
-          outputHash =
-            {
-              aarch64-darwin = "sha256-vN0sXYs7pLtpq7U9SorR2z6st/wMfHA3dybOnwIh1pU=";
-              aarch64-linux = lib.fakeHash;
-              x86_64-darwin = "sha256-P8fgyBcZJmY5VbNxNer/EL4r/F28dNxaqheaqNZH488=";
-              x86_64-linux = lib.fakeHash;
-            }
-            .${system};
-        };
+        # node_modules = old.node_modules.overrideAttrs {
+        #   buildPhase = builtins.replaceStrings
+        #     [ "--frozen-lockfile" ]
+        #     [ "" ]
+        #     old.node_modules.buildPhase;
+        #   installPhase = ''
+        #     runHook preInstall
+        #     mkdir -p $out
+        #     find . -path './node_modules/.bun' -prune -o -type d -name node_modules -exec cp -R --parents {} $out \;
+        #     runHook postInstall
+        #   '';
+        #   outputHash =
+        #     {
+        #       aarch64-darwin = "sha256-qyvgR4Sd03jsROLqSIq46+kTjdI97qPmA86PpVVpNBs=";
+        #       aarch64-linux = lib.fakeHash;
+        #       x86_64-darwin = "sha256-P8fgyBcZJmY5VbNxNer/EL4r/F28dNxaqheaqNZH488=";
+        #       x86_64-linux = lib.fakeHash;
+        #     }
+        #     .${system};
+        # };
         patches = (old.patches or [ ]) ++ [
           ./patches/anthropic-provider-label.patch
           ./patches/cursor-style-and-blink.patch
           ./patches/fix-repeated-json-migration-check.patch
           ./patches/multi-account-profiles.patch
+          ./patches/storage-static-helpers.patch
           ./patches/usage-tracking.patch
           ./patches/usage-profiles.patch
         ];
+        postConfigure = (old.postConfigure or "") + ''
+          if [ -e node_modules/.bun/node_modules/prettier ] && [ ! -e node_modules/prettier ]; then
+            chmod u+w node_modules
+            ln -s .bun/node_modules/prettier node_modules/prettier
+          fi
+        '';
         nativeBuildInputs =
           (old.nativeBuildInputs or [ ])
           ++ lib.optionals (isDarwin && isx86_64) [
@@ -115,12 +126,12 @@ in
             "*.env.*" = "deny";
           };
         };
-        tui = {
-          cursor_blink = false;
-          cursor_style = "line";
-          scroll_acceleration.enabled = true;
-          theme = "system";
-        };
+      };
+      tui = {
+        cursor_blink = false;
+        cursor_style = "line";
+        scroll_acceleration.enabled = true;
+        theme = "system";
       };
     };
 
@@ -136,10 +147,6 @@ in
           "tui"
         ];
 
-        tuiSettings =
-          (optionalAttrs (settings ? theme) { theme = settings.theme; })
-          // (optionalAttrs (settings ? keybinds) { keybinds = settings.keybinds; })
-          // (settings.tui or { });
       in
       {
         "opencode/opencode.json" = mkForce {
@@ -148,16 +155,6 @@ in
               "$schema" = "https://opencode.ai/config.json";
             }
             // opencodeSettings
-          );
-        };
-
-        "opencode/tui.json" = {
-          force = true;
-          source = jsonFormat.generate "opencode-tui.json" (
-            {
-              "$schema" = "https://opencode.ai/tui.json";
-            }
-            // tuiSettings
           );
         };
       };

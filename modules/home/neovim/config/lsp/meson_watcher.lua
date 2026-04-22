@@ -200,7 +200,6 @@ return {
       callback(nil, nil)
     end
 
-    ---@type vim.lsp.rpc.PublicClient
     return {
       request = function(method, params, callback, notify_reply_callback)
         local request_id = next_request_id
