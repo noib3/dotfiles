@@ -12,41 +12,32 @@ let
 
   inherit (pkgs.stdenv.hostPlatform) system isDarwin isx86_64;
 
-  opencodeAnthropicAuthDeps = pkgs.stdenvNoCC.mkDerivation {
-    pname = "opencode-anthropic-auth-deps";
-    version = "0.1.0";
-    src = inputs.opencode-anthropic-auth;
-    nativeBuildInputs = [ pkgs.bun ];
-    buildPhase = ''
-      bun install --frozen-lockfile --no-progress --ignore-scripts --no-cache
-      rm -rf node_modules/.cache
-    '';
-    installPhase = ''
-      mkdir -p $out
-      cp -r node_modules $out/
-    '';
-    outputHashAlgo = "sha256";
-    outputHashMode = "recursive";
-    outputHash =
-      {
-        aarch64-darwin = "sha256-ik8TVMjmjQgBCF/wjukBx0BrEp4rNkMl200jCZL2HDQ=";
-        aarch64-linux = lib.fakeHash;
-        x86_64-darwin = "sha256-o0WtvID32y0SHMv3FmmxCpAI0mYb3QQ1OHeJGbDrqJ8=";
-        x86_64-linux = lib.fakeHash;
-      }
-      .${system};
-  };
+  bun2nix = inputs.bun2nix.packages.${system}.default;
+
+  opencodeAnthropicAuthBunNix =
+    pkgs.runCommand "opencode-anthropic-auth-bun.nix"
+      { nativeBuildInputs = [ bun2nix ]; }
+      ''
+        bun2nix \
+          --lock-file ${inputs.opencode-anthropic-auth}/bun.lock \
+          --output-file $out
+      '';
 
   opencodeAnthropicAuth = pkgs.stdenvNoCC.mkDerivation {
     pname = "opencode-anthropic-auth";
     version = "0.1.0";
     src = inputs.opencode-anthropic-auth;
     nativeBuildInputs = [
-      pkgs.bun
+      bun2nix.hook
       pkgs.nodejs
     ];
-    configurePhase = ''
-      cp -r ${opencodeAnthropicAuthDeps}/node_modules .
+    bunDeps = bun2nix.fetchBunDeps {
+      bunNix = opencodeAnthropicAuthBunNix;
+    };
+    dontRunLifecycleScripts = true;
+    postPatch = ''
+      substituteInPlace tsconfig.build.json \
+        --replace-fail '"types": ["bun-types"]' '"types": ["bun"]'
     '';
     buildPhase = ''
       bun run build
