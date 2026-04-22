@@ -282,6 +282,9 @@ in
           };
           # Yes, the typo in the key is from Brave itself.
           ntp.shortcust_visible = false;
+          # Chromium stores the default zoom as log(zoom_factor)/log(1.2), so
+          # for 130% we have log(1.3)/(log1.2) ~= 1.43902.
+          partition.default_zoom_level.x = 1.43902;
           toolbar.pinned_actions = [ ];
         };
 
