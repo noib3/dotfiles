@@ -14,6 +14,30 @@ let
 
   bun2nix = inputs.bun2nix.packages.${system}.default;
 
+  bun_1_3_13 = pkgs.bun.overrideAttrs (_: rec {
+    version = "1.3.13";
+    src =
+      {
+        aarch64-darwin = pkgs.fetchurl {
+          url = "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-darwin-aarch64.zip";
+          hash = "sha256-VGfj9l26Umuf6pjwzOBO+vwMY+Fpcz7Ce4dqOtMtoZA=";
+        };
+        aarch64-linux = pkgs.fetchurl {
+          url = "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-linux-aarch64.zip";
+          hash = "sha256-cLrkGzkIsKEg4eWMXIrzDnSvrjuNEbDT/djnh937SyI=";
+        };
+        x86_64-darwin = pkgs.fetchurl {
+          url = "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-darwin-x64-baseline.zip";
+          hash = "sha256-qYumpIDyL9qbNDYmuQak4mqlNhi/hdK8WSjs8rpF8O0=";
+        };
+        x86_64-linux = pkgs.fetchurl {
+          url = "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-linux-x64.zip";
+          hash = "sha256-ecB3H6i5LDOq5B4VoODTB+qZ0OLwAxfHHGxTI3p44lo=";
+        };
+      }
+      .${system};
+  });
+
   opencodeAnthropicAuthBunNix =
     pkgs.runCommand "opencode-anthropic-auth-bun.nix"
       { nativeBuildInputs = [ bun2nix ]; }
@@ -67,10 +91,9 @@ let
           fi
         '';
         nativeBuildInputs =
-          (old.nativeBuildInputs or [ ])
-          ++ lib.optionals (isDarwin && isx86_64) [
-            pkgs.sysctl
-          ];
+          (lib.filter (pkg: lib.getName pkg != "bun") (old.nativeBuildInputs or [ ]))
+          ++ [ bun_1_3_13 ]
+          ++ lib.optionals (isDarwin && isx86_64) [ pkgs.sysctl ];
       });
 in
 {
