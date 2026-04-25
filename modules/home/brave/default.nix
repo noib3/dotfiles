@@ -361,6 +361,7 @@ in
           ''
             if [[ -d "${braveAppBundlePath}" ]]; then
               if ! /usr/bin/codesign --verify --deep --strict --verbose=0 "${braveAppBundlePath}" >/dev/null 2>&1; then
+                run /usr/bin/xattr -cr "${braveAppBundlePath}"
                 run /usr/bin/codesign --force --deep --sign - "${braveAppBundlePath}" >/dev/null 2>&1
               fi
             fi
