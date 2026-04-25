@@ -13,6 +13,8 @@ let
     name = "nix";
     runtimeInputs = [
       nix
+      pkgs.coreutils
+      pkgs.gnused
       pkgs.jq
     ];
     runtimeEnv = {

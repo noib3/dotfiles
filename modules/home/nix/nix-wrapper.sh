@@ -145,7 +145,7 @@ flag_takes_1_arg() {
     --out-link | -o | --profile | --eval-store | --include | -I | --expr | \
       --inputs-from | --output-lock-file | --reference-lock-file | --file | \
       -f | --update-input | --log-format | --arg-from-stdin | --redirect | \
-      --extra-experimental-features)
+      --extra-experimental-features | --store)
       return 0
       ;;
     *) return 1 ;;
