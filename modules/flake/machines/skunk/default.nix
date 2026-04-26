@@ -24,7 +24,10 @@ in
 
   flake.darwinConfigurations."skunk@darwin" = inputs.nix-darwin.lib.darwinSystem {
     system = "x86_64-darwin";
-    modules = [ ./darwin-configuration.nix ];
+    modules = [
+      ./darwin-configuration.nix
+      { nixpkgs.overlays = [ inputs.brew-nix.overlays.default ]; }
+    ];
     specialArgs = {
       inherit hostname username;
     };

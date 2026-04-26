@@ -56,7 +56,6 @@ in
       ]
       ++ lib.lists.optionals isDarwin [
         brewCasks.obs
-        brewCasks.protonvpn
         coreutils
         gnused
         iina

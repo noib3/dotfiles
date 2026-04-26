@@ -28,6 +28,8 @@ in
     ];
 
     environment.systemPackages = with pkgs; [
+      brewCasks.proton-drive
+      brewCasks.protonvpn
       home-manager
       neovim
     ];

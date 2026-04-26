@@ -35,8 +35,6 @@ in
       }
     ];
 
-    home.packages = [ pkgs.brewCasks.proton-drive ];
-
     home.activation = {
       symlinkDocumentsToProtonDrive = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         if [ ! -e "${cfg.directory}" ] && [ ! -L "${cfg.directory}" ]; then
