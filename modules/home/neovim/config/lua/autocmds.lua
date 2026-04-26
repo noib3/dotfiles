@@ -99,6 +99,11 @@ vim.api.nvim_create_autocmd("User", {
         ::continue::
       end
 
+      if #filepaths == 1 and file_buf == orig_buf then
+        vim.schedule(ev.data.on_done)
+        return
+      end
+
       if orig_buf == vim.api.nvim_get_current_buf() then
         -- If the original buffer is focused, display the first file in the
         -- current window.
