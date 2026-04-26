@@ -171,6 +171,12 @@ keymap.set("n", "td", function() vim.fn.jobstart("td") end)
 -- Open tomorrow's todo.
 keymap.set("n", "tm", function() vim.fn.jobstart("tm") end)
 
+-- Open this week's todo.
+keymap.set("n", "tw", function() vim.fn.jobstart("tw") end)
+
+-- Open next week's todo.
+keymap.set("n", "nw", function() vim.fn.jobstart("nw") end)
+
 --- @param key string
 local fallback = function(key)
   local keys = vim.api.nvim_replace_termcodes(key, true, false, true)

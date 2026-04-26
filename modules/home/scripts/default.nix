@@ -64,6 +64,18 @@
         runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
         text = builtins.readFile ./tm.sh;
       };
+
+      tw = pkgs.writeShellApplication {
+        name = "tw";
+        runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
+        text = builtins.readFile ./tw.sh;
+      };
+
+      nw = pkgs.writeShellApplication {
+        name = "nw";
+        runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
+        text = builtins.readFile ./nw.sh;
+      };
     };
   };
 
