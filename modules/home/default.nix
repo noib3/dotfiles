@@ -142,6 +142,7 @@ in
     fd.enable = true;
     fish.enable = true;
     fzf.enable = true;
+    gc-git-repos.enable = true;
     ghostty.enable = true;
     git.enable = true;
     gnupg.enable = true;
