@@ -776,20 +776,18 @@ handle_flake_check() {
     local system
     system=$(current_system)
 
-    if [ -n "$system" ]; then
-      local check_names
-      check_names=$(nix flake show "$flake_url" --json 2>/dev/null |
-        jq -r ".checks.\"$system\" // {} | keys[]" 2>/dev/null) || check_names=""
+    local check_names
+    check_names=$(nix flake show "$flake_url" --json 2>/dev/null |
+      jq -r ".checks.\"$system\" // {} | keys[]" 2>/dev/null) || check_names=""
 
-      mkdir -p "$roots_dir/checks"
+    mkdir -p "$roots_dir/checks"
 
-      local name safe_name
-      for name in $check_names; do
-        safe_name=$(printf '%s' "$name" | tr '/' '-')
-        nix build --out-link "$roots_dir/checks/$safe_name" \
-          "$flake_url#checks.$system.$name" 2>/dev/null || true
-      done
-    fi
+    local name safe_name
+    for name in $check_names; do
+      safe_name=$(printf '%s' "$name" | tr '/' '-')
+      nix build --out-link "$roots_dir/checks/$safe_name" \
+        "$flake_url#checks.$system.$name" 2>/dev/null || true
+    done
   fi
 
   return "$check_exit"
@@ -812,13 +810,8 @@ handle_fmt() {
   root_flake_inputs "$flake_root" "$roots_dir"
 
   # Build the formatter to create a GC root, then run fmt.
-  local system
-  system=$(current_system)
-
-  if [ -n "$system" ]; then
-    nix build --out-link "$roots_dir/formatter" \
-      ".#formatter.$system" 2>/dev/null || true
-  fi
+  nix build --out-link "$roots_dir/formatter" \
+    ".#formatter.$(current_system)" || true
 
   exec nix fmt "${pass_through[@]}"
 }
