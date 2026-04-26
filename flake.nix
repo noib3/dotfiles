@@ -98,10 +98,12 @@
 
   nixConfig = {
     extra-substituters = [
+      "https://cache.sub60.dev/noib3/dotfiles"
       "https://nix-community.cachix.org"
       "https://nomad.cachix.org"
     ];
     extra-trusted-public-keys = [
+      "cache.sub60.dev/noib3/dotfiles-1:ZpBUDFsYAQAi2hHs6ot+3m5+wZYXHyGBhEsgobh3k7I="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "nomad.cachix.org-1:jQ4al6yxQyvUBB7YJVJbMbc9rASokqamqvPhBUrVjww="
     ];
