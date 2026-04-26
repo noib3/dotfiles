@@ -51,7 +51,11 @@ in
     modules.terminals.ghostty = {
       enabled = true;
       inherit package;
-      launchCommand = "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
+      launchCommand =
+        if isDarwin then
+          "/usr/bin/open -na ${lib.escapeShellArg "${package}/Applications/Ghostty.app"} --args --working-directory=${config.home.homeDirectory}"
+        else
+          "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
       terminfo.xterm-ghostty =
         let
           ghosttyTerminfo =
