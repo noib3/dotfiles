@@ -137,6 +137,7 @@ in
     brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;
+    delete-ds-store.enable = isDarwin;
     direnv.enable = true;
     fd.enable = true;
     fish.enable = true;
