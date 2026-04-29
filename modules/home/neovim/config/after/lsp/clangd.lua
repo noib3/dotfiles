@@ -11,6 +11,26 @@
 
 local methods = vim.lsp.protocol.Methods
 
+--- Returns whether the active clang-format config disables formatting.
+---@param root_dir string?
+---@return boolean
+local clang_format_is_disabled = function(root_dir)
+  if not root_dir then return false end
+
+  local clang_format = vim.fs.find(".clang-format", {
+    upward = true,
+    path = root_dir,
+  })[1]
+  if not clang_format then return false end
+
+  for _, line in ipairs(vim.fn.readfile(clang_format)) do
+    local value = line:match("^%s*DisableFormat%s*:%s*([^#]+)")
+    if value then return vim.trim(value):lower() == "true" end
+  end
+
+  return false
+end
+
 --- Parses a compile_commands.json and returns the set of source file paths.
 ---@param path string
 ---@return table<string, true>
@@ -337,6 +357,11 @@ return {
     if init_result.offsetEncoding then
       ---@diagnostic disable-next-line: undefined-field
       client.offset_encoding = init_result.offsetEncoding
+    end
+
+    if clang_format_is_disabled(client.root_dir) then
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
     end
 
     local root_dir = client.root_dir
