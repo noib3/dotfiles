@@ -125,7 +125,9 @@ writeShellApplication {
     coreutils
   ];
   runtimeEnv = env // {
-    NVIM_EXE = lib.getExe inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
+    NVIM_EXE =
+      lib.getExe
+        inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
   };
   passthru = { inherit env; };
   text = builtins.readFile ./nvim.sh;
