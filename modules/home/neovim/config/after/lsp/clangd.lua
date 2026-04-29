@@ -11,6 +11,19 @@
 
 local methods = vim.lsp.protocol.Methods
 
+---@param config vim.lsp.ClientConfig
+---@return boolean
+local workspace_diagnostics_enabled = function(config)
+  local enabled = vim.tbl_get(
+    config.settings or {},
+    "clangd",
+    "noib3",
+    "workspaceDiagnostics"
+  )
+
+  return enabled ~= false
+end
+
 --- Returns whether the active clang-format config disables formatting.
 ---@param root_dir string?
 ---@return boolean
@@ -345,10 +358,25 @@ end
 
 ---@type vim.lsp.Config
 return {
-  -- Raise the file descriptor limit: our workspace-wide diagnostics open all
-  -- project files in clangd simultaneously, which can exceed the OS's default
-  -- soft limit (256 on macOS, 1024 on Linux).
-  cmd = { "sh", "-c", "ulimit -n 10240; exec clangd --background-index" },
+  settings = {
+    clangd = {
+      noib3 = {
+        workspaceDiagnostics = false,
+      },
+    },
+  },
+
+  cmd = function(dispatchers, config)
+    local cmd = { "clangd" }
+
+    if workspace_diagnostics_enabled(config) then
+      -- Raise the file descriptor limit: workspace-wide diagnostics open all
+      -- project files in clangd simultaneously, which can exceed the OS default.
+      cmd = { "sh", "-c", "ulimit -n 10240; exec clangd --background-index" }
+    end
+
+    return vim.lsp.rpc.start(cmd, dispatchers)
+  end,
 
   on_init = function(client, init_result)
     -- Replicate nvim-lspconfig's default on_init for clangd, which handles
@@ -363,6 +391,8 @@ return {
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
     end
+
+    if not workspace_diagnostics_enabled(client.config) then return end
 
     local root_dir = client.root_dir
     if not root_dir then return end
