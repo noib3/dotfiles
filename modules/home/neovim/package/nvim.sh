@@ -1,8 +1,10 @@
 # Flattens `nvim` calls made from Neovim's embedded terminal by opening the
 # target files in the parent instance.
 
+nvim=$NVIM_EXE
+
 if [[ -z ${NVIM:-} ]]; then
-  exec "$NVIM_EXE" "$@"
+  exec "$nvim" "$@"
 fi
 
 files_only=true
@@ -21,7 +23,7 @@ for arg in "$@"; do
 done
 
 # If the arguments contain any non-file arguments, launch a new instance.
-[[ $files_only == true ]] || exec "$NVIM_EXE" "$@"
+[[ $files_only == true ]] || exec "$nvim" "$@"
 
 filepaths=""
 for arg in "$@"; do
@@ -44,11 +46,11 @@ trap 'rm -f "$fifo"' EXIT
 escaped_fifo=${fifo//\\/\\\\}
 escaped_fifo=${escaped_fifo//\"/\\\"}
 
-if "$NVIM_EXE" --server "$NVIM" --remote-expr \
+if "$nvim" --server "$NVIM" --remote-expr \
   "luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimLaunch\", modeline = false, data = { filepaths = { $filepaths }, on_done = function() local f = io.open(\"$escaped_fifo\", \"w\"); if f then f:close() end end } })')" \
   2>/dev/null; then
   read -r <"$fifo" || true
   exit 0
 fi
 
-exec "$NVIM_EXE" "$@"
+exec "$nvim" "$@"

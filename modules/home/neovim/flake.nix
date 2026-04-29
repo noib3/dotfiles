@@ -189,15 +189,28 @@
     {
       homeManagerModules.default = import ./module.nix { inherit inputs mkPkgs; };
 
-      packages = eachSystem (pkgs: {
-        default = pkgs.callPackage ./package { inherit inputs; };
-      });
+      packages = eachSystem (
+        pkgs:
+        let
+          nvim = pkgs.callPackage ./package { inherit inputs; };
+        in
+        {
+          default = nvim;
+          setupHook = pkgs.writeText "nvim-setup-hook" ''
+            ${pkgs.lib.concatStringsSep "\n" (
+              pkgs.lib.mapAttrsToList (
+                name: value: "export ${name}=${pkgs.lib.escapeShellArg "${value}"}"
+              ) (nvim.override { includeConfig = false; }).env
+            )}
+          '';
+        }
+      );
 
       checks = eachSystem (pkgs: {
         default =
           pkgs.runCommand "check-config"
             {
-              env.NVIM_PLUGINS = self.packages.${pkgs.stdenv.system}.default.pluginsDir;
+              env.NVIM_PLUGINS = self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS;
               env.VIMRUNTIME = "${
                 nix-community-neovim.packages.${pkgs.stdenv.system}.default
               }/share/nvim/runtime";

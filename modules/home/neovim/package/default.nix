@@ -2,6 +2,7 @@
   coreutils,
   lib,
   linkFarm,
+  runCommandLocal,
   stdenvNoCC,
   writeShellApplication,
   writeTextDir,
@@ -103,31 +104,29 @@ let
     }) plugins
   );
 
-  # The config directory is first so that its `lua/` modules take priority,
-  # matching Neovim's default behavior of placing `stdpath('config')` at the
-  # top of the rtp.
-  runtimePaths = lib.optionals includeConfig [ ../config ] ++ plugins;
-
-  neovimOrig = inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
-
-  neovimWithPlugins = writeShellApplication {
-    name = "nvim-with-plugins";
-    runtimeEnv.NVIM_PLUGINS = pluginsDir;
-    text = ''
-      exec ${lib.getExe neovimOrig} \
-        ${lib.optionalString includeConfig "-u ${../config/init.lua}"} \
-        --cmd 'set rtp^=${lib.concatStringsSep "," runtimePaths}' \
-        "$@"
+  env = {
+    COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
+    NVIM_PLUGINS = pluginsDir;
+    XDG_DATA_DIRS = runCommandLocal "nvim-site" { } ''
+      mkdir -p "$out/nvim/site/pack/noib3/start"
+      ln -s ${pluginsDir}/* "$out/nvim/site/pack/noib3/start/"
+    '';
+  }
+  // lib.optionalAttrs includeConfig {
+    XDG_CONFIG_HOME = runCommandLocal "nvim-config-home" { } ''
+      mkdir -p "$out"
+      ln -s ${../config} "$out/nvim"
     '';
   };
 in
 writeShellApplication {
   name = "nvim";
-  runtimeInputs = [ coreutils ];
-  runtimeEnv = {
-    COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
-    NVIM_EXE = lib.getExe neovimWithPlugins;
+  runtimeInputs = [
+    coreutils
+  ];
+  runtimeEnv = env // {
+    NVIM_EXE = lib.getExe inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
   };
-  passthru = { inherit pluginsDir; };
+  passthru = { inherit env; };
   text = builtins.readFile ./nvim.sh;
 }
