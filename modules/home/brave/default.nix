@@ -16,13 +16,21 @@ let
     else
       "${config.xdg.configHome}/BraveSoftware/Brave-Browser";
 
+  chromeWebStoreUpdateUrl = "https://clients2.google.com/service/update2/crx";
+  braveExtensionUpdateUrl = "https://extensionupdater.brave.com/service/update2/crx";
+
   # ── Types ──
 
   extensionType = types.submodule {
     options = {
       id = mkOption {
         type = types.singleLineStr;
-        description = "Chrome Web Store extension ID";
+        description = "Chromium extension ID";
+      };
+      updateUrl = mkOption {
+        type = types.singleLineStr;
+        default = chromeWebStoreUpdateUrl;
+        description = "Extension update manifest URL";
       };
       pinned = mkOption {
         type = types.bool;
@@ -234,7 +242,10 @@ in
       isDefaultBrowser = true;
 
       features = {
-        enabled = [ "BraveEnableAutoTranslate" ];
+        enabled = [
+          "BraveEnableAutoTranslate"
+          "ExtensionsManifestV2"
+        ];
         disabled = [ "GlobalMediaControls" ];
       };
 
@@ -242,6 +253,10 @@ in
         proton-pass = {
           id = "ghmbeldphafepmbegfdlkpapadhbakde";
           pinned = true;
+        };
+        ublock-origin = {
+          id = "jcokkipkhhgiakinbnnplhkdbjbgcgpe";
+          updateUrl = braveExtensionUpdateUrl;
         };
         unhook.id = "khncfooichmfjbepaaaebmommgaepoid";
       };
@@ -337,7 +352,9 @@ in
     programs.brave = {
       enable = true;
       package = if needsWrapping then wrappedBrave else pkgs.brave;
-      extensions = mapAttrsToList (_: ext: { inherit (ext) id; }) cfg.extensions;
+      extensions = mapAttrsToList (_: ext: {
+        inherit (ext) id updateUrl;
+      }) cfg.extensions;
     };
 
     modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies;
