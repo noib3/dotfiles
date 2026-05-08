@@ -28,6 +28,9 @@ opt.laststatus = 3
 opt.list = true
 opt.listchars = "eol:¬,tab:⇥ ,space:·"
 
+-- Modelines are a dumb antipattern.
+opt.modeline = false
+
 -- Enable mouse support in normal and visual mode.
 opt.mouse = "nv"
 
