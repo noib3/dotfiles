@@ -16,8 +16,11 @@ let
 
   codexConfig = {
     model = "gpt-5.5";
-    model_reasoning_effort = "xhigh";
+    model_reasoning_effort = "high";
+    plan_mode_reasoning_effort = "high";
     model_provider = "codex-lb";
+    approval_policy = "never";
+    sandbox_mode = "danger-full-access";
 
     model_providers."codex-lb" = {
       name = "OpenAI";
