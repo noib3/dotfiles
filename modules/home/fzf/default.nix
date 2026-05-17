@@ -61,12 +61,12 @@ in
                 # fd doesn't follow symlinks.
                 if [ -L "$docs_dir" ]; then
                   (cd "$docs_dir" && fd ${fdOpts}) \
-                    | sed "s|^|"$'\x1b[${col-dirs}m'"$docs_name/|"
+                    | sed -u "s|^|"$'\x1b[${col-dirs}m'"$docs_name/|"
                 fi
               } \
-                | sed 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
-                | sed 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
-                | sed 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
+                | sed -u 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
+                | sed -u 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
+                | sed -u 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
             '';
           };
         in
