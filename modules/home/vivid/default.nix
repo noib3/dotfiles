@@ -83,6 +83,7 @@ in
           dart = [ ".dart" ];
           r = [ ".r" ];
           rust = [ ".rs" ];
+          svelte = [ ".svelte" ];
           shell = [
             ".sh"
             ".bash"
@@ -257,6 +258,9 @@ in
               foreground = "blue";
             };
             kotlin = {
+              foreground = "orange";
+            };
+            svelte = {
               foreground = "orange";
             };
             latex = {
