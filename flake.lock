@@ -772,6 +772,9 @@
         "rustaceanvim": "rustaceanvim",
         "toggleterm-nvim": "toggleterm-nvim",
         "tokyonight-nvim": "tokyonight-nvim",
+        "treefmt-nix": [
+          "treefmt-nix"
+        ],
         "treesitter-modules-nvim": "treesitter-modules-nvim",
         "trouble-nvim": "trouble-nvim"
       },

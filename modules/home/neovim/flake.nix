@@ -11,6 +11,10 @@
       inputs.neovim-src.follows = "neovim-src";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Plugins.
     blink-cmp.url = "github:Saghen/blink.cmp";
@@ -157,6 +161,7 @@
     inputs@{
       self,
       nixpkgs,
+      treefmt-nix,
       ...
     }:
     let
@@ -190,6 +195,16 @@
             inherit system;
           })
         );
+
+      mkTreefmt =
+        pkgs:
+        treefmt-nix.lib.evalModule pkgs {
+          projectRootFile = "flake.nix";
+          programs.nixfmt = {
+            enable = true;
+            width = 80;
+          };
+        };
     in
     {
       homeManagerModules.default = import ./module.nix { inherit inputs mkPkgs; };
@@ -228,6 +243,8 @@
                 2>&1 | tee "$out"
             '';
       });
+
+      formatter = eachSystem (pkgs: (mkTreefmt pkgs).config.build.wrapper);
     };
 
   nixConfig = {
