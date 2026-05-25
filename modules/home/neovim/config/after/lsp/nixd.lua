@@ -41,6 +41,48 @@ local file_exists_async = function(path, callback)
   )
 end
 
+---@param value string
+---@return string
+local nix_string = function(value)
+  return ('"%s"'):format(
+    value
+      :gsub("\\", "\\\\")
+      :gsub('"', '\\"')
+      :gsub("%$%{", "\\${")
+      :gsub("\n", "\\n")
+      :gsub("\r", "\\r")
+  )
+end
+
+---@param client vim.lsp.Client
+local configure_flake_nixpkgs = function(client)
+  local root_dir = client.root_dir
+  if not root_dir or vim.uv.fs_stat(root_dir .. "/flake.nix") == nil then
+    return
+  end
+
+  client.settings = vim.tbl_deep_extend("force", client.settings or {}, {
+    nixd = {
+      nixpkgs = {
+        expr = ([[
+          let
+            flake = builtins.getFlake %s;
+          in
+            if flake.inputs ? nixpkgs then
+              flake.inputs.nixpkgs.legacyPackages.${builtins.currentSystem}
+            else
+              { }
+        ]]):format(nix_string(root_dir)),
+      },
+    },
+  })
+
+  client:notify(
+    "workspace/didChangeConfiguration",
+    { settings = client.settings }
+  )
+end
+
 ---@alias DetectFormatterResult
 ---| { variant: "found", command: string[] }
 ---| { variant: "no_flake" }
@@ -98,6 +140,7 @@ return {
       },
     },
   },
+  on_init = configure_flake_nixpkgs,
   on_attach = function(client)
     if not client.root_dir then return end
 
