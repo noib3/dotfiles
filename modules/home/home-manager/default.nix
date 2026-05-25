@@ -20,7 +20,6 @@ in
       enable = true;
       frequency = "daily";
       timestamp = "-1 second"; # expire all but current
-      store.cleanup = true; # run nix-collect-garbage after
     };
   };
 }
