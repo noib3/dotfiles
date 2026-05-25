@@ -146,6 +146,7 @@ in
     kubectl.enable = true;
     lazygit.enable = true;
     lf.enable = true;
+    lima.enable = isDarwin;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     macosDefaults.enable = isDarwin;

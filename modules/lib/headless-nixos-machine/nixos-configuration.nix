@@ -41,7 +41,16 @@
 
   networking = {
     hostName = hostname;
-    useDHCP = true;
+    useDHCP = false;
+    useNetworkd = true;
+  };
+
+  systemd.network.networks."10-dhcp" = {
+    matchConfig.Name = [
+      "en*"
+      "eth*"
+    ];
+    networkConfig.DHCP = "yes";
   };
 
   nix.settings = {
@@ -94,8 +103,6 @@
   };
 
   home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
     users.${username} = {
       imports = [

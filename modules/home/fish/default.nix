@@ -48,6 +48,9 @@ in
         ipy = "ipython";
         lg = "lazygit";
       }
+      // lib.attrsets.optionalAttrs config.modules.lima.enable {
+        limash = "limactl shell --start --workdir /home/${config.home.username} ${config.modules.lima.instanceName}";
+      }
       // lib.attrsets.optionalAttrs config.machines.current.hasNixosConfiguration {
         nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machines.current.name} --sudo";
       }
@@ -128,7 +131,8 @@ in
             end
           end
         end
-
+      ''
+      + lib.optionalString config.modules.rust.enable ''
         function __update_cargo_target_dir --on-variable PWD
           ${config.modules.rust.cargo-target-dir-env.meta.mainProgram} \
             --shell fish | source
