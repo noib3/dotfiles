@@ -38,7 +38,7 @@ let
     '';
     runtimeEnv = {
       NIX_CONF_DIR = "/dev/null";
-      NIX_CONFIG = "";
+      NIX_CONFIG = "experimental-features = nix-command flakes";
       NIX_USER_CONF_FILES = "";
     };
   };
