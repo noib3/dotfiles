@@ -59,7 +59,7 @@ in
     ];
 
     nix = {
-      package = nix;
+      package = lib.mkForce nix;
       plugins.jettison.enable = true;
       settings = {
         experimental-features = [
