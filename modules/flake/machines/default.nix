@@ -73,6 +73,12 @@ in
               type = types.singleLineStr;
               description = "The system architecture";
             };
+
+            isHeadless = lib.mkOption {
+              type = types.bool;
+              default = false;
+              description = "Whether the machine is expected to run without a graphical session.";
+            };
           };
         }
       );
