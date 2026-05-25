@@ -45,7 +45,7 @@ in
     };
   };
 
-  config =
+  config = lib.mkIf (!config.machines.current.isHeadless) (
     let
       current = cfg.stacks.current;
     in
@@ -66,5 +66,6 @@ in
           emoji = [ current.emoji.name ];
         };
       };
-    };
+    }
+  );
 }

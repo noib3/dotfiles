@@ -59,7 +59,7 @@ in
     default = { };
   };
 
-  config = {
+  config = mkIf (!config.machines.current.isHeadless) {
     assertions = [
       {
         assertion = (enabledStacks |> attrNames |> length) == 1;

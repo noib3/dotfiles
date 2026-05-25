@@ -7,6 +7,7 @@
 
 let
   inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (config.machines.current) isHeadless;
 in
 {
   # Import all the modules in this directory.
@@ -34,8 +35,6 @@ in
     packages =
       with pkgs;
       [
-        asciinema
-        cachix
         delta
         dua
         gh
@@ -45,13 +44,15 @@ in
         pfetch
         python312Packages.ipython
         ripgrep
-        signal-desktop
-        texliveConTeXt
         tokei
         tree
         unzip
         vimv
         zip
+      ]
+      ++ lib.lists.optionals (!isHeadless) [
+        asciinema
+        signal-desktop
         zoom-us
       ]
       ++ lib.lists.optionals isDarwin [
@@ -62,19 +63,18 @@ in
         keycastr
       ]
       ++ lib.lists.optionals isLinux [
-        cameractrls
-        feh
-        glxinfo
+        pciutils # Contains lspci.
+        proton-vpn-cli
+        wl-clipboard-rs
+        xdg-utils
+      ]
+      ++ lib.lists.optionals (isLinux && !isHeadless) [
         grimblast
         libnotify
         obs-studio
-        pciutils # Contains lspci.
         pick-colour-picker
         playerctl
         proton-pass
-        protonvpn-cli_2
-        wl-clipboard-rs
-        xdg-utils
       ]
       # C/C++.
       ++ [ clang-tools ]
@@ -132,8 +132,6 @@ in
 
   modules = {
     bat.enable = true;
-    bettermouse.enable = isDarwin;
-    brave.enable = isDarwin;
     claude.enable = true;
     codex.enable = true;
     delete-ds-store.enable = isDarwin;
@@ -142,31 +140,35 @@ in
     fish.enable = true;
     fzf.enable = true;
     gc-git-repos.enable = true;
-    ghostty.enable = true;
     git.enable = true;
     gnupg.enable = true;
     home-manager.enable = true;
-    hyprland.enable = isLinux;
-    kanshi.enable = isLinux;
     kubectl.enable = true;
     lazygit.enable = true;
     lf.enable = true;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     macosDefaults.enable = isDarwin;
-    mpv.enable = isLinux;
     neovim.enable = true;
     opencode.enable = true;
-    proton-drive.enable = isDarwin;
-    qutebrowser.enable = isLinux;
     ripgrep.enable = true;
     rust.enable = true;
-    selfcontrol.enable = isDarwin;
-    skhd.enable = isDarwin;
     snowstorm-work.enable = true;
     ssh.enable = true;
     starship.enable = true;
     terminfo.enable = true;
+  }
+  // lib.optionalAttrs (!isHeadless) {
+    bettermouse.enable = isDarwin;
+    brave.enable = isDarwin;
+    ghostty.enable = true;
+    hyprland.enable = isLinux;
+    kanshi.enable = isLinux;
+    mpv.enable = isLinux;
+    proton-drive.enable = isDarwin;
+    qutebrowser.enable = isLinux;
+    selfcontrol.enable = isDarwin;
+    skhd.enable = isDarwin;
     whatsapp.enable = isDarwin;
     wlsunset.enable = isLinux;
     yabai.enable = isDarwin;
@@ -174,13 +176,13 @@ in
   };
 
   services = {
-    mpris-proxy.enable = isLinux;
+    mpris-proxy.enable = isLinux && !isHeadless;
   };
 
   systemd.user.startServices = true;
 
   xdg = {
     enable = true;
-    mimeApps.enable = isLinux;
+    mimeApps.enable = isLinux && !isHeadless;
   };
 }
