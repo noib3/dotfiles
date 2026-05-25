@@ -31,24 +31,41 @@ let
   treeSitterParsers = with vimPlugins.nvim-treesitter-parsers; [
     c
     cpp
+    css
+    html
+    javascript
+    jsdoc
     lua
     markdown
     markdown_inline
     nix
     rust
+    scss
+    svelte
     toml
+    typescript
     vimdoc
   ];
 
   treeSitterQueries = with vimPlugins.nvim-treesitter.queries; [
     c
     cpp
+    css
+    ecma
+    html
+    html_tags
+    javascript
+    jsdoc
+    jsx
     lua
     markdown
     markdown_inline
     nix
     rust
+    scss
+    svelte
     toml
+    typescript
     vimdoc
   ];
 

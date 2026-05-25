@@ -223,12 +223,6 @@
                 2>&1 | tee "$out"
             '';
       });
-
-      devShells = eachSystem (pkgs: {
-        develop-neovim = pkgs.mkShell {
-          name = "develop-neovim";
-        };
-      });
     };
 
   nixConfig = {
