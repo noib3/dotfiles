@@ -138,6 +138,11 @@ return {
           "sema-primop-removed-prefix",
         },
       },
+      options = {
+        nixos = {
+          expr = "{ }",
+        },
+      },
     },
   },
   on_init = configure_flake_nixpkgs,
