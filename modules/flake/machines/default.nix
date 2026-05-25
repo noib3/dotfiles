@@ -23,6 +23,10 @@ let
             type = lib.types.singleLineStr;
             readOnly = true;
           };
+          system = lib.mkOption {
+            type = lib.types.singleLineStr;
+            readOnly = true;
+          };
           hasNixosConfiguration = lib.mkOption {
             type = lib.types.bool;
             readOnly = true;
@@ -99,6 +103,7 @@ in
             {
               home.username = username;
               machines.current.name = machineName;
+              machines.current.system = machine.system;
               modules.colorschemes.${colorscheme}.enable = true;
               modules.fonts.stacks.${fontstack}.enable = true;
               nixpkgs.overlays = [ inputs.brew-nix.overlays.default ];
