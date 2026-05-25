@@ -29,6 +29,19 @@ let
     # binary.
     meta.priority = (nix.meta.priority or 5) - 1;
   };
+
+  # Wrap nixd so that it doesn't load Nix's config.
+  nixdWrapper = pkgs.writeShellApplication {
+    name = "nixd";
+    text = ''
+      exec ${lib.getExe pkgs.nixd} "$@"
+    '';
+    runtimeEnv = {
+      NIX_CONF_DIR = "/dev/null";
+      NIX_CONFIG = "";
+      NIX_USER_CONF_FILES = "";
+    };
+  };
 in
 {
   imports = [
@@ -41,7 +54,7 @@ in
       # commands used by home-manager.
       nix
       nixWrapper
-      nixd
+      nixdWrapper
       nixfmt
     ];
 
