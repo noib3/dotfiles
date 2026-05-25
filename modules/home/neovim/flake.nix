@@ -2,8 +2,14 @@
   description = "noib3's Neovim configuration";
 
   inputs = {
-    neovim-src.follows = "nix-community-neovim/neovim-src";
-    nix-community-neovim.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-src = {
+      url = "github:neovim/neovim/pull/39773/head";
+      flake = false;
+    };
+    nix-community-neovim = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.neovim-src.follows = "neovim-src";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # Plugins.
@@ -151,7 +157,6 @@
     inputs@{
       self,
       nixpkgs,
-      nix-community-neovim,
       ...
     }:
     let
@@ -212,7 +217,7 @@
             {
               env.NVIM_PLUGINS = self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS;
               env.VIMRUNTIME = "${
-                nix-community-neovim.packages.${pkgs.stdenv.system}.default
+                self.packages.${pkgs.stdenv.system}.default.neovim
               }/share/nvim/runtime";
             }
             ''

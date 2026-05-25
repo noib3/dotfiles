@@ -751,11 +751,7 @@
         "lualine-nvim": "lualine-nvim",
         "neotab-nvim": "neotab-nvim",
         "neotest": "neotest",
-        "neovim-src": [
-          "neovim",
-          "nix-community-neovim",
-          "neovim-src"
-        ],
+        "neovim-src": "neovim-src",
         "nix-community-neovim": "nix-community-neovim",
         "nixpkgs": [
           "nixpkgs"
@@ -829,15 +825,16 @@
     "neovim-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1776802301,
-        "narHash": "sha256-POX0+8RjLyI3KKOJrJFlakm3Qvuf049ZT9vo2wDcYZM=",
+        "lastModified": 1779445057,
+        "narHash": "sha256-Eq7RAm6/pHueySDl+eYa+hrxVdDVSCZSDIJKytD/mRE=",
         "owner": "neovim",
         "repo": "neovim",
-        "rev": "ff68fd6b8a84ce83c14358db1d70a562f1524ebe",
+        "rev": "63ee49fbded1b05530831658dd7196c8fe130d75",
         "type": "github"
       },
       "original": {
         "owner": "neovim",
+        "ref": "pull/39773/head",
         "repo": "neovim",
         "type": "github"
       }
@@ -858,26 +855,13 @@
         "type": "github"
       }
     },
-    "neovim-src_3": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1776863060,
-        "narHash": "sha256-dTPUv+elifygvv5RSReQn6yoKYif//lWeUQdJ+vqH6U=",
-        "owner": "neovim",
-        "repo": "neovim",
-        "rev": "61fb88992d34d16b3058dcd8b1664f575449d964",
-        "type": "github"
-      },
-      "original": {
-        "owner": "neovim",
-        "repo": "neovim",
-        "type": "github"
-      }
-    },
     "nix-community-neovim": {
       "inputs": {
         "flake-parts": "flake-parts_4",
-        "neovim-src": "neovim-src",
+        "neovim-src": [
+          "neovim",
+          "neovim-src"
+        ],
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
@@ -1375,7 +1359,6 @@
         "flake-parts": "flake-parts_2",
         "home-manager": "home-manager",
         "neovim": "neovim",
-        "neovim-src": "neovim-src_3",
         "nix-darwin": "nix-darwin",
         "nix-jettison": "nix-jettison",
         "nixos-hardware": "nixos-hardware",

@@ -135,22 +135,6 @@ keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
 -- Send a literal <Esc> to the terminal app.
 keymap.set("t", "<D-Esc>", "<C-\\><Esc>", { noremap = true })
 
--- Forward super-modified keys directly to terminal jobs because libvterm drops
--- the super modifier when re-encoding terminal-mode input.
-local chansend = function(keys)
-  return function() vim.fn.chansend(vim.b.terminal_job_id, keys) end
-end
-keymap.set("t", "<D-Left>", chansend("\x1b[1;9D"))
-keymap.set("t", "<D-Right>", chansend("\x1b[1;9C"))
-keymap.set("t", "<D-w>", chansend("\x1b[119;9u"))
-keymap.set("t", "<D-l>", chansend("\x1b[108;9u"))
-keymap.set("t", "<D-d>", chansend("\x1b[100;9u"))
-keymap.set("t", "<D-e>", chansend("\x1b[101;9u"))
-keymap.set("t", "<D-h>", chansend("\x1b[104;9u"))
-keymap.set("t", "<D-k>", chansend("\x1b[107;9u"))
-keymap.set("t", "<D-r>", chansend("\x1b[114;9u"))
-keymap.set("t", "<D-s>", chansend("\x1b[115;9u"))
-
 -- Open a terminal in the current window.
 keymap.set("n", "tt", function() vim.cmd("terminal") end)
 

@@ -7,6 +7,7 @@
   writeShellApplication,
   writeTextDir,
   copilot-language-server,
+  pkgs,
   vimPlugins,
   # --
   inputs,
@@ -121,6 +122,10 @@ let
     }) plugins
   );
 
+  neovim = import ./neovim.nix {
+    inherit inputs lib pkgs;
+  };
+
   env = {
     COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
     NVIM_PLUGINS = pluginsDir;
@@ -142,10 +147,10 @@ writeShellApplication {
     coreutils
   ];
   runtimeEnv = env // {
-    NVIM_EXE =
-      lib.getExe
-        inputs.nix-community-neovim.packages.${stdenvNoCC.system}.default;
+    NVIM_EXE = lib.getExe neovim;
   };
-  passthru = { inherit env; };
+  passthru = {
+    inherit env neovim;
+  };
   text = builtins.readFile ./nvim.sh;
 }

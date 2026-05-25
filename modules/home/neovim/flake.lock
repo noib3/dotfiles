@@ -531,15 +531,16 @@
     "neovim-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1776802301,
-        "narHash": "sha256-POX0+8RjLyI3KKOJrJFlakm3Qvuf049ZT9vo2wDcYZM=",
+        "lastModified": 1779445057,
+        "narHash": "sha256-Eq7RAm6/pHueySDl+eYa+hrxVdDVSCZSDIJKytD/mRE=",
         "owner": "neovim",
         "repo": "neovim",
-        "rev": "ff68fd6b8a84ce83c14358db1d70a562f1524ebe",
+        "rev": "63ee49fbded1b05530831658dd7196c8fe130d75",
         "type": "github"
       },
       "original": {
         "owner": "neovim",
+        "ref": "pull/39773/head",
         "repo": "neovim",
         "type": "github"
       }
@@ -563,7 +564,9 @@
     "nix-community-neovim": {
       "inputs": {
         "flake-parts": "flake-parts_2",
-        "neovim-src": "neovim-src",
+        "neovim-src": [
+          "neovim-src"
+        ],
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
@@ -932,10 +935,7 @@
         "lualine-nvim": "lualine-nvim",
         "neotab-nvim": "neotab-nvim",
         "neotest": "neotest",
-        "neovim-src": [
-          "nix-community-neovim",
-          "neovim-src"
-        ],
+        "neovim-src": "neovim-src",
         "nix-community-neovim": "nix-community-neovim",
         "nixpkgs": "nixpkgs_3",
         "nomad": "nomad",

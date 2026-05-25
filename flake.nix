@@ -27,11 +27,6 @@
     neovim = {
       url = ./modules/home/neovim;
       inputs.nixpkgs.follows = "nixpkgs";
-      # inputs.neovim-src.follows = "neovim-src";
-    };
-    neovim-src = {
-      url = "github:neovim/neovim";
-      flake = false;
     };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
