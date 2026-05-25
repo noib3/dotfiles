@@ -45,7 +45,10 @@ in
     };
 
     nix = {
-      linux-builder.enable = true;
+      linux-builder = {
+        enable = true;
+        config.virtualisation.cores = 10;
+      };
 
       settings = {
         experimental-features = [
