@@ -226,7 +226,7 @@ in
       }
       // (
         if isLinux then
-          { drag-and-drop = "%${pkgs.xdragon}/bin/dragon -a -x $fx"; }
+          { drag-and-drop = "%${lib.getExe pkgs.dragon-drop} -a -x $fx"; }
         else if isDarwin then
           {
             open-pdf-with-preview = ''
