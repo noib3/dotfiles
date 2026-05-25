@@ -13,45 +13,10 @@ let
 
   cfg = config.machines;
 
-  # A home-manager module that defines `config.machines`.
-  homeManagerMachinesModule =
-    { config, lib, ... }:
-    {
-      options.machines = {
-        current = {
-          name = lib.mkOption {
-            type = lib.types.singleLineStr;
-            readOnly = true;
-          };
-          system = lib.mkOption {
-            type = lib.types.singleLineStr;
-            readOnly = true;
-          };
-          hasNixosConfiguration = lib.mkOption {
-            type = lib.types.bool;
-            readOnly = true;
-            default = inputs.self.nixosConfigurations ? ${config.machines.current.name};
-          };
-          hasDarwinConfiguration = lib.mkOption {
-            type = lib.types.bool;
-            readOnly = true;
-            default = inputs.self.darwinConfigurations ? ${config.machines.current.name};
-          };
-        };
-      }
-      // (
-        cfg
-        |> lib.mapAttrs (
-          machineName: _: {
-            isCurrent = lib.mkOption {
-              type = lib.types.bool;
-              readOnly = true;
-              default = machineName == config.machines.current.name;
-            };
-          }
-        )
-      );
-    };
+  homeManagerMachinesModule = import ./home-manager-machines-module.nix {
+    inherit inputs;
+    machines = cfg;
+  };
 in
 {
   imports = [
