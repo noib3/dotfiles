@@ -9,12 +9,11 @@
   config.lib.mine = rec {
     base64Encode = import ./base64-encode.nix lib;
 
-    # The absolute path to the root of this repository.
     documentsDir =
       if config.modules.proton-drive.enable then
         config.modules.proton-drive.directory
       else
-        throw "Where are the documents stored?";
+        "${config.home.homeDirectory}/Documents";
 
     # The absolute path to the root of this repository.
     dotfilesDir = "${documentsDir}/dotfiles";
