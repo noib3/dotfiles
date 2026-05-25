@@ -133,7 +133,7 @@ keymap.set("n", "?", vim.diagnostic.open_float)
 keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
 
 -- Send a literal <Esc> to the terminal app.
-keymap.set("t", "<D><Esc>", "<C-\\><Esc>", { noremap = true })
+keymap.set("t", "<D-Esc>", "<C-\\><Esc>", { noremap = true })
 
 -- Forward super-modified keys directly to terminal jobs because libvterm drops
 -- the super modifier when re-encoding terminal-mode input.
@@ -173,9 +173,6 @@ keymap.set("n", "tm", function() vim.fn.jobstart("tm") end)
 
 -- Open this week's todo.
 keymap.set("n", "tw", function() vim.fn.jobstart("tw") end)
-
--- Open next week's todo.
-keymap.set("n", "nw", function() vim.fn.jobstart("nw") end)
 
 --- @param key string
 local fallback = function(key)
