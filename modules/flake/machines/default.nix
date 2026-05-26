@@ -39,6 +39,12 @@ in
               description = "The system architecture";
             };
 
+            cores = lib.mkOption {
+              type = types.nullOr types.ints.positive;
+              default = null;
+              description = "Number of CPU cores available on the machine.";
+            };
+
             isHeadless = lib.mkOption {
               type = types.bool;
               default = false;

@@ -13,7 +13,10 @@ let
   };
 in
 {
-  machines."stolen-bride".system = "aarch64-darwin";
+  machines."stolen-bride" = {
+    system = "aarch64-darwin";
+    cores = 10;
+  };
 
   flake.darwinConfigurations."stolen-bride" = inputs.nix-darwin.lib.darwinSystem {
     system = "aarch64-darwin";

@@ -13,6 +13,11 @@
         type = lib.types.singleLineStr;
         readOnly = true;
       };
+      cores = lib.mkOption {
+        type = lib.types.nullOr lib.types.ints.positive;
+        readOnly = true;
+        default = machines.${config.machines.current.name}.cores or null;
+      };
       hasNixosConfiguration = lib.mkOption {
         type = lib.types.bool;
         readOnly = true;
