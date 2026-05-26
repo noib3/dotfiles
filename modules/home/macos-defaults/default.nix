@@ -30,6 +30,7 @@ in
         AppleInterfaceStyle = "Dark";
         AppleKeyboardUIMode = 3;
         AppleMetricUnits = 1;
+        ApplePressAndHoldEnabled = true;
         AppleShowAllExtensions = true;
         AppleShowAllFiles = true;
         AppleShowScrollBars = "WhenScrolling";
