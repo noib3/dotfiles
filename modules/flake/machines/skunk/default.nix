@@ -1,11 +1,16 @@
 {
   inputs,
+  config,
   username,
   ...
 }:
 
 let
   hostname = "skunk";
+  machinesModule = import ../home-manager-machines-module.nix {
+    inherit inputs;
+    machines = config.machines;
+  };
 in
 {
   machines."skunk@linux".system = "x86_64-linux";
@@ -25,7 +30,12 @@ in
   flake.darwinConfigurations."skunk@darwin" = inputs.nix-darwin.lib.darwinSystem {
     system = "x86_64-darwin";
     modules = [
+      machinesModule
       ./darwin-configuration.nix
+      {
+        machines.current.name = "skunk@darwin";
+        machines.current.system = "x86_64-darwin";
+      }
       { nixpkgs.overlays = [ inputs.brew-nix.overlays.default ]; }
     ];
     specialArgs = {
