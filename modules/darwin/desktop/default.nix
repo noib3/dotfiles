@@ -8,6 +8,44 @@
 with lib;
 let
   cfg = config.modules.desktop;
+  inherit (config.machines.current) cores;
+
+  linuxBuilderQemu =
+    pkgs.darwin.linux-builder.nixosConfig.virtualisation.qemu.package;
+  # nixpkgs uses gic-version=2 for aarch64-darwin QEMU, which caps ARM virt
+  # guests at 8 vCPUs. Use max so the Linux builder can use every host core.
+  linuxBuilderQemuGicMax =
+    (pkgs.symlinkJoin {
+      name = "${linuxBuilderQemu.name}-gic-max";
+      paths = [ linuxBuilderQemu ];
+      postBuild = ''
+        rm -f "$out/bin/qemu-system-aarch64"
+        cat > "$out/bin/qemu-system-aarch64" <<'EOF'
+        #!${pkgs.bash}/bin/bash
+        args=()
+        for arg in "$@"; do
+          args+=("''${arg//gic-version=2/gic-version=max}")
+        done
+        exec ${linuxBuilderQemu}/bin/qemu-system-aarch64 "''${args[@]}"
+        EOF
+        chmod +x "$out/bin/qemu-system-aarch64"
+      '';
+    })
+    // {
+      inherit (linuxBuilderQemu) stdenv;
+    };
+
+  linuxBuilderPackage = pkgs.darwin.linux-builder.override {
+    modules = [
+      {
+        virtualisation.darwin-builder.diskSize = 80 * 1024;
+      }
+      (lib.optionalAttrs (cores != null) {
+        virtualisation.cores = cores;
+        virtualisation.qemu.package = linuxBuilderQemuGicMax;
+      })
+    ];
+  };
 in
 {
   options.modules.desktop = {
@@ -47,7 +85,7 @@ in
     nix = {
       linux-builder = {
         enable = true;
-        config.virtualisation.cores = 10;
+        package = linuxBuilderPackage;
       };
 
       settings = {
