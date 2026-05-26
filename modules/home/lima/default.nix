@@ -10,7 +10,9 @@ with lib;
 let
   cfg = config.modules.lima;
 
-  guestSystem = builtins.replaceStrings [ "darwin" ] [ "linux" ] config.machines.current.system;
+  guestSystem =
+    builtins.replaceStrings [ "darwin" ] [ "linux" ]
+      config.machines.current.system;
 
   guestMachines = (removeAttrs config.machines [ "current" ]) // {
     ${cfg.machineName} = {
@@ -46,7 +48,8 @@ let
         --replace-fail '#!/bin/bash -c \"$(printf' '#!/bin/sh -c \"$(printf'
     '';
   });
-  nixosImage = headlessMachine.config.nixosConfigurations.${cfg.machineName}.config.formats.qcow;
+  nixosImage =
+    headlessMachine.config.nixosConfigurations.${cfg.machineName}.config.formats.qcow;
 in
 {
   options.modules.lima = {

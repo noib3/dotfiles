@@ -10,12 +10,15 @@ let
 
   cfg = config.headlessNixosMachine;
 
-  nixosGeneratorsSrc = inputs.nixpkgs.legacyPackages.${cfg.system}.nixos-generators.src;
+  nixosGeneratorsSrc =
+    inputs.nixpkgs.legacyPackages.${cfg.system}.nixos-generators.src;
 
-  homeManagerMachinesModule = import ../../flake/machines/home-manager-machines-module.nix {
-    inherit inputs;
-    machines = cfg.machines;
-  };
+  homeManagerMachinesModule =
+    import ../../flake/machines/home-manager-machines-module.nix
+      {
+        inherit inputs;
+        machines = cfg.machines;
+      };
 in
 {
   options = {
@@ -61,7 +64,10 @@ in
 
   config.nixosConfigurations.${cfg.name} = inputs.nixpkgs.lib.nixosSystem {
     system = cfg.system;
-    modules = [ ./nixos-configuration.nix ] ++ lib.optional (cfg.extraConfig != null) cfg.extraConfig;
+    modules = [
+      ./nixos-configuration.nix
+    ]
+    ++ lib.optional (cfg.extraConfig != null) cfg.extraConfig;
     specialArgs = {
       hostname = cfg.name;
       inherit
