@@ -16,26 +16,6 @@ let
     builtins.replaceStrings [ "darwin" ] [ "linux" ]
       config.machines.current.system;
 
-  homeManagerConfig =
-    { pkgs, ... }:
-    {
-      imports = [ ../. ];
-      modules.colorschemes.${config.modules.colorschemes.name}.enable = true;
-      modules.terminals.ghostty = lib.mkIf config.modules.ghostty.enable (
-        let
-          ghosttyTerminfo = pkgs.runCommandLocal "ghostty-terminfo" { } ''
-            mkdir -p "$out"
-            cp -r "${pkgs.ghostty.terminfo}/share/terminfo/." "$out"
-          '';
-        in
-        {
-          package = ghosttyTerminfo;
-          launchCommand = "false";
-          terminfo.xterm-ghostty = ghosttyTerminfo;
-        }
-      );
-    };
-
   headlessMachine = lib.evalModules {
     specialArgs = { inherit inputs; };
     modules = [
@@ -45,12 +25,7 @@ let
         system = guestSystem;
         inherit username;
         machines = removeAttrs config.machines [ "current" ];
-        extraConfig = {
-          imports = [
-            (import ./nixos-module.nix)
-            { home-manager.users.${username} = homeManagerConfig; }
-          ];
-        };
+        extraConfig = import ./nixos-configuration.nix;
       }
     ];
   };
@@ -59,14 +34,6 @@ let
 
   limaArch = builtins.elemAt (lib.splitString "-" guestSystem) 0;
   limaHome = "${config.xdg.stateHome}/lima";
-
-  # Patch Lima to use #!/bin/sh instead of #!/bin/bash.
-  limaPackage = pkgs.lima.overrideAttrs (old: {
-    postPatch = (old.postPatch or "") + ''
-      substituteInPlace pkg/hostagent/requirements.go \
-        --replace-fail '#!/bin/bash -c \"$(printf' '#!/bin/sh -c \"$(printf'
-    '';
-  });
 in
 {
   options.modules.lima = {
@@ -74,7 +41,7 @@ in
 
     machineName = mkOption {
       type = types.singleLineStr;
-      default = "lima";
+      default = "${config.machines.current.hostName}-lima";
       description = "Name of the generated headless NixOS machine used as the Lima guest image.";
     };
 
@@ -101,12 +68,27 @@ in
       default = "40GiB";
       description = "Disk size assigned to the Lima NixOS instance.";
     };
+
+    homeConfiguration = mkOption {
+      type = types.nullOr types.raw;
+      readOnly = true;
+      description = "Home Manager configuration for the Lima guest.";
+      default = inputs.home-manager.lib.homeManagerConfiguration {
+        pkgs = inputs.nixpkgs.legacyPackages.${guestSystem};
+        modules = [ ./home-manager-configuration.nix ];
+        extraSpecialArgs = {
+          inherit inputs username;
+          hostConfig = config;
+          system = guestSystem;
+        };
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
     home = {
       packages = [
-        limaPackage
+        pkgs.lima
       ];
       sessionVariables.LIMA_HOME = limaHome;
     };
@@ -116,7 +98,7 @@ in
         marker = "${limaHome}/_hm/${cfg.instanceName}.image";
         markerDir = "${limaHome}/_hm";
         instanceDir = "${limaHome}/${cfg.instanceName}";
-        limactl = lib.getExe' limaPackage "limactl";
+        limactl = lib.getExe' pkgs.lima "limactl";
         recordImage = pkgs.writeShellScript "record-lima-${cfg.instanceName}-image" ''
           printf '%s\n' ${escapeShellArg (toString nixosImage)} > ${escapeShellArg marker}
         '';
@@ -134,8 +116,8 @@ in
 
           if [[ -d ${escapeShellArg instanceDir} ]]; then
             status="$(${limactl} list --format '{{.Status}}' ${escapeShellArg cfg.instanceName} 2>/dev/null || true)"
-            if [[ "$status" == "Running" ]]; then
-              run ${limactl} stop ${escapeShellArg cfg.instanceName}
+            if [[ -n "$status" && "$status" != "Stopped" ]]; then
+              run ${limactl} stop --force ${escapeShellArg cfg.instanceName}
             fi
 
             while IFS= read -r -d "" path; do
@@ -160,6 +142,8 @@ in
           name: "${username}"
           home: "/home/${username}"
           shell: "/run/current-system/sw/bin/fish"
+        ssh:
+          forwardAgent: true
         mountType: "virtiofs"
         images:
         - location: "${nixosImage}"
@@ -170,16 +154,20 @@ in
         disk: "${cfg.disk}"
 
         mounts:
-        - location: "${config.xdg.cacheHome}/lima/shared"
-          mountPoint: "/mnt/lima"
+        - location: "${config.lib.mine.documentsDir}"
+          mountPoint: "/home/${username}/Documents"
           writable: true
+
+        portForwards:
+        - guestIP: "0.0.0.0"
+          guestPort: 5355
+          proto: "any"
+          ignore: true
 
         containerd:
           system: false
           user: false
       '';
     };
-
-    xdg.cacheFile."lima/shared/.keep".text = "";
   };
 }

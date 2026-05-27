@@ -7,7 +7,7 @@ let
   inherit (lib) types;
 
   machineModule =
-    { name, ... }:
+    { config, name, ... }:
     {
       options = {
         name = lib.mkOption {
@@ -35,7 +35,7 @@ let
 
         hostName = lib.mkOption {
           type = types.singleLineStr;
-          default = name;
+          default = config.name;
           description = "Machine's hostname";
         };
 

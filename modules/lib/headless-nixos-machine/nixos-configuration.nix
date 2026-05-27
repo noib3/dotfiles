@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   inputs,
   system,
   username,
@@ -13,11 +14,11 @@ in
 {
   imports = [
     "${generatorsSrc}/all-formats.nix"
-    inputs.home-manager.nixosModules.home-manager
   ];
 
   environment.systemPackages = with pkgs; [
     git
+    inputs.home-manager.packages.${system}.default
     neovim
   ];
 
@@ -27,17 +28,6 @@ in
   ];
 
   i18n.defaultLocale = "en_US.UTF-8";
-
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
-      "ookla-speedtest"
-      "proton-pass"
-      "proton-vpn-cli"
-      "signal-desktop"
-      "widevine-cdm"
-      "zoom"
-    ];
 
   networking = {
     inherit (config.machines.current) hostName;
@@ -83,7 +73,7 @@ in
         {
           name = username;
           groups = [ "wheel" ];
-          shell = "${pkgs.fish}/bin/fish";
+          shell = lib.getExe config.users.users.${username}.shell;
           sudo = [ "ALL=(ALL) NOPASSWD:ALL" ];
         }
       ];
@@ -93,22 +83,15 @@ in
       enable = true;
       settings.PasswordAuthentication = false;
     };
+
+    cloud-init.settings.preserve_hostname = true;
   };
 
   users.users.${username} = {
-    isNormalUser = true;
+    isNormalUser = lib.mkDefault true;
     extraGroups = [ "wheel" ];
     home = "/home/${username}";
     shell = pkgs.fish;
-  };
-
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users.${username} = {
-      imports = [ ../machines ];
-      inherit (config) machines;
-      home.username = username;
-    };
   };
 
   system.stateVersion = "25.11";
