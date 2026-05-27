@@ -13,7 +13,7 @@
     sizes = {
       default =
         {
-          "skunk@darwin" = 22.75;
+          "skunk@macos" = 22.75;
           stolen-bride = 22.0;
         }
         .${config.machines.current.name} or 16.5;

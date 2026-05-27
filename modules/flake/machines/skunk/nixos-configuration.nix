@@ -1,5 +1,4 @@
 {
-  hostname,
   username,
   ...
 }:
@@ -28,7 +27,7 @@
 
   modules.desktop = {
     enable = true;
-    inherit hostname username;
+    inherit username;
   };
 
   system.stateVersion = "24.11";

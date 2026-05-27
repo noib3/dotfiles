@@ -1,7 +1,6 @@
 {
   config,
   colorscheme,
-  hostname,
   inputs,
   pkgs,
   system,
@@ -42,7 +41,7 @@ in
     ];
 
   networking = {
-    hostName = hostname;
+    inherit (config.machines.current) hostName;
     useDHCP = false;
     useNetworkd = true;
   };

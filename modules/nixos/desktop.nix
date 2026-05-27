@@ -12,11 +12,6 @@ in
 {
   options.modules.desktop = {
     enable = mkEnableOption "Desktop config";
-    hostname = mkOption {
-      type = types.str;
-      example = "macbook-pro";
-      description = "The hostname of the machine";
-    };
     username = mkOption {
       type = types.str;
     };
@@ -91,7 +86,7 @@ in
     };
 
     networking = {
-      hostName = cfg.hostname;
+      inherit (config.machines.current) hostName;
       networkmanager.enable = true;
     };
 

@@ -6,62 +6,60 @@
 }:
 
 let
-  hostname = "skunk";
-  darwinPartitionMachineName = "${hostname}@darwin";
-  linuxPartitionMachineName = "${hostname}@linux";
+  hostName = "skunk";
+  macosPartitionMachineName = "${hostName}@macos";
+  linuxPartitionMachineName = "${hostName}@linux";
 in
 {
-  machines.${darwinPartitionMachineName} = {
-    system = "x86_64-linux";
+  machines.${macosPartitionMachineName} = {
+    inherit hostName;
+    system = "x86_64-darwin";
+    darwinConfigurationName = hostName;
   };
 
   machines.${linuxPartitionMachineName} = {
-    system = "x86_64-darwin";
+    inherit hostName;
+    system = "x86_64-linux";
+    nixosConfigurationName = hostName;
   };
 
-  flake.darwinConfigurations.${darwinPartitionMachineName} =
-    inputs.nix-darwin.lib.darwinSystem
+  flake.darwinConfigurations.${hostName} = inputs.nix-darwin.lib.darwinSystem {
+    inherit (config.machines.${macosPartitionMachineName}) system;
+    modules = [
+      ./darwin-configuration.nix
+      { nixpkgs.overlays = [ inputs.brew-nix.overlays.default ]; }
+      ../../../lib/machines
       {
-        inherit (config.machines.${darwinPartitionMachineName}) system;
-        modules = [
-          ./darwin-configuration.nix
-          { nixpkgs.overlays = [ inputs.brew-nix.overlays.default ]; }
-          ../../../lib/machines
-          {
-            machines = config.machines // {
-              current = config.machines.${darwinPartitionMachineName};
-            };
-          }
-        ];
-        specialArgs = {
-          inherit
-            hostname
-            inputs
-            username
-            ;
+        machines = config.machines // {
+          current = config.machines.${macosPartitionMachineName};
         };
-      };
+      }
+    ];
+    specialArgs = {
+      inherit
+        inputs
+        username
+        ;
+    };
+  };
 
-  flake.nixosConfigurations.${linuxPartitionMachineName} =
-    inputs.nixpkgs.lib.nixosSystem
+  flake.nixosConfigurations.${hostName} = inputs.nixpkgs.lib.nixosSystem {
+    inherit (config.machines.${linuxPartitionMachineName}) system;
+    modules = [
+      ./nixos-configuration.nix
+      inputs.nixos-hardware.nixosModules.apple-t2
+      ../../../lib/machines
       {
-        inherit (config.machines.${linuxPartitionMachineName}) system;
-        modules = [
-          ./nixos-configuration.nix
-          inputs.nixos-hardware.nixosModules.apple-t2
-          ../../../lib/machines
-          {
-            machines = config.machines // {
-              current = config.machines.${linuxPartitionMachineName};
-            };
-          }
-        ];
-        specialArgs = {
-          inherit
-            hostname
-            inputs
-            username
-            ;
+        machines = config.machines // {
+          current = config.machines.${linuxPartitionMachineName};
         };
-      };
+      }
+    ];
+    specialArgs = {
+      inherit
+        inputs
+        username
+        ;
+    };
+  };
 }

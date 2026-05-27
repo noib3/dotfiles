@@ -1,5 +1,4 @@
 {
-  hostname,
   username,
   ...
 }:
@@ -11,7 +10,6 @@
 
   modules.desktop = {
     enable = true;
-    inherit hostname;
   };
 
   system.primaryUser = username;

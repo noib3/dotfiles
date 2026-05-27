@@ -65,7 +65,6 @@ in
     ]
     ++ lib.optional (cfg.extraConfig != null) cfg.extraConfig;
     specialArgs = {
-      hostname = cfg.name;
       inherit
         inputs
         ;

@@ -13,7 +13,7 @@ let
         name = lib.mkOption {
           type = types.singleLineStr;
           default = name;
-          description = "Machine name.";
+          description = "Machine name";
         };
 
         system = lib.mkOption {
@@ -31,6 +31,39 @@ let
           type = types.bool;
           default = false;
           description = "Whether the machine is expected to run without a graphical session.";
+        };
+
+        hostName = lib.mkOption {
+          type = types.singleLineStr;
+          default = name;
+          description = "Machine's hostname";
+        };
+
+        homeConfigurationName = lib.mkOption {
+          type = types.singleLineStr;
+          default = name;
+          description = ''
+            The key in the flake's 'homeConfigurations' output attrset
+            specifying the machine's home-manager configuratin
+          '';
+        };
+
+        darwinConfigurationName = lib.mkOption {
+          type = types.nullOr types.singleLineStr;
+          default = null;
+          description = ''
+            The key in the flake's 'darwinConfigurations' output attrset
+            specifying the machine's nix-darwin configuratin
+          '';
+        };
+
+        nixosConfigurationName = lib.mkOption {
+          type = types.nullOr types.singleLineStr;
+          default = null;
+          description = ''
+            The key in the flake's 'nixosConfigurations' output attrset
+            specifying the machine's NixOS configuratin
+          '';
         };
       };
     };
