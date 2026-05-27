@@ -12,8 +12,10 @@ let
 
   linuxBuilderQemu =
     pkgs.darwin.linux-builder.nixosConfig.virtualisation.qemu.package;
+
   # nixpkgs uses gic-version=2 for aarch64-darwin QEMU, which caps ARM virt
-  # guests at 8 vCPUs. Use max so the Linux builder can use every host core.
+  # guests at 8 vCPUs. We override it to pass gic-version=max so the Linux
+  # builder can use every host core.
   linuxBuilderQemuGicMax =
     (pkgs.symlinkJoin {
       name = "${linuxBuilderQemu.name}-gic-max";

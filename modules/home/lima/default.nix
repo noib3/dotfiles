@@ -14,13 +14,6 @@ let
     builtins.replaceStrings [ "darwin" ] [ "linux" ]
       config.machines.current.system;
 
-  guestMachines = (removeAttrs config.machines [ "current" ]) // {
-    ${cfg.machineName} = {
-      system = guestSystem;
-      isHeadless = true;
-    };
-  };
-
   headlessMachine = lib.evalModules {
     specialArgs = { inherit inputs; };
     modules = [
@@ -28,10 +21,10 @@ let
       {
         headlessNixosMachine = {
           name = cfg.machineName;
-          colorscheme = config.modules.colorschemes.name;
           system = guestSystem;
           username = config.home.username;
-          machines = guestMachines;
+          colorscheme = config.modules.colorschemes.name;
+          machines = removeAttrs config.machines [ "current" ];
           extraConfig = import ./nixos-module.nix {
             enableGhosttyTerminfo = config.modules.ghostty.enable;
           };
@@ -48,8 +41,7 @@ let
         --replace-fail '#!/bin/bash -c \"$(printf' '#!/bin/sh -c \"$(printf'
     '';
   });
-  nixosImage =
-    headlessMachine.config.nixosConfigurations.${cfg.machineName}.config.formats.qcow;
+  nixosImage = headlessMachine.config.nixosConfiguration.config.formats.qcow;
 in
 {
   options.modules.lima = {

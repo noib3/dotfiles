@@ -7,30 +7,31 @@
 
 let
   hostname = "stolen-bride";
-  machinesModule = import ../home-manager-machines-module.nix {
-    inherit inputs;
-    machines = config.machines;
-  };
 in
 {
-  machines."stolen-bride" = {
+  machines.${hostname} = {
     system = "aarch64-darwin";
     cores = 10;
   };
 
-  flake.darwinConfigurations."stolen-bride" = inputs.nix-darwin.lib.darwinSystem {
-    system = "aarch64-darwin";
+  flake.darwinConfigurations.${hostname} = inputs.nix-darwin.lib.darwinSystem {
+    inherit (config.machines.${hostname}) system;
     modules = [
-      machinesModule
       ./darwin-configuration.nix
-      {
-        machines.current.name = "stolen-bride";
-        machines.current.system = "aarch64-darwin";
-      }
       { nixpkgs.overlays = [ inputs.brew-nix.overlays.default ]; }
+      ../../../lib/machines
+      {
+        machines = config.machines // {
+          current = config.machines.${hostname};
+        };
+      }
     ];
     specialArgs = {
-      inherit hostname username;
+      inherit
+        hostname
+        inputs
+        username
+        ;
     };
   };
 }

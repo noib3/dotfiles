@@ -12,12 +12,11 @@
 
     sizes = {
       default =
-        if config.machines."skunk@darwin".isCurrent then
-          22.75
-        else if config.machines.stolen-bride.isCurrent then
-          22.0
-        else
-          16.5;
+        {
+          "skunk@darwin" = 22.75;
+          stolen-bride = 22.0;
+        }
+        .${config.machines.current.name} or 16.5;
     };
   };
 }

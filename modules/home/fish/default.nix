@@ -10,6 +10,9 @@ let
   cfg = config.modules.fish;
   inherit (pkgs.stdenv) isDarwin isLinux;
   inherit (config.lib.mine) dotfilesDir;
+
+  machineName = config.machines.current.name;
+
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
     import ./colors.nix { inherit config; }
   );
@@ -43,19 +46,19 @@ in
       };
 
       shellAbbrs = {
-        hmn = "home-manager news --flake ${dotfilesDir}#${config.machines.current.name}";
-        hms = "home-manager switch --flake ${dotfilesDir}#${config.machines.current.name}";
+        hmn = "home-manager news --flake ${dotfilesDir}#${machineName}";
+        hms = "home-manager switch --flake ${dotfilesDir}#${machineName}";
         ipy = "ipython";
         lg = "lazygit";
       }
       // lib.attrsets.optionalAttrs config.modules.lima.enable {
         limash = "limactl shell --start --workdir /home/${config.home.username} ${config.modules.lima.instanceName}";
       }
-      // lib.attrsets.optionalAttrs config.machines.current.hasNixosConfiguration {
-        nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${config.machines.current.name} --sudo";
+      // lib.attrsets.optionalAttrs isLinux {
+        nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${machineName} --sudo";
       }
-      // lib.attrsets.optionalAttrs config.machines.current.hasDarwinConfiguration {
-        drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${config.machines.current.name}";
+      // lib.attrsets.optionalAttrs isDarwin {
+        drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${machineName}";
       };
 
       interactiveShellInit = ''

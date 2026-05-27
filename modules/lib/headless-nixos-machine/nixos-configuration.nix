@@ -1,18 +1,20 @@
 {
+  config,
   colorscheme,
-  homeManagerMachinesModule,
   hostname,
   inputs,
-  nixosGeneratorsSrc,
   pkgs,
   system,
   username,
   ...
 }:
 
+let
+  generatorsSrc = inputs.nixpkgs.legacyPackages.${system}.nixos-generators.src;
+in
 {
   imports = [
-    "${nixosGeneratorsSrc}/all-formats.nix"
+    "${generatorsSrc}/all-formats.nix"
     inputs.home-manager.nixosModules.home-manager
   ];
 
@@ -103,15 +105,16 @@
   };
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = {
+      inherit inputs;
+    };
     users.${username} = {
       imports = [
         ../../home
-        homeManagerMachinesModule
+        ../machines
         {
+          inherit (config) machines;
           home.username = username;
-          machines.current.name = hostname;
-          machines.current.system = system;
           modules.colorschemes.${colorscheme}.enable = true;
         }
       ];
