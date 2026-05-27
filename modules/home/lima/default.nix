@@ -51,12 +51,6 @@ in
       description = "Name of the Lima NixOS instance.";
     };
 
-    cpus = mkOption {
-      type = types.ints.positive;
-      default = 4;
-      description = "Number of vCPUs assigned to the Lima NixOS instance.";
-    };
-
     memory = mkOption {
       type = types.str;
       default = "8GiB";
@@ -149,7 +143,7 @@ in
         - location: "${nixosImage}"
           arch: "${limaArch}"
 
-        cpus: ${toString cfg.cpus}
+        cpus: ${toString config.machines.current.cores}
         memory: "${cfg.memory}"
         disk: "${cfg.disk}"
 
