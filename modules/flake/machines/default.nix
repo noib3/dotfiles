@@ -13,6 +13,15 @@
     ../../lib/machines
     ./skunk
     ./stolen-bride
+    # Unlike `nixosConfigurations`, `darwinConfigurations` is not a default
+    # option in the flake output schema, so we need to define it as an attrset
+    # to be able to add keys into it from multiple machines modules.
+    {
+      options.flake.darwinConfigurations = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = { };
+      };
+    }
   ];
 
   config = {
