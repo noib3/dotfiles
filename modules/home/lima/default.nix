@@ -6,46 +6,71 @@
   ...
 }:
 
-with lib;
 let
   cfg = config.modules.lima;
+
+  inherit (lib) escapeShellArg mkOption types;
+  inherit (config.home) username;
 
   guestSystem =
     builtins.replaceStrings [ "darwin" ] [ "linux" ]
       config.machines.current.system;
+
+  homeManagerConfig =
+    { pkgs, ... }:
+    {
+      imports = [ ../. ];
+      modules.colorschemes.${config.modules.colorschemes.name}.enable = true;
+      modules.terminals.ghostty = lib.mkIf config.modules.ghostty.enable (
+        let
+          ghosttyTerminfo = pkgs.runCommandLocal "ghostty-terminfo" { } ''
+            mkdir -p "$out"
+            cp -r "${pkgs.ghostty.terminfo}/share/terminfo/." "$out"
+          '';
+        in
+        {
+          package = ghosttyTerminfo;
+          launchCommand = "false";
+          terminfo.xterm-ghostty = ghosttyTerminfo;
+        }
+      );
+    };
 
   headlessMachine = lib.evalModules {
     specialArgs = { inherit inputs; };
     modules = [
       ../../lib/headless-nixos-machine
       {
-        headlessNixosMachine = {
-          name = cfg.machineName;
-          system = guestSystem;
-          username = config.home.username;
-          colorscheme = config.modules.colorschemes.name;
-          machines = removeAttrs config.machines [ "current" ];
-          extraConfig = import ./nixos-module.nix {
-            enableGhosttyTerminfo = config.modules.ghostty.enable;
-          };
+        name = cfg.machineName;
+        system = guestSystem;
+        inherit username;
+        machines = removeAttrs config.machines [ "current" ];
+        extraConfig = {
+          imports = [
+            (import ./nixos-module.nix)
+            { home-manager.users.${username} = homeManagerConfig; }
+          ];
         };
       }
     ];
   };
 
+  nixosImage = headlessMachine.config.nixosConfiguration.config.formats.qcow;
+
   limaArch = builtins.elemAt (lib.splitString "-" guestSystem) 0;
   limaHome = "${config.xdg.stateHome}/lima";
+
+  # Patch Lima to use #!/bin/sh instead of #!/bin/bash.
   limaPackage = pkgs.lima.overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
       substituteInPlace pkg/hostagent/requirements.go \
         --replace-fail '#!/bin/bash -c \"$(printf' '#!/bin/sh -c \"$(printf'
     '';
   });
-  nixosImage = headlessMachine.config.nixosConfiguration.config.formats.qcow;
 in
 {
   options.modules.lima = {
-    enable = mkEnableOption "Lima";
+    enable = lib.mkEnableOption "Lima";
 
     machineName = mkOption {
       type = types.singleLineStr;
@@ -78,10 +103,9 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     home = {
       packages = [
-        # Patch Lima to use #!/bin/sh instead of #!/bin/bash.
         limaPackage
       ];
       sessionVariables.LIMA_HOME = limaHome;
@@ -133,8 +157,8 @@ in
         vmType: vz
         arch: "${limaArch}"
         user:
-          name: "${config.home.username}"
-          home: "/home/${config.home.username}"
+          name: "${username}"
+          home: "/home/${username}"
           shell: "/run/current-system/sw/bin/fish"
         mountType: "virtiofs"
         images:

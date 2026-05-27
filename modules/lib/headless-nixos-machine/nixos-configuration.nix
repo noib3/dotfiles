@@ -1,8 +1,7 @@
 {
   config,
-  colorscheme,
-  inputs,
   pkgs,
+  inputs,
   system,
   username,
   ...
@@ -104,19 +103,11 @@ in
   };
 
   home-manager = {
-    extraSpecialArgs = {
-      inherit inputs;
-    };
+    extraSpecialArgs = { inherit inputs; };
     users.${username} = {
-      imports = [
-        ../../home
-        ../machines
-        {
-          inherit (config) machines;
-          home.username = username;
-          modules.colorschemes.${colorscheme}.enable = true;
-        }
-      ];
+      imports = [ ../machines ];
+      inherit (config) machines;
+      home.username = username;
     };
   };
 

@@ -1,19 +1,11 @@
-{ enableGhosttyTerminfo }:
-
 {
   config,
   lib,
-  modulesPath,
   pkgs,
-  username,
+  modulesPath,
   ...
 }:
-let
-  ghosttyTerminfo = pkgs.runCommandLocal "ghostty-terminfo" { } ''
-    mkdir -p "$out"
-    cp -r "${pkgs.ghostty.terminfo}/share/terminfo/." "$out"
-  '';
-in
+
 {
   system.build.qcow = lib.mkForce (
     import "${modulesPath}/../lib/make-disk-image.nix" {
@@ -76,12 +68,5 @@ in
         RestartSec = "3s";
       };
     };
-  };
-}
-// lib.optionalAttrs enableGhosttyTerminfo {
-  home-manager.users.${username}.modules.terminals.ghostty = {
-    package = ghosttyTerminfo;
-    launchCommand = "false";
-    terminfo.xterm-ghostty = ghosttyTerminfo;
   };
 }

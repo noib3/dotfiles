@@ -7,10 +7,9 @@
 
 let
   inherit (lib) types;
-  cfg = config.headlessNixosMachine;
 in
 {
-  options.headlessNixosMachine = {
+  options = {
     name = lib.mkOption {
       type = types.singleLineStr;
       description = "Name of the concrete headless NixOS machine.";
@@ -26,11 +25,6 @@ in
       description = "Primary user name.";
     };
 
-    colorscheme = lib.mkOption {
-      type = types.singleLineStr;
-      description = "Home Manager colorscheme to enable for the primary user.";
-    };
-
     machines = lib.mkOption {
       type = types.attrsOf types.raw;
       description = "Machine metadata exposed to the embedded Home Manager config.";
@@ -41,38 +35,32 @@ in
       default = null;
       description = "Additional NixOS module merged into the generated headless machine.";
     };
-  };
 
-  options.nixosConfiguration = lib.mkOption {
-    type = types.raw;
-    readOnly = true;
-    description = "Evaluated NixOS configuration for the concrete headless machine.";
+    nixosConfiguration = lib.mkOption {
+      type = types.raw;
+      readOnly = true;
+      description = "Evaluated NixOS configuration for the concrete headless machine.";
+    };
   };
 
   config.nixosConfiguration = inputs.nixpkgs.lib.nixosSystem {
-    inherit (cfg) system;
+    inherit (config) system;
     modules = [
       ./nixos-configuration.nix
       ../machines
       {
-        machines = cfg.machines // {
+        machines = config.machines // {
           current = {
-            inherit (cfg) system name;
+            inherit (config) system name;
             isHeadless = true;
           };
         };
       }
     ]
-    ++ lib.optional (cfg.extraConfig != null) cfg.extraConfig;
+    ++ lib.optional (config.extraConfig != null) config.extraConfig;
     specialArgs = {
-      inherit
-        inputs
-        ;
-      inherit (cfg)
-        colorscheme
-        system
-        username
-        ;
+      inherit inputs;
+      inherit (config) system username;
     };
   };
 }
