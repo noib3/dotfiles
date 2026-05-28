@@ -151,7 +151,7 @@ in
     macOSProfile.enable = isDarwin;
     macosDefaults.enable = isDarwin;
     neovim.enable = true;
-    opencode.enable = true;
+    opencode.enable = false;
     ripgrep.enable = true;
     rust.enable = true;
     snowstorm-work.enable = true;
