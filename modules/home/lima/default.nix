@@ -59,7 +59,7 @@ in
 
     disk = mkOption {
       type = types.str;
-      default = "40GiB";
+      default = "128GiB";
       description = "Disk size assigned to the Lima NixOS instance.";
     };
 
