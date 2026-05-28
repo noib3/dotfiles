@@ -127,6 +127,18 @@ in
       OSFONTDIR = "${config.home.profileDirectory}/share/fonts/truetype/NerdFonts";
     });
 
+    sessionVariablesExtra =
+      lib.optionalString isLinux ''
+        if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        fi
+      ''
+      + lib.optionalString isDarwin ''
+        if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
+          export XDG_RUNTIME_DIR="''${TMPDIR:-/tmp}"
+        fi
+      '';
+
     stateVersion = "25.11";
   };
 
