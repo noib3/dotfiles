@@ -41,7 +41,7 @@ let
 
         homeConfigurationName = lib.mkOption {
           type = types.singleLineStr;
-          default = name;
+          default = config.name;
           description = ''
             The key in the flake's 'homeConfigurations' output attrset
             specifying the machine's home-manager configuratin
