@@ -8,50 +8,6 @@
   ...
 }:
 
-let
-  physicalHomeConfigurations =
-    removeAttrs config.machines [ "current" ]
-    |> lib.mapAttrs' (
-      _: machine:
-      lib.nameValuePair machine.homeConfigurationName (
-        inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = inputs.nixpkgs.legacyPackages.${machine.system};
-
-          modules = [
-            ../../home
-            ../../lib/machines
-            {
-              home.username = username;
-              machines = config.machines // {
-                current = machine;
-              };
-              modules.colorschemes.${colorscheme}.enable = true;
-              modules.fonts.stacks.${fontstack}.enable = true;
-              nixpkgs.overlays = [ inputs.brew-nix.overlays.default ];
-            }
-          ];
-
-          extraSpecialArgs = {
-            inherit inputs;
-          };
-        }
-      )
-    );
-
-  limaHomeConfigurations =
-    physicalHomeConfigurations
-    |> lib.mapAttrsToList (
-      _: homeConfiguration:
-      let
-        lima = homeConfiguration.config.modules.lima;
-      in
-      lib.optional lima.enable (
-        lib.nameValuePair lima.machineName lima.homeConfiguration
-      )
-    )
-    |> lib.flatten
-    |> builtins.listToAttrs;
-in
 {
   imports = [
     ../../lib/machines
@@ -75,6 +31,33 @@ in
       |> map (m: m.system)
       |> lib.lists.unique;
 
-    flake.homeConfigurations = physicalHomeConfigurations // limaHomeConfigurations;
+    flake.homeConfigurations =
+      removeAttrs config.machines [ "current" ]
+      |> lib.mapAttrs' (
+        _: machine:
+        lib.nameValuePair machine.homeConfigurationName (
+          inputs.home-manager.lib.homeManagerConfiguration {
+            pkgs = inputs.nixpkgs.legacyPackages.${machine.system};
+
+            modules = [
+              ../../home
+              ../../lib/machines
+              {
+                home.username = username;
+                machines = config.machines // {
+                  current = machine;
+                };
+                modules.colorschemes.${colorscheme}.enable = true;
+                modules.fonts.stacks.${fontstack}.enable = true;
+                nixpkgs.overlays = [ inputs.brew-nix.overlays.default ];
+              }
+            ];
+
+            extraSpecialArgs = {
+              inherit inputs;
+            };
+          }
+        )
+      );
   };
 }

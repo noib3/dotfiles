@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   system,
@@ -7,6 +8,9 @@
   ...
 }:
 
+let
+  limaFlakeConfigUri = "${config.lib.mine.dotfilesDir}#homeConfigurations.${builtins.toJSON hostConfig.machines.current.homeConfigurationName}.config.modules.lima.homeConfiguration";
+in
 {
   imports = [
     ../.
@@ -20,6 +24,10 @@
       name = hostConfig.modules.lima.machineName;
       isHeadless = true;
     };
+  };
+  modules.fish = {
+    homeManagerNewsAbbreviation = "FLAKE_CONFIG_URI=${lib.escapeShellArg limaFlakeConfigUri} home-manager news";
+    homeManagerSwitchAbbreviation = "FLAKE_CONFIG_URI=${lib.escapeShellArg limaFlakeConfigUri} home-manager switch";
   };
   modules.colorschemes.${hostConfig.modules.colorschemes.name}.enable = true;
   modules.terminals.ghostty = lib.mkIf hostConfig.modules.ghostty.enable (

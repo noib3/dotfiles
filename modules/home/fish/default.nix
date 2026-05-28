@@ -17,6 +17,18 @@ in
 {
   options.modules.fish = {
     enable = lib.mkEnableOption "Fish";
+
+    homeManagerNewsAbbreviation = lib.mkOption {
+      type = lib.types.str;
+      default = "home-manager news --flake ${dotfilesDir}#${machine.homeConfigurationName}";
+      description = "Command expanded by the 'hmn' fish abbreviation.";
+    };
+
+    homeManagerSwitchAbbreviation = lib.mkOption {
+      type = lib.types.str;
+      default = "home-manager switch --flake ${dotfilesDir}#${machine.homeConfigurationName}";
+      description = "Command expanded by the 'hms' fish abbreviation.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -43,8 +55,8 @@ in
       };
 
       shellAbbrs = {
-        hmn = "home-manager news --flake ${dotfilesDir}#${machine.homeConfigurationName}";
-        hms = "home-manager switch --flake ${dotfilesDir}#${machine.homeConfigurationName}";
+        hmn = cfg.homeManagerNewsAbbreviation;
+        hms = cfg.homeManagerSwitchAbbreviation;
         ipy = "ipython";
         lg = "lazygit";
       }
