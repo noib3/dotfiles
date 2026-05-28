@@ -86,7 +86,6 @@
       url = "github:nvim-neotest/neotest";
       flake = false;
     };
-    nomad.url = "github:nomad/nomad";
     nvim-autopairs = {
       url = "github:windwp/nvim-autopairs";
       flake = false;
@@ -250,11 +249,9 @@
   nixConfig = {
     extra-substituters = [
       "https://nix-community.cachix.org"
-      "https://nomad.cachix.org"
     ];
     extra-trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "nomad.cachix.org-1:jQ4al6yxQyvUBB7YJVJbMbc9rASokqamqvPhBUrVjww="
     ];
   };
 }

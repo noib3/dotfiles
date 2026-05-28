@@ -32,24 +32,10 @@ in
       apiVersion: v1
       kind: Config
 
-      clusters:
-      - name: nomad
-        cluster:
-          server: https://k8s.nomad.foo
-
       users:
       - name: noib3
         user:
           tokenFile: ${configDir}/token.txt
-
-      contexts:
-      - name: nomad
-        context:
-          cluster: nomad
-          namespace: default
-          user: noib3
-
-      current-context: nomad
     '';
   };
 }

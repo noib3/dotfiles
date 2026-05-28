@@ -20,10 +20,6 @@ in
       enable = true;
       enableDefaultConfig = false;
       matchBlocks = {
-        auth-canada = {
-          hostname = "148.113.207.61";
-          user = "nomad";
-        };
         remarkable2 = {
           hostname = "10.11.99.1";
           user = "root";

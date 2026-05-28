@@ -90,7 +90,6 @@ let
     inputs.lualine-nvim
     inputs.neotab-nvim
     inputs.neotest
-    inputs.nomad.packages.${stdenvNoCC.system}.neovim-nightly
     inputs.nvim-autopairs
     inputs.nvim-colorizer-lua
     inputs.nvim-lastplace
