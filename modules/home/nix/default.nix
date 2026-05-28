@@ -60,7 +60,10 @@ in
 
     nix = {
       package = lib.mkForce nix;
-      plugins.jettison.enable = true;
+      # TODO: always enable once Nix 2.35 is released (needs
+      # https://github.com/NixOS/nix/pull/15696 to load the C API symbols on
+      # Linux).
+      plugins.jettison.enable = pkgs.stdenv.isDarwin;
       settings = {
         experimental-features = [
           "flakes"
