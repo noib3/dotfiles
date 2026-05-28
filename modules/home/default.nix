@@ -119,6 +119,7 @@ in
       LANG = "en_US.UTF-8";
       LC_ALL = "en_US.UTF-8";
       LESSHISTFILE = "${config.xdg.cacheHome}/less/lesshst";
+      NPM_CONFIG_INIT_MODULE = "${config.xdg.configHome}/npm/config/npm-init.js";
       NPM_CONFIG_CACHE = "${config.xdg.cacheHome}/npm";
       TEXMFCONFIG = "${config.xdg.configHome}/texmf";
       TEXMFVAR = "${config.xdg.stateHome}/texmf";
@@ -137,6 +138,9 @@ in
         if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
           export XDG_RUNTIME_DIR="''${TMPDIR:-/tmp}"
         fi
+      ''
+      + ''
+        export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR/npm"
       '';
 
     stateVersion = "25.11";
