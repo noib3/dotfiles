@@ -63,6 +63,32 @@ in
       description = "Disk size assigned to the Lima NixOS instance.";
     };
 
+    mounts = mkOption {
+      type = types.listOf (
+        types.submodule {
+          options = {
+            location = mkOption {
+              type = types.str;
+              description = "Host path to mount into the Lima VM.";
+            };
+
+            mountPoint = mkOption {
+              type = types.str;
+              description = "Guest path where the host path is mounted.";
+            };
+
+            writeable = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Whether the mount is writable from the Lima VM.";
+            };
+          };
+        }
+      );
+      default = [ ];
+      description = "Host paths to mount into the Lima VM.";
+    };
+
     homeConfiguration = mkOption {
       type = types.nullOr types.raw;
       readOnly = true;
@@ -86,6 +112,17 @@ in
       ];
       sessionVariables.LIMA_HOME = limaHome;
     };
+
+    modules.lima.mounts = [
+      {
+        location = config.lib.mine.documentsDir;
+        mountPoint = "/home/${username}/Documents";
+      }
+      {
+        location = "${config.home.homeDirectory}/Dev";
+        mountPoint = "/home/${username}/Dev";
+      }
+    ];
 
     home.activation.resetLimaOnImageChange =
       let
@@ -148,9 +185,11 @@ in
         disk: "${cfg.disk}"
 
         mounts:
-        - location: "${config.lib.mine.documentsDir}"
-          mountPoint: "/home/${username}/Documents"
-          writable: true
+        ${lib.concatMapStrings (mount: ''
+          - location: ${builtins.toJSON mount.location}
+            mountPoint: ${builtins.toJSON mount.mountPoint}
+            writable: ${lib.boolToString mount.writeable}
+        '') cfg.mounts}
 
         portForwards:
         - guestIP: "0.0.0.0"
