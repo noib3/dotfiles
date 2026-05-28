@@ -52,17 +52,32 @@ in
               gnused
             ];
             text = ''
-              docs_dir="${config.lib.mine.documentsDir}"
-              docs_name="$(basename "$docs_dir")"
-              {
-                (cd "${config.home.homeDirectory}" && fd ${fdOpts})
+              emit_dir_tree() {
+                root="$1"
+                home="${config.home.homeDirectory}"
 
-                # If the documents directory is a symlink, scan it explicitly since
-                # fd doesn't follow symlinks.
-                if [ -L "$docs_dir" ]; then
-                  (cd "$docs_dir" && fd ${fdOpts}) \
-                    | sed -u "s|^|"$'\x1b[${col-dirs}m'"$docs_name/|"
+                if [ ! -d "$root" ]; then
+                  return
                 fi
+
+                case "$root" in
+                  "$home"/*)
+                    prefix="''${root#"$home"/}"
+                    ;;
+                  *)
+                    prefix="$root"
+                    ;;
+                esac
+
+                (cd "$root" && fd ${fdOpts}) \
+                  | sed -u "s|^|"$'\x1b[${col-dirs}m'"$prefix/|"
+              }
+
+              {
+                emit_dir_tree "${config.lib.mine.documentsDir}"
+                emit_dir_tree "${config.home.homeDirectory}/Downloads"
+                emit_dir_tree "${config.home.homeDirectory}/Dev"
+                emit_dir_tree "${config.xdg.configHome}"
               } \
                 | sed -u 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
                 | sed -u 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
