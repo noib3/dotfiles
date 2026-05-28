@@ -23,6 +23,7 @@ in
       settings = {
         adjust-cursor-thickness = "200%";
         auto-update = "off";
+        command = "direct:${lib.getExe config.neovim.package} +terminal";
         cursor-style = "bar";
         cursor-style-blink = false;
         keybind = import ./keybinds.nix { inherit lib isDarwin isLinux; };
