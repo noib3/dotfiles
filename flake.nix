@@ -35,7 +35,7 @@
     };
     nix-jettison = {
       url = "git+ssh://git@github.com/noib3/nix-jettison";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

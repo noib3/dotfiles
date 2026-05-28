@@ -29,10 +29,10 @@ in
       ];
     };
 
-    programs.ssh.matchBlocks.${sshHostname} = {
-      hostname = "github.com";
-      identityFile = "~/.ssh/snowstorm.pk";
-      identitiesOnly = true;
+    programs.ssh.settings.${sshHostname} = {
+      HostName = "github.com";
+      IdentityFile = "~/.ssh/snowstorm.pk";
+      IdentitiesOnly = true;
     };
   };
 }

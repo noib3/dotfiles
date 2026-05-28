@@ -19,21 +19,21 @@ in
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
-      matchBlocks = {
+      settings = {
         remarkable2 = {
-          hostname = "10.11.99.1";
-          user = "root";
+          HostName = "10.11.99.1";
+          User = "root";
         };
         "*" = {
-          addKeysToAgent = "yes";
-          compression = true;
-          hashKnownHosts = true;
-          userKnownHostsFile = knownHostsFile;
+          AddKeysToAgent = "yes";
+          Compression = true;
+          HashKnownHosts = true;
+          UserKnownHostsFile = knownHostsFile;
+        }
+        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+          UseKeychain = "yes";
         };
       };
-      extraConfig = ''
-        ${lib.optionalString pkgs.stdenv.isDarwin "UseKeychain yes"}
-      '';
     };
 
     services.ssh-agent.enable = pkgs.stdenv.isLinux;
