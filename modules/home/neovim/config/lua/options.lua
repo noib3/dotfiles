@@ -6,6 +6,10 @@ opt.autochdir = true
 
 opt.background = "dark"
 
+-- Paste from/copy to system clipboard via OSC 52, let the terminal worry about
+-- the platform-specific details.
+vim.g.clipboard = "osc52"
+
 -- Use the system clipboard.
 opt.clipboard = "unnamedplus"
 
