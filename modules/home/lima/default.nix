@@ -196,6 +196,11 @@ in
           guestPort: 5355
           proto: "any"
           ignore: true
+        ${lib.optionalString config.services.gpg-agent.enable ''
+          - guestSocket: "/run/user/{{.UID}}/gnupg/S.gpg-agent"
+            hostSocket: ${builtins.toJSON "${config.programs.gpg.homedir}/S.gpg-agent.extra"}
+            reverse: true
+        ''}
 
         containerd:
           system: false
