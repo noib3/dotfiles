@@ -23,6 +23,7 @@ in
       settings = {
         adjust-cursor-thickness = "200%";
         auto-update = "off";
+        clipboard-read = "allow";
         command = "direct:${lib.getExe config.neovim.package} +terminal";
         cursor-style = "bar";
         cursor-style-blink = false;
