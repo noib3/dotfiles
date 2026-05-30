@@ -142,9 +142,26 @@ local handle_launch = function(ev)
   local file_wins = buf_get_wins(file_buf):totable()
   emit_for_buffer(file_buf, did_swallow_event)
 
+  local bdeleting_file_buf = false
+
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "BDeletePre " .. file_buf,
+    once = true,
+    callback = function()
+      -- Bdelete preserves the window layout by moving windows off the buffer
+      -- before deleting it, so freeze restore targets before that churn starts.
+      bdeleting_file_buf = true
+      file_wins = buf_get_wins(file_buf):totable()
+    end,
+  })
+
   vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave" }, {
     buffer = file_buf,
-    callback = function() file_wins = buf_get_wins(file_buf):totable() end,
+    callback = function()
+      -- Ignore Bdelete's temporary window moves, they are not user intent.
+      if bdeleting_file_buf then return end
+      file_wins = buf_get_wins(file_buf):totable()
+    end,
   })
 
   vim.api.nvim_create_autocmd("BufDelete", {
