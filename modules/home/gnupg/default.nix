@@ -10,6 +10,8 @@ let
   cfg = config.modules.gnupg;
   isEmbedded = args ? hostConfig;
   shouldForwardGpgAgent = isEmbedded && args.hostConfig.services.gpg-agent.enable;
+  publicKeysHostDir = "${config.xdg.stateHome}/gnupg/lima-public-keys";
+  publicKeysGuestDir = "/home/${config.home.username}/.local/state/gnupg-host-public-keys";
 in
 {
   options.modules.gnupg = {
@@ -43,5 +45,34 @@ in
     systemd.user.tmpfiles.rules = optionals shouldForwardGpgAgent [
       "d %t/gnupg 0700 - - - -"
     ];
+
+    modules.lima.mounts = mkIf config.modules.lima.enable [
+      {
+        location = publicKeysHostDir;
+        mountPoint = publicKeysGuestDir;
+        writeable = false;
+      }
+    ];
+
+    home.activation.exportGpgPublicKeys = mkIf config.modules.lima.enable (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        dir=${lib.escapeShellArg publicKeysHostDir}
+        run mkdir -p "$dir"
+        run chmod 700 "$dir"
+        run ${lib.getExe pkgs.gnupg} --batch --yes --armor --export --output "$dir/host-public-keys.asc"
+        run chmod 600 "$dir/host-public-keys.asc"
+      ''
+    );
+
+    home.activation.importHostGpgPublicKeys =
+      mkIf (isEmbedded && args.hostConfig.modules.gnupg.enable)
+        (
+          lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            dir=${lib.escapeShellArg publicKeysGuestDir}
+            if [[ -s "$dir/host-public-keys.asc" ]]; then
+              run ${lib.getExe pkgs.gnupg} --batch --import "$dir/host-public-keys.asc"
+            fi
+          ''
+        );
   };
 }
