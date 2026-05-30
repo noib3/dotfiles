@@ -1,10 +1,8 @@
 {
-  coreutils,
   lib,
   linkFarm,
   runCommandLocal,
   stdenvNoCC,
-  writeShellApplication,
   writeTextDir,
   copilot-language-server,
   pkgs,
@@ -70,6 +68,10 @@ let
     vimdoc
   ];
 
+  localPlugins = lib.mapAttrsToList (name: _: ../plugins + "/${name}") (
+    builtins.readDir ../plugins
+  );
+
   # Each of these is a valid Neovim rtp entry.
   plugins = [
     inputs.blink-cmp.packages.${stdenvNoCC.system}.default
@@ -108,6 +110,7 @@ let
     inputs.treesitter-modules-nvim
     inputs.trouble-nvim
   ]
+  ++ localPlugins
   ++ treeSitterParsers
   ++ treeSitterQueries
   ++ [ (writeTextDir "lua/palette.lua" "return ${toLua paletteData}") ];
@@ -120,10 +123,6 @@ let
       path = plugin;
     }) plugins
   );
-
-  neovim = import ./neovim.nix {
-    inherit inputs lib pkgs;
-  };
 
   env = {
     COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
@@ -139,17 +138,35 @@ let
       ln -s ${../config} "$out/nvim"
     '';
   };
-in
-writeShellApplication {
-  name = "nvim";
-  runtimeInputs = [
-    coreutils
-  ];
-  runtimeEnv = env // {
-    NVIM_EXE = lib.getExe neovim;
+
+  neovim = import ./neovim.nix {
+    inherit inputs lib pkgs;
   };
+in
+pkgs.symlinkJoin {
+  name = "nvim";
+  paths = [ neovim ];
+  nativeBuildInputs = [ pkgs.makeWrapper ];
+
+  postBuild =
+    let
+      envWrapperArgs = lib.escapeShellArgs (
+        lib.concatLists (
+          lib.mapAttrsToList (name: value: [
+            "--set"
+            name
+            value
+          ]) env
+        )
+      );
+    in
+    ''
+      wrapProgram "$out/bin/nvim" ${envWrapperArgs}
+    '';
+
   passthru = {
     inherit env neovim;
   };
-  text = builtins.readFile ./nvim.sh;
+
+  meta.mainProgram = "nvim";
 }

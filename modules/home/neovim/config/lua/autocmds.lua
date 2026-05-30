@@ -4,14 +4,6 @@ local create_augroup = function(name)
   return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
---- Returns an iterator over the windows currently displaying the given buffer.
---- @param buf number
-local buf_get_wins = function(buf)
-  return vim
-    .iter(vim.api.nvim_list_wins())
-    :filter(function(win) return vim.api.nvim_win_get_buf(win) == buf end)
-end
-
 vim.api.nvim_create_autocmd("VimResized", {
   group = create_augroup("noib3/rebalance-splits"),
   desc = "Rebalances window splits when terminal is resized",
@@ -50,98 +42,37 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
+
 vim.api.nvim_create_autocmd("User", {
-  group = create_augroup("noib3/handle-recursive-nvim-launch"),
-  pattern = "NvimLaunch",
-  callback = function(ev)
-    local orig_buf = ev.buf
-    local orig_buf_is_terminal = vim.bo[orig_buf].buftype == "terminal"
+  group = nvim_flatten_group,
+  pattern = "NvimFlattenWillSwallow",
+  desc = "Hides terminals while recursive nvim launches replace them",
+  callback = function()
+    if vim.bo.buftype == "terminal" then vim.bo.buflisted = false end
+  end,
+})
 
-    -- Map of buffer names to buffer numbers for all currently open buffers.
-    local buf_names_to_bufnr = vim
-      .iter(vim.api.nvim_list_bufs())
-      :fold({}, function(acc, bufnr)
-        if not vim.api.nvim_buf_is_valid(bufnr) then return acc end
-        local name = vim.api.nvim_buf_get_name(bufnr)
-        if name ~= "" then acc[name] = bufnr end
-        return acc
-      end)
+vim.api.nvim_create_autocmd("User", {
+  group = nvim_flatten_group,
+  pattern = "NvimFlattenDidSwallow",
+  desc = "Marks recursive nvim launch buffers for the local close mapping",
+  callback = function() vim.b.from_nvim_launch = true end,
+})
 
-    local filepaths = ev.data.filepaths
-    local file_buf
+vim.api.nvim_create_autocmd("User", {
+  group = nvim_flatten_group,
+  pattern = "NvimFlattenWillShow",
+  desc = "Clears local close mapping state from recursive nvim launch buffers",
+  callback = function() vim.b.from_nvim_launch = nil end,
+})
 
-    if #filepaths == 0 then
-      vim.cmd.enew()
-      file_buf = vim.api.nvim_get_current_buf()
-    else
-      -- Create new buffers for each file.
-      for _, filepath in ipairs(filepaths) do
-        local buf = buf_names_to_bufnr[filepath]
-        if not buf then buf = vim.fn.bufadd(filepath) end
-        vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
-        vim.fn.bufload(buf)
-        if vim.bo[buf].filetype == "" then
-          local ft = vim.filetype.match({ buf = buf, filename = filepath })
-          if ft and ft ~= "" then
-            vim.api.nvim_buf_call(
-              buf,
-              function() vim.cmd("setfiletype " .. ft) end
-            )
-          end
-        end
-        if not file_buf then file_buf = buf end
-      end
-
-      if #filepaths == 1 and file_buf == orig_buf then
-        vim.schedule(ev.data.on_done)
-        return
-      end
-
-      if orig_buf == vim.api.nvim_get_current_buf() then
-        -- If the original buffer is focused, display the first file in the
-        -- current window.
-        vim.api.nvim_win_set_buf(0, file_buf)
-      else
-        -- Otherwise, display it in all the windows showing the original buffer.
-        for win in buf_get_wins(orig_buf) do
-          vim.api.nvim_win_set_buf(win, file_buf)
-        end
-      end
-    end
-
-    -- The list of windows currently displaying the opened file.
-    local file_wins = buf_get_wins(file_buf):totable()
-
-    -- Keep the list updated.
-    vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave" }, {
-      buffer = file_buf,
-      callback = function() file_wins = buf_get_wins(file_buf):totable() end,
-    })
-
-    vim.api.nvim_create_autocmd("BufDelete", {
-      buffer = file_buf,
-      once = true,
-      callback = function()
-        ev.data.on_done()
-        -- Display the original buffer on all the windows that were displaying
-        -- the deleted buffer (scheduled to ensure BufDelete has fully
-        -- completed).
-        vim.schedule(function()
-          if not vim.api.nvim_buf_is_valid(orig_buf) then return end
-          local restored = false
-          for _, win in ipairs(file_wins) do
-            if vim.api.nvim_win_is_valid(win) then
-              vim.api.nvim_win_set_buf(win, orig_buf)
-              restored = true
-            end
-          end
-          -- Restore insert mode only if the terminal is visible again.
-          if orig_buf_is_terminal and restored then
-            vim.api.nvim_buf_call(orig_buf, vim.cmd.startinsert)
-          end
-        end)
-      end,
-    })
+vim.api.nvim_create_autocmd("User", {
+  group = nvim_flatten_group,
+  pattern = "NvimFlattenDidShow",
+  desc = "Relists terminals after recursive nvim launches return to them",
+  callback = function()
+    if vim.bo.buftype == "terminal" then vim.bo.buflisted = true end
   end,
 })
 
