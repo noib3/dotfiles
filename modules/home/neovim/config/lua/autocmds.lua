@@ -41,12 +41,28 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+local closing_last_terminal = false
+
+vim.api.nvim_create_autocmd("BufDelete", {
+  group = create_augroup("noib3/track-closing-terminal"),
+  callback = function(ev)
+    local is_empty_buffer = function(buf)
+      return vim.bo[buf].buftype == "" and vim.api.nvim_buf_get_name(buf) == ""
+    end
+
+    if vim.bo[ev.buf].buftype ~= "terminal" then return end
+
+    closing_last_terminal = vim.iter(vim.fn.getbufinfo({ buflisted = 1 })):all(
+      function(info) return info.bufnr == ev.buf or is_empty_buffer(info.bufnr) end
+    )
+  end,
+})
+
 vim.api.nvim_create_autocmd("TermClose", {
   group = create_augroup("noib3/quit-on-last-terminal-exited"),
   callback = function()
-    vim.schedule(function()
-      if #vim.fn.getbufinfo({ buflisted = 1 }) == 1 then vim.cmd("q") end
-    end)
+    if not closing_last_terminal then return end
+    vim.schedule(function() vim.cmd("q") end)
   end,
 })
 
