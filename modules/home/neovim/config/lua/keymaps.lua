@@ -12,17 +12,13 @@ local close = function()
     return #vim.fn.getbufinfo({ buflisted = 1 }) == 1
   end
 
-  -- The current buffer filetype and buffer type.
-  local filetype, buftype = vim.bo.filetype, vim.bo.buftype
-
   -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
   -- to avoid messing w/ the window layout.
   local has_bufdelete, _ = pcall(require, "bufdelete")
   local bd = has_bufdelete and "Bdelete" or "bdelete"
 
-  local cmd = (buftype == "terminal" and "bdelete!")
-    or (vim.b.from_nvim_launch and bd)
-    or ((filetype == "help" or buftype == "nofile" or is_last_buffer()) and "q")
+  local cmd = (vim.b.from_nvim_launch and bd)
+    or ((vim.bo.filetype == "help" or vim.bo.buftype == "nofile" or is_last_buffer()) and "q")
     or bd
 
   vim.cmd(cmd)
