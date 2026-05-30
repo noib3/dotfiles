@@ -14,8 +14,15 @@ results="$(
       --preview='rg-preview {1}:{2}' \
       --preview-window='+{2}-/2'
 )"
+status=$?
 
-[ -n "$results" ] || exit 0
+if [ "$status" -eq 130 ] || [ -z "$results" ]; then
+  exit 0
+fi
+
+if [ "$status" -ne 0 ]; then
+  exit "$status"
+fi
 
 regex='^([^:]*):([^:]*):([^:]*):.*$'
 
