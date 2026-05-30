@@ -131,15 +131,16 @@ keymap.set("v", "ss", ":s///g<Left><Left><Left>")
 -- Display diagnostics in a floating window.
 keymap.set("n", "?", vim.diagnostic.open_float)
 
--- Escape terminal mode.
-keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
-
--- Send a literal <Esc> to the terminal app.
-keymap.set("t", "<D-Esc>", "<C-\\><Esc>", { noremap = true })
-keymap.set("n", "<D-Esc>", function()
-  if vim.bo.buftype ~= "terminal" then return end
-  vim.api.nvim_chan_send(vim.bo.channel, "\27")
-end)
+-- Escape terminal mode if the terminal is displaying the shell's prompt, or
+-- re-emit the same key event for the child TUI to consume otherwise.
+keymap.set(
+  "t",
+  "<Esc>",
+  function()
+    return vim.b.terminal_shell_prompt_active and "<C-\\><C-n>" or "<C-\\><Esc>"
+  end,
+  { expr = true, noremap = true }
+)
 
 -- Open a terminal in the current window.
 keymap.set("n", "tt", function() vim.cmd("terminal") end)

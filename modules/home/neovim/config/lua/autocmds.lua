@@ -50,6 +50,17 @@ vim.api.nvim_create_autocmd("TermClose", {
   end,
 })
 
+vim.api.nvim_create_autocmd("TermRequest", {
+  group = create_augroup("noib3/track-shell-prompt"),
+  desc = "Tracks when terminals are at an OSC 133 shell prompt",
+  callback = function(ev)
+    local seq = ev.data and ev.data.sequence or ""
+    local marker = seq:match("^\27%]133;([ABCD])")
+    if not marker then return end
+    vim.b[ev.buf].terminal_shell_prompt_active = marker == "B"
+  end,
+})
+
 local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
 local nvim_flatten_orig_buf
 
