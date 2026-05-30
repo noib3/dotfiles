@@ -110,13 +110,20 @@ in
         bind -M insert super-right end-of-line
         bind -M insert \e\x7F backward-kill-word
         bind -M insert super-w exit
+
+        function __mark_command_output
+          printf '\e]133;C\a'
+          $argv
+          printf '\e]133;B\a'
+        end
+
         bind -M insert super-l 'clear; commandline -f repaint'
-        bind -M insert super-d fuzzy-cd
-        bind -M insert super-e fuzzy-edit
-        bind -M insert super-h fuzzy-history
-        bind -M insert super-k fuzzy-kill
-        bind -M insert super-r fuzzy-ripgrep-fish
-        bind -M insert super-s fuzzy-search
+        bind -M insert super-d '__mark_command_output fuzzy-cd'
+        bind -M insert super-e '__mark_command_output fuzzy-edit'
+        bind -M insert super-h '__mark_command_output fuzzy-history'
+        bind -M insert super-k '__mark_command_output fuzzy-kill'
+        bind -M insert super-r '__mark_command_output fuzzy-ripgrep-fish'
+        bind -M insert super-s '__mark_command_output fuzzy-search'
 
         # For some reason the pisces plugin needs to be sourced manually to
         # become active.
@@ -125,7 +132,7 @@ in
         # The fzf module's fish integration adds `fzf --fish` to the config,
         # which, among other things, sets shift-tab to show shell completions
         # via fzf. I want shift-tab to select the previous completion.
-        bind -M insert super-t fzf-completion
+        bind -M insert super-t '__mark_command_output fzf-completion'
         bind -M insert shift-tab 'if commandline --paging-mode; commandline -f complete-and-search; end'
 
         ${pkgs.gnupg}/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
