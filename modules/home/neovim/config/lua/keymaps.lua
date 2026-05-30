@@ -131,6 +131,9 @@ keymap.set("v", "ss", ":s///g<Left><Left><Left>")
 -- Display diagnostics in a floating window.
 keymap.set("n", "?", vim.diagnostic.open_float)
 
+-- Escape terminal mode.
+keymap.set("t", "<D-Esc>", "<C-\\><C-n>", { noremap = true })
+
 -- Escape terminal mode if the terminal is displaying the shell's prompt, or
 -- re-emit the same key event for the child TUI to consume otherwise.
 keymap.set(
