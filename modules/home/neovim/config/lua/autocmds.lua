@@ -73,30 +73,23 @@ vim.api.nvim_create_autocmd("User", {
     if #filepaths == 0 then
       vim.cmd.enew()
       file_buf = vim.api.nvim_get_current_buf()
-      vim.b[file_buf].from_nvim_launch = true
     else
       -- Create new buffers for each file.
       for _, filepath in ipairs(filepaths) do
         local buf = buf_names_to_bufnr[filepath]
-        -- Skip creating a new buffer if one already exists for the file.
-        if buf then
-          if not file_buf then file_buf = buf end
-          goto continue
-        end
-        buf = vim.fn.bufadd(filepath)
+        if not buf then buf = vim.fn.bufadd(filepath) end
         vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
         vim.fn.bufload(buf)
-        -- Set the buffer's filetype.
-        local ft = vim.filetype.match({ buf = buf, filename = filepath })
-        if ft and ft ~= "" then
-          vim.api.nvim_buf_call(
-            buf,
-            function() vim.cmd("setfiletype " .. ft) end
-          )
+        if vim.bo[buf].filetype == "" then
+          local ft = vim.filetype.match({ buf = buf, filename = filepath })
+          if ft and ft ~= "" then
+            vim.api.nvim_buf_call(
+              buf,
+              function() vim.cmd("setfiletype " .. ft) end
+            )
+          end
         end
-        vim.b[buf].from_nvim_launch = true
         if not file_buf then file_buf = buf end
-        ::continue::
       end
 
       if #filepaths == 1 and file_buf == orig_buf then
@@ -116,12 +109,8 @@ vim.api.nvim_create_autocmd("User", {
       end
     end
 
-    -- If the original buffer was a terminal, unlist it (to keep up the illusion
-    -- that the newly opened file has "swallowed" it).
-    if orig_buf_is_terminal then vim.bo[orig_buf].buflisted = false end
-
     -- The list of windows currently displaying the opened file.
-    local file_wins = {}
+    local file_wins = buf_get_wins(file_buf):totable()
 
     -- Keep the list updated.
     vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave" }, {
@@ -134,14 +123,11 @@ vim.api.nvim_create_autocmd("User", {
       once = true,
       callback = function()
         ev.data.on_done()
-        -- Return early if the original buffer has since been deleted.
-        if not vim.api.nvim_buf_is_valid(orig_buf) then return end
-        -- If the buffer was a terminal, re-add it to the buffer list.
-        if orig_buf_is_terminal then vim.bo[orig_buf].buflisted = true end
         -- Display the original buffer on all the windows that were displaying
         -- the deleted buffer (scheduled to ensure BufDelete has fully
         -- completed).
         vim.schedule(function()
+          if not vim.api.nvim_buf_is_valid(orig_buf) then return end
           local restored = false
           for _, win in ipairs(file_wins) do
             if vim.api.nvim_win_is_valid(win) then
