@@ -106,6 +106,28 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    assertions =
+      let
+        limaHomeMountLocations =
+          cfg.mounts
+          |> map (mount: mount.location)
+          |> lib.filter (
+            location: location == limaHome || lib.hasPrefix "${limaHome}/" location
+          );
+      in
+      [
+        {
+          assertion = limaHomeMountLocations == [ ];
+          message = ''
+            modules.lima.mounts locations must not be inside LIMA_HOME (${limaHome}).
+            Lima treats directories there as instances; invalid locations:
+            ${lib.concatMapStringsSep "\n" (
+              location: "  - ${location}"
+            ) limaHomeMountLocations}
+          '';
+        }
+      ];
+
     home = {
       packages = [
         pkgs.lima
