@@ -136,6 +136,10 @@ keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true })
 
 -- Send a literal <Esc> to the terminal app.
 keymap.set("t", "<D-Esc>", "<C-\\><Esc>", { noremap = true })
+keymap.set("n", "<D-Esc>", function()
+  if vim.bo.buftype ~= "terminal" then return end
+  vim.api.nvim_chan_send(vim.bo.channel, "\27")
+end)
 
 -- Open a terminal in the current window.
 keymap.set("n", "tt", function() vim.cmd("terminal") end)
