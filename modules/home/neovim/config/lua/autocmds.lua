@@ -41,6 +41,15 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+vim.api.nvim_create_autocmd("TermClose", {
+  group = create_augroup("noib3/quit-on-last-terminal-exited"),
+  callback = function()
+    vim.schedule(function()
+      if #vim.fn.getbufinfo({ buflisted = 1 }) == 1 then vim.cmd("q") end
+    end)
+  end,
+})
+
 local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
 
 vim.api.nvim_create_autocmd("User", {
