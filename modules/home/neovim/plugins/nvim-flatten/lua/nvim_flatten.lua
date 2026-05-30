@@ -158,5 +158,6 @@ vim.api.nvim_create_autocmd("User", {
     clear = true,
   }),
   pattern = launch_event,
+  nested = true,
   callback = handle_launch,
 })

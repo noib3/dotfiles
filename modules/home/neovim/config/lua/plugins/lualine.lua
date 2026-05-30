@@ -2,6 +2,20 @@ local lsp_progress = require("lsp-progress")
 local lualine = require("lualine")
 local utils = require("utils")
 
+local all_splits_are_terminals = function()
+  return vim
+    .iter(vim.api.nvim_list_wins())
+    :filter(function(win) return vim.fn.win_gettype(win) == "" end)
+    :all(function(win)
+      local buf = vim.api.nvim_win_get_buf(win)
+      return vim.bo[buf].buftype == "terminal"
+    end)
+end
+
+local not_all_splits_are_terminals = function()
+  return not all_splits_are_terminals()
+end
+
 --- Returns diagnostic counts across all the LSP clients attached to the current
 --- buffer.
 ---@return { error: integer, warn: integer, info: integer, hint: integer }
@@ -45,7 +59,7 @@ lualine.setup({
     globalstatus = true,
     ignore_focus = function(win)
       local buf = vim.api.nvim_win_get_buf(win)
-      return vim.bo[buf].buftype ~= ""
+      return not all_splits_are_terminals() and vim.bo[buf].buftype ~= ""
     end,
     section_separators = "",
     -- Returns the theme table with colors sourced from the current
@@ -69,11 +83,15 @@ lualine.setup({
   },
   sections = {
     lualine_a = {
-      lsp_progress.progress,
+      {
+        lsp_progress.progress,
+        cond = not_all_splits_are_terminals,
+      },
     },
     lualine_b = {
       {
         "diagnostics",
+        cond = not_all_splits_are_terminals,
         diagnostics_color = {
           error = "DiagnosticError",
           warn = "DiagnosticWarn",
@@ -83,15 +101,34 @@ lualine.setup({
         symbols = { error = " ", warn = " " },
       },
     },
-    lualine_c = {},
+    lualine_c = {
+      {
+        function()
+          return string.rep(
+            vim.opt.fillchars:get().horiz or "─",
+            vim.o.columns
+          )
+        end,
+        color = "WinSeparator",
+        cond = all_splits_are_terminals,
+        padding = 0,
+      },
+    },
     lualine_x = {},
     lualine_y = {
-      "selectioncount",
-      "searchcount",
+      {
+        "selectioncount",
+        cond = not_all_splits_are_terminals,
+      },
+      {
+        "searchcount",
+        cond = not_all_splits_are_terminals,
+      },
     },
     lualine_z = {
       {
         "branch",
+        cond = not_all_splits_are_terminals,
         color = {
           ---@diagnostic disable-next-line: undefined-field
           fg = vim.opt.background:get() == "dark" and "#928374" or "#7c6f64",
@@ -99,6 +136,17 @@ lualine.setup({
       },
     },
   },
+})
+
+vim.api.nvim_create_autocmd({ "BufEnter", "TermOpen", "WinClosed", "WinNew" }, {
+  group = vim.api.nvim_create_augroup("noib3/lualine-statusline", {
+    clear = true,
+  }),
+  desc = "Renders terminal-only statuslines as split separators",
+  callback = vim.schedule_wrap(function()
+    vim.o.laststatus = all_splits_are_terminals() and 0 or 3
+    lualine.refresh({ place = { "statusline" } })
+  end),
 })
 
 -- Refresh lualine when the LSP progress status is updated.
