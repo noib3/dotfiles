@@ -17,7 +17,13 @@ local close = function()
   local has_bufdelete, _ = pcall(require, "bufdelete")
   local bd = has_bufdelete and "Bdelete" or "bdelete"
 
-  local cmd = (vim.b.from_nvim_launch and bd)
+  local orig_buf = vim.b.nvim_flatten_orig_buf
+  local from_nvim_launch = type(orig_buf) == "number"
+    and vim.api.nvim_buf_is_valid(orig_buf)
+
+  if from_nvim_launch then vim.bo[orig_buf].buflisted = true end
+
+  local cmd = (from_nvim_launch and bd)
     or ((vim.bo.filetype == "help" or vim.bo.buftype == "nofile" or is_last_buffer()) and "q")
     or bd
 

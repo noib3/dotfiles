@@ -51,12 +51,14 @@ vim.api.nvim_create_autocmd("TermClose", {
 })
 
 local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
+local nvim_flatten_orig_buf
 
 vim.api.nvim_create_autocmd("User", {
   group = nvim_flatten_group,
   pattern = "NvimFlattenWillSwallow",
   desc = "Hides terminals while recursive nvim launches replace them",
   callback = function()
+    nvim_flatten_orig_buf = vim.api.nvim_get_current_buf()
     if vim.bo.buftype == "terminal" then vim.bo.buflisted = false end
   end,
 })
@@ -64,15 +66,15 @@ vim.api.nvim_create_autocmd("User", {
 vim.api.nvim_create_autocmd("User", {
   group = nvim_flatten_group,
   pattern = "NvimFlattenDidSwallow",
-  desc = "Marks recursive nvim launch buffers for the local close mapping",
-  callback = function() vim.b.from_nvim_launch = true end,
+  desc = "Marks recursive nvim launch buffers with their original buffer",
+  callback = function() vim.b.nvim_flatten_orig_buf = nvim_flatten_orig_buf end,
 })
 
 vim.api.nvim_create_autocmd("User", {
   group = nvim_flatten_group,
   pattern = "NvimFlattenWillShow",
-  desc = "Clears local close mapping state from recursive nvim launch buffers",
-  callback = function() vim.b.from_nvim_launch = nil end,
+  desc = "Clears recursive nvim launch buffer state",
+  callback = function() vim.b.nvim_flatten_orig_buf = nil end,
 })
 
 vim.api.nvim_create_autocmd("User", {
