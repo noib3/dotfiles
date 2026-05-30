@@ -387,7 +387,7 @@ in
       }
       // optionalAttrs (isDarwin && cfg.isDefaultBrowser) {
         setBraveAsDefaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          run ${pkgs.defaultbrowser}/bin/defaultbrowser browser
+          run ${pkgs.defaultbrowser}/bin/defaultbrowser browser >/dev/null 2>&1
         '';
       };
 
