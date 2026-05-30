@@ -74,9 +74,10 @@ in
               }
 
               {
-                emit_dir_tree "${config.lib.mine.documentsDir}"
-                emit_dir_tree "${config.home.homeDirectory}/Downloads"
+                emit_dir_tree "${config.home.homeDirectory}/Desktop"
                 emit_dir_tree "${config.home.homeDirectory}/Dev"
+                emit_dir_tree "${config.home.homeDirectory}/Downloads"
+                emit_dir_tree "${config.lib.mine.documentsDir}"
                 emit_dir_tree "${config.xdg.configHome}"
               } \
                 | sed -u 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
