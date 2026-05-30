@@ -41,6 +41,8 @@ end
 
 incline.setup({
   render = function(props)
+    if vim.bo[props.buf].buftype == "terminal" then return nil end
+
     return {
       " ",
       diagnostics(props.buf),
