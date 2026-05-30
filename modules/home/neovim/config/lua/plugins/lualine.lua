@@ -4,7 +4,7 @@ local utils = require("utils")
 
 local all_splits_are_terminals = function()
   return vim
-    .iter(vim.api.nvim_list_wins())
+    .iter(vim.api.nvim_tabpage_list_wins(0))
     :filter(function(win) return vim.fn.win_gettype(win) == "" end)
     :all(function(win)
       local buf = vim.api.nvim_win_get_buf(win)

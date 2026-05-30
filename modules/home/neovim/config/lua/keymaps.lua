@@ -7,27 +7,32 @@ local keymap = vim.keymap
 -- Either quit Neovim, close a window or delete a buffer based on the current
 -- context.
 local close = function()
-  -- Returns `true` if there's only one buffer left.
-  local is_last_buffer = function()
-    return #vim.fn.getbufinfo({ buflisted = 1 }) == 1
+  local current_buf = vim.api.nvim_get_current_buf()
+
+  local splits = vim
+    .iter(vim.api.nvim_tabpage_list_wins(0))
+    :filter(function(win) return vim.fn.win_gettype(win) == "" end)
+    :totable()
+
+  local all_splits_are_showing_this_buffer = vim.iter(splits):all(
+    function(win) return vim.api.nvim_win_get_buf(win) == current_buf end
+  )
+
+  local delete_buffer = vim.bo.buflisted
+    and (#splits == 1 or not all_splits_are_showing_this_buffer)
+
+  if delete_buffer then
+    local orig_buf = vim.b.nvim_flatten_orig_buf
+    if type(orig_buf) == "number" and vim.api.nvim_buf_is_valid(orig_buf) then
+      vim.bo[orig_buf].buflisted = true
+    end
+    -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
+    -- to avoid messing w/ the window layout.
+    local has_bufdelete, _ = pcall(require, "bufdelete")
+    vim.cmd(has_bufdelete and "Bdelete" or "bdelete")
+  else
+    vim.cmd("q")
   end
-
-  -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
-  -- to avoid messing w/ the window layout.
-  local has_bufdelete, _ = pcall(require, "bufdelete")
-  local bd = has_bufdelete and "Bdelete" or "bdelete"
-
-  local orig_buf = vim.b.nvim_flatten_orig_buf
-  local from_nvim_launch = type(orig_buf) == "number"
-    and vim.api.nvim_buf_is_valid(orig_buf)
-
-  if from_nvim_launch then vim.bo[orig_buf].buflisted = true end
-
-  local cmd = (from_nvim_launch and bd)
-    or ((vim.bo.filetype == "help" or vim.bo.buftype == "nofile" or is_last_buffer()) and "q")
-    or bd
-
-  vim.cmd(cmd)
 end
 
 ---@enum Direction
