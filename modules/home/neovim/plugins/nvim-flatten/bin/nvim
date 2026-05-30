@@ -6,25 +6,69 @@ if [[ -z ${NVIM:-} ]]; then
   exec "$real_nvim" "$@"
 fi
 
-files_only=true
+original_args=("$@")
+can_flatten=true
 after_double_dash=false
+commands=()
+file_args=()
 
-for arg in "$@"; do
+while (($# > 0)); do
+  arg=$1
+  shift
+
+  if [[ $after_double_dash == true ]]; then
+    file_args+=("$arg")
+    continue
+  fi
+
   if [[ $arg == "--" ]]; then
     after_double_dash=true
     continue
   fi
 
-  if [[ $after_double_dash == false && ($arg == -* || $arg == +*) ]]; then
-    files_only=false
+  case $arg in
+  +)
+    commands+=('$')
+    ;;
+  +*)
+    commands+=("${arg#+}")
+    ;;
+  -c)
+    if (($# == 0)); then
+      can_flatten=false
+      break
+    fi
+
+    commands+=("$1")
+    shift
+    ;;
+  -c*)
+    commands+=("${arg#-c}")
+    ;;
+  -*)
+    can_flatten=false
     break
-  fi
+    ;;
+  *)
+    file_args+=("$arg")
+    ;;
+  esac
 done
 
-[[ $files_only == true ]] || exec "$real_nvim" "$@"
+[[ $can_flatten == true ]] || exec "$real_nvim" "${original_args[@]}"
+
+lua_array_item() {
+  local value=$1
+
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\n'/\\n}
+
+  printf '"%s",' "$value"
+}
 
 filepaths=""
-for arg in "$@"; do
+for arg in "${file_args[@]}"; do
   if filepath=$(realpath -m -- "$arg" 2>/dev/null); then
     :
   elif filepath=$(realpath "$arg" 2>/dev/null); then
@@ -35,23 +79,35 @@ for arg in "$@"; do
     filepath=$PWD/$arg
   fi
 
-  escaped_filepath=${filepath//\\/\\\\}
-  escaped_filepath=${escaped_filepath//\"/\\\"}
-  filepaths+="\"$escaped_filepath\","
+  filepaths+=$(lua_array_item "$filepath")
+done
+
+post_commands=""
+for command in "${commands[@]}"; do
+  post_commands+=$(lua_array_item "$command")
 done
 
 fifo=$(mktemp -u)
 mkfifo "$fifo"
-trap 'rm -f "$fifo"' EXIT
+launch_file=$(mktemp)
+trap 'rm -f "$fifo" "$launch_file"' EXIT
 
 escaped_fifo=${fifo//\\/\\\\}
 escaped_fifo=${escaped_fifo//\"/\\\"}
+escaped_launch_file=${launch_file//\\/\\\\}
+escaped_launch_file=${escaped_launch_file//\"/\\\"}
 
-expr="luaeval('vim.api.nvim_exec_autocmds(\"User\", { pattern = \"NvimFlattenLaunch\", modeline = false, data = { filepaths = { $filepaths }, on_done = function() local f = io.open(\"$escaped_fifo\", \"w\"); if f then f:close() end end } })')"
+printf 'vim.api.nvim_exec_autocmds("User", { pattern = "NvimFlattenLaunch", modeline = false, data = { filepaths = { %s }, commands = { %s }, on_done = function() local f = io.open("%s", "w"); if f then f:close() end end } })\n' \
+  "$filepaths" \
+  "$post_commands" \
+  "$escaped_fifo" \
+  >"$launch_file"
 
-if "$real_nvim" --server "$NVIM" --remote-expr "$expr" 2>/dev/null; then
+expr="luaeval('dofile(\"$escaped_launch_file\")')"
+
+if "$real_nvim" --server "$NVIM" --remote-expr "$expr" >/dev/null 2>&1; then
   read -r <"$fifo" || true
   exit 0
 fi
 
-exec "$real_nvim" "$@"
+exec "$real_nvim" "${original_args[@]}"

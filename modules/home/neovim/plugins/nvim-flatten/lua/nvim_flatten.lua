@@ -77,10 +77,37 @@ local prepare_buffer = function(buf, filepath)
   end
 end
 
+--- @param buf number
+--- @param commands string[]
+local run_post_commands = function(buf, commands)
+  if #commands == 0 then return end
+
+  local wins = buf_get_wins(buf):totable()
+
+  local run = function()
+    for _, command in ipairs(commands) do
+      local ok, err = pcall(vim.cmd, command)
+      if not ok then
+        vim.notify(
+          ("nvim-flatten: failed to run command %q: %s"):format(command, err),
+          vim.log.levels.ERROR
+        )
+      end
+    end
+  end
+
+  if #wins > 0 and vim.api.nvim_win_is_valid(wins[1]) then
+    vim.api.nvim_win_call(wins[1], run)
+  else
+    vim.api.nvim_buf_call(buf, run)
+  end
+end
+
 --- @param ev table
 local handle_launch = function(ev)
   local data = ev.data or {}
   local filepaths = data.filepaths or {}
+  local commands = data.commands or {}
   local on_done = data.on_done or function() end
 
   local orig_buf = ev.buf
@@ -151,6 +178,8 @@ local handle_launch = function(ev)
       end)
     end,
   })
+
+  run_post_commands(file_buf, commands)
 end
 
 vim.api.nvim_create_autocmd("User", {
