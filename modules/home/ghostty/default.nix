@@ -24,7 +24,6 @@ in
         adjust-cursor-thickness = "200%";
         auto-update = "off";
         clipboard-read = "allow";
-        command = "direct:${lib.getExe config.neovim.package} +terminal";
         cursor-style = "bar";
         cursor-style-blink = false;
         keybind = import ./keybinds.nix { inherit lib isDarwin isLinux; };
@@ -37,6 +36,13 @@ in
         window-padding-x = 10;
         window-padding-y = 5;
         unfocused-split-opacity = 1.0;
+      }
+      // lib.attrsets.optionalAttrs config.modules.neovim.enable {
+        command = "direct:${lib.getExe (
+          pkgs.writeShellScriptBin "nvim-with-login-shell-environment" ''
+            exec "$SHELL" -lic 'exec ${lib.getExe config.neovim.package} +terminal'
+          ''
+        )}";
       }
       # Ghostty exports its own $TERMINFO path by default, so we need to
       # override it to use the Home Manager-managed terminfo directory.
