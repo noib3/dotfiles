@@ -1,6 +1,35 @@
 #!/usr/bin/env bash
 
-real_nvim=${NVIM_FLATTEN_REAL_NVIM:-nvim}
+resolve_real_nvim() {
+  if [[ -n ${NVIM_FLATTEN_REAL_NVIM:-} ]]; then
+    printf '%s\n' "$NVIM_FLATTEN_REAL_NVIM"
+    return
+  fi
+
+  local path_entry
+  local path_entries
+
+  # When NVIM_FLATTEN_REAL_NVIM is unset, resolving "nvim" through PATH can find
+  # this wrapper again, which would make it exec itself instead of the real
+  # nvim, leading to an infinite cycle.
+
+  parent_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+
+  IFS=: read -r -a path_entries <<<"${PATH:-}"
+  for path_entry in "${path_entries[@]}"; do
+    [[ -z $path_entry ]] && path_entry=.
+    [[ $(cd -- "$path_entry" 2>/dev/null && pwd -P) == "$parent_dir" ]] && continue
+    [[ -x $path_entry/nvim ]] || continue
+    printf '%s\n' "$path_entry/nvim"
+    return
+  done
+  return 1
+}
+
+if ! real_nvim=$(resolve_real_nvim); then
+  printf 'nvim-flatten: failed to locate the real nvim binary\n' >&2
+  exit 127
+fi
 
 if [[ -z ${NVIM:-} ]]; then
   exec "$real_nvim" "$@"
