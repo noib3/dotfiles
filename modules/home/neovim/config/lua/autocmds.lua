@@ -67,6 +67,39 @@ vim.api.nvim_create_autocmd("TermClose", {
 })
 
 vim.api.nvim_create_autocmd("TermRequest", {
+  group = create_augroup("noib3/respond-to-terminal-osc52-clipboard-queries"),
+  desc = "Answers OSC 52 clipboard read queries",
+  callback = function(ev)
+    local seq = ev.data and ev.data.sequence or ""
+    local selectors = seq:match("^\27%]52;([^;]*);%?$")
+    if not selectors then return end
+
+    local channel = vim.bo[ev.buf].channel
+    if channel == 0 then return end
+
+    local is_primary_selection = selectors ~= "" and selectors:match("^[p]+$")
+    local register = is_primary_selection and "*" or "+"
+    local ok, contents = pcall(vim.fn.getreg, register)
+    assert(type(contents) == "string")
+
+    if not ok then
+      vim.notify(
+        ("OSC 52 clipboard read failed: %s"):format(contents),
+        vim.log.levels.WARN
+      )
+      return
+    end
+
+    local response = ("\27]52;%s;%s%s"):format(
+      selectors,
+      vim.base64.encode(contents),
+      ev.data.terminator
+    )
+    vim.api.nvim_chan_send(channel, response)
+  end,
+})
+
+vim.api.nvim_create_autocmd("TermRequest", {
   group = create_augroup("noib3/track-shell-prompt"),
   desc = "Tracks when terminals are at an OSC 133 shell prompt",
   callback = function(ev)
