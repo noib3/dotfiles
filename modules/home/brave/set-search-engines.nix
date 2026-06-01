@@ -28,19 +28,21 @@ let
     inherit keyword;
     short_name = engine.name;
     inherit (engine) url;
+    originating_url = "nix-managed://${keyword}";
     favicon_url =
       if engine ? favicon && engine.favicon != null then
         "nix-managed://${keyword}"
       else
         "";
     safe_for_autoreplace = 0;
-    created_by_policy = 1;
+    created_by_policy = 0;
     input_encodings = "UTF-8";
+    is_active = 1;
   }) engines;
 
   sqlScript = writeText "brave-search-engines.sql" ''
-    -- Remove all policy-managed search engines.
-    DELETE FROM keywords WHERE created_by_policy = 1;
+    -- Remove search engines managed by this module.
+    DELETE FROM keywords WHERE originating_url LIKE 'nix-managed://%';
 
     -- Insert the configured search engines.
     ${lib.concatMapStringsSep "\n" (
