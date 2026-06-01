@@ -172,13 +172,13 @@ local handle_launch = function(ev)
       on_done()
 
       vim.schedule(function()
-        local restored_wins = {}
+        local restored_win
 
         if vim.api.nvim_buf_is_valid(orig_buf) then
           for _, win in ipairs(file_wins) do
             if vim.api.nvim_win_is_valid(win) then
               vim.api.nvim_win_set_buf(win, orig_buf)
-              table.insert(restored_wins, win)
+              restored_win = restored_win or win
             end
           end
         end
@@ -186,12 +186,23 @@ local handle_launch = function(ev)
         emit_for_buffer(orig_buf, did_show_event)
 
         if
-          #restored_wins > 0
-          and vim.api.nvim_buf_is_valid(orig_buf)
-          and vim.bo[orig_buf].buftype == "terminal"
+          not vim.api.nvim_buf_is_valid(orig_buf)
+          or vim.bo[orig_buf].buftype ~= "terminal"
         then
-          vim.api.nvim_buf_call(orig_buf, vim.cmd.startinsert)
+          return
         end
+
+        local win = restored_win
+        local current_win = vim.api.nvim_get_current_win()
+        if vim.api.nvim_win_get_buf(current_win) == orig_buf then
+          win = current_win
+        end
+
+        -- Buffer-deletion plugins may move windows before BufDelete runs. If
+        -- orig_buf is already visible, still return to Terminal-mode there.
+        if not win then win = buf_get_wins(orig_buf):next() end
+
+        if win then vim.api.nvim_win_call(win, vim.cmd.startinsert) end
       end)
     end,
   })
