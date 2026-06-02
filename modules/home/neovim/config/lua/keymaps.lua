@@ -7,32 +7,44 @@ local keymap = vim.keymap
 -- Either quit Neovim, close a window or delete a buffer based on the current
 -- context.
 local close = function()
-  local current_buf = vim.api.nvim_get_current_buf()
+  if not vim.bo.buflisted then
+    vim.cmd("q")
+    return
+  end
 
   local splits = vim
     .iter(vim.api.nvim_tabpage_list_wins(0))
     :filter(function(win) return vim.fn.win_gettype(win) == "" end)
     :totable()
 
+  local current_buf = vim.api.nvim_get_current_buf()
+
   local all_splits_are_showing_this_buffer = vim.iter(splits):all(
     function(win) return vim.api.nvim_win_get_buf(win) == current_buf end
   )
 
-  local delete_buffer = vim.bo.buflisted
-    and (#splits == 1 or not all_splits_are_showing_this_buffer)
-
-  if delete_buffer then
-    local orig_buf = vim.b.nvim_flatten_orig_buf
-    if type(orig_buf) == "number" and vim.api.nvim_buf_is_valid(orig_buf) then
-      vim.bo[orig_buf].buflisted = true
-    end
-    -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
-    -- to avoid messing w/ the window layout.
-    local has_bufdelete, _ = pcall(require, "bufdelete")
-    vim.cmd(has_bufdelete and "Bdelete" or "bdelete")
-  else
+  if #splits > 1 and all_splits_are_showing_this_buffer then
     vim.cmd("q")
+    return
   end
+
+  local buf_was_opened_from_embedded_terminal = type(
+    vim.b.nvim_flatten_orig_buf
+  ) == "number" and vim.api.nvim_buf_is_valid(vim.b.nvim_flatten_orig_buf)
+
+  if #splits == 1 and not buf_was_opened_from_embedded_terminal then
+    vim.cmd("q")
+    return
+  end
+
+  if buf_was_opened_from_embedded_terminal then
+    vim.bo[vim.b.nvim_flatten_orig_buf].buflisted = true
+  end
+
+  -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
+  -- to avoid messing w/ the window layout.
+  local has_bufdelete, _ = pcall(require, "bufdelete")
+  vim.cmd(has_bufdelete and "Bdelete" or "bdelete")
 end
 
 ---@enum Direction
