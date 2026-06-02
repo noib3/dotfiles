@@ -12,8 +12,8 @@ vim.api.nvim_create_autocmd("VimResized", {
 
 vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
   group = create_augroup("noib3/reset-cursor"),
-  desc = "Resets the cursor to a vertical bar before exiting Neovim",
-  command = "set guicursor=a:ver25",
+  desc = "Resets the cursor to a vertical one before exiting Neovim",
+  command = "set guicursor=a:ver25-blinkon0",
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {

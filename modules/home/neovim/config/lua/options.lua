@@ -22,6 +22,9 @@ opt.colorcolumn = "+1"
 -- Automatically expand tabs to spaces.
 opt.expandtab = true
 
+-- Make the embedded :terminal's default cursor a vertical one.
+opt.guicursor:append("t:ver25-blinkon0")
+
 -- Ignore upper/lower casing in search results.
 opt.ignorecase = true
 
