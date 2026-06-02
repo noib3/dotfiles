@@ -10,6 +10,7 @@ let
   inherit (pkgs.stdenv) isDarwin isLinux;
   cfg = config.modules.ghostty;
   package = if isDarwin then pkgs.brewCasks.ghostty else pkgs.ghostty;
+  terminfoEntry = "xterm-ghostty";
 in
 {
   options.modules.ghostty = {
@@ -26,12 +27,21 @@ in
         clipboard-read = "allow";
         cursor-style = "bar";
         cursor-style-blink = false;
+        env =
+          {
+            TERM = terminfoEntry;
+          }
+          // lib.attrsets.optionalAttrs config.modules.terminfo.enable {
+            # Ghostty exports its own $TERMINFO path by default, so we need to
+            # override it to use the Home Manager-managed terminfo directory.
+            TERMINFO = config.modules.terminfo.directory;
+          }
+          |> lib.mapAttrsToList (name: value: "${name}=${value}");
         keybind = import ./keybinds.nix { inherit lib isDarwin isLinux; };
         quit-after-last-window-closed = true;
         # Without this the cursor will still blink, even if cursor-style-blink
-        # is set to false. See [1] for more infos.
-        #
-        # [1]: https://github.com/ghostty-org/ghostty/discussions/2812
+        # is set to false. See https://github.com/ghostty-org/ghostty/discussions/2812
+        # for more infos.
         shell-integration-features = "no-cursor";
         window-padding-x = 10;
         window-padding-y = 5;
@@ -44,17 +54,21 @@ in
           ''
         )}";
       }
-      # Ghostty exports its own $TERMINFO path by default, so we need to
-      # override it to use the Home Manager-managed terminfo directory.
-      // lib.attrsets.optionalAttrs config.modules.terminfo.enable {
-        env = "TERMINFO=${config.modules.terminfo.directory}";
-      }
       // lib.attrsets.optionalAttrs isLinux {
         mouse-scroll-multiplier = 1.25;
       }
       // (import ./colors.nix { inherit config; })
       // (import ./font.nix { inherit config lib isDarwin; });
     };
+
+    modules.terminfo.entries.${terminfoEntry} =
+      pkgs':
+      if pkgs'.stdenv.isDarwin then
+        pkgs'.runCommandLocal "ghostty-terminfo" { } ''
+          cp -r "${pkgs'.brewCasks.ghostty}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
+        ''
+      else
+        pkgs'.ghostty.terminfo;
 
     modules.terminals.ghostty = {
       enabled = true;
@@ -64,26 +78,6 @@ in
           "/usr/bin/open -na ${lib.escapeShellArg "${package}/Applications/Ghostty.app"} --args --working-directory=${config.home.homeDirectory}"
         else
           "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
-      terminfo.xterm-ghostty =
-        let
-          ghosttyTerminfo =
-            if isDarwin then
-              pkgs.runCommandLocal "ghostty-terminfo" { } ''
-                cp -r "${package}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
-              ''
-            else
-              pkgs.ghostty.terminfo;
-
-          ghosttyTerminfoPatched = pkgs.runCommandLocal "ghostty-terminfo-patched" { } ''
-            mkdir -p "$out"
-            src="$TMPDIR/xterm-ghostty"
-            patched="$TMPDIR/xterm-ghostty-patched"
-            "${pkgs.ncurses}/bin/infocmp" -x -A "${ghosttyTerminfo}" xterm-ghostty > "$src"
-            sed 's@^\([[:space:]]*sgr=\).*$@\1%?%p9%t\\E(0%e\\E(B%;\\E[0%?%p6%t;1%;%?%p5%t;2%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m,@' "$src" > "$patched"
-            "${pkgs.ncurses}/bin/tic" -x -o "$out" "$patched"
-          '';
-        in
-        ghosttyTerminfoPatched;
     };
   };
 }

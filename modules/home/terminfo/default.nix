@@ -8,38 +8,19 @@
 with lib;
 let
   cfg = config.modules.terminfo;
-
-  enabledTerminalTerminfoNames =
-    if config.modules.terminals.enabled == null then
-      [ ]
-    else
-      config.modules.terminals.enabled.terminfo |> attrNames;
-
-  selectedTerm =
-    if cfg.term != null then
-      cfg.term
-    else if enabledTerminalTerminfoNames == [ ] then
-      null
-    else
-      head enabledTerminalTerminfoNames;
-
-  terminfoEntries =
-    removeAttrs config.modules.terminals [
-      "enabled"
-      "_module"
-    ]
-    |> attrValues
-    |> concatMap (terminal: attrValues terminal.terminfo);
 in
 {
   options.modules.terminfo = {
     enable = mkEnableOption "Terminfo configuration";
 
-    term = mkOption {
-      type = types.nullOr types.singleLineStr;
-      default = null;
-      example = "xterm-ghostty";
-      description = "The terminfo entry name to export as $TERM";
+    entries = mkOption {
+      type = types.attrsOf (types.functionTo types.package);
+      default = { };
+      description = ''
+        Terminfo source builders keyed by terminfo database name. Each value is
+        called with the current Home Manager package set and should return a
+        directory containing one or more terminfo directories.
+      '';
     };
 
     directory = mkOption {
@@ -55,13 +36,6 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = cfg.term != null || length enabledTerminalTerminfoNames <= 1;
-        message = ''
-          Couldn't determine what to set $TERM to because the enabled terminal
-          has multiple terminfo entries. Set modules.terminfo.term explicitly.
-        '';
-      }
-      {
         assertion = hasPrefix "${config.home.homeDirectory}/" cfg.directory;
         message = "modules.terminfo.directory must be under config.home.homeDirectory";
       }
@@ -69,14 +43,14 @@ in
 
     home.sessionVariables = {
       TERMINFO = cfg.directory;
-    }
-    // optionalAttrs (selectedTerm != null) {
-      TERM = selectedTerm;
     };
 
     home.file."terminfo" = {
       target = cfg.directory |> removePrefix "${config.home.homeDirectory}/";
       source = pkgs.runCommandLocal "terminfo-entries" { } (
+        let
+          terminfoEntries = cfg.entries |> mapAttrsToList (_: mkEntry: mkEntry pkgs);
+        in
         ''
           mkdir -p "$out"
         ''

@@ -76,19 +76,7 @@ in
     };
   };
   modules.colorschemes.${hostConfig.modules.colorschemes.name}.enable = true;
-  modules.terminals.ghostty = lib.mkIf hostConfig.modules.ghostty.enable (
-    let
-      ghosttyTerminfo = pkgs.runCommandLocal "ghostty-terminfo" { } ''
-        mkdir -p "$out"
-        cp -r "${pkgs.ghostty.terminfo}/share/terminfo/." "$out"
-      '';
-    in
-    {
-      package = ghosttyTerminfo;
-      launchCommand = "false";
-      terminfo.xterm-ghostty = ghosttyTerminfo;
-    }
-  );
+  modules.terminfo.entries = hostConfig.modules.terminfo.entries;
   systemd.user.services.codex-provider-proxy = lib.mkIf shouldProxyModelProvider {
     Unit = {
       Description = "Codex provider proxy";
