@@ -64,7 +64,7 @@ let
     tui.model_availability_nux."gpt-5.5" = 4;
   };
 
-  codexLb = pkgs.callPackage ./codex-lb.nix { };
+  codexLb = pkgs.callPackage ./codex-lb.nix { inherit inputs; };
   codexLbDataDir = "${config.xdg.stateHome}/codex-lb";
   codexLbLogDir = "${codexLbDataDir}/log";
   codexLbEnvironment = {
