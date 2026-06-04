@@ -75,6 +75,7 @@ let
   # Each of these is a valid Neovim rtp entry.
   plugins = [
     inputs.blink-cmp.packages.${stdenvNoCC.system}.default
+    inputs.blink-cmp.inputs.blink-lib.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
     inputs.bufdelete-nvim
     inputs.colorful-menu-nvim

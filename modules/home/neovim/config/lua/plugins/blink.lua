@@ -1,6 +1,16 @@
 local blink = require("blink.cmp")
 local colorful_menu = require("colorful-menu")
 
+-- See https://github.com/saghen/blink.cmp/discussions/2502 for what's this for.
+package.loaded["blink.cmp.lib.async"] = (function()
+  local task = require("blink.lib.task")
+  rawset(task, "empty", task.resolve)
+  rawset(task, "on_completion", task.on_resolve)
+  rawset(task, "on_failure", task.on_reject)
+  rawset(task, "task", task)
+  return task
+end)()
+
 ---@type blink.cmp.Config
 blink.setup({
   keymap = {
@@ -45,7 +55,7 @@ blink.setup({
     },
   },
   fuzzy = {
-    prebuilt_binaries = { download = false },
+    implementation = "rust",
   },
   signature = {
     enabled = true,
