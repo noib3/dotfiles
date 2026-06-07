@@ -116,26 +116,28 @@ for command in "${commands[@]}"; do
   post_commands+=$(lua_array_item "$command")
 done
 
-fifo=$(mktemp -u)
-mkfifo "$fifo"
 launch_file=$(mktemp)
-trap 'rm -f "$fifo" "$launch_file"' EXIT
+finished=false
+trap 'finished=true' USR1
+trap 'rm -f "$launch_file"' EXIT
 
-escaped_fifo=${fifo//\\/\\\\}
-escaped_fifo=${escaped_fifo//\"/\\\"}
 escaped_launch_file=${launch_file//\\/\\\\}
 escaped_launch_file=${escaped_launch_file//\"/\\\"}
+wrapper_pid=$$
 
-printf 'vim.api.nvim_exec_autocmds("User", { pattern = "NvimFlattenLaunch", modeline = false, data = { filepaths = { %s }, commands = { %s }, on_done = function() local f = io.open("%s", "w"); if f then f:close() end end } })\n' \
+printf 'vim.api.nvim_exec_autocmds("User", { pattern = "NvimFlattenLaunch", modeline = false, data = { filepaths = { %s }, commands = { %s }, on_done = function() pcall(vim.uv.kill, %d, vim.uv.constants.SIGUSR1) end } })\n' \
   "$filepaths" \
   "$post_commands" \
-  "$escaped_fifo" \
+  "$wrapper_pid" \
   >"$launch_file"
 
 expr="luaeval('dofile(\"$escaped_launch_file\")')"
 
 if "$real_nvim" --server "$NVIM" --remote-expr "$expr" >/dev/null 2>&1; then
-  read -r <"$fifo" || true
+  while [[ $finished == false ]]; do
+    sleep 3600 &
+    wait $! || true
+  done
   exit 0
 fi
 
