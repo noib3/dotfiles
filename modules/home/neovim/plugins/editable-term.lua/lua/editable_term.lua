@@ -260,6 +260,15 @@ M.setup = function(config)
         buffer = args.buf,
         group = editgroup,
         callback = function(args2)
+          local bufinfo = M.buffers[args2.buf]
+          local cmd_start = bufinfo.cmd_cursor
+          if not cmd_start then return end
+
+          if api.nvim_get_current_buf() ~= args2.buf then return end
+
+          local mode = api.nvim_get_mode().mode
+          if mode ~= "n" and mode ~= "nt" then return end
+
           if busy then return end
           busy = true
           vim.defer_fn(function()
@@ -267,10 +276,6 @@ M.setup = function(config)
             -- NOTE: there must be a better way to handle this, probably by
             -- plugin into the C implementation of the terminal buffer
           end, 100)
-
-          local bufinfo = M.buffers[args2.buf]
-          local cmd_start = bufinfo.cmd_cursor
-          if not cmd_start then return end
 
           local lines =
             api.nvim_buf_get_lines(args2.buf, cmd_start[1] - 1, -1, true)
@@ -289,11 +294,16 @@ M.setup = function(config)
         group = editgroup,
         buffer = args.buf,
         callback = function(args2)
-          if not string.match(args2.data.sequence, "^\027]133;B") then
-            return
-          end
+          local sequence = args2.data and args2.data.sequence or ""
+          local marker = sequence:match("^\027%]133;([ABCD])")
+          if not marker then return end
 
-          M.buffers[args2.buf].cmd_cursor = args2.data.cursor
+          local bufinfo = M.buffers[args2.buf]
+          if marker == "B" then
+            bufinfo.cmd_cursor = args2.data.cursor
+          else
+            bufinfo.cmd_cursor = nil
+          end
         end,
       })
 
