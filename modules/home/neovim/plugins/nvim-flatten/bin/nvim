@@ -118,27 +118,51 @@ done
 
 launch_file=$(mktemp)
 finished=false
+remote_failed=false
 trap 'finished=true' USR1
+trap 'remote_failed=true' USR2
 trap 'rm -f "$launch_file"' EXIT
 
 escaped_launch_file=${launch_file//\\/\\\\}
 escaped_launch_file=${escaped_launch_file//\"/\\\"}
 wrapper_pid=$$
 
-printf 'vim.api.nvim_exec_autocmds("User", { pattern = "NvimFlattenLaunch", modeline = false, data = { filepaths = { %s }, commands = { %s }, on_done = function() pcall(vim.uv.kill, %d, vim.uv.constants.SIGUSR1) end } })\n' \
+printf 'local done = function() pcall(vim.uv.kill, %d, vim.uv.constants.SIGUSR1) end
+vim.schedule(function()
+  local ok, err = pcall(vim.api.nvim_exec_autocmds, "User", { pattern = "NvimFlattenLaunch", modeline = false, data = { filepaths = { %s }, commands = { %s }, on_done = done } })
+  if not ok then
+    vim.notify(("nvim-flatten: failed to launch flattened buffer: %%s"):format(err), vim.log.levels.ERROR)
+    done()
+  end
+end)
+return true
+' \
+  "$wrapper_pid" \
   "$filepaths" \
   "$post_commands" \
-  "$wrapper_pid" \
   >"$launch_file"
 
 expr="luaeval('dofile(\"$escaped_launch_file\")')"
 
-if "$real_nvim" --server "$NVIM" --remote-expr "$expr" >/dev/null 2>&1; then
-  while [[ $finished == false ]]; do
-    sleep 3600 &
-    wait $! || true
-  done
-  exit 0
+(
+  "$real_nvim" --server "$NVIM" --remote-expr "$expr" >/dev/null 2>&1
+  status=$?
+  if ((status != 0)); then
+    kill -USR2 "$wrapper_pid" 2>/dev/null || true
+  fi
+) &
+remote_pid=$!
+
+while [[ $finished == false && $remote_failed == false ]]; do
+  sleep 3600 &
+  wait $! || true
+done
+
+if [[ $remote_failed == true ]]; then
+  exec "$real_nvim" "${original_args[@]}"
 fi
+
+kill "$remote_pid" 2>/dev/null || true
+exit 0
 
 exec "$real_nvim" "${original_args[@]}"
