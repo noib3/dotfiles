@@ -72,6 +72,22 @@
         "type": "github"
       }
     },
+    "codediff-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780811622,
+        "narHash": "sha256-F68cABCjKUbsc7tfGzREGuykxxDxTfkH5ZeRybrbUvU=",
+        "owner": "esmuellert",
+        "repo": "codediff.nvim",
+        "rev": "5d6aa753797a0ebda14dd769ed03d12a320d689b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "esmuellert",
+        "repo": "codediff.nvim",
+        "type": "github"
+      }
+    },
     "colorful-menu-nvim": {
       "flake": false,
       "locked": {
@@ -617,6 +633,7 @@
         "blink-cmp": "blink-cmp",
         "blink-emoji-nvim": "blink-emoji-nvim",
         "bufdelete-nvim": "bufdelete-nvim",
+        "codediff-nvim": "codediff-nvim",
         "colorful-menu-nvim": "colorful-menu-nvim",
         "comment-nvim": "comment-nvim",
         "conform-nvim": "conform-nvim",

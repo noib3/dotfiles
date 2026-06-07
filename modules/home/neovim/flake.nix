@@ -38,6 +38,10 @@
       url = "github:stevearc/conform.nvim";
       flake = false;
     };
+    codediff-nvim = {
+      url = "github:esmuellert/codediff.nvim";
+      flake = false;
+    };
     copilot-lua = {
       url = "github:noib3/copilot.lua/fix-insert-special-key-passthrough";
       flake = false;

@@ -68,6 +68,38 @@ let
     vimdoc
   ];
 
+  codediff-nvim = pkgs.stdenv.mkDerivation {
+    pname = "codediff.nvim";
+    version = lib.trim (builtins.readFile "${inputs.codediff-nvim}/VERSION");
+    src = inputs.codediff-nvim;
+
+    nativeBuildInputs = [ pkgs.cmake ];
+
+    buildInputs =
+      lib.optionals pkgs.stdenv.isDarwin [ pkgs.llvmPackages.openmp ]
+      ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.stdenv.cc.cc.lib ];
+
+    configurePhase = ''
+      runHook preConfigure
+      cmake -B build -S .
+      runHook postConfigure
+    '';
+
+    buildPhase = ''
+      runHook preBuild
+      cmake --build build
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out"
+      cp -R . "$out"
+      rm -rf "$out/build"
+      runHook postInstall
+    '';
+  };
+
   localPlugins = lib.mapAttrsToList (name: _: ../plugins + "/${name}") (
     builtins.readDir ../plugins
   );
@@ -78,6 +110,7 @@ let
     inputs.blink-cmp.inputs.blink-lib.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
     inputs.bufdelete-nvim
+    codediff-nvim
     inputs.colorful-menu-nvim
     inputs.comment-nvim
     inputs.conform-nvim
