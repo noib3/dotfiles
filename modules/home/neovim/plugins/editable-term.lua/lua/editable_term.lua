@@ -317,7 +317,7 @@ M.setup = function(config)
             and (
               (
                 cursor[1] == bufinfo.cmd_cursor[1]
-                and cursor[2] > bufinfo.cmd_cursor[2]
+                and cursor[2] >= bufinfo.cmd_cursor[2]
               ) or cursor[1] > bufinfo.cmd_cursor[1]
             )
         end,
