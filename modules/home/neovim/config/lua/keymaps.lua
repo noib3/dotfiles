@@ -28,11 +28,24 @@ local close = function()
     return
   end
 
+  local has_other_listed_file_buffer = vim.iter(vim.api.nvim_list_bufs()):any(
+    function(buf)
+      return buf ~= current_buf
+        and vim.api.nvim_buf_is_valid(buf)
+        and vim.bo[buf].buflisted
+        and vim.bo[buf].buftype == ""
+    end
+  )
+
   local buf_was_opened_from_embedded_terminal = type(
     vim.b.nvim_flatten_orig_buf
   ) == "number" and vim.api.nvim_buf_is_valid(vim.b.nvim_flatten_orig_buf)
 
-  if #splits == 1 and not buf_was_opened_from_embedded_terminal then
+  if
+    #splits == 1
+    and not has_other_listed_file_buffer
+    and not buf_was_opened_from_embedded_terminal
+  then
     vim.cmd("q")
     return
   end
