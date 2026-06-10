@@ -33,7 +33,6 @@ local close = function()
       return buf ~= current_buf
         and vim.api.nvim_buf_is_valid(buf)
         and vim.bo[buf].buflisted
-        and vim.bo[buf].buftype == ""
     end
   )
 
@@ -56,8 +55,18 @@ local close = function()
 
   -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
   -- to avoid messing w/ the window layout.
-  local has_bufdelete, _ = pcall(require, "bufdelete")
-  vim.cmd(has_bufdelete and "Bdelete" or "bdelete")
+  local has_bufdelete, bufdelete = pcall(require, "bufdelete")
+
+  if not has_bufdelete then
+    vim.cmd("bdelete")
+    return
+  end
+
+  local switchable_bufs = buf_was_opened_from_embedded_terminal
+      and { vim.b.nvim_flatten_orig_buf }
+    or nil
+
+  bufdelete.bufdelete(0, false, switchable_bufs)
 end
 
 ---@enum Direction
