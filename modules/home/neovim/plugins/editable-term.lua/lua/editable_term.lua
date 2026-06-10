@@ -12,7 +12,7 @@ local function set_term_cursor(buf, cursor, term_keys)
   local cmd_start = bufinfo.cmd_cursor
   if not cmd_start then return end
   if cursor[1] < cmd_start[1] then return end
-  local n_forward_chars ---@type integer
+  local n_forward_chars = 0
   if cursor[1] == cmd_start[1] then
     local line = api.nvim_buf_get_lines(buf, cursor[1] - 1, cursor[1], true)[1]
     local cursor_end_index = vim.str_utfindex(line, "utf-32", cursor[2], true)
@@ -304,6 +304,17 @@ M.setup = function(config)
           else
             bufinfo.cmd_cursor = nil
           end
+        end,
+      })
+
+      -- Terminal reflow can move prompt lines without preserving the OSC 133
+      -- cursor snapshot we stored, so invalidate it and wait for the shell's
+      -- next prompt marker to set it.
+      api.nvim_create_autocmd({ "VimResized", "WinResized" }, {
+        group = editgroup,
+        callback = function()
+          local bufinfo = M.buffers[args.buf]
+          if bufinfo then bufinfo.cmd_cursor = nil end
         end,
       })
 
