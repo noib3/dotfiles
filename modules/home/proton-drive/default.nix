@@ -2,12 +2,14 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
 with lib;
 let
   cfg = config.modules.proton-drive;
+  bun2nix = inputs.bun2nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   options.modules.proton-drive = {
@@ -28,14 +30,11 @@ in
   };
 
   config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = pkgs.stdenv.isDarwin;
-        message = "Proton Drive is only available on macOS";
-      }
+    home.packages = [
+      (pkgs.callPackage ./proton-drive-cli.nix { inherit bun2nix; })
     ];
 
-    home.activation = {
+    home.activation = mkIf pkgs.stdenv.isDarwin {
       symlinkDocumentsToProtonDrive = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         if [ ! -e "${cfg.directory}" ] && [ ! -L "${cfg.directory}" ]; then
           ln -s \
