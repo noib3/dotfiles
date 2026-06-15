@@ -46,6 +46,7 @@ in
         yabai -m rule --add app="Digital Colour Meter" manage=off
         yabai -m rule --add app="System Settings" manage=off
         yabai -m rule --add app="Activity Monitor" manage=off
+        yabai -m rule --add app="Archive Utility" manage=off
         yabai -m rule --add app="Font Book" manage=off
         yabai -m rule --add app="App Store" manage=off
         yabai -m rule --add app="System Information" manage=off
