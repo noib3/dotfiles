@@ -60,11 +60,11 @@
     "brew-api": {
       "flake": false,
       "locked": {
-        "lastModified": 1778264952,
-        "narHash": "sha256-y2uzS9+LZWedsSjZF4nXv9Fc/JSlJlDIcnODVwml78E=",
+        "lastModified": 1781518730,
+        "narHash": "sha256-ybYyVYv6V/v9tBx+FgL87mIsidL7TJQ7E2n4/K48cgM=",
         "owner": "BatteredBunny",
         "repo": "brew-api",
-        "rev": "f95f64db373f556a1b97e3d93cd653b4bbb76daa",
+        "rev": "d46a98470c30882ed12ea7051601eb4011e8f5ed",
         "type": "github"
       },
       "original": {
@@ -75,7 +75,9 @@
     },
     "brew-nix": {
       "inputs": {
-        "brew-api": "brew-api",
+        "brew-api": [
+          "brew-api"
+        ],
         "nix-darwin": [
           "nix-darwin"
         ],
@@ -84,11 +86,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778864554,
-        "narHash": "sha256-+M0daK83pZ2j+uDDOgcpqn2yNABvXX+5LIBbYivWkuw=",
+        "lastModified": 1780306103,
+        "narHash": "sha256-si58gIStHng+T+AE430vrXzg0r4BJWtnxzwqAKYhEFw=",
         "owner": "BatteredBunny",
         "repo": "brew-nix",
-        "rev": "3018198a797eafa188d81aef2ddc0b2e17b8c3f8",
+        "rev": "d40695006e0313d131c668d926d92c0fcd737e2a",
         "type": "github"
       },
       "original": {
@@ -1092,6 +1094,7 @@
     },
     "root": {
       "inputs": {
+        "brew-api": "brew-api",
         "brew-nix": "brew-nix",
         "bun2nix": "bun2nix",
         "claude-code-nix": "claude-code-nix",

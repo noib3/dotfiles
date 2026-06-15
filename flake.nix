@@ -2,8 +2,13 @@
   description = "noib3's dotfiles";
 
   inputs = {
+    brew-api = {
+      url = "github:BatteredBunny/brew-api";
+      flake = false;
+    };
     brew-nix = {
       url = "github:BatteredBunny/brew-nix";
+      inputs.brew-api.follows = "brew-api";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "nix-darwin";
     };
