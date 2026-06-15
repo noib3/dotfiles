@@ -99,6 +99,19 @@ in
         # Don't show the Spotlight icon in the menu bar.
         MenuItemHidden = 1;
       };
+      "com.apple.symbolichotkeys".forced = {
+        AppleSymbolicHotKeys = {
+          "79".enabled = true; # Move left a Space.
+          "80".enabled = true; # Move left a Space (slow).
+          "81".enabled = true; # Move right a Space.
+          "82".enabled = true; # Move right a Space (slow).
+          # macOS 26.4 added a default Mission Control shortcut named
+          # "Game Overlay" bound to Cmd+Esc (see
+          # https://github.com/ghostty-org/ghostty/discussions/11829). Let's
+          # disable it so that we can reclaim that keybind.
+          "260".enabled = false;
+        };
+      };
     };
   };
 }
