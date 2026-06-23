@@ -56,15 +56,22 @@ in
         zoom-us
       ]
       ++ lib.lists.optionals isDarwin [
-        brewCasks.obs
         coreutils
         gnused
         iina
         keycastr
+        brewCasks.obs
+        (brewCasks.spotify.overrideAttrs (oldAttrs: {
+          src = fetchurl {
+            url = builtins.head oldAttrs.src.urls;
+            hash = "sha256-EVdZUczAtvrHvkNSE4mUhY4vHwBZJPYgNJBM3M1Ksa4=";
+          };
+        }))
       ]
       ++ lib.lists.optionals isLinux [
         pciutils # Contains lspci.
         proton-vpn-cli
+        spotify
         wl-clipboard-rs
         xdg-utils
       ]
