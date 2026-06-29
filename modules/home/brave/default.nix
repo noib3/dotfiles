@@ -250,6 +250,7 @@ in
       };
 
       extensions = {
+        dont-fuck-with-paste.id = "efaagigdgamehbpimpiagfpoihlkgamh";
         proton-pass = {
           id = "ghmbeldphafepmbegfdlkpapadhbakde";
           pinned = true;
