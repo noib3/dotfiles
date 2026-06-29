@@ -22,6 +22,15 @@ in
 
     programs.lf = {
       enable = true;
+      package = pkgs.lf.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [
+          ./patches/super-key-syntax.patch
+        ];
+        modPostBuild = (old.modPostBuild or "") + ''
+          patch -d vendor/github.com/gdamore/tcell/v2 -p1 < ${./patches/tcell-kitty-keyboard-protocol.patch}
+        '';
+        vendorHash = "sha256-o2e8S11QkSCenxDL6wMmxtdDVokjS0IBJddtPdYNwHE=";
+      });
 
       settings = {
         dircounts = true;
@@ -271,6 +280,8 @@ in
         "<c-x><c-e>" = "fuzzy-edit";
         "<c-x><c-r>" = "fuzzy-ripgrep";
         "<enter>" = "push $";
+        "<super-up>" = "half-up";
+        "<super-down>" = "half-down";
       }
       // (
         if isLinux then

@@ -1,0 +1,56 @@
+Adds `super` as a named modifier in lf key expressions.
+
+diff --git a/misc.go b/misc.go
+--- a/misc.go
++++ b/misc.go
+@@ -19,7 +19,7 @@ import (
+ )
+
+ var (
+-	reModKey    = regexp.MustCompile(`<(c|s|a)-(.+)>`)
++	reModKey    = regexp.MustCompile(`<(c|s|a|super)-(.+)>`)
+ 	reRulerSub  = regexp.MustCompile(`%[apmcsvfithPd]|%\{[^}]+\}`)
+ 	reSixelSize = regexp.MustCompile(`"1;1;(\d+);(\d+)`)
+ )
+diff --git a/ui.go b/ui.go
+--- a/ui.go
++++ b/ui.go
+@@ -1500,6 +1500,8 @@ func (ui *ui) pollEvent() tcell.Event {
+ 				mod = tcell.ModShift
+ 			case "a":
+ 				mod = tcell.ModAlt
++			case "super":
++				mod = tcell.ModMeta
+ 			}
+ 			val = matches[2]
+ 			if utf8.RuneCountInString(val) == 1 {
+@@ -1531,6 +1533,8 @@ func addSpecialKeyModifier(val string, mod tcell.ModMask) string {
+ 		return "<s-" + val[1:]
+ 	case mod == tcell.ModAlt:
+ 		return "<a-" + val[1:]
++	case mod == tcell.ModMeta:
++		return "<super-" + val[1:]
+ 	default:
+ 		return val
+ 	}
+@@ -1565,6 +1569,8 @@ func (ui *ui) readNormalEvent(ev tcell.Event, nav *nav) expr {
+ 				ui.keyAcc = append(ui.keyAcc, []rune("<space>")...)
+ 			case tev.Modifiers() == tcell.ModAlt:
+ 				ui.keyAcc = append(ui.keyAcc, '<', 'a', '-', tev.Rune(), '>')
++			case tev.Modifiers() == tcell.ModMeta:
++				ui.keyAcc = append(ui.keyAcc, []rune(fmt.Sprintf("<super-%c>", tev.Rune()))...)
+ 			case unicode.IsDigit(tev.Rune()) && len(ui.keyAcc) == 0:
+ 				ui.keyCount = append(ui.keyCount, tev.Rune())
+ 			default:
+@@ -1751,6 +1757,11 @@ func readCmdEvent(ev tcell.Event) expr {
+ 				if expr, ok := gOpts.cmdkeys[val]; ok {
+ 					return expr
+ 				}
++			} else if tev.Modifiers() == tcell.ModMeta {
++				val := fmt.Sprintf("<super-%c>", tev.Rune())
++				if expr, ok := gOpts.cmdkeys[val]; ok {
++					return expr
++				}
+ 			} else {
+ 				return &callExpr{"cmd-insert", []string{string(tev.Rune())}, 1}
+ 			}

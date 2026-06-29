@@ -1,0 +1,191 @@
+Enables Kitty keyboard protocol support in tcell.
+
+diff --git a/tscreen.go b/tscreen.go
+--- a/tscreen.go
++++ b/tscreen.go
+@@ -1659,8 +1659,156 @@ func (t *tScreen) parseFunctionKey(buf *bytes.Buffer, evs *[]Event) (bool, bool
+ 		}
+ 	}
+ 	return partial, false
++}
++
++func parseKittyKeyboardModifier(raw string) (ModMask, bool) {
++	if raw == "" {
++		return ModNone, true
++	}
++	raw = strings.Split(raw, ":")[0]
++	val, err := strconv.Atoi(raw)
++	if err != nil || val < 1 {
++		return ModNone, false
++	}
++
++	mask := val - 1
++	mod := ModNone
++	if mask&1 != 0 {
++		mod |= ModShift
++	}
++	if mask&2 != 0 {
++		mod |= ModAlt
++	}
++	if mask&4 != 0 {
++		mod |= ModCtrl
++	}
++	if mask&8 != 0 {
++		mod |= ModMeta
++	}
++	return mod, true
++}
++
++func parseKittyKeyboardCtrl(ch rune) rune {
++	switch {
++	case ch >= 'a' && ch <= 'z':
++		return ch - 'a' + 1
++	case ch >= 'A' && ch <= 'Z':
++		return ch - 'A' + 1
++	}
++
++	switch ch {
++	case ' ', '2':
++		return 0
++	case '[', '3':
++		return 27
++	case '\\', '4':
++		return 28
++	case ']', '5':
++		return 29
++	case '^', '6':
++		return 30
++	case '_', '7', '/':
++		return 31
++	case '8':
++		return 127
++	default:
++		return ch
++	}
++}
++
++func kittyKeyboardKey(code int, mod ModMask) (Key, rune, ModMask, bool) {
++	switch code {
++	case 57417:
++		return KeyLeft, 0, mod, true
++	case 57418:
++		return KeyRight, 0, mod, true
++	case 57419:
++		return KeyUp, 0, mod, true
++	case 57420:
++		return KeyDown, 0, mod, true
++	case 57421:
++		return KeyPgUp, 0, mod, true
++	case 57422:
++		return KeyPgDn, 0, mod, true
++	case 57423:
++		return KeyHome, 0, mod, true
++	case 57424:
++		return KeyEnd, 0, mod, true
++	case 57425:
++		return KeyInsert, 0, mod, true
++	case 57426:
++		return KeyDelete, 0, mod, true
++	}
++
++	if code < 0 || code > utf8.MaxRune {
++		return 0, 0, ModNone, false
++	}
++
++	ch := rune(code)
++	if mod&ModCtrl != 0 {
++		ch = parseKittyKeyboardCtrl(ch)
++	}
++	return KeyRune, ch, mod, true
+ }
+
++func (t *tScreen) parseKittyKeyboard(buf *bytes.Buffer, evs *[]Event) (bool, bool) {
++	b := buf.Bytes()
++	if len(b) < 2 || b[0] != '\x1b' || b[1] != '[' {
++		return false, false
++	}
++
++	end := -1
++	for i := 2; i < len(b); i++ {
++		switch c := b[i]; {
++		case c >= '0' && c <= '9':
++		case c == ';' || c == ':':
++		case c == 'u':
++			end = i
++		default:
++			return false, false
++		}
++		if end != -1 {
++			break
++		}
++	}
++	if end == -1 {
++		return true, false
++	}
++
++	params := strings.Split(string(b[2:end]), ";")
++	if len(params) == 0 || params[0] == "" {
++		return false, false
++	}
++
++	code, err := strconv.Atoi(strings.Split(params[0], ":")[0])
++	if err != nil {
++		return false, false
++	}
++
++	mod := ModNone
++	if len(params) > 1 {
++		var ok bool
++		mod, ok = parseKittyKeyboardModifier(params[1])
++		if !ok {
++			return false, false
++		}
++	}
++	if t.escaped {
++		mod |= ModAlt
++		t.escaped = false
++	}
++
++	key, ch, mod, ok := kittyKeyboardKey(code, mod)
++	if !ok {
++		return false, false
++	}
++	*evs = append(*evs, NewEventKey(key, ch, mod))
++	for i := 0; i <= end; i++ {
++		_, _ = buf.ReadByte()
++	}
++	return true, true
++}
++
+ func (t *tScreen) parseRune(buf *bytes.Buffer, evs *[]Event) (bool, bool) {
+ 	b := buf.Bytes()
+ 	if b[0] >= ' ' && b[0] <= 0x7F {
+@@ -1738,6 +1886,12 @@ func (t *tScreen) collectEventsFromInput(buf *bytes.Buffer, expire bool) []Event
+ 		}
+
+ 		partials := 0
++
++		if part, comp := t.parseKittyKeyboard(buf, &res); comp {
++			continue
++		} else if part {
++			partials++
++		}
+
+ 		if part, comp := t.parseRune(buf, &res); comp {
+ 			continue
+@@ -2037,6 +2191,7 @@ func (t *tScreen) engage() error {
+ 		}
+ 	}
+ 	t.TPuts(ti.EnterKeypad)
++	t.TPuts("\x1b[=5u")
+ 	t.TPuts(ti.HideCursor)
+ 	t.TPuts(ti.EnableAcs)
+ 	t.TPuts(ti.DisableAutoMargin)
+@@ -2084,6 +2239,7 @@ func (t *tScreen) disengage() {
+ 	}
+ 	t.TPuts(ti.ResetFgBg)
+ 	t.TPuts(ti.AttrOff)
++	t.TPuts("\x1b[=0u")
+ 	t.TPuts(ti.ExitKeypad)
+ 	t.TPuts(ti.EnableAutoMargin)
+ 	if os.Getenv("TCELL_ALTSCREEN") != "disable" {
