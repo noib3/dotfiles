@@ -1,0 +1,200 @@
+Enables Kitty keyboard protocol mode while fzf is active.
+
+--- a/src/tui/light.go	2026-06-29 15:08:40
++++ b/src/tui/light.go	2026-06-29 15:09:09
+@@ -442,6 +442,11 @@
+ 		if len(r.buffer) < 3 {
+ 			return Event{Invalid, 0, nil}
+ 		}
++		if r.buffer[1] == '[' {
++			if ev := r.kittyKeySequence(sz); ev.Type != Invalid {
++				return ev
++			}
++		}
+ 		*sz = 3
+ 		switch r.buffer[2] {
+ 		case 'D':
+@@ -884,10 +889,129 @@
+ 	if err == nil {
+ 		*sz = 1 + size
+ 		return AltKey(c)
++	}
++	return Event{Invalid, 0, nil}
++}
++
++func (r *LightRenderer) kittyKeySequence(sz *int) Event {
++	end := bytes.IndexByte(r.buffer[2:], 'u')
++	if end < 0 {
++		return Event{Invalid, 0, nil}
++	}
++
++	end += 2
++	params := strings.Split(string(r.buffer[2:end]), ";")
++	if len(params) == 0 || len(params) > 2 {
++		return Event{Invalid, 0, nil}
++	}
++
++	keyParam := strings.SplitN(params[0], ":", 2)[0]
++	key, err := strconv.Atoi(keyParam)
++	if err != nil {
++		return Event{Invalid, 0, nil}
++	}
++
++	modifier := 1
++	if len(params) == 2 {
++		modifier, err = strconv.Atoi(params[1])
++		if err != nil || modifier < 1 {
++			return Event{Invalid, 0, nil}
++		}
++	}
++
++	*sz = end + 1
++	mask := modifier - 1
++	shift := mask&1 != 0
++	ctrl := mask&4 != 0
++	alt := mask&2 != 0
++	super := mask&8 != 0
++
++	switch key {
++	case 57417:
++		return kittyArrowEvent(ctrl, alt, shift, super, Left, CtrlLeft, AltLeft, CtrlAltLeft, ShiftLeft, CtrlShiftLeft, AltShiftLeft, CtrlAltShiftLeft, SuperLeft)
++	case 57418:
++		return kittyArrowEvent(ctrl, alt, shift, super, Right, CtrlRight, AltRight, CtrlAltRight, ShiftRight, CtrlShiftRight, AltShiftRight, CtrlAltShiftRight, SuperRight)
++	case 57419:
++		return kittyArrowEvent(ctrl, alt, shift, super, Up, CtrlUp, AltUp, CtrlAltUp, ShiftUp, CtrlShiftUp, AltShiftUp, CtrlAltShiftUp, SuperUp)
++	case 57420:
++		return kittyArrowEvent(ctrl, alt, shift, super, Down, CtrlDown, AltDown, CtrlAltDown, ShiftDown, CtrlShiftDown, AltShiftDown, CtrlAltShiftDown, SuperDown)
++	case 27:
++		if !ctrl && !alt && !super {
++			return Event{Esc, 0, nil}
++		}
++	case 127:
++		if ctrl {
++			return Event{CtrlBackspace, 0, nil}
++		}
++		return Event{Backspace, 0, nil}
++	}
++
++	if ctrl {
++		switch key {
++		case ' ', '2':
++			return Event{CtrlSpace, 0, nil}
++		case '\\':
++			return Event{CtrlBackSlash, 0, nil}
++		case ']':
++			return Event{CtrlRightBracket, 0, nil}
++		case '^', '6':
++			return Event{CtrlCaret, 0, nil}
++		case '/', '_':
++			return Event{CtrlSlash, 0, nil}
++		}
++
++		if key >= 'A' && key <= 'Z' {
++			key += 'a' - 'A'
++		}
++		if key == 'h' {
++			return Event{CtrlBackspace, 0, nil}
++		}
++		if key >= 'a' && key <= 'z' {
++			if alt {
++				return CtrlAltKey(rune(key))
++			}
++			return Event{EventType(int(CtrlA) + key - 'a'), 0, nil}
++		}
++	}
++
++	if alt && key >= 0 && key <= utf8.MaxRune {
++		return AltKey(rune(key))
++	}
++	if !super && key >= 0 && key <= utf8.MaxRune {
++		return Event{Rune, rune(key), nil}
+ 	}
++
+ 	return Event{Invalid, 0, nil}
+ }
+
++func kittyArrowEvent(ctrl bool, alt bool, shift bool, super bool, normal EventType, ctrlEvent EventType, altEvent EventType, ctrlAltEvent EventType, shiftEvent EventType, ctrlShiftEvent EventType, altShiftEvent EventType, ctrlAltShiftEvent EventType, superEvent EventType) Event {
++	if super && !ctrl && !alt {
++		return Event{superEvent, 0, nil}
++	}
++	if ctrl && alt && shift {
++		return Event{ctrlAltShiftEvent, 0, nil}
++	}
++	if ctrl && alt {
++		return Event{ctrlAltEvent, 0, nil}
++	}
++	if ctrl && shift {
++		return Event{ctrlShiftEvent, 0, nil}
++	}
++	if alt && shift {
++		return Event{altShiftEvent, 0, nil}
++	}
++	if ctrl {
++		return Event{ctrlEvent, 0, nil}
++	}
++	if alt {
++		return Event{altEvent, 0, nil}
++	}
++	if shift {
++		return Event{shiftEvent, 0, nil}
++	}
++	return Event{normal, 0, nil}
++}
++
+ // https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
+ func (r *LightRenderer) mouseSequence(sz *int) Event {
+ 	// "\e[<0;0;0M"
+@@ -992,6 +1116,7 @@
+ 		r.csi("?1006h")
+ 	}
+ 	r.csi("?2004h") // Enable bracketed paste mode
++	r.csi("=5u")    // Enable Kitty keyboard progressive enhancements
+ }
+
+ func (r *LightRenderer) disableMouse() {
+@@ -1004,6 +1129,7 @@
+
+ func (r *LightRenderer) disableModes() {
+ 	r.disableMouse()
++	r.csi("=0u") // Disable Kitty keyboard progressive enhancements
+ 	r.csi("?2004l")
+ }
+
+--- a/src/tui/light_test.go	2026-06-29 15:08:40
++++ b/src/tui/light_test.go	2026-06-29 15:09:22
+@@ -155,12 +155,16 @@
+ 	assertEscSequence("\x1b[24~", "f12")
+
+ 	assertEscSequence("\x1b", "esc")
++	assertEscSequence("\x1b[27u", "esc")
+ 	assertCharSequence("\t", "tab")
+ 	assertEscSequence("\x1b[Z", "shift-tab")
+
+ 	assertCharSequence("\x7f", "backspace")
++	assertEscSequence("\x1b[127u", "backspace")
+ 	assertEscSequence("\x1b\x7f", "alt-backspace")
+ 	assertCharSequence("\b", "ctrl-backspace")
++	assertEscSequence("\x1b[104;5u", "ctrl-backspace")
++	assertEscSequence("\x1b[127;5u", "ctrl-backspace")
+ 	assertEscSequence("\x1b\b", "ctrl-alt-backspace")
+
+ 	assertEscSequence("\x1b[A", "up")
+@@ -261,6 +265,18 @@
+ 	assertEscSequence("\x1b[1;9B", "super-down")
+ 	assertEscSequence("\x1b[1;9C", "super-right")
+ 	assertEscSequence("\x1b[1;9D", "super-left")
++	assertEscSequence("\x1b[57417;9u", "super-left")
++	assertEscSequence("\x1b[57418;9u", "super-right")
++	assertEscSequence("\x1b[57419;9u", "super-up")
++	assertEscSequence("\x1b[57420;9u", "super-down")
++	assertEscSequence("\x1b[57417:1;9u", "super-left")
++	assertEscSequence("\x1b[99;5u", "ctrl-c")
++	assertEscSequence("\x1b[97;7u", "ctrl-alt-a")
++	assertEscSequence("\x1b[32;5u", "ctrl-space")
++	assertEscSequence("\x1b[92;5u", "ctrl-\\")
++	assertEscSequence("\x1b[93;5u", "ctrl-]")
++	assertEscSequence("\x1b[94;5u", "ctrl-^")
++	assertEscSequence("\x1b[47;5u", "ctrl-/")
+ 	assertEscSequence("\x1b[1;9H", "alt-home")
+ 	assertEscSequence("\x1b[1;9F", "alt-end")
+ 	assertEscSequence("\x1b[3;9~", "alt-delete")

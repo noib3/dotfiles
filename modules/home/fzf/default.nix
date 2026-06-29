@@ -22,6 +22,13 @@ in
     programs.fzf = {
       enable = true;
 
+      package = pkgs.fzf.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [
+          ./patches/super-arrows.patch
+          ./patches/kitty-keyboard-protocol.patch
+        ];
+      });
+
       defaultCommand = "${lib.getExe config.modules.scripts.lf-recursive} $HOME";
 
       defaultOptions = [
@@ -33,6 +40,7 @@ in
         "--ansi"
         "--preview-window=sharp"
         "--preview-window=border-left"
+        "--bind='super-left:beginning-of-line,super-right:end-of-line'"
         "--color='hl:-1:underline'"
         "--color='fg+:-1:regular:italic'"
         "--color='hl+:-1:underline:italic'"
