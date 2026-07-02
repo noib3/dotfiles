@@ -14,7 +14,7 @@
         name = "fuzzy-ripgrep";
         runtimeInputs = with pkgs; [
           config.modules.scripts.rg-pattern
-          fzf
+          config.programs.fzf.package
           git
           gnused
           uutils-coreutils-noprefix # Contains `head`
