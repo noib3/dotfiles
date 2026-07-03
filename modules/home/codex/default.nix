@@ -47,20 +47,6 @@ let
       cfg.modelProviders
       |> builtins.mapAttrs (_: provider: removeAttrs provider [ "active" ]);
 
-    projects =
-      [
-        "${config.home.homeDirectory}/Dev/neovim"
-        "${config.home.homeDirectory}/Dev/snowstorm/snowstorm"
-        "${config.lib.mine.documentsDir}/dotfiles"
-      ]
-      |> map (proj: {
-        name = proj;
-        value = {
-          trust_level = "trusted";
-        };
-      })
-      |> builtins.listToAttrs;
-
     tui.model_availability_nux."gpt-5.5" = 4;
   };
 
@@ -126,7 +112,20 @@ in
 
         home = {
           packages = [
-            inputs.codex-cli-nix.packages.${pkgs.stdenv.system}.default
+            (pkgs.writeShellApplication {
+              name = "codex";
+              runtimeInputs = [
+                pkgs.git
+                inputs.codex-cli-nix.packages.${pkgs.stdenv.system}.default
+              ];
+              text = ''
+                project=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || pwd -P)
+                project=''${project%/.git}
+                project=''${project//\\/\\\\}
+                project=''${project//\"/\\\"}
+                exec codex -c "projects={\"$project\"={trust_level=\"trusted\"}}" "$@"
+              '';
+            })
           ];
 
           sessionVariables.CODEX_HOME = "${config.xdg.configHome}/codex";
