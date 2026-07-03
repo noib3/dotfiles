@@ -50,7 +50,8 @@ in
         "--color='border:${colors.border}'"
       ];
 
-      changeDirWidgetCommand =
+      changeDirWidget = {
+        command =
         let
           fdOpts = "--strip-cwd-prefix --hidden --type=d --color=always";
           fzf-alt-c = pkgs.writeShellApplication {
@@ -96,10 +97,11 @@ in
         in
         "${lib.getExe fzf-alt-c}";
 
-      changeDirWidgetOptions = [
+      options = [
         "--prompt='Cd> '"
         "--preview='ls --color=always ~/{}'"
       ];
+      };
     };
   };
 }

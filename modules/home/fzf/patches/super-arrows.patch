@@ -2,7 +2,7 @@ Adds fzf key names and event types for Super-arrow bindings.
 
 --- a/src/options.go
 +++ b/src/options.go
-@@ -1209,6 +1209,14 @@
+@@ -1220,6 +1220,14 @@
  			add(tui.CtrlAltShiftPageUp)
  		case "ctrl-alt-shift-page-down":
  			add(tui.CtrlAltShiftPageDown)
@@ -22,37 +22,37 @@ Adds fzf key names and event types for Super-arrow bindings.
 @@ -196,6 +196,11 @@
  	CtrlAltShiftPageUp
  	CtrlAltShiftPageDown
-
+ 
 +	SuperUp
 +	SuperDown
 +	SuperLeft
 +	SuperRight
 +
- 	Invalid
- 	Fatal
- 	BracketedPasteBegin
+ 	Mouse
+ 	DoubleClick
+ 	LeftClick
 --- a/src/tui/eventtype_string.go
 +++ b/src/tui/eventtype_string.go
-@@ -133,41 +133,45 @@
+@@ -133,42 +133,46 @@
  	_ = x[CtrlAltShiftDelete-122]
  	_ = x[CtrlAltShiftPageUp-123]
  	_ = x[CtrlAltShiftPageDown-124]
--	_ = x[Invalid-125]
--	_ = x[Fatal-126]
--	_ = x[BracketedPasteBegin-127]
--	_ = x[BracketedPasteEnd-128]
--	_ = x[Mouse-129]
--	_ = x[DoubleClick-130]
--	_ = x[LeftClick-131]
--	_ = x[RightClick-132]
--	_ = x[SLeftClick-133]
--	_ = x[SRightClick-134]
--	_ = x[ScrollUp-135]
--	_ = x[ScrollDown-136]
--	_ = x[SScrollUp-137]
--	_ = x[SScrollDown-138]
--	_ = x[PreviewScrollUp-139]
--	_ = x[PreviewScrollDown-140]
+-	_ = x[Mouse-125]
+-	_ = x[DoubleClick-126]
+-	_ = x[LeftClick-127]
+-	_ = x[RightClick-128]
+-	_ = x[SLeftClick-129]
+-	_ = x[SRightClick-130]
+-	_ = x[ScrollUp-131]
+-	_ = x[ScrollDown-132]
+-	_ = x[SScrollUp-133]
+-	_ = x[SScrollDown-134]
+-	_ = x[PreviewScrollUp-135]
+-	_ = x[PreviewScrollDown-136]
+-	_ = x[Invalid-137]
+-	_ = x[Fatal-138]
+-	_ = x[BracketedPasteBegin-139]
+-	_ = x[BracketedPasteEnd-140]
 -	_ = x[Resize-141]
 -	_ = x[Change-142]
 -	_ = x[BackwardEOF-143]
@@ -67,26 +67,27 @@ Adds fzf key names and event types for Super-arrow bindings.
 -	_ = x[ClickHeader-152]
 -	_ = x[ClickFooter-153]
 -	_ = x[Multi-154]
+-	_ = x[Every-155]
 +	_ = x[SuperUp-125]
 +	_ = x[SuperDown-126]
 +	_ = x[SuperLeft-127]
 +	_ = x[SuperRight-128]
-+	_ = x[Invalid-129]
-+	_ = x[Fatal-130]
-+	_ = x[BracketedPasteBegin-131]
-+	_ = x[BracketedPasteEnd-132]
-+	_ = x[Mouse-133]
-+	_ = x[DoubleClick-134]
-+	_ = x[LeftClick-135]
-+	_ = x[RightClick-136]
-+	_ = x[SLeftClick-137]
-+	_ = x[SRightClick-138]
-+	_ = x[ScrollUp-139]
-+	_ = x[ScrollDown-140]
-+	_ = x[SScrollUp-141]
-+	_ = x[SScrollDown-142]
-+	_ = x[PreviewScrollUp-143]
-+	_ = x[PreviewScrollDown-144]
++	_ = x[Mouse-129]
++	_ = x[DoubleClick-130]
++	_ = x[LeftClick-131]
++	_ = x[RightClick-132]
++	_ = x[SLeftClick-133]
++	_ = x[SRightClick-134]
++	_ = x[ScrollUp-135]
++	_ = x[ScrollDown-136]
++	_ = x[SScrollUp-137]
++	_ = x[SScrollDown-138]
++	_ = x[PreviewScrollUp-139]
++	_ = x[PreviewScrollDown-140]
++	_ = x[Invalid-141]
++	_ = x[Fatal-142]
++	_ = x[BracketedPasteBegin-143]
++	_ = x[BracketedPasteEnd-144]
 +	_ = x[Resize-145]
 +	_ = x[Change-146]
 +	_ = x[BackwardEOF-147]
@@ -101,19 +102,20 @@ Adds fzf key names and event types for Super-arrow bindings.
 +	_ = x[ClickHeader-156]
 +	_ = x[ClickFooter-157]
 +	_ = x[Multi-158]
++	_ = x[Every-159]
  }
-
--const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownInvalidFatalBracketedPasteBeginBracketedPasteEndMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMulti"
-+const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownSuperUpSuperDownSuperLeftSuperRightInvalidFatalBracketedPasteBeginBracketedPasteEndMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMulti"
-
--var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1067, 1072, 1091, 1108, 1113, 1124, 1133, 1143, 1153, 1164, 1172, 1182, 1191, 1202, 1217, 1234, 1240, 1246, 1257, 1262, 1266, 1271, 1274, 1278, 1284, 1288, 1298, 1309, 1320, 1325}
-+var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1067, 1076, 1085, 1095, 1102, 1107, 1126, 1143, 1148, 1159, 1168, 1178, 1188, 1199, 1207, 1217, 1226, 1237, 1252, 1269, 1275, 1281, 1292, 1297, 1301, 1306, 1309, 1313, 1319, 1323, 1333, 1344, 1355, 1360}
-
+ 
+-const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownInvalidFatalBracketedPasteBeginBracketedPasteEndResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMultiEvery"
++const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownSuperUpSuperDownSuperLeftSuperRightMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownInvalidFatalBracketedPasteBeginBracketedPasteEndResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMultiEvery"
+ 
+-var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1065, 1076, 1085, 1095, 1105, 1116, 1124, 1134, 1143, 1154, 1169, 1186, 1193, 1198, 1217, 1234, 1240, 1246, 1257, 1262, 1266, 1271, 1274, 1278, 1284, 1288, 1298, 1309, 1320, 1325, 1330}
++var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1067, 1076, 1085, 1095, 1100, 1111, 1120, 1130, 1140, 1151, 1159, 1169, 1178, 1189, 1204, 1221, 1228, 1233, 1252, 1269, 1275, 1281, 1292, 1297, 1301, 1306, 1309, 1313, 1319, 1323, 1333, 1344, 1355, 1360, 1365}
+ 
  func (i EventType) String() string {
  	if i < 0 || i >= EventType(len(_EventType_index)-1) {
 --- a/src/tui/light.go
 +++ b/src/tui/light.go
-@@ -698,9 +698,10 @@
+@@ -699,9 +699,10 @@
  						alt := bytes.IndexByte([]byte{'3', '4', '7', '8'}, r.buffer[4]) >= 0
  						shift := bytes.IndexByte([]byte{'2', '4', '6', '8'}, r.buffer[4]) >= 0
  						char := r.buffer[5]
@@ -125,7 +127,7 @@ Adds fzf key names and event types for Super-arrow bindings.
  							shift = false
  							if len(r.buffer) < 6 {
  								return Event{Invalid, 0, nil}
-@@ -723,6 +724,9 @@
+@@ -724,6 +725,9 @@
  						ctrlAltShift := ctrl && alt && shift
  						switch char {
  						case 'A':
@@ -135,7 +137,7 @@ Adds fzf key names and event types for Super-arrow bindings.
  							if ctrlAltShift {
  								return Event{CtrlAltShiftUp, 0, nil}
  							}
-@@ -746,6 +750,9 @@
+@@ -747,6 +751,9 @@
  							}
  							return Event{Up, 0, nil}
  						case 'B':
@@ -145,7 +147,7 @@ Adds fzf key names and event types for Super-arrow bindings.
  							if ctrlAltShift {
  								return Event{CtrlAltShiftDown, 0, nil}
  							}
-@@ -769,6 +776,9 @@
+@@ -770,6 +777,9 @@
  							}
  							return Event{Down, 0, nil}
  						case 'C':
@@ -155,7 +157,7 @@ Adds fzf key names and event types for Super-arrow bindings.
  							if ctrlAltShift {
  								return Event{CtrlAltShiftRight, 0, nil}
  							}
-@@ -792,6 +802,9 @@
+@@ -793,6 +803,9 @@
  							}
  							return Event{Right, 0, nil}
  						case 'D':
@@ -169,7 +171,7 @@ Adds fzf key names and event types for Super-arrow bindings.
 +++ b/src/tui/light_test.go
 @@ -253,10 +253,14 @@
  	assertEscSequence("\x1b[6;8~", "ctrl-alt-shift-page-down")
-
+ 
  	// xterm meta & mac
 -	assertEscSequence("\x1b[1;9A", "alt-up")
 -	assertEscSequence("\x1b[1;9B", "alt-down")
