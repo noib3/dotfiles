@@ -11,7 +11,7 @@ let
   isEmbedded = args ? hostConfig;
   shouldForwardGpgAgent = isEmbedded && args.hostConfig.services.gpg-agent.enable;
   publicKeysHostDir = "${config.xdg.stateHome}/gnupg/lima-public-keys";
-  publicKeysGuestDir = "/home/${config.home.username}/.local/state/gnupg-host-public-keys";
+  publicKeysGuestDir = "/run/gnupg-host-public-keys";
 in
 {
   options.modules.gnupg = {

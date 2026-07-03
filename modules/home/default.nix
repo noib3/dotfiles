@@ -71,7 +71,6 @@ in
       ++ lib.lists.optionals isLinux [
         pciutils # Contains lspci.
         proton-vpn-cli
-        spotify
         wl-clipboard-rs
         xdg-utils
       ]
@@ -82,6 +81,7 @@ in
         pick-colour-picker
         playerctl
         proton-pass
+        spotify
       ]
       # C/C++.
       ++ [ clang-tools ]
