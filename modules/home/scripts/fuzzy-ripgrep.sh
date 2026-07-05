@@ -2,7 +2,7 @@ if git status &>/dev/null; then
   cd "$(git rev-parse --show-toplevel)" || exit
 fi
 
-results="$(
+if results="$(
   rg-pattern "" |
     fzf \
       --multi \
@@ -13,8 +13,11 @@ results="$(
       --bind="change:reload:rg-pattern {q}" \
       --preview='rg-preview {1}:{2}' \
       --preview-window='+{2}-/2'
-)"
-status=$?
+)"; then
+  status=0
+else
+  status=$?
+fi
 
 if [ "$status" -eq 130 ] || [ -z "$results" ]; then
   exit 0

@@ -276,10 +276,10 @@ in
         x = "cut";
         "+" = "make-ex";
         "-" = "remove-ex";
-        "<c-x><c-d>" = "fuzzy-cd";
-        "<c-x><c-e>" = "fuzzy-edit";
-        "<c-x><c-r>" = "fuzzy-ripgrep";
         "<enter>" = "push $";
+        "<super-d>" = "fuzzy-cd";
+        "<super-e>" = "fuzzy-edit";
+        "<super-r>" = "fuzzy-ripgrep";
         "<super-up>" = "half-up";
         "<super-down>" = "half-down";
       }
