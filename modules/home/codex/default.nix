@@ -145,18 +145,29 @@ in
           );
         };
 
-        modules.codex.modelProviders = lib.mkIf cfg.codexLb.enable {
-          codex-lb = {
-            active = true;
-            name = "OpenAI";
-            base_url = "http://${cfg.codexLb.host}:${toString cfg.codexLb.port}/backend-api/codex";
-            wire_api = "responses";
-            supports_websockets = true;
-          };
-        };
+        modules.codex.modelProviders = lib.mkMerge [
+          (lib.mkIf cfg.codexLb.enable {
+            codex-lb = {
+              active = true;
+              name = "OpenAI";
+              base_url = "http://${cfg.codexLb.host}:${toString cfg.codexLb.port}/backend-api/codex";
+              wire_api = "responses";
+              supports_websockets = true;
+            };
+          })
+          (lib.mkIf config.modules.cli-proxy-api.enable {
+            cli-proxy-api = {
+              active = false;
+              name = "CLIProxyAPI";
+              base_url = "${config.modules.cli-proxy-api.endpoint}/v1";
+              experimental_bearer_token = config.modules.cli-proxy-api.apiKey;
+              wire_api = "responses";
+            };
+          })
+        ];
 
         xdg.configFile."codex/config.toml" = {
-          source = (pkgs.formats.toml { }).generate "codex-config.toml" codexConfig;
+          source = tomlFormat.generate "codex-config.toml" codexConfig;
           force = true;
         };
       }
