@@ -156,6 +156,7 @@ in
   modules = {
     bat.enable = true;
     claude.enable = true;
+    cli-proxy-api.enable = true;
     codex.enable = true;
     delete-ds-store.enable = isDarwin;
     direnv.enable = true;
