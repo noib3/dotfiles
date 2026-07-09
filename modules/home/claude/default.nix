@@ -32,6 +32,10 @@ in
         enabledPlugins = {
           "rust-analyzer-lsp@claude-plugins-official" = true;
         };
+        env = lib.optionalAttrs config.modules.cli-proxy-api.enable {
+          ANTHROPIC_BASE_URL = config.modules.cli-proxy-api.endpoint;
+          ANTHROPIC_AUTH_TOKEN = config.modules.cli-proxy-api.apiKey;
+        };
         permissions = {
           allow = [
             "Bash"
