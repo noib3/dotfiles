@@ -35,7 +35,8 @@ let
             artifact = "CLIProxyAPI_${version}_linux_amd64.tar.gz";
             hash = "sha256-OkLshkaEeRDHflgUnMXWLKzYM3LwJhlGTZBEKHRsiWE=";
           };
-        }.${pkgs.stdenv.hostPlatform.system};
+        }
+        .${pkgs.stdenv.hostPlatform.system};
     in
     pkgs.stdenvNoCC.mkDerivation {
       pname = "cli-proxy-api";
@@ -124,7 +125,8 @@ in
       {
         home.packages = [ cfg.package ];
         xdg.configFile."cli-proxy-api/config.yaml".source =
-          (pkgs.formats.yaml { }).generate "cli-proxy-api-config.yaml" cfg.settings;
+          (pkgs.formats.yaml { }).generate "cli-proxy-api-config.yaml"
+            cfg.settings;
       }
       (lib.mkIf pkgs.stdenv.isDarwin {
         launchd.agents.cli-proxy-api = {
