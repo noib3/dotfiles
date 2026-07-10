@@ -1,8 +1,15 @@
 local fzf_lua = require("fzf-lua")
+local terminal = require("terminal")
 local trouble = require("trouble")
 local utils = require("utils")
 
 local keymap = vim.keymap
+
+--- @param key string
+local fallback = function(key)
+  local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
+  vim.api.nvim_feedkeys(keys, "n", false)
+end
 
 -- Either quit Neovim, close a window or delete a buffer based on the current
 -- context.
@@ -19,6 +26,38 @@ local close = function()
 
   local current_buf = vim.api.nvim_get_current_buf()
 
+  local other_listed_bufs = vim
+    .iter(vim.api.nvim_list_bufs())
+    :filter(
+      function(buf)
+        return buf ~= current_buf
+          and vim.api.nvim_buf_is_valid(buf)
+          and vim.bo[buf].buflisted
+      end
+    )
+    :totable()
+
+  local base_terminal = terminal.get_base()
+
+  if current_buf == base_terminal and #other_listed_bufs > 0 then
+    local switch_buf = vim
+      .iter(other_listed_bufs)
+      :fold(nil, function(most_recent, buf)
+        if not most_recent then return buf end
+        local lastused = vim.fn.getbufinfo(buf)[1].lastused
+        local most_recent_lastused = vim.fn.getbufinfo(most_recent)[1].lastused
+        return lastused > most_recent_lastused and buf or most_recent
+      end)
+
+    vim.bo[current_buf].buflisted = false
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == current_buf then
+        vim.api.nvim_win_set_buf(win, switch_buf)
+      end
+    end
+    return
+  end
+
   local all_splits_are_showing_this_buffer = vim.iter(splits):all(
     function(win) return vim.api.nvim_win_get_buf(win) == current_buf end
   )
@@ -28,45 +67,43 @@ local close = function()
     return
   end
 
-  local has_other_listed_file_buffer = vim.iter(vim.api.nvim_list_bufs()):any(
-    function(buf)
-      return buf ~= current_buf
-        and vim.api.nvim_buf_is_valid(buf)
-        and vim.bo[buf].buflisted
-    end
-  )
-
-  local buf_was_opened_from_embedded_terminal = type(
-    vim.b.nvim_flatten_orig_buf
-  ) == "number" and vim.api.nvim_buf_is_valid(vim.b.nvim_flatten_orig_buf)
+  local has_other_listed_file_buffer = #other_listed_bufs > 0
+  local can_return_to_base_terminal = base_terminal
+    and base_terminal ~= current_buf
 
   if
     #splits == 1
     and not has_other_listed_file_buffer
-    and not buf_was_opened_from_embedded_terminal
+    and not can_return_to_base_terminal
   then
     vim.cmd("q")
     return
   end
 
-  if buf_was_opened_from_embedded_terminal then
-    vim.bo[vim.b.nvim_flatten_orig_buf].buflisted = true
+  if not has_other_listed_file_buffer and can_return_to_base_terminal then
+    vim.bo[base_terminal].buflisted = true
   end
+
+  local force_delete = vim.bo.buftype == "terminal"
 
   -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
   -- to avoid messing w/ the window layout.
   local has_bufdelete, bufdelete = pcall(require, "bufdelete")
 
   if not has_bufdelete then
-    vim.cmd("bdelete")
-    return
+    vim.cmd(force_delete and "bdelete!" or "bdelete")
+  else
+    local switchable_bufs = not has_other_listed_file_buffer
+        and can_return_to_base_terminal
+        and { base_terminal }
+      or nil
+
+    bufdelete.bufdelete(0, force_delete, switchable_bufs)
   end
 
-  local switchable_bufs = buf_was_opened_from_embedded_terminal
-      and { vim.b.nvim_flatten_orig_buf }
-    or nil
-
-  bufdelete.bufdelete(0, false, switchable_bufs)
+  if vim.api.nvim_get_current_buf() == base_terminal then
+    vim.cmd.startinsert()
+  end
 end
 
 ---@enum Direction
@@ -105,6 +142,15 @@ keymap.set({ "n", "v" }, "<D-s>", utils.buffer.save)
 
 -- Close the current buffer/window.
 keymap.set("n", "<D-w>", close)
+
+-- Close or hide the current terminal buffer.
+keymap.set("t", "<D-w>", function()
+  if vim.b.terminal_shell_prompt_active then
+    close()
+  else
+    fallback("<D-w>")
+  end
+end)
 
 -- Scroll up/down by half a page.
 keymap.set({ "n", "v" }, "<D-Up>", "<C-u>")
@@ -206,12 +252,6 @@ keymap.set("n", "tm", function() vim.fn.jobstart("tm") end)
 
 -- Open this week's todo.
 keymap.set("n", "tw", function() vim.fn.jobstart("tw") end)
-
---- @param key string
-local fallback = function(key)
-  local keys = vim.api.nvim_replace_termcodes(key, true, false, true)
-  vim.api.nvim_feedkeys(keys, "n", false)
-end
 
 vim.api.nvim_set_keymap("n", "q", "", {
   desc = "Close the quickfix window with 'q'",

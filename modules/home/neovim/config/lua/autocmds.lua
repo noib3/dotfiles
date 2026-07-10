@@ -1,3 +1,5 @@
+local terminal = require("terminal")
+
 ---@param name string
 ---@return number
 local create_augroup = function(name)
@@ -32,7 +34,8 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 vim.api.nvim_create_autocmd("TermOpen", {
   group = create_augroup("noib3/setup-terminal"),
   desc = "Disables line numbers and enters insert mode in terminals",
-  callback = function()
+  callback = function(ev)
+    terminal.register_base(ev.buf)
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
     if vim.startswith(vim.api.nvim_buf_get_name(0), "term://") then
@@ -111,30 +114,14 @@ vim.api.nvim_create_autocmd("TermRequest", {
 })
 
 local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
-local nvim_flatten_orig_buf
 
 vim.api.nvim_create_autocmd("User", {
   group = nvim_flatten_group,
   pattern = "NvimFlattenWillSwallow",
   desc = "Hides terminals while recursive nvim launches replace them",
   callback = function()
-    nvim_flatten_orig_buf = vim.api.nvim_get_current_buf()
     if vim.bo.buftype == "terminal" then vim.bo.buflisted = false end
   end,
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = nvim_flatten_group,
-  pattern = "NvimFlattenDidSwallow",
-  desc = "Marks recursive nvim launch buffers with their original buffer",
-  callback = function() vim.b.nvim_flatten_orig_buf = nvim_flatten_orig_buf end,
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = nvim_flatten_group,
-  pattern = "NvimFlattenWillShow",
-  desc = "Clears recursive nvim launch buffer state",
-  callback = function() vim.b.nvim_flatten_orig_buf = nil end,
 })
 
 vim.api.nvim_create_autocmd("User", {
