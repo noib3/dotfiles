@@ -1,0 +1,67 @@
+Enables transparent fallback to another pooled account when upstream rejects
+the requested model for the account initially selected by codex-lb.
+
+---
+diff --git a/app/modules/proxy/_service/websocket/mixin.py b/app/modules/proxy/_service/websocket/mixin.py
+index 4c17ada..af212ff 100644
+--- a/app/modules/proxy/_service/websocket/mixin.py
++++ b/app/modules/proxy/_service/websocket/mixin.py
+@@ -448,6 +448,21 @@ def _facade() -> Any:
+     return sys.modules["app.modules.proxy.service"]
+
+
++def _is_account_scoped_model_unsupported_error(code: str | None, message: str | None) -> bool:
++    """Return whether upstream rejected a model for the selected ChatGPT account.
++
++    Model rollouts can differ between accounts on the same plan.  Treat only
++    the backend's exact account-scoped rejection as eligible for transparent
++    failover; other invalid requests remain terminal.
++    """
++    if code != "invalid_request_error" or not isinstance(message, str):
++        return False
++    normalized = message.strip().lower()
++    return normalized.startswith("the '") and normalized.endswith(
++        "' model is not supported when using codex with a chatgpt account."
++    )
++
++
+ @contextmanager
+ def _websocket_archive_request_context(request_id: str | None) -> Iterator[None]:
+     token = set_request_id(request_id)
+@@ -3192,6 +3207,36 @@ class _WebSocketMixin:
+                 error.type if error else None,
+             )
+             terminal_error_message = error.message if error else None
++            can_retry_account_scoped_model_rejection = (
++                _is_account_scoped_model_unsupported_error(terminal_error_code, terminal_error_message)
++                and not has_other_pending_requests
++                and request_state.response_id is None
++                and not request_state.downstream_visible
++                and request_state.previous_response_id is None
++                and bool(request_state.request_text)
++                and request_state.replay_count < _facade()._WEBSOCKET_MAX_ACCOUNT_ATTEMPTS - 1
++            )
++            if can_retry_account_scoped_model_rejection:
++                request_state.replay_count += 1
++                request_state.response_id = None
++                request_state.awaiting_response_created = True
++                request_state.force_refresh_account_id = None
++                request_state.preferred_account_id = None
++                request_state.excluded_account_ids.add(account.id)
++                _clear_websocket_request_error_overrides(request_state)
++                upstream_control.reconnect_requested = True
++                upstream_control.suppress_downstream_event = True
++                upstream_control.replay_request_state = request_state
++                await _release_websocket_response_create_gate(request_state, response_create_gate)
++                _facade().logger.info(
++                    "Retrying account-scoped model rejection request_id=%s model=%s account_id=%s retry=%s/%s",
++                    request_state.request_log_id or request_state.request_id,
++                    request_state.model,
++                    account.id,
++                    request_state.replay_count,
++                    _facade()._WEBSOCKET_MAX_ACCOUNT_ATTEMPTS - 1,
++                )
++                return downstream_text
+             if _facade()._is_security_work_authorization_required_error(terminal_error_code, terminal_error_message):
+                 can_retry_security_work = (
+                     not account.security_work_authorized

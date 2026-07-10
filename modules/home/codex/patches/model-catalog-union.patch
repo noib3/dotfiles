@@ -1,0 +1,65 @@
+Makes model discovery advertise models available to any pooled account, so
+Codex receives metadata for models supported through account fallback.
+
+---
+diff --git a/app/core/openai/model_refresh_scheduler.py b/app/core/openai/model_refresh_scheduler.py
+index 880448c..15f5677 100644
+--- a/app/core/openai/model_refresh_scheduler.py
++++ b/app/core/openai/model_refresh_scheduler.py
+@@ -250,20 +250,14 @@ def _merge_same_plan_model_results(successful_results: list[list[UpstreamModel]]
+     if not successful_results:
+         return []
+
+-    models_by_slug = [{model.slug: model for model in models} for models in successful_results]
+-    common_slugs = set(models_by_slug[0])
+-    for models in models_by_slug[1:]:
+-        common_slugs.intersection_update(models)
+-
+-    merged_models: list[UpstreamModel] = []
+-    for model in models_by_slug[0].values():
+-        if model.slug not in common_slugs:
+-            continue
+-        merged_model = model
+-        for models in models_by_slug[1:]:
+-            merged_model = _merge_service_tier_metadata(merged_model, models[model.slug])
+-        merged_models.append(merged_model)
+-    return merged_models
++    merged_models: dict[str, UpstreamModel] = {}
++    for models in successful_results:
++        for model in models:
++            existing = merged_models.get(model.slug)
++            merged_models[model.slug] = (
++                model if existing is None else _merge_service_tier_metadata(existing, model)
++            )
++    return list(merged_models.values())
+
+
+ async def _ensure_fresh_with_transport_recovery(
+diff --git a/tests/unit/test_model_refresh_scheduler.py b/tests/unit/test_model_refresh_scheduler.py
+index ae23840..13dbd5c 100644
+--- a/tests/unit/test_model_refresh_scheduler.py
++++ b/tests/unit/test_model_refresh_scheduler.py
+@@ -302,14 +302,14 @@ async def test_fetch_with_failover_unions_same_plan_tiers(
+
+
+ @pytest.mark.asyncio
+-async def test_fetch_with_failover_excludes_same_plan_private_model_slug(
++async def test_fetch_with_failover_includes_same_plan_account_specific_model_slugs(
+     monkeypatch: pytest.MonkeyPatch,
+ ) -> None:
+     accounts = [_account("account-1"), _account("account-2")]
+     encryptor = MagicMock()
+     encryptor.decrypt.return_value = "access-token"
+     first_models = [_model("gpt-5.4"), _model("private-alpha")]
+-    second_models = [_model("gpt-5.4")]
++    second_models = [_model("gpt-5.4"), _model("private-beta")]
+
+     fetch_models_for_plan = AsyncMock(side_effect=[first_models, second_models])
+
+@@ -319,7 +319,7 @@ async def test_fetch_with_failover_excludes_same_plan_private_model_slug(
+     result = await scheduler_module._fetch_with_failover(accounts, encryptor, MagicMock())
+
+     assert result is not None
+-    assert [model.slug for model in result.models] == ["gpt-5.4"]
++    assert [model.slug for model in result.models] == ["gpt-5.4", "private-alpha", "private-beta"]
+     assert fetch_models_for_plan.await_count == 2
