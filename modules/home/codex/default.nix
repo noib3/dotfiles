@@ -36,7 +36,7 @@ let
     cfg.modelProviders |> lib.filterAttrs (_: provider: provider.active);
 
   codexConfig = {
-    model = "gpt-5.5";
+    model = "gpt-5.6-sol";
     model_reasoning_effort = "high";
     plan_mode_reasoning_effort = "high";
     model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
@@ -47,7 +47,7 @@ let
       cfg.modelProviders
       |> builtins.mapAttrs (_: provider: removeAttrs provider [ "active" ]);
 
-    tui.model_availability_nux."gpt-5.5" = 4;
+    tui.model_availability_nux."gpt-5.6-sol" = 4;
   };
 
   codexLb = pkgs.callPackage ./codex-lb.nix { inherit inputs; };
