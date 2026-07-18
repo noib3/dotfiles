@@ -37,8 +37,8 @@ let
 
   codexConfig = {
     model = "gpt-5.6-sol";
-    model_reasoning_effort = "high";
-    plan_mode_reasoning_effort = "high";
+    model_reasoning_effort = "xhigh";
+    plan_mode_reasoning_effort = "xhigh";
     model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
     approval_policy = "never";
     sandbox_mode = "danger-full-access";
