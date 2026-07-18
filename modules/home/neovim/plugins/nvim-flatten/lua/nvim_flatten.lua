@@ -6,9 +6,35 @@ local did_swallow_event = "NvimFlattenDidSwallow"
 local will_show_event = "NvimFlattenWillShow"
 local did_show_event = "NvimFlattenDidShow"
 
+local project_markers = {
+  ".envrc",
+  ".git",
+  ".hg",
+  ".svn",
+  "flake.nix",
+  "Cargo.toml",
+  "go.mod",
+  "pyproject.toml",
+  "package.json",
+  "deno.json",
+  "deno.jsonc",
+  "Gemfile",
+  "composer.json",
+  "mix.exs",
+  "build.zig",
+  "meson.build",
+  "CMakeLists.txt",
+  "Makefile",
+}
+
 local plugin_root =
   vim.fs.dirname(vim.fs.dirname(debug.getinfo(1, "S").source:sub(2)))
 local bin_dir = plugin_root .. "/bin"
+
+local contexts_by_buffer = {}
+local contexts_by_root = {}
+local roots_by_buffer = {}
+local original_lsp_start
 
 local prepend_path = function(dir)
   for path in vim.gsplit(vim.env.PATH or "", ":") do
@@ -23,6 +49,204 @@ if vim.env.NVIM_FLATTEN_REAL_NVIM == "" then
   vim.env.NVIM_FLATTEN_REAL_NVIM = vim.v.progpath
 end
 prepend_path(bin_dir)
+
+local normalize = function(path)
+  if type(path) ~= "string" or path == "" then return nil end
+  return vim.fs.normalize(path)
+end
+
+local environment_id = function(environment)
+  local keys = vim.tbl_keys(environment)
+  table.sort(keys)
+
+  local serialized = {}
+  for _, key in ipairs(keys) do
+    local value = tostring(environment[key])
+    serialized[#serialized + 1] = #key .. ":" .. key
+    serialized[#serialized + 1] = #value .. ":" .. value
+  end
+
+  return vim.fn.sha256(table.concat(serialized))
+end
+
+local new_context = function(environment)
+  local normalized = {}
+  for key, value in pairs(environment or {}) do
+    normalized[tostring(key)] = tostring(value)
+  end
+
+  return {
+    environment = normalized,
+    id = environment_id(normalized),
+  }
+end
+
+local path_for_buffer = function(bufnr)
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  if name ~= "" then return name end
+
+  local context = contexts_by_buffer[bufnr]
+  if context then return context.environment.PWD end
+  return nil
+end
+
+local detect_project_root = function(path)
+  path = normalize(path)
+  if not path then return nil end
+  return normalize(vim.fs.root(path, { project_markers }))
+end
+
+local path_is_within = function(path, root)
+  path = normalize(path)
+  root = normalize(root)
+  if not path or not root then return false end
+  return path == root or vim.startswith(path, root .. "/")
+end
+
+local context_for_path = function(path)
+  local best_root
+  local best_context
+
+  for root, context in pairs(contexts_by_root) do
+    if path_is_within(path, root) and (not best_root or #root > #best_root) then
+      best_root = root
+      best_context = context
+    end
+  end
+
+  return best_context
+end
+
+local context_for_buffer = function(bufnr)
+  if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+
+  local context = contexts_by_buffer[bufnr]
+  if context then return context end
+
+  local path = path_for_buffer(bufnr)
+  if not path then return nil end
+
+  context = context_for_path(path)
+  if context then contexts_by_buffer[bufnr] = context end
+  return context
+end
+
+local register_buffer = function(bufnr, context, path)
+  contexts_by_buffer[bufnr] = context
+
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+    local lsp_root = normalize(client.root_dir)
+    if lsp_root then contexts_by_root[lsp_root] = context end
+  end
+
+  local root = detect_project_root(path)
+    or detect_project_root(context.environment.PWD)
+    or normalize(context.environment.PWD)
+  if not root then return end
+
+  roots_by_buffer[bufnr] = root
+  contexts_by_root[root] = context
+end
+
+local uri_to_path = function(uri)
+  if type(uri) ~= "string" or uri == "" then return nil end
+  local ok, path = pcall(vim.uri_to_fname, uri)
+  if ok then return normalize(path) end
+  return nil
+end
+
+local root_for_lsp = function(config, opts)
+  local root = normalize(config.root_dir)
+  if root then return root end
+
+  local folder = config.workspace_folders and config.workspace_folders[1]
+  local workspace_root = folder and uri_to_path(folder.uri)
+  if workspace_root then return workspace_root end
+
+  if opts and opts._root_markers then
+    local bufnr = opts.bufnr or 0
+    if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+    return normalize(vim.fs.root(bufnr, opts._root_markers))
+  end
+
+  return nil
+end
+
+local merge_environment = function(environment, overrides)
+  local result = vim.deepcopy(environment or {})
+  for key, value in pairs(overrides or {}) do
+    if value == vim.NIL or value == nil then
+      result[key] = nil
+    else
+      result[key] = tostring(value)
+    end
+  end
+  return result
+end
+
+local wrap_rpc_start = function(environment, command)
+  return function(dispatchers, config)
+    local rpc_start = vim.lsp.rpc.start
+
+    vim.lsp.rpc.start = function(cmd, dispatchers_, spawn_params)
+      spawn_params = vim.deepcopy(spawn_params or {})
+      spawn_params.env = merge_environment(environment, spawn_params.env)
+      return rpc_start(cmd, dispatchers_, spawn_params)
+    end
+
+    local ok, result = pcall(command, dispatchers, config)
+    vim.lsp.rpc.start = rpc_start
+    if not ok then error(result) end
+    return result
+  end
+end
+
+local default_reuse_client = function(client, config)
+  return client.name == config.name and client.root_dir == config.root_dir
+end
+
+local with_lsp_environment = function(config, opts)
+  local bufnr = opts and opts.bufnr or 0
+  if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+
+  local root = root_for_lsp(config, opts)
+  local context = context_for_buffer(bufnr)
+    or (root and contexts_by_root[root])
+    or (root and context_for_path(root))
+
+  if not context then return config, opts end
+  if root then contexts_by_root[root] = context end
+
+  local result = vim.deepcopy(config)
+  local base_cmd_env = result._nvim_flatten_base_cmd_env
+    or vim.deepcopy(result.cmd_env or {})
+  local original_cmd = result._nvim_flatten_original_cmd or result.cmd
+
+  result.root_dir = root or result.root_dir
+  result._nvim_flatten_base_cmd_env = base_cmd_env
+  result._nvim_flatten_env_id = context.id
+  result.cmd_env = merge_environment(context.environment, base_cmd_env)
+
+  if type(original_cmd) == "function" then
+    result._nvim_flatten_original_cmd = original_cmd
+    result.cmd = wrap_rpc_start(result.cmd_env, original_cmd)
+  end
+
+  local start_opts = vim.tbl_extend("force", {}, opts or {})
+  local reuse_client = start_opts.reuse_client or default_reuse_client
+  start_opts.reuse_client = function(client, config_)
+    return client.config._nvim_flatten_env_id == config_._nvim_flatten_env_id
+      and reuse_client(client, config_)
+  end
+
+  return result, start_opts
+end
+
+original_lsp_start = vim.lsp.start
+vim.lsp.start = function(config, opts)
+  local config_, opts_ = with_lsp_environment(config, opts)
+  return original_lsp_start(config_, opts_)
+end
 
 --- Returns an iterator over the windows currently displaying the given buffer.
 --- @param buf number
@@ -108,6 +332,7 @@ local handle_launch = function(ev)
   local data = ev.data or {}
   local filepaths = data.filepaths or {}
   local commands = data.commands or {}
+  local context = new_context(data.environment)
   local on_done = data.on_done or function() end
 
   local orig_buf = ev.buf
@@ -116,9 +341,11 @@ local handle_launch = function(ev)
   if #filepaths == 0 then
     vim.cmd.enew()
     file_buf = vim.api.nvim_get_current_buf()
+    register_buffer(file_buf, context)
   else
     for _, filepath in ipairs(filepaths) do
       local buf = get_or_add_buffer(filepath)
+      register_buffer(buf, context, filepath)
       prepare_buffer(buf, filepath)
       if not file_buf then file_buf = buf end
     end
@@ -207,11 +434,39 @@ local handle_launch = function(ev)
   run_post_commands(file_buf, commands)
 end
 
+local group = vim.api.nvim_create_augroup("nvim-session-flatten", {
+  clear = true,
+})
+
 vim.api.nvim_create_autocmd("User", {
-  group = vim.api.nvim_create_augroup("nvim-session-flatten", {
-    clear = true,
-  }),
+  group = group,
   pattern = launch_event,
   nested = true,
   callback = handle_launch,
 })
+
+vim.api.nvim_create_autocmd("BufWipeout", {
+  group = group,
+  callback = function(ev)
+    contexts_by_buffer[ev.buf] = nil
+    roots_by_buffer[ev.buf] = nil
+  end,
+})
+
+M.environment_for_buffer = function(bufnr)
+  local context = context_for_buffer(bufnr or 0)
+  return context and vim.deepcopy(context.environment) or nil
+end
+
+M.environment_for_root = function(root)
+  root = normalize(root)
+  local context = root and (contexts_by_root[root] or context_for_path(root))
+  return context and vim.deepcopy(context.environment) or nil
+end
+
+M.project_root = function(bufnr)
+  if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
+  return roots_by_buffer[bufnr] or detect_project_root(path_for_buffer(bufnr))
+end
+
+return M
