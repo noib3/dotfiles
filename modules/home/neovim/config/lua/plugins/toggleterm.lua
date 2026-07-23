@@ -42,7 +42,12 @@ local setup_lf = function()
   })
 
   local cmd = function()
-    temp_mtime = vim.uv.fs_stat(temp_file).mtime.sec
+    local stat = vim.uv.fs_stat(temp_file)
+    if not stat then
+      temp_file = os.tmpname()
+      stat = assert(vim.uv.fs_stat(temp_file))
+    end
+    temp_mtime = stat.mtime.sec
     local buf_name = vim.api.nvim_buf_get_name(0)
     local buf_path = vim.uv.fs_stat(buf_name) and buf_name or ""
     return ("lf -selection-path %s %s"):format(
