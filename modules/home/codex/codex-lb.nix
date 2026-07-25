@@ -1,4 +1,5 @@
 {
+  fetchurl,
   fetchzip,
   inputs,
   lib,
@@ -8,57 +9,28 @@
 
 let
   pname = "codex-lb";
-  version = "1.20.2-beta.1-main-20260710";
+  version = "1.22.0";
 
-  bun2nix = inputs.bun2nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
-  mainSrc = pkgs.applyPatches {
-    name = "${pname}-${version}-patched-source";
-    src = fetchzip {
-      url = "https://github.com/Soju06/codex-lb/archive/b0f5ea8b03a6b7685d281d74350a22377e05d72e.tar.gz";
-      hash = "sha256-h8TnZUUys+AOTX/69EysccZMdXXP042ofe9U5xOUJGA=";
-    };
-    patches = [
-      ./patches/account-model-failover.patch
-      ./patches/model-catalog-union.patch
-    ];
+  mainSrc = fetchzip {
+    url = "https://github.com/Soju06/codex-lb/archive/4c0dbc9ceb2b5d70204ea7603cf1b4bef83db234.tar.gz";
+    hash = "sha256-HMGgf5w1GcSKvcf0zQL1LqgMHoU1HoB/dnxFVJvYEKY=";
   };
 
-  frontendBunNix =
-    pkgs.runCommand "${pname}-frontend-bun.nix" { nativeBuildInputs = [ bun2nix ]; }
+  frontendWheel = fetchurl {
+    url = "https://files.pythonhosted.org/packages/d3/93/f1b70213c3c56b7d8af2a12f6eb17ba5fdc73aa9bed17e19a975cfd885c1/codex_lb-1.22.0-py3-none-any.whl";
+    hash = "sha256-R2sb9HFr2A/j+FiLnT+QElnZwzAKJ2h0eE4IRq981Lk=";
+  };
+
+  frontend =
+    pkgs.runCommand "${pname}-frontend-${version}"
+      {
+        nativeBuildInputs = [ pkgs.unzip ];
+      }
       ''
-        bun2nix \
-          --lock-file ${mainSrc}/frontend/bun.lock \
-          --output-file $out
+        mkdir -p "$out"
+        unzip -q ${frontendWheel} 'app/static/*' -d wheel
+        cp -R wheel/app/static/. "$out"
       '';
-
-  frontend = pkgs.stdenvNoCC.mkDerivation {
-    pname = "${pname}-frontend";
-    inherit version;
-    src = mainSrc;
-    sourceRoot = "${mainSrc.name}/frontend";
-    postUnpack = ''
-      chmod -R u+w ${mainSrc.name}
-    '';
-
-    nativeBuildInputs = [ bun2nix.hook ];
-    bunDeps = bun2nix.fetchBunDeps {
-      bunNix = frontendBunNix;
-    };
-    dontRunLifecycleScripts = true;
-
-    buildPhase = ''
-      runHook preBuild
-      bun run build
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      cp -R ../app/static $out
-      runHook postInstall
-    '';
-  };
 
   src = pkgs.runCommand "${pname}-${version}-source" { } ''
     mkdir -p "$out"
