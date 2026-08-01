@@ -17,7 +17,10 @@
     };
 
     # Plugins.
-    blink-cmp.url = "github:Saghen/blink.cmp";
+    blink-cmp = {
+      url = "github:Saghen/blink.cmp";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     blink-emoji-nvim = {
       url = "github:moyiz/blink-emoji.nvim";
       flake = false;
