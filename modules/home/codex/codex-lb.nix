@@ -71,12 +71,10 @@ let
             maturin = [ ];
             setuptools = [ ];
           };
-        buildInputs =
-          (old.buildInputs or [ ])
-          ++ [
-            pkgs.openssl
-            pkgs.libiconv
-          ];
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          pkgs.openssl
+          pkgs.libiconv
+        ];
       });
     };
 

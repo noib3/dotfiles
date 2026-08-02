@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -44,10 +43,6 @@ let
   };
 in
 {
-  imports = [
-    inputs.nix-jettison.homeManagerModules.default
-  ];
-
   config = {
     home.packages = with pkgs; [
       # We add the original Nix package because it contains the legacy nix-*
@@ -60,10 +55,6 @@ in
 
     nix = {
       package = lib.mkForce nix;
-      # TODO: always enable once Nix 2.35 is released (needs
-      # https://github.com/NixOS/nix/pull/15696 to load the C API symbols on
-      # Linux).
-      plugins.jettison.enable = pkgs.stdenv.isDarwin;
       settings = {
         experimental-features = [
           "flakes"
