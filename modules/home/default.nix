@@ -64,7 +64,7 @@ in
         (brewCasks.spotify.overrideAttrs (oldAttrs: {
           src = fetchurl {
             url = builtins.head oldAttrs.src.urls;
-            hash = "sha256-EVdZUczAtvrHvkNSE4mUhY4vHwBZJPYgNJBM3M1Ksa4=";
+            hash = "sha256-NGaAr3hHRga1ntkqyrPnbyl4fkjwb2MRxVHETSgs2Jk=";
           };
         }))
       ]
@@ -170,7 +170,7 @@ in
     kubectl.enable = true;
     lazygit.enable = true;
     lf.enable = true;
-    lima.enable = isDarwin;
+    lima.enable = isDarwin && config.machines.current.name != "skunk@macos";
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     macosDefaults.enable = isDarwin;
