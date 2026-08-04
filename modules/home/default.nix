@@ -53,6 +53,7 @@ in
       ++ lib.lists.optionals (!isHeadless) [
         asciinema
         signal-desktop
+        spotify
         zoom-us
       ]
       ++ lib.lists.optionals isDarwin [
@@ -61,12 +62,6 @@ in
         iina
         keycastr
         brewCasks.obs
-        (brewCasks.spotify.overrideAttrs (oldAttrs: {
-          src = fetchurl {
-            url = builtins.head oldAttrs.src.urls;
-            hash = "sha256-NGaAr3hHRga1ntkqyrPnbyl4fkjwb2MRxVHETSgs2Jk=";
-          };
-        }))
       ]
       ++ lib.lists.optionals isLinux [
         pciutils # Contains lspci.
@@ -81,7 +76,6 @@ in
         pick-colour-picker
         playerctl
         proton-pass
-        spotify
       ]
       # C/C++.
       ++ [ clang-tools ]

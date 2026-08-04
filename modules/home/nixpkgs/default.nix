@@ -17,6 +17,7 @@ in
   config = {
     modules.nixpkgs.allowUnfreePackages = [
       "ookla-speedtest"
+      "spotify"
       "widevine-cdm"
       "zoom"
     ];
