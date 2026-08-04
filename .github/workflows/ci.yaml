@@ -15,10 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: NixOS/nix-installer-action@main
         with:
-          nix_version: 2.29.2
-          nix_conf: |
+          extra-conf: |
+            accept-flake-config = true
             experimental-features = pipe-operators
       - name: Check formatting
         run: nix run .#check-formatting
@@ -29,27 +29,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: NixOS/nix-installer-action@main
         with:
-          nix_version: 2.29.2
-          nix_conf: |
+          extra-conf: |
             accept-flake-config = true
             experimental-features = pipe-operators
-      - name: Checkout sub60/cache-action
-        uses: actions/checkout@v6
-        with:
-          repository: sub60/cache-action
-          ref: main
-          ssh-key: ${{ secrets.SUB60_CACHE_ACTION_DEPLOY_TOKEN }}
-          path: ./.github/actions/cache-action
       - name: Setup Nix cache
-        uses: ./.github/actions/cache-action/js
+        uses: sub60/setup-cache@v0.0.17
         with:
-          user: noib3
-          cache: dotfiles
-          auth-token: ${{ secrets.SUB60_AUTH_TOKEN }}
-          github-token: ${{ secrets.SUB60_CACHE_ACTION_RELEASE_ARTIFACT_FETCH_TOKEN }}
-          action-ref: v0.0.14
+          auth-token: token
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
 
@@ -59,10 +47,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: NixOS/nix-installer-action@main
         with:
-          nix_version: 2.29.2
-          nix_conf: |
+          extra-conf: |
             accept-flake-config = true
             experimental-features = pipe-operators
       - name: Run Nix linter on all .nix files
@@ -74,10 +61,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
+        uses: NixOS/nix-installer-action@main
         with:
-          nix_version: 2.29.2
-          nix_conf: |
+          extra-conf: |
+            accept-flake-config = true
             experimental-features = pipe-operators
       - name: Run ShellCheck on all .sh files
         run: nix run .#check-shell-lints
