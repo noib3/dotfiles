@@ -71,6 +71,11 @@
         text = builtins.readFile ./tw.sh;
       };
 
+      yo = pkgs.writeShellApplication {
+        name = "yo";
+        text = builtins.readFile ./yo.sh;
+      };
+
       nw = pkgs.writeShellApplication {
         name = "nw";
         runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
