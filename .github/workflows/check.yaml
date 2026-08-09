@@ -1,4 +1,4 @@
-name: CI
+name: check
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   formatting:
-    name: Formatting
+    name: formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -35,7 +35,7 @@ jobs:
             accept-flake-config = true
             experimental-features = pipe-operators
       - name: Setup Nix cache
-        uses: sub60/setup-cache@v0.0.17
+        uses: sub60/setup-cache@v0.0.18
         with:
           auth-token: token
       - name: Check the Neovim config
@@ -56,7 +56,7 @@ jobs:
         run: nix run .#check-nix-lints
 
   shell-lints:
-    name: Shell lints
+    name: shell lints
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
