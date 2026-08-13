@@ -16,11 +16,12 @@ local not_all_splits_are_terminals = function()
   return not all_splits_are_terminals()
 end
 
---- Returns diagnostic counts across all the LSP clients attached to the current
---- buffer.
+--- Returns diagnostic counts from two disjoint sets:
+--- - every buffer covered by the LSP clients attached to the current buffer;
+--- - non-LSP diagnostic providers on the current buffer;
 ---@return { error: integer, warn: integer, info: integer, hint: integer }
-local current_workspace_diagnostics = function()
-  local workspace_namespaces = vim
+local current_diagnostics = function()
+  local lsp_namespaces = vim
     .iter(vim.lsp.get_clients({ bufnr = 0 }))
     :fold({}, function(acc, client)
       acc[vim.lsp.diagnostic.get_namespace(client.id)] = true
@@ -32,17 +33,22 @@ local current_workspace_diagnostics = function()
       return acc
     end)
 
-  if vim.tbl_isempty(workspace_namespaces) then
-    return { error = 0, warn = 0, info = 0, hint = 0 }
-  end
-
   local counts = { 0, 0, 0, 0 }
 
+  local count = function(diagnostic)
+    local severity = diagnostic.severity
+    counts[severity] = counts[severity] + 1
+  end
+
+  -- Count diagnostics from attached LSP clients across every buffer in their
+  -- workspaces.
   for _, diagnostic in ipairs(vim.diagnostic.get()) do
-    if workspace_namespaces[diagnostic.namespace] then
-      local severity = diagnostic.severity
-      counts[severity] = counts[severity] + 1
-    end
+    if lsp_namespaces[diagnostic.namespace] then count(diagnostic) end
+  end
+
+  -- Add current-buffer diagnostics from all other providers.
+  for _, diagnostic in ipairs(vim.diagnostic.get(0)) do
+    if not lsp_namespaces[diagnostic.namespace] then count(diagnostic) end
   end
 
   return {
@@ -97,7 +103,7 @@ lualine.setup({
           warn = "DiagnosticWarn",
         },
         sections = { "error", "warn" },
-        sources = { current_workspace_diagnostics },
+        sources = { current_diagnostics },
         symbols = { error = " ", warn = " " },
       },
     },
