@@ -79,6 +79,8 @@ in
       ]
       # C/C++.
       ++ [ clang-tools ]
+      # GitHub Actions.
+      ++ [ actionlint ]
       # Lua.
       ++ [
         lua-language-server
