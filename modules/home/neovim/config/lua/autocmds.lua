@@ -69,6 +69,45 @@ vim.api.nvim_create_autocmd("TermClose", {
   end,
 })
 
+local local_hostname = assert(vim.uv.os_gethostname()):lower()
+
+---@param sequence string
+---@return string?
+local osc7_directory = function(sequence)
+  local hostname, encoded_path = sequence:match("^\27%]7;file://([^/]*)(/.*)$")
+  if not hostname then return end
+
+  hostname = hostname:lower()
+  if
+    hostname ~= ""
+    and hostname ~= "localhost"
+    and hostname ~= local_hostname
+  then
+    return
+  end
+
+  local ok, directory = pcall(vim.uri_to_fname, "file://" .. encoded_path)
+  if not ok then return end
+
+  return vim.uv.fs_realpath(directory)
+end
+
+vim.api.nvim_create_autocmd("TermRequest", {
+  group = create_augroup("noib3/track-terminal-cwd"),
+  desc = "Tracks terminal working directories from OSC 7 requests",
+  nested = true,
+  callback = function(ev)
+    local sequence = ev.data and ev.data.sequence or ""
+    local directory = osc7_directory(sequence)
+    if not directory then return end
+
+    vim.api.nvim_buf_call(
+      ev.buf,
+      function() vim.cmd.bcd({ args = { directory } }) end
+    )
+  end,
+})
+
 vim.api.nvim_create_autocmd("TermRequest", {
   group = create_augroup("noib3/respond-to-terminal-osc52-clipboard-queries"),
   desc = "Answers OSC 52 clipboard read queries",
