@@ -11,6 +11,7 @@ vim.g.loaded_2html_plugin = 1 -- :TOhtml command
 vim.g.loaded_tutor_mode_plugin = 1 -- :Tutor command
 vim.g.loaded_zipPlugin = 1 -- transparent editing of zip archives
 
+require("cargo_target_dir")
 require("autocmds")
 require("diagnostic")
 require("keymaps")

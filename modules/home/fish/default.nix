@@ -153,8 +153,21 @@ in
       ''
       + lib.optionalString config.modules.rust.enable ''
         function __update_cargo_target_dir --on-variable PWD
-          ${config.modules.rust.cargo-target-dir-env.meta.mainProgram} \
-            --shell fish | source
+          if set -q CARGO_TARGET_DIR; and not set -q __cargo_target_dir_dynamic
+            return
+          end
+
+          set -l target_dir \
+            (${config.modules.rust.cargo-target-dir-env.meta.mainProgram} "$PWD")
+          set -l resolver_status $status
+
+          if test $resolver_status -eq 0; and test (count $target_dir) -eq 1
+            set -gx CARGO_TARGET_DIR $target_dir
+            set -gx __cargo_target_dir_dynamic 1
+          else if test $resolver_status -eq 1; and set -q __cargo_target_dir_dynamic
+            set -e CARGO_TARGET_DIR
+            set -e __cargo_target_dir_dynamic
+          end
         end
 
         __update_cargo_target_dir
