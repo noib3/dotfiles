@@ -163,6 +163,7 @@ in
     git.enable = true;
     gnupg.enable = true;
     home-manager.enable = true;
+    jujutsu.enable = true;
     kubectl.enable = true;
     lazygit.enable = true;
     lf.enable = true;

@@ -4,10 +4,11 @@ with lib;
 let
   cfg = config.modules.snowstorm-work;
   sshHostname = "github-snowstorm";
+  workEmail = "riccardo@snowstorm.net";
 in
 {
   options.modules.snowstorm-work = {
-    enable = mkEnableOption "Snowstorm-related Git/SSH configs";
+    enable = mkEnableOption "Snowstorm-related Git/Jujutsu/SSH configs";
   };
 
   config = mkIf cfg.enable {
@@ -16,9 +17,9 @@ in
         {
           condition = "gitdir:**/snowstorm/**";
           contents = {
-            user = rec {
-              email = "riccardo@snowstorm.net";
-              signingkey = email;
+            user = {
+              email = workEmail;
+              signingkey = workEmail;
             };
           };
         }
@@ -29,6 +30,14 @@ in
         "ssh://git@github.com/project-snowstorm/"
       ];
     };
+
+    programs.jujutsu.settings."--scope" = [
+      {
+        "--when".repositories = [ "${config.home.homeDirectory}/Dev/snowstorm" ];
+        user.email = workEmail;
+        signing.key = workEmail;
+      }
+    ];
 
     programs.ssh.settings.${sshHostname} = {
       HostName = "github.com";
