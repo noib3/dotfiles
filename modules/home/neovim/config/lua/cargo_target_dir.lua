@@ -37,7 +37,7 @@ vim.api.nvim_create_autocmd("DirChanged", {
     clear = true,
   }),
   desc = "Updates CARGO_TARGET_DIR for Neovim's working directory",
-  callback = function(ev) update(ev.cwd) end,
+  callback = function(ev) update(ev.file) end,
 })
 
 update(vim.fn.getcwd())
