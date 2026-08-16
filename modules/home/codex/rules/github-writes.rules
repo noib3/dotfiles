@@ -1,0 +1,167 @@
+# Rules to make every `gh` write command prompt the user for confirmation.
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    match = [
+        "git push",
+        "git push origin HEAD",
+        "git push --force-with-lease origin feature",
+        "git push origin --delete feature",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "send-pack"],
+    decision = "prompt",
+    match = ["git send-pack origin HEAD"],
+)
+
+prefix_rule(
+    pattern = ["git", "lfs", "push"],
+    decision = "prompt",
+    match = ["git lfs push origin main"],
+)
+
+prefix_rule(
+    pattern = ["gh", "api"],
+    decision = "prompt",
+    match = [
+        "gh api repos/OWNER/REPO",
+        "gh api --method POST repos/OWNER/REPO/issues",
+        "gh api graphql -f query=mutation",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "pr", ["create", "close", "comment", "edit", "lock", "merge", "ready", "reopen", "revert", "review", "unlock", "update-branch"]],
+    decision = "prompt",
+    match = ["gh pr create --base dev", "gh pr comment 123 --body hi", "gh pr update-branch 123"],
+    not_match = ["gh pr list", "gh pr view 123 --comments", "gh pr diff 123"],
+)
+
+prefix_rule(
+    pattern = ["gh", "issue", ["create", "close", "comment", "delete", "edit", "lock", "pin", "reopen", "transfer", "unlock", "unpin"]],
+    decision = "prompt",
+    match = ["gh issue create --title bug", "gh issue close 123"],
+    not_match = ["gh issue list", "gh issue view 123 --comments"],
+)
+
+prefix_rule(
+    pattern = ["gh", "repo", ["archive", "create", "delete", "edit", "fork", "rename", "sync", "unarchive"]],
+    decision = "prompt",
+    match = ["gh repo create example", "gh repo delete OWNER/REPO", "gh repo sync OWNER/REPO"],
+    not_match = ["gh repo view OWNER/REPO", "gh repo clone OWNER/REPO"],
+)
+
+prefix_rule(
+    pattern = ["gh", "repo", "autolink", ["create", "delete"]],
+    decision = "prompt",
+    match = ["gh repo autolink create --key-prefix TICKET- --url-template URL", "gh repo autolink delete 1"],
+    not_match = ["gh repo autolink list", "gh repo autolink view 1"],
+)
+
+prefix_rule(
+    pattern = ["gh", "repo", "deploy-key", ["add", "delete"]],
+    decision = "prompt",
+    match = ["gh repo deploy-key add key.pub", "gh repo deploy-key delete 1"],
+    not_match = ["gh repo deploy-key list"],
+)
+
+prefix_rule(
+    pattern = ["gh", "release", ["create", "delete", "delete-asset", "edit", "upload"]],
+    decision = "prompt",
+    match = ["gh release create v1.0.0", "gh release delete v1.0.0"],
+    not_match = ["gh release list", "gh release view v1.0.0"],
+)
+
+prefix_rule(
+    pattern = ["gh", "workflow", ["disable", "enable", "run"]],
+    decision = "prompt",
+    match = ["gh workflow run ci.yml", "gh workflow disable ci.yml"],
+    not_match = ["gh workflow list", "gh workflow view ci.yml"],
+)
+
+prefix_rule(
+    pattern = ["gh", "run", ["cancel", "delete", "rerun"]],
+    decision = "prompt",
+    match = ["gh run cancel 123", "gh run rerun 123"],
+    not_match = ["gh run list", "gh run view 123", "gh run watch 123"],
+)
+
+prefix_rule(
+    pattern = ["gh", "gist", ["create", "delete", "edit"]],
+    decision = "prompt",
+    match = ["gh gist create file.txt", "gh gist delete abc123"],
+    not_match = ["gh gist list", "gh gist view abc123"],
+)
+
+prefix_rule(
+    pattern = ["gh", "discussion", ["comment", "create", "edit"]],
+    decision = "prompt",
+    match = ["gh discussion create --title hello", "gh discussion comment 123 --body hi"],
+    not_match = ["gh discussion list", "gh discussion view 123"],
+)
+
+prefix_rule(
+    pattern = ["gh", "project", ["close", "copy", "create", "delete", "edit", "field-create", "field-delete", "item-add", "item-archive", "item-create", "item-delete", "item-edit", "link", "mark-template", "unlink"]],
+    decision = "prompt",
+    match = ["gh project create --owner OWNER --title roadmap", "gh project item-add 1 --url URL"],
+    not_match = ["gh project list --owner OWNER", "gh project item-list 1 --owner OWNER"],
+)
+
+prefix_rule(
+    pattern = ["gh", "codespace", ["create", "delete", "edit", "rebuild", "stop"]],
+    decision = "prompt",
+    match = ["gh codespace create", "gh codespace delete -c NAME", "gh codespace stop -c NAME"],
+    not_match = ["gh codespace list", "gh codespace view -c NAME"],
+)
+
+prefix_rule(
+    pattern = ["gh", "codespace", "ports", "visibility"],
+    decision = "prompt",
+    match = ["gh codespace ports visibility 3000:public -c NAME"],
+    not_match = ["gh codespace ports -c NAME"],
+)
+
+prefix_rule(
+    pattern = ["gh", "agent-task", "create"],
+    decision = "prompt",
+    match = ["gh agent-task create improve tests"],
+    not_match = ["gh agent-task list", "gh agent-task view 123"],
+)
+
+prefix_rule(
+    pattern = ["gh", ["secret", "variable"], ["delete", "set"]],
+    decision = "prompt",
+    match = ["gh secret set TOKEN", "gh variable delete NAME"],
+    not_match = ["gh secret list", "gh variable list"],
+)
+
+prefix_rule(
+    pattern = ["gh", ["gpg-key", "ssh-key"], ["add", "delete"]],
+    decision = "prompt",
+    match = ["gh ssh-key add key.pub", "gh gpg-key delete KEY-ID"],
+    not_match = ["gh ssh-key list", "gh gpg-key list"],
+)
+
+prefix_rule(
+    pattern = ["gh", "label", ["clone", "create", "delete", "edit"]],
+    decision = "prompt",
+    match = ["gh label create bug", "gh label delete obsolete"],
+    not_match = ["gh label list"],
+)
+
+prefix_rule(
+    pattern = ["gh", "cache", "delete"],
+    decision = "prompt",
+    match = ["gh cache delete 123"],
+    not_match = ["gh cache list"],
+)
+
+prefix_rule(
+    pattern = ["gh", "auth", "refresh"],
+    decision = "prompt",
+    match = ["gh auth refresh -s project"],
+    not_match = ["gh auth status"],
+)

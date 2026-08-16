@@ -40,7 +40,13 @@ let
     model_reasoning_effort = "xhigh";
     plan_mode_reasoning_effort = "xhigh";
     model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
-    approval_policy = "never";
+    approval_policy.granular = {
+      rules = true;
+      sandbox_approval = false;
+      mcp_elicitations = false;
+      request_permissions = false;
+      skill_approval = false;
+    };
     sandbox_mode = "danger-full-access";
 
     model_providers =
@@ -169,6 +175,14 @@ in
         xdg.configFile."codex/config.toml" = {
           source = tomlFormat.generate "codex-config.toml" codexConfig;
           force = true;
+        };
+
+        xdg.configFile."codex" = {
+          source = lib.fileset.toSource {
+            root = ./.;
+            fileset = lib.fileset.fileFilter (file: !lib.hasSuffix ".nix" file.name) ./.;
+          };
+          recursive = true;
         };
       }
       (lib.mkIf (isDarwin && cfg.codexLb.enable) {
