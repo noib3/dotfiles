@@ -22,7 +22,8 @@ if test (count $selected_files) -gt 0
 
   set -l cmd (string join " " "$EDITOR" $escaped_paths)
   commandline "$cmd"
+  commandline -f repaint
   commandline -f execute
+else
+  commandline -f repaint
 end
-
-commandline -f repaint
