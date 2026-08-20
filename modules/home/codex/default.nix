@@ -36,10 +36,6 @@ let
     cfg.modelProviders |> lib.filterAttrs (_: provider: provider.active);
 
   codexConfig = {
-    model = "gpt-5.6-sol";
-    model_reasoning_effort = "xhigh";
-    plan_mode_reasoning_effort = "xhigh";
-    model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
     approval_policy.granular = {
       rules = true;
       sandbox_approval = false;
@@ -47,12 +43,16 @@ let
       request_permissions = false;
       skill_approval = false;
     };
-    sandbox_mode = "danger-full-access";
-
+    cli_auth_credentials_store = "ephemeral";
+    features.apps = false;
+    model = "gpt-5.6-sol";
+    model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
     model_providers =
       cfg.modelProviders
       |> builtins.mapAttrs (_: provider: removeAttrs provider [ "active" ]);
-
+    model_reasoning_effort = "xhigh";
+    plan_mode_reasoning_effort = "xhigh";
+    sandbox_mode = "danger-full-access";
     tui.model_availability_nux."gpt-5.6-sol" = 4;
   };
 
