@@ -76,8 +76,8 @@ let
     nativeBuildInputs = [ pkgs.cmake ];
 
     buildInputs =
-      lib.optionals pkgs.stdenv.isDarwin [ pkgs.llvmPackages.openmp ]
-      ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.stdenv.cc.cc.lib ];
+      lib.optionals pkgs.stdenv.hostPlatform.isDarwin [ pkgs.llvmPackages.openmp ]
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.stdenv.cc.cc.lib ];
 
     configurePhase = ''
       runHook preConfigure

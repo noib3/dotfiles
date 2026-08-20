@@ -23,7 +23,7 @@ in
     programs.qutebrowser = {
       enable = true;
 
-      package = lib.mkIf pkgs.stdenv.isLinux (
+      package = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
         pkgs.qutebrowser.override { enableWideVine = true; }
       );
 

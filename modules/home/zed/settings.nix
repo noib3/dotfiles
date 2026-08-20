@@ -112,7 +112,7 @@ in
   vim_mode = true;
   wrap_guides = [ preferredLineLength ];
 }
-// lib.optionalAttrs pkgs.stdenv.isDarwin {
+// lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
   ui_font_family = ".SystemUIFont";
   use_system_window_tabs = true;
 }

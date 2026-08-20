@@ -2,7 +2,7 @@
 
 let
   notify-done =
-    if pkgs.stdenv.isLinux then
+    if pkgs.stdenv.hostPlatform.isLinux then
       ''
         ${pkgs.libnotify}/bin/notify-send \
           --expire-time=4000 \
@@ -11,7 +11,7 @@ let
           "Torrent complete" \
           "$TR_TORRENT_NAME has finished downloading"
       ''
-    else if pkgs.stdenv.isDarwin then
+    else if pkgs.stdenv.hostPlatform.isDarwin then
       ''
         ${pkgs.terminal-notifier}/bin/terminal-notifier \
           -title "transmission-remote" \

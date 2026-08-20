@@ -74,11 +74,11 @@ in
         cargoTargetDirEnv
         nightlyToolchain
       ]
-      ++ lib.lists.optionals pkgs.stdenv.isDarwin [
+      ++ lib.lists.optionals pkgs.stdenv.hostPlatform.isDarwin [
         (lib.hiPrio nightlyToolchainWrapped)
       ]
       # cargo-llvm-cov is currently broken on macOS.
-      ++ lib.lists.optionals (!pkgs.stdenv.isDarwin) [ cargo-llvm-cov ];
+      ++ lib.lists.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [ cargo-llvm-cov ];
 
     home.sessionVariables = {
       CARGO_HOME = "${config.xdg.dataHome}/cargo";

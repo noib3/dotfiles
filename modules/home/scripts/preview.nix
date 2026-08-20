@@ -27,7 +27,7 @@ pkgs.writeShellApplication {
       # Contains `pdftoppm`, used for PDFs.
       poppler-utils
     ]
-    ++ pkgs.lib.lists.optionals (!pkgs.stdenv.isDarwin) [
+    ++ pkgs.lib.lists.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
       # Contains `ebook-meta`, used for epubs.
       calibre
     ];

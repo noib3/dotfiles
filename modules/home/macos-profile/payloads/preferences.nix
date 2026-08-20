@@ -95,7 +95,7 @@ in
         message = "The macOSPreferences module needs the macOSProfile module";
       }
       {
-        assertion = pkgs.stdenv.isDarwin;
+        assertion = pkgs.stdenv.hostPlatform.isDarwin;
         message = "The macOSPreferences module is only available on macOS";
       }
       {

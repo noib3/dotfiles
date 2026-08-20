@@ -7,7 +7,7 @@
 
 with lib;
 let
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
   cfg = config.modules.ghostty;
   package = if isDarwin then pkgs.brewCasks.ghostty else pkgs.ghostty;
   terminfoEntry = "xterm-ghostty";
@@ -63,7 +63,7 @@ in
 
     modules.terminfo.entries.${terminfoEntry} =
       pkgs':
-      if pkgs'.stdenv.isDarwin then
+      if pkgs'.stdenv.hostPlatform.isDarwin then
         pkgs'.runCommandLocal "ghostty-terminfo" { } ''
           cp -r "${pkgs'.brewCasks.ghostty}/Applications/Ghostty.app/Contents/Resources/terminfo/." "$out"
         ''

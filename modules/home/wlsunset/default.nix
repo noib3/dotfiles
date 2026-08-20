@@ -17,7 +17,7 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isLinux;
+        assertion = pkgs.stdenv.hostPlatform.isLinux;
         message = "wlsunset is only available on Linux";
       }
     ];

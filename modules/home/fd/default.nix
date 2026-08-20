@@ -41,7 +41,7 @@ in
         "*.synctex.gz"
         "*.toc"
       ]
-      ++ lib.lists.optionals pkgs.stdenv.isDarwin [
+      ++ lib.lists.optionals pkgs.stdenv.hostPlatform.isDarwin [
         "/.Trash"
         "/Applications"
         "/Library"

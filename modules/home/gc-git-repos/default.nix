@@ -8,7 +8,7 @@
 with lib;
 let
   cfg = config.modules.gc-git-repos;
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
 
   gc-git-repos = pkgs.writeShellApplication {
     name = "gc-git-repos";

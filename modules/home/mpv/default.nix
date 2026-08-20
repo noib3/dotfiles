@@ -17,13 +17,13 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isLinux;
+        assertion = pkgs.stdenv.hostPlatform.isLinux;
         message = "mpv is only available on Linux";
       }
     ];
 
     programs.mpv = {
-      enable = pkgs.stdenv.isLinux;
+      enable = pkgs.stdenv.hostPlatform.isLinux;
 
       # See
       # https://raw.githubusercontent.com/mpv-player/mpv/master/etc/input.conf

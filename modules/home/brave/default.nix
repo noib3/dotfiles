@@ -8,7 +8,7 @@
 with lib;
 let
   cfg = config.modules.brave;
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
 
   braveDataDir =
     if isDarwin then

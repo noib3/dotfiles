@@ -8,7 +8,7 @@
 
 let
   inherit (lib) mkOption types;
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
 
   cfg = config.modules.codex;
 

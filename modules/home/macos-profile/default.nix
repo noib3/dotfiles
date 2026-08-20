@@ -39,7 +39,7 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isDarwin;
+        assertion = pkgs.stdenv.hostPlatform.isDarwin;
         message = "The macOSProfile module is only available on macOS";
       }
       {

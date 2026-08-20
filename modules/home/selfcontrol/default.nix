@@ -17,7 +17,7 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isDarwin;
+        assertion = pkgs.stdenv.hostPlatform.isDarwin;
         message = "SelfControl is only available on macOS";
       }
     ];

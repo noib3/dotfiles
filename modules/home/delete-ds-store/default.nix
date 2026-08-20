@@ -29,7 +29,7 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isDarwin;
+        assertion = pkgs.stdenv.hostPlatform.isDarwin;
         message = ".DS_Store files are only created on macOS";
       }
     ];

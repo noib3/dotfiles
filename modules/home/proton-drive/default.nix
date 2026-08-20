@@ -34,7 +34,7 @@ in
       (pkgs.callPackage ./proton-drive-cli.nix { inherit bun2nix; })
     ];
 
-    home.activation = mkIf pkgs.stdenv.isDarwin {
+    home.activation = mkIf pkgs.stdenv.hostPlatform.isDarwin {
       symlinkDocumentsToProtonDrive = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         if [ ! -e "${cfg.directory}" ] && [ ! -L "${cfg.directory}" ]; then
           ln -s \

@@ -30,13 +30,13 @@ in
           HashKnownHosts = true;
           UserKnownHostsFile = knownHostsFile;
         }
-        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
           UseKeychain = "yes";
         };
       };
     };
 
-    services.ssh-agent.enable = pkgs.stdenv.isLinux;
+    services.ssh-agent.enable = pkgs.stdenv.hostPlatform.isLinux;
 
     home.activation.createSshKnownHostsFile =
       lib.hm.dag.entryAfter [ "writeBoundary" ]

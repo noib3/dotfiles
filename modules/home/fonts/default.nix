@@ -58,7 +58,7 @@ in
       ];
 
       fonts.fontconfig = {
-        enable = pkgs.stdenv.isLinux;
+        enable = pkgs.stdenv.hostPlatform.isLinux;
         defaultFonts = {
           serif = [ current.serif.name ];
           sansSerif = [ current.sansSerif.name ];

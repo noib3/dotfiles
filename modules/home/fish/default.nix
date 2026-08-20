@@ -7,7 +7,7 @@
 
 let
   cfg = config.modules.fish;
-  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
   inherit (config.lib.mine) dotfilesDir;
   machine = config.machines.current;
   colors = builtins.mapAttrs (name: hex: lib.strings.removePrefix "#" hex) (
