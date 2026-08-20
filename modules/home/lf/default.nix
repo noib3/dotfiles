@@ -26,10 +26,6 @@ in
         patches = (old.patches or [ ]) ++ [
           ./patches/super-key-syntax.patch
         ];
-        modPostBuild = (old.modPostBuild or "") + ''
-          patch -d vendor/github.com/gdamore/tcell/v2 -p1 < ${./patches/tcell-kitty-keyboard-protocol.patch}
-        '';
-        vendorHash = "sha256-o2e8S11QkSCenxDL6wMmxtdDVokjS0IBJddtPdYNwHE=";
       });
 
       settings = {

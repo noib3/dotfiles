@@ -152,13 +152,13 @@ Enables Kitty keyboard protocol mode while fzf is active.
  }
 
  func (r *LightRenderer) disableMouse() {
-@@ -1004,6 +1129,7 @@
-
+@@ -1067,5 +1192,6 @@
+ 
  func (r *LightRenderer) disableModes() {
  	r.disableMouse()
 +	r.csi("=0u") // Disable Kitty keyboard progressive enhancements
- 	r.csi("?2004l")
- }
+ 	// Put bracketed paste back the way we found it. A shell that runs fzf from
+ 	// a line editor widget re-enables the mode only when the editor starts, so
 
 --- a/src/tui/light_test.go	2026-06-29 15:08:40
 +++ b/src/tui/light_test.go	2026-06-29 15:09:22

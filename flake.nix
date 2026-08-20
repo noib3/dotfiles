@@ -28,6 +28,7 @@
     jujutsu = {
       url = "github:jj-vcs/jj";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "rust-overlay";
     };
     home-manager = {
       url = "github:nix-community/home-manager";

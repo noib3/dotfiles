@@ -39,7 +39,10 @@ in
         defaultCacheTtlSsh = sevenDays;
         maxCacheTtlSsh = sevenDays;
         pinentry.package =
-          if pkgs.stdenv.hostPlatform.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-qt;
+          if pkgs.stdenv.hostPlatform.isDarwin then
+            pkgs.pinentry_mac
+          else
+            pkgs.pinentry-qt;
       };
 
     systemd.user.tmpfiles.rules = optionals shouldForwardGpgAgent [
