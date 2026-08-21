@@ -76,7 +76,8 @@ case "$MIME_TYPE" in
     case "$(basename "$FILE")" in
       .env | .env.*)
         # Obscure env variable values to avoid leaking secrets in previews.
-        sed 's/^\([^ =]*\)=.*/\1=***/' "$FILE" | bat --color=always --file-name "$FILE"
+        sed 's/^\(\(export[[:space:]]\{1,\}\)\{0,1\}[^ =]*\)=.*/\1=***/' "$FILE" |
+          bat --color=always --file-name "$FILE"
         ;;
       *)
         bat --color=always "$FILE"

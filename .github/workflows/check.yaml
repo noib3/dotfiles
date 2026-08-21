@@ -35,7 +35,7 @@ jobs:
             accept-flake-config = true
             experimental-features = pipe-operators
       - name: Setup Nix cache
-        uses: sub60/setup-cache@v0.0.18
+        uses: sub60/setup-cache@main
         with:
           auth-token: token
       - name: Check the Neovim config
