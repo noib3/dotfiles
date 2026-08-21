@@ -9,12 +9,16 @@
 with lib;
 let
   cfg = config.modules.rust;
-
-  cargoTargetDirEnv = pkgs.writeShellApplication {
-    name = "cargo-target-dir-env";
+  cargoWrapped = pkgs.writeShellApplication {
+    name = "cargo";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gnused
+      nightlyToolchain
+    ];
     text = ''
       ${builtins.readFile ../scripts/project-hash-utils.sh}
-      ${builtins.readFile ./cargo-target-dir-env.sh}
+      ${builtins.readFile ./cargo-wrapper.sh}
     '';
   };
 
@@ -35,32 +39,9 @@ let
       ];
     }
   );
-
-  # Wrap all the executables in the toolchain to get around
-  # https://github.com/oxalica/rust-overlay/issues/248
-  nightlyToolchainWrapped =
-    pkgs.runCommand "rust-nightly-toolchain-wrapped"
-      {
-        nativeBuildInputs = [ pkgs.makeWrapper ];
-      }
-      ''
-        mkdir -p "$out/bin"
-
-        for exe in "${nightlyToolchain}"/bin/*; do
-          makeWrapper "$exe" "$out/bin/$(basename "$exe")" \
-            --prefix DYLD_FALLBACK_LIBRARY_PATH : "${nightlyToolchain}/lib"
-        done
-      '';
 in
 {
-  options.modules.rust = {
-    enable = mkEnableOption "Rust";
-    cargo-target-dir-env = mkOption {
-      type = types.package;
-      readOnly = true;
-      default = cargoTargetDirEnv;
-    };
-  };
+  options.modules.rust.enable = mkEnableOption "Rust";
 
   config = mkIf cfg.enable {
     home.packages =
@@ -71,11 +52,8 @@ in
         cargo-expand
         cargo-flamegraph
         cargo-fuzz
-        cargoTargetDirEnv
+        (lib.hiPrio cargoWrapped)
         nightlyToolchain
-      ]
-      ++ lib.lists.optionals pkgs.stdenv.hostPlatform.isDarwin [
-        (lib.hiPrio nightlyToolchainWrapped)
       ]
       # cargo-llvm-cov is currently broken on macOS.
       ++ lib.lists.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [ cargo-llvm-cov ];
