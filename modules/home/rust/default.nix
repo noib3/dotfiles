@@ -9,19 +9,6 @@
 with lib;
 let
   cfg = config.modules.rust;
-  cargoWrapped = pkgs.writeShellApplication {
-    name = "cargo";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.gnused
-      nightlyToolchain
-    ];
-    text = ''
-      ${builtins.readFile ../scripts/project-hash-utils.sh}
-      ${builtins.readFile ./cargo-wrapper.sh}
-    '';
-  };
-
   rustBin = inputs.rust-overlay.lib.mkRustBin { } pkgs;
 
   nightlyToolchain = rustBin.selectLatestNightlyWith (
@@ -52,7 +39,6 @@ in
         cargo-expand
         cargo-flamegraph
         cargo-fuzz
-        (lib.hiPrio cargoWrapped)
         nightlyToolchain
       ]
       # cargo-llvm-cov is currently broken on macOS.
@@ -62,5 +48,10 @@ in
       CARGO_HOME = "${config.xdg.dataHome}/cargo";
       RUSTUP_HOME = "${config.xdg.dataHome}/rustup";
     };
+
+    xdg.dataFile."cargo/config.toml".text = ''
+      [build]
+      build-dir = "${config.xdg.stateHome}/cargo/build/{workspace-path-hash}"
+    '';
   };
 }
