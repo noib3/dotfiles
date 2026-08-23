@@ -9,16 +9,16 @@
 
 let
   pname = "codex-lb";
-  version = "1.22.0";
+  version = "1.24.0-beta.3";
 
   mainSrc = fetchzip {
-    url = "https://github.com/Soju06/codex-lb/archive/4c0dbc9ceb2b5d70204ea7603cf1b4bef83db234.tar.gz";
-    hash = "sha256-HMGgf5w1GcSKvcf0zQL1LqgMHoU1HoB/dnxFVJvYEKY=";
+    url = "https://github.com/Soju06/codex-lb/archive/1ecb51d2e31c0ea808c631ad559bfcd4be586a54.tar.gz";
+    hash = "sha256-zmQ/vyVi1MKILgiN+wE1UIdeqhGrGy5PSjCgfRRW1Ek=";
   };
 
   frontendWheel = fetchurl {
-    url = "https://files.pythonhosted.org/packages/d3/93/f1b70213c3c56b7d8af2a12f6eb17ba5fdc73aa9bed17e19a975cfd885c1/codex_lb-1.22.0-py3-none-any.whl";
-    hash = "sha256-R2sb9HFr2A/j+FiLnT+QElnZwzAKJ2h0eE4IRq981Lk=";
+    url = "https://files.pythonhosted.org/packages/72/3e/7780f1c9765eba4dda88dd3c6457a6af0644af73b23a348e55b074fe10de/codex_lb-1.24.0b3-py3-none-any.whl";
+    hash = "sha256-yVtBHoaD4ZLG1uvvkWW9iJhYhjVqkoI4H9s+wCQYxHQ=";
   };
 
   frontend =
@@ -50,13 +50,13 @@ let
   cryptographyOverlayForX86Darwin =
     final: prev:
     lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == "x86_64-darwin") {
-      # cryptography 49.0.0 has no x86_64-darwin wheel in codex-lb's uv.lock,
+      # cryptography 50.0.0 has no x86_64-darwin wheel in codex-lb's uv.lock,
       # so uv2nix falls back to an sdist build that needs the maturin backend.
       cryptography = prev.cryptography.overrideAttrs (old: {
         MATURIN_NO_INSTALL_RUST = "1";
         cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
           inherit (old) pname version src;
-          hash = "sha256-yMCBu/RGRcEQST8tEWCNgVvlQsp2KamOqt60qvOYdt8=";
+          hash = "sha256-heJGLh0MgDPpksWyPLaIkZ5gVEWx8UnaJKv4GvclpmI=";
         };
         nativeBuildInputs =
           (old.nativeBuildInputs or [ ])

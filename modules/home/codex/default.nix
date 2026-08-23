@@ -62,6 +62,7 @@ let
   codexLbEnvironment = {
     CODEX_LB_DATABASE_URL = "sqlite+aiosqlite:///${codexLbDataDir}/store.db";
     CODEX_LB_ENCRYPTION_KEY_FILE = "${codexLbDataDir}/encryption.key";
+    CODEX_LB_TELEMETRY_ENABLED = "false";
   };
 in
 {
