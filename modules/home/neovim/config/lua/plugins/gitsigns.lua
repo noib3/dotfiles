@@ -17,7 +17,6 @@ require("gitsigns").setup({
       gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
     end
 
-    map("n", "th", gitsigns.toggle_linehl)
     map("v", "s", stage_selected)
     map("v", "u", unstage_selected)
   end,
