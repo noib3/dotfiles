@@ -57,6 +57,22 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
+local base_reveal_scheduled = false
+
+vim.api.nvim_create_autocmd("BufDelete", {
+  group = create_augroup("noib3/show-base-terminal-after-last-buffer"),
+  desc = "Shows the base terminal after the last listed buffer is deleted",
+  callback = function()
+    if base_reveal_scheduled then return end
+    base_reveal_scheduled = true
+
+    vim.schedule(function()
+      base_reveal_scheduled = false
+      terminal.reveal_base_if_idle()
+    end)
+  end,
+})
+
 local closing_last_terminal = false
 
 vim.api.nvim_create_autocmd("BufDelete", {
@@ -67,6 +83,11 @@ vim.api.nvim_create_autocmd("BufDelete", {
     end
 
     if vim.bo[ev.buf].buftype ~= "terminal" then return end
+
+    closing_last_terminal = false
+
+    local base_terminal = terminal.get_base()
+    if base_terminal and ev.buf ~= base_terminal then return end
 
     closing_last_terminal = vim.iter(vim.fn.getbufinfo({ buflisted = 1 })):all(
       function(info) return info.bufnr == ev.buf or is_empty_buffer(info.bufnr) end
@@ -186,15 +207,6 @@ vim.api.nvim_create_autocmd("User", {
   desc = "Hides terminals while recursive nvim launches replace them",
   callback = function()
     if vim.bo.buftype == "terminal" then vim.bo.buflisted = false end
-  end,
-})
-
-vim.api.nvim_create_autocmd("User", {
-  group = nvim_flatten_group,
-  pattern = "NvimFlattenDidShow",
-  desc = "Relists terminals after recursive nvim launches return to them",
-  callback = function()
-    if vim.bo.buftype == "terminal" then vim.bo.buflisted = true end
   end,
 })
 

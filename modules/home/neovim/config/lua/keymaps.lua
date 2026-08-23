@@ -1,3 +1,4 @@
+local bufdelete = require("bufdelete")
 local fzf_lua = require("fzf-lua")
 local locations = require("locations")
 local terminal = require("terminal")
@@ -14,16 +15,6 @@ end
 -- Either quit Neovim, close a window or delete a buffer based on the current
 -- context.
 local close = function()
-  if not vim.bo.buflisted then
-    vim.cmd("q")
-    return
-  end
-
-  local splits = vim
-    .iter(vim.api.nvim_tabpage_list_wins(0))
-    :filter(function(win) return vim.fn.win_gettype(win) == "" end)
-    :totable()
-
   local current_buf = vim.api.nvim_get_current_buf()
 
   local other_listed_bufs = vim
@@ -58,6 +49,16 @@ local close = function()
     return
   end
 
+  if not vim.bo.buflisted then
+    vim.cmd("q")
+    return
+  end
+
+  local splits = vim
+    .iter(vim.api.nvim_tabpage_list_wins(0))
+    :filter(function(win) return vim.fn.win_gettype(win) == "" end)
+    :totable()
+
   local all_splits_are_showing_this_buffer = vim.iter(splits):all(
     function(win) return vim.api.nvim_win_get_buf(win) == current_buf end
   )
@@ -80,26 +81,15 @@ local close = function()
     return
   end
 
-  if not has_other_listed_file_buffer and can_return_to_base_terminal then
-    vim.bo[base_terminal].buflisted = true
-  end
-
   local force_delete = vim.bo.buftype == "terminal"
 
-  -- Use `Bdelete` from `https://github.com/famiu/bufdelete.nvim` if available
-  -- to avoid messing w/ the window layout.
-  local has_bufdelete, bufdelete = pcall(require, "bufdelete")
+  local switchable_bufs = not has_other_listed_file_buffer
+      and can_return_to_base_terminal
+      and { base_terminal }
+    or nil
 
-  if not has_bufdelete then
-    vim.cmd(force_delete and "bdelete!" or "bdelete")
-  else
-    local switchable_bufs = not has_other_listed_file_buffer
-        and can_return_to_base_terminal
-        and { base_terminal }
-      or nil
-
-    bufdelete.bufdelete(0, force_delete, switchable_bufs)
-  end
+  -- Use Bdelete to avoid messing w/ the window layout.
+  bufdelete.bufdelete(0, force_delete, switchable_bufs)
 
   if vim.api.nvim_get_current_buf() == base_terminal then
     vim.cmd.startinsert()

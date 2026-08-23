@@ -2,9 +2,6 @@ local M = {}
 
 local launch_event = "NvimFlattenLaunch"
 local will_swallow_event = "NvimFlattenWillSwallow"
-local did_swallow_event = "NvimFlattenDidSwallow"
-local will_show_event = "NvimFlattenWillShow"
-local did_show_event = "NvimFlattenDidShow"
 
 local project_markers = {
   ".envrc",
@@ -340,10 +337,12 @@ local handle_launch = function(ev)
   local on_done = data.on_done or function() end
 
   local orig_buf = ev.buf
+  local orig_buflisted = vim.bo[orig_buf].buflisted
   local file_buf
   local file_buf_owned = false
 
   if #filepaths == 0 then
+    emit_for_buffer(orig_buf, will_swallow_event)
     vim.cmd.enew()
     file_buf = vim.api.nvim_get_current_buf()
     file_buf_owned = true
@@ -377,7 +376,6 @@ local handle_launch = function(ev)
   end
 
   local file_wins = buf_get_wins(file_buf):totable()
-  emit_for_buffer(file_buf, did_swallow_event)
 
   local deleting_file_buf = false
 
@@ -405,14 +403,16 @@ local handle_launch = function(ev)
     once = true,
     callback = function()
       deleting_file_buf = true
-      emit_for_buffer(file_buf, will_show_event)
+      local should_restore = vim.api.nvim_buf_is_valid(orig_buf)
+        and vim.b[orig_buf].nvim_flatten_restore ~= false
+      if should_restore then vim.bo[orig_buf].buflisted = orig_buflisted end
 
       vim.schedule(function()
         pcall(vim.api.nvim_del_autocmd, window_autocmd)
 
         local restored_win
 
-        if vim.api.nvim_buf_is_valid(orig_buf) then
+        if should_restore and vim.api.nvim_buf_is_valid(orig_buf) then
           for _, win in ipairs(file_wins) do
             if vim.api.nvim_win_is_valid(win) then
               vim.api.nvim_win_set_buf(win, orig_buf)
@@ -420,8 +420,6 @@ local handle_launch = function(ev)
             end
           end
         end
-
-        emit_for_buffer(orig_buf, did_show_event)
 
         if file_buf_owned and vim.api.nvim_buf_is_valid(file_buf) then
           local ok, err = pcall(vim.api.nvim_buf_delete, file_buf, {
@@ -438,7 +436,9 @@ local handle_launch = function(ev)
         on_done()
 
         if
-          not vim.api.nvim_buf_is_valid(orig_buf)
+          not should_restore
+          or not restored_win
+          or not vim.api.nvim_buf_is_valid(orig_buf)
           or vim.bo[orig_buf].buftype ~= "terminal"
         then
           return

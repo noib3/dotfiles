@@ -12,6 +12,7 @@ vim.g.loaded_tutor_mode_plugin = 1 -- :Tutor command
 vim.g.loaded_zipPlugin = 1 -- transparent editing of zip archives
 
 require("autocmds")
+require("commands")
 require("diagnostic")
 require("keymaps")
 require("lsp")
