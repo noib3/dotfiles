@@ -33,6 +33,7 @@ local bin_dir = plugin_root .. "/bin"
 
 local contexts_by_buffer = {}
 local contexts_by_root = {}
+local buffers_owned_by_flatten = {}
 local roots_by_buffer = {}
 local original_lsp_start
 local transform_filepaths = function(filepaths) return filepaths end
@@ -274,18 +275,20 @@ local emit_for_buffer = function(buf, pattern)
 end
 
 --- @param filepath string
---- @return number
+--- @return number, boolean
 local get_or_add_buffer = function(filepath)
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if
       vim.api.nvim_buf_is_valid(bufnr)
       and vim.api.nvim_buf_get_name(bufnr) == filepath
     then
-      return bufnr
+      return bufnr, buffers_owned_by_flatten[bufnr] == true
     end
   end
 
-  return vim.fn.bufadd(filepath)
+  local bufnr = vim.fn.bufadd(filepath)
+  buffers_owned_by_flatten[bufnr] = true
+  return bufnr, true
 end
 
 --- @param buf number
@@ -338,17 +341,23 @@ local handle_launch = function(ev)
 
   local orig_buf = ev.buf
   local file_buf
+  local file_buf_owned = false
 
   if #filepaths == 0 then
     vim.cmd.enew()
     file_buf = vim.api.nvim_get_current_buf()
+    file_buf_owned = true
+    buffers_owned_by_flatten[file_buf] = true
     register_buffer(file_buf, context)
   else
     for _, filepath in ipairs(filepaths) do
-      local buf = get_or_add_buffer(filepath)
+      local buf, owned = get_or_add_buffer(filepath)
       register_buffer(buf, context, filepath)
       prepare_buffer(buf, filepath)
-      if not file_buf then file_buf = buf end
+      if not file_buf then
+        file_buf = buf
+        file_buf_owned = owned
+      end
     end
 
     if #filepaths == 1 and file_buf == orig_buf then
@@ -372,21 +381,24 @@ local handle_launch = function(ev)
 
   local deleting_file_buf = false
 
-  vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWinLeave" }, {
-    buffer = file_buf,
-    callback = function()
-      -- Update after the window transition completes. Buffer-deletion plugins
-      -- also move windows before deleting their buffers; in that case
-      -- `deleting_file_buf` is set before this scheduled update can discard the
-      -- last user-selected restore targets.
-      vim.schedule(function()
-        if deleting_file_buf or not vim.api.nvim_buf_is_valid(file_buf) then
-          return
-        end
-        file_wins = buf_get_wins(file_buf):totable()
-      end)
-    end,
-  })
+  local window_autocmd = vim.api.nvim_create_autocmd(
+    { "BufWinEnter", "BufWinLeave" },
+    {
+      buffer = file_buf,
+      callback = function()
+        -- Update after the window transition completes. Buffer-deletion plugins
+        -- also move windows before deleting their buffers; in that case
+        -- `deleting_file_buf` is set before this scheduled update can discard the
+        -- last user-selected restore targets.
+        vim.schedule(function()
+          if deleting_file_buf or not vim.api.nvim_buf_is_valid(file_buf) then
+            return
+          end
+          file_wins = buf_get_wins(file_buf):totable()
+        end)
+      end,
+    }
+  )
 
   vim.api.nvim_create_autocmd("BufDelete", {
     buffer = file_buf,
@@ -396,6 +408,8 @@ local handle_launch = function(ev)
       emit_for_buffer(file_buf, will_show_event)
 
       vim.schedule(function()
+        pcall(vim.api.nvim_del_autocmd, window_autocmd)
+
         local restored_win
 
         if vim.api.nvim_buf_is_valid(orig_buf) then
@@ -408,6 +422,19 @@ local handle_launch = function(ev)
         end
 
         emit_for_buffer(orig_buf, did_show_event)
+
+        if file_buf_owned and vim.api.nvim_buf_is_valid(file_buf) then
+          local ok, err = pcall(vim.api.nvim_buf_delete, file_buf, {
+            force = true,
+          })
+          if not ok then
+            vim.notify(
+              ("nvim-flatten: failed to wipe owned buffer: %s"):format(err),
+              vim.log.levels.ERROR
+            )
+          end
+        end
+
         on_done()
 
         if
@@ -450,6 +477,7 @@ vim.api.nvim_create_autocmd("BufWipeout", {
   group = group,
   callback = function(ev)
     contexts_by_buffer[ev.buf] = nil
+    buffers_owned_by_flatten[ev.buf] = nil
     roots_by_buffer[ev.buf] = nil
   end,
 })
