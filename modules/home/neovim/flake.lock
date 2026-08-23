@@ -276,15 +276,16 @@
     "incline-nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1778159739,
-        "narHash": "sha256-UIlrWiym/wO7olXX3W3HQBAuISzzKS4qp2/gprXnb0g=",
+        "lastModified": 1787494806,
+        "narHash": "sha256-lEbyYq8oywxS7+SZ9TFoxTAGbMaypDnzSf0g4boUk7M=",
         "owner": "b0o",
         "repo": "incline.nvim",
-        "rev": "debd628e9395f7a9da57bdc31ce75ca6b40a880b",
+        "rev": "50d55b5084381d7a7e05fcb1fa7e111435b3ff85",
         "type": "github"
       },
       "original": {
         "owner": "b0o",
+        "ref": "pull/96/head",
         "repo": "incline.nvim",
         "type": "github"
       }

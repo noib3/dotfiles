@@ -74,7 +74,7 @@
       flake = false;
     };
     incline-nvim = {
-      url = "github:b0o/incline.nvim";
+      url = "github:b0o/incline.nvim/pull/96/head";
       flake = false;
     };
     lsp-progress-nvim = {
