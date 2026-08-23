@@ -1,6 +1,6 @@
 local fzf_lua = require("fzf-lua")
+local locations = require("locations")
 local terminal = require("terminal")
-local trouble = require("trouble")
 local utils = require("utils")
 
 local keymap = vim.keymap
@@ -283,23 +283,6 @@ local fzf_opts = {
   }, ","),
 }
 
---- Opens a trouble.nvim with w/ the given entries in quickfix formats
---- (`:h setqflist).
----
----@param qf_entries string[]
-local open_trouble_qf = function(qf_entries)
-  if #qf_entries == 0 then return end
-
-  local win = vim.api.nvim_get_current_win()
-  vim.fn.setqflist(qf_entries, "r")
-  trouble.open({
-    mode = "quickfix",
-    new = false,
-    refresh = true,
-  })
-  vim.api.nvim_set_current_win(win)
-end
-
 --- Fuzzy searches files in the given directory, and opens the selected ones.
 local fzf_files = function(search_root)
   local opts = vim.tbl_extend("force", fzf_opts, {
@@ -320,10 +303,10 @@ local fzf_files = function(search_root)
           })
         end
 
-        local first = table.remove(qf_entries, 1)
+        local first = qf_entries[1]
         vim.cmd(("edit %s"):format(first.filename))
 
-        open_trouble_qf(qf_entries)
+        if #qf_entries > 1 then locations.open_trouble_qf(qf_entries) end
       end,
     },
     fzf_opts = opts,
@@ -382,11 +365,11 @@ local fzf_live_ripgrep = function(search_root)
           })
         end
 
-        local first = table.remove(qf_entries, 1)
+        local first = qf_entries[1]
         vim.cmd(("edit %s"):format(first.filename))
         vim.fn.cursor(first.lnum, first.col)
 
-        open_trouble_qf(qf_entries)
+        if #qf_entries > 1 then locations.open_trouble_qf(qf_entries) end
       end,
     },
     exec_empty_query = true,

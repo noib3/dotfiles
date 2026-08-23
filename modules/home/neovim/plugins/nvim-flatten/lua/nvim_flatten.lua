@@ -35,6 +35,7 @@ local contexts_by_buffer = {}
 local contexts_by_root = {}
 local roots_by_buffer = {}
 local original_lsp_start
+local transform_filepaths = function(filepaths) return filepaths end
 
 local prepend_path = function(dir)
   for path in vim.gsplit(vim.env.PATH or "", ":") do
@@ -330,7 +331,7 @@ end
 --- @param ev table
 local handle_launch = function(ev)
   local data = ev.data or {}
-  local filepaths = data.filepaths or {}
+  local filepaths = transform_filepaths(vim.deepcopy(data.filepaths or {}))
   local commands = data.commands or {}
   local context = new_context(data.environment)
   local on_done = data.on_done or function() end
@@ -467,6 +468,16 @@ end
 M.project_root = function(bufnr)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
   return roots_by_buffer[bufnr] or detect_project_root(path_for_buffer(bufnr))
+end
+
+---@class nvim_flatten.Config
+---@field transform_filepaths? fun(filepaths: string[]): string[]
+
+---@param config? nvim_flatten.Config
+M.setup = function(config)
+  config = config or {}
+  transform_filepaths = config.transform_filepaths
+    or function(filepaths) return filepaths end
 end
 
 return M

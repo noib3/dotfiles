@@ -1,3 +1,4 @@
+local locations = require("locations")
 local terminal = require("terminal")
 
 ---@param name string
@@ -5,6 +6,18 @@ local terminal = require("terminal")
 local create_augroup = function(name)
   return vim.api.nvim_create_augroup(name, { clear = true })
 end
+
+local cli_files_group = create_augroup("noib3/open-cli-files-in-trouble")
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = cli_files_group,
+  desc = "Opens additional CLI file arguments in Trouble",
+  callback = function()
+    local filepaths = vim.fn.argv()
+    ---@cast filepaths string[]
+    locations.open_cli_files(filepaths, true)
+  end,
+})
 
 vim.api.nvim_create_autocmd("VimResized", {
   group = create_augroup("noib3/rebalance-splits"),
@@ -153,6 +166,19 @@ vim.api.nvim_create_autocmd("TermRequest", {
 })
 
 local nvim_flatten_group = create_augroup("noib3/nvim-flatten")
+
+vim.api.nvim_create_autocmd("User", {
+  group = nvim_flatten_group,
+  pattern = "NvimFlattenLaunch",
+  desc = "Opens additional flattened file arguments in Trouble",
+  callback = function(ev)
+    local data = ev.data
+    if not data or type(data.filepaths) ~= "table" then return end
+
+    local filepaths = vim.deepcopy(data.filepaths)
+    vim.schedule(function() locations.open_cli_files(filepaths) end)
+  end,
+})
 
 vim.api.nvim_create_autocmd("User", {
   group = nvim_flatten_group,
