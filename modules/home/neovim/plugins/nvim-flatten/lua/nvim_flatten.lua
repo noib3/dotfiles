@@ -32,7 +32,7 @@ local contexts_by_buffer = {}
 local contexts_by_root = {}
 local buffers_owned_by_flatten = {}
 local roots_by_buffer = {}
-local original_lsp_start
+local original_system = vim.system
 local transform_filepaths = function(filepaths) return filepaths end
 
 local prepend_path = function(dir)
@@ -54,20 +54,6 @@ local normalize = function(path)
   return vim.fs.normalize(path)
 end
 
-local environment_id = function(environment)
-  local keys = vim.tbl_keys(environment)
-  table.sort(keys)
-
-  local serialized = {}
-  for _, key in ipairs(keys) do
-    local value = tostring(environment[key])
-    serialized[#serialized + 1] = #key .. ":" .. key
-    serialized[#serialized + 1] = #value .. ":" .. value
-  end
-
-  return vim.fn.sha256(table.concat(serialized))
-end
-
 local new_context = function(environment)
   local normalized = {}
   for key, value in pairs(environment or {}) do
@@ -76,7 +62,6 @@ local new_context = function(environment)
 
   return {
     environment = normalized,
-    id = environment_id(normalized),
   }
 end
 
@@ -133,42 +118,13 @@ end
 local register_buffer = function(bufnr, context, path)
   contexts_by_buffer[bufnr] = context
 
-  for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
-    local lsp_root = normalize(client.root_dir)
-    if lsp_root then contexts_by_root[lsp_root] = context end
-  end
-
   local root = detect_project_root(path)
     or detect_project_root(context.environment.PWD)
     or normalize(context.environment.PWD)
   if not root then return end
 
   roots_by_buffer[bufnr] = root
-  contexts_by_root[root] = context
-end
-
-local uri_to_path = function(uri)
-  if type(uri) ~= "string" or uri == "" then return nil end
-  local ok, path = pcall(vim.uri_to_fname, uri)
-  if ok then return normalize(path) end
-  return nil
-end
-
-local root_for_lsp = function(config, opts)
-  local root = normalize(config.root_dir)
-  if root then return root end
-
-  local folder = config.workspace_folders and config.workspace_folders[1]
-  local workspace_root = folder and uri_to_path(folder.uri)
-  if workspace_root then return workspace_root end
-
-  if opts and opts._root_markers then
-    local bufnr = opts.bufnr or 0
-    if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-    return normalize(vim.fs.root(bufnr, opts._root_markers))
-  end
-
-  return nil
+  contexts_by_root[root] = contexts_by_root[root] or context
 end
 
 local merge_environment = function(environment, overrides)
@@ -183,68 +139,22 @@ local merge_environment = function(environment, overrides)
   return result
 end
 
-local wrap_rpc_start = function(environment, command)
-  return function(dispatchers, config)
-    local rpc_start = vim.lsp.rpc.start
-
-    vim.lsp.rpc.start = function(cmd, dispatchers_, spawn_params)
-      spawn_params = vim.deepcopy(spawn_params or {})
-      spawn_params.env = merge_environment(environment, spawn_params.env)
-      return rpc_start(cmd, dispatchers_, spawn_params)
-    end
-
-    local ok, result = pcall(command, dispatchers, config)
-    vim.lsp.rpc.start = rpc_start
-    if not ok then error(result) end
-    return result
-  end
-end
-
-local default_reuse_client = function(client, config)
-  return client.name == config.name and client.root_dir == config.root_dir
-end
-
-local with_lsp_environment = function(config, opts)
-  local bufnr = opts and opts.bufnr or 0
-  if bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-
-  local root = root_for_lsp(config, opts)
-  local context = context_for_buffer(bufnr)
-    or (root and contexts_by_root[root])
-    or (root and context_for_path(root))
-
-  if not context then return config, opts end
-  if root then contexts_by_root[root] = context end
-
-  local result = vim.deepcopy(config)
-  local base_cmd_env = result._nvim_flatten_base_cmd_env
-    or vim.deepcopy(result.cmd_env or {})
-  local original_cmd = result._nvim_flatten_original_cmd or result.cmd
-
-  result.root_dir = root or result.root_dir
-  result._nvim_flatten_base_cmd_env = base_cmd_env
-  result._nvim_flatten_env_id = context.id
-  result.cmd_env = merge_environment(context.environment, base_cmd_env)
-
-  if type(original_cmd) == "function" then
-    result._nvim_flatten_original_cmd = original_cmd
-    result.cmd = wrap_rpc_start(result.cmd_env, original_cmd)
+vim.system = function(cmd, opts, on_exit)
+  if
+    type(opts) ~= "table"
+    or type(opts.cwd) ~= "string"
+    or opts.cwd == ""
+    or opts.clear_env
+  then
+    return original_system(cmd, opts, on_exit)
   end
 
-  local start_opts = vim.tbl_extend("force", {}, opts or {})
-  local reuse_client = start_opts.reuse_client or default_reuse_client
-  start_opts.reuse_client = function(client, config_)
-    return client.config._nvim_flatten_env_id == config_._nvim_flatten_env_id
-      and reuse_client(client, config_)
-  end
+  local context = context_for_path(vim.fs.abspath(opts.cwd))
+  if not context then return original_system(cmd, opts, on_exit) end
 
-  return result, start_opts
-end
-
-original_lsp_start = vim.lsp.start
-vim.lsp.start = function(config, opts)
-  local config_, opts_ = with_lsp_environment(config, opts)
-  return original_lsp_start(config_, opts_)
+  local system_opts = vim.deepcopy(opts)
+  system_opts.env = merge_environment(context.environment, system_opts.env)
+  return original_system(cmd, system_opts, on_exit)
 end
 
 --- Returns an iterator over the windows currently displaying the given buffer.
