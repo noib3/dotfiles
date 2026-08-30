@@ -35,16 +35,12 @@ let
     ))
   ];
 
-  treeSitterRev =
-    let
-      matches = builtins.match "https://github.com/tree-sitter/tree-sitter/archive/([0-9a-f]+)\\.tar\\.gz" dependencyMetadata.treesitter.url;
-    in
-    builtins.elemAt matches 0;
-
-  treeSitterCargoLockSource = builtins.fetchGit {
-    url = "https://github.com/tree-sitter/tree-sitter";
-    rev = treeSitterRev;
-  };
+  treeSitterSource =
+    pkgs.runCommand "tree-sitter-source" { src = neovim-dependencies.treesitter; }
+      ''
+        mkdir "$out"
+        tar --extract --gzip --file "$src" --strip-components=1 --directory "$out"
+      '';
 
   tree-sitter =
     (import "${overlayPackages}/tree-sitter.nix" {
@@ -53,7 +49,7 @@ let
       (_: {
         cargoHash = null;
         cargoDeps = pkgs.rustPlatform.importCargoLock {
-          lockFile = "${treeSitterCargoLockSource}/Cargo.lock";
+          lockFile = "${treeSitterSource}/Cargo.lock";
         };
       });
 
