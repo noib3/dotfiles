@@ -10,6 +10,17 @@
     type = lib.types.attrsOf lib.types.path;
     readOnly = true;
     default = {
+      fuzzy-edit-files = pkgs.writeShellApplication {
+        name = "fuzzy-edit-files";
+        runtimeInputs = [
+          config.modules.scripts.lf-recursive
+          config.modules.scripts.preview
+          config.programs.fzf.package
+          pkgs.git
+        ];
+        text = builtins.readFile ./fuzzy-edit-files.sh;
+      };
+
       fuzzy-ripgrep = pkgs.writeShellApplication {
         name = "fuzzy-ripgrep";
         runtimeInputs = with pkgs; [

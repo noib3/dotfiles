@@ -9,6 +9,7 @@ with lib;
 let
   cfg = config.modules.lf;
   inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
+  fuzzy-edit-files = lib.getExe config.modules.scripts.fuzzy-edit-files;
   preview = lib.getExe config.modules.scripts.preview;
   chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
 in
@@ -188,10 +189,7 @@ in
         fuzzy-edit = ''
           ''${{
             clear
-            readarray -t filenames < <(\
-              fzf --multi --prompt='Edit> ' --preview='${preview} ~/{}' \
-                | sed -r "s!^!$HOME/!" \
-            )
+            readarray -t filenames < <(${fuzzy-edit-files})
             [ ''${#filenames[@]} -eq 0 ] || $EDITOR "''${filenames[@]}"
           }}
         '';
