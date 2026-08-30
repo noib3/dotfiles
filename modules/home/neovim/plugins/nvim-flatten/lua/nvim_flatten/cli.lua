@@ -64,15 +64,11 @@ local done = function()
 end
 
 vim.schedule(function()
-  local ok, err = pcall(vim.api.nvim_exec_autocmds, "User", {
-    pattern = "NvimFlattenLaunch",
-    modeline = false,
-    data = {
-      filepaths = filepaths,
-      commands = commands,
-      environment = environment,
-      on_done = done,
-    },
+  local ok, err = pcall(require("nvim_flatten").launch, {
+    filepaths = filepaths,
+    commands = commands,
+    environment = environment,
+    on_done = done,
   })
 
   if not ok then

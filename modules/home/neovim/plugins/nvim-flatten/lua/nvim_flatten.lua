@@ -257,6 +257,13 @@ local handle_launch = function(ev)
     file_buf = vim.api.nvim_get_current_buf()
     file_buf_owned = true
     buffers_owned_by_flatten[file_buf] = true
+
+    local launch_cwd = normalize(context.environment.PWD)
+    local launch_cwd_stat = launch_cwd and vim.uv.fs_stat(launch_cwd)
+    if launch_cwd_stat and launch_cwd_stat.type == "directory" then
+      vim.cmd.bcd({ args = { launch_cwd } })
+    end
+
     register_buffer(file_buf, context)
   else
     for _, filepath in ipairs(filepaths) do
@@ -376,13 +383,6 @@ local group = vim.api.nvim_create_augroup("nvim-session-flatten", {
   clear = true,
 })
 
-vim.api.nvim_create_autocmd("User", {
-  group = group,
-  pattern = launch_event,
-  nested = true,
-  callback = handle_launch,
-})
-
 vim.api.nvim_create_autocmd("BufWipeout", {
   group = group,
   callback = function(ev)
@@ -391,6 +391,19 @@ vim.api.nvim_create_autocmd("BufWipeout", {
     roots_by_buffer[ev.buf] = nil
   end,
 })
+
+---@param data table
+M.launch = function(data)
+  local orig_buf = vim.api.nvim_get_current_buf()
+
+  vim.api.nvim_exec_autocmds("User", {
+    pattern = launch_event,
+    modeline = false,
+    data = data,
+  })
+
+  handle_launch({ buf = orig_buf, data = data })
+end
 
 M.environment_for_buffer = function(bufnr)
   local context = context_for_buffer(bufnr or 0)
