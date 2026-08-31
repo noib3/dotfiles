@@ -54,6 +54,14 @@ local normalize = function(path)
   return vim.fs.normalize(path)
 end
 
+local direnv_root = function(context)
+  local envrc = normalize(context.environment.DIRENV_FILE)
+  if not envrc then return nil end
+
+  envrc = vim.uv.fs_realpath(envrc) or envrc
+  return normalize(vim.fs.dirname(envrc))
+end
+
 local new_context = function(environment)
   local normalized = {}
   for key, value in pairs(environment or {}) do
@@ -118,7 +126,8 @@ end
 local register_buffer = function(bufnr, context, path)
   contexts_by_buffer[bufnr] = context
 
-  local root = detect_project_root(path)
+  local root = direnv_root(context)
+    or detect_project_root(path)
     or detect_project_root(context.environment.PWD)
     or normalize(context.environment.PWD)
   if not root then return end
