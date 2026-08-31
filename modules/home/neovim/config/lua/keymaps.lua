@@ -243,16 +243,7 @@ keymap.set("n", "tm", function() vim.fn.jobstart("tm") end)
 -- Open this week's todo.
 keymap.set("n", "tw", function() vim.fn.jobstart("tw") end)
 
-vim.api.nvim_set_keymap("n", "q", "", {
-  desc = "Close the quickfix window with 'q'",
-  callback = function()
-    if vim.bo.buftype == "quickfix" then
-      vim.cmd("cclose")
-    else
-      fallback("q")
-    end
-  end,
-})
+keymap.set("n", "q", "<Cmd>q<Cr>")
 
 local fzf_opts = {
   ["--multi"] = true,
