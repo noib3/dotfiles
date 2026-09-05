@@ -33,8 +33,6 @@ in
         AppleShowAllExtensions = true;
         AppleShowAllFiles = true;
         AppleShowScrollBars = "WhenScrolling";
-        InitialKeyRepeat = 10;
-        KeyRepeat = 2;
         NSWindowShouldDragOnGesture = true;
       };
       "com.apple.AdLib".forced = {
@@ -113,5 +111,11 @@ in
         };
       };
     };
+
+    home.activation.setKeyRepeat = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      # Key-repeat values are measured in 1/60-second ticks.
+      run /usr/bin/defaults write -g InitialKeyRepeat -int 10
+      run /usr/bin/defaults write -g KeyRepeat -int 2
+    '';
   };
 }
