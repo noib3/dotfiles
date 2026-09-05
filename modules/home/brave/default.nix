@@ -151,21 +151,25 @@ let
       ) attrs
     );
 
+  profilePreferences =
+    profileCfg:
+    profileCfg.preferences
+    // optionalAttrs (pinnedExtensionIds != [ ]) {
+      extensions.pinned_extensions = pinnedExtensionIds;
+    };
+
   mkPreferencesActivation =
     profileName: profileCfg:
     let
-      merged =
-        profileCfg.preferences
-        // optionalAttrs (pinnedExtensionIds != [ ]) {
-          extensions.pinned_extensions = pinnedExtensionIds;
-        };
       sanitized = strings.sanitizeDerivationName profileName;
     in
     nameValuePair "setBravePreferences-${profileName}" (
       lib.hm.dag.entryAfter [ "writeBoundary" ] (
         pkgs.callPackage ./set-preferences.nix {
           preferencesPath = "${braveDataDir}/${profileName}/Preferences";
-          prefUpdates = builtins.toJSON (flattenPrefs [ ] merged);
+          prefUpdates = builtins.toJSON (
+            flattenPrefs [ ] (profilePreferences profileCfg)
+          );
           hashFile = "${config.xdg.cacheHome}/home-manager/brave-preferences-${sanitized}.hash";
           inherit isDarwin;
         }
@@ -227,6 +231,21 @@ in
       description = "Enterprise policies";
     };
 
+    # Unlike profiles.<name>.preferences, these preferences are used only as a
+    # template when Brave creates its first profile. Changes made afterwards do
+    # not affect existing profiles.
+    initialPreferences = mkOption {
+      type = types.attrs;
+      default = profilePreferences cfg.profiles.Default // {
+        distribution.import_search_engine = false;
+      };
+      description = ''
+        Preferences imported when Brave creates its first profile. By default,
+        these contain the Default profile's preferences and disable importing
+        the system browser's search engine.
+      '';
+    };
+
     profiles = mkOption {
       type = types.attrsOf profileType;
       default = { };
@@ -275,7 +294,6 @@ in
         BraveWalletDisabled = true;
         BrowserSignin = 0;
         HomepageIsNewTabPage = true;
-        NewTabPageLocation = "about:blank";
         PasswordManagerEnabled = false;
         SyncDisabled = true;
       };
@@ -283,15 +301,27 @@ in
       profiles.Default = {
         preferences = {
           brave = {
-            brave_search."show-ntp-search" = false;
+            brave_search = {
+              "show-ntp-chat" = false;
+              "show-ntp-search" = false;
+            };
             new_tab_page = {
               background = {
                 random = false;
                 selected_value = config.modules.colorschemes.palette.primary.background;
-                show_background_image = true;
                 type = "color";
               };
+              show_background_image = true;
+              show_binance = false;
+              show_branded_background_image = false;
+              show_brave_news = false;
+              show_brave_vpn = false;
+              show_clock = false;
+              show_gemini = false;
+              show_rewards = false;
+              show_sponsored_sites = false;
               show_stats = false;
+              show_together = false;
             };
             show_bookmarks_button = false;
             show_side_panel_button = false;
@@ -359,6 +389,13 @@ in
     };
 
     modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies;
+
+    # Brave imports this file when it creates the first profile. The filename is
+    # hard-coded by Chromium on macOS.
+    home.file = optionalAttrs isDarwin {
+      "Library/Application Support/BraveSoftware/Brave-Browser/Chromium Initial Preferences".text =
+        builtins.toJSON cfg.initialPreferences;
+    };
 
     home.activation =
       (
