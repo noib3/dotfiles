@@ -56,7 +56,7 @@ let
     tui.model_availability_nux."gpt-5.6-sol" = 4;
   };
 
-  codexLb = pkgs.callPackage ./codex-lb.nix { inherit inputs; };
+  codexLb = inputs.codex-lb.packages.${pkgs.stdenv.hostPlatform.system}.default;
   codexLbDataDir = "${config.xdg.stateHome}/codex-lb";
   codexLbLogDir = "${codexLbDataDir}/log";
   codexLbEnvironment = {
