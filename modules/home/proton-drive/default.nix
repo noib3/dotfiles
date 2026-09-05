@@ -2,14 +2,12 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 
 with lib;
 let
   cfg = config.modules.proton-drive;
-  bun2nix = inputs.bun2nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   options.modules.proton-drive = {
@@ -31,7 +29,7 @@ in
 
   config = mkIf cfg.enable {
     home.packages = [
-      (pkgs.callPackage ./proton-drive-cli.nix { inherit bun2nix; })
+      (pkgs.callPackage ./proton-drive-cli.nix { })
     ];
 
     home.activation = mkIf pkgs.stdenv.hostPlatform.isDarwin {
