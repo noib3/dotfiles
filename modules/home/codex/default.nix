@@ -51,6 +51,7 @@ let
       cfg.modelProviders
       |> builtins.mapAttrs (_: provider: removeAttrs provider [ "active" ]);
     model_reasoning_effort = "xhigh";
+    notice.hide_rate_limit_model_nudge = true;
     plan_mode_reasoning_effort = "xhigh";
     sandbox_mode = "danger-full-access";
     tui.model_availability_nux."gpt-5.6-sol" = 4;
