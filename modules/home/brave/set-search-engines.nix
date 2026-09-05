@@ -76,13 +76,35 @@ let
 
   quit =
     if isDarwin then
-      ''/usr/bin/osascript -e 'quit app "Brave Browser"' ''
+      ''/usr/bin/osascript -e 'tell application id "com.brave.Browser" to quit' ''
     else
       "pkill -TERM brave";
+
+  terminate =
+    if isDarwin then
+      ''/usr/bin/pkill -TERM -x "Brave Browser"''
+    else
+      "pkill -TERM brave";
+
+  forceKill =
+    if isDarwin then
+      ''/usr/bin/pkill -KILL -x "Brave Browser"''
+    else
+      "pkill -KILL brave";
 
   relaunch = if isDarwin then ''/usr/bin/open -a "Brave Browser"'' else "brave &";
 in
 ''
+  _wait_for_brave_to_exit() {
+    local attempts=0
+
+    while ${pgrep} > /dev/null 2>&1; do
+      [[ "$attempts" -ge 20 ]] && return 1
+      sleep 0.25
+      attempts=$((attempts + 1))
+    done
+  }
+
   _set_brave_search_engines() {
     [[ -f "${dbPath}" ]] || return 0
 
@@ -98,8 +120,22 @@ in
     local brave_was_running=0
     if ${pgrep} > /dev/null 2>&1; then
       brave_was_running=1
-      ${quit}
-      while ${pgrep} > /dev/null 2>&1; do sleep 0.5; done
+      ${quit} || true
+
+      if ! _wait_for_brave_to_exit; then
+        echo "Brave did not exit after a quit request; sending SIGTERM"
+        ${terminate} || true
+
+        if ! _wait_for_brave_to_exit; then
+          echo "Brave did not exit after SIGTERM; sending SIGKILL"
+          ${forceKill} || true
+
+          if ! _wait_for_brave_to_exit; then
+            echo "Unable to stop Brave before updating its search engine database" >&2
+            return 1
+          fi
+        fi
+      fi
     fi
 
     run ${sqlite3} "${dbPath}" < ${sqlScript}
