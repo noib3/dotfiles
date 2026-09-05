@@ -8,6 +8,7 @@
 with lib;
 let
   cfg = config.modules.bettermouse;
+  package = pkgs.brewCasks.bettermouse;
   toPlist = value: lib.generators.toPlist { escape = true; } value;
   utils = import ../macos-profile/utils.nix { inherit config lib; };
 
@@ -87,7 +88,7 @@ in
     ];
 
     home.packages = [
-      pkgs.brewCasks.bettermouse
+      package
     ];
 
     modules.bettermouse = {
@@ -173,5 +174,17 @@ in
           ];
         };
       };
+
+    launchd.agents.bettermouse = {
+      enable = true;
+      config = {
+        ProgramArguments = [
+          "/usr/bin/open"
+          "-g"
+          "${package}/Applications/BetterMouse.app"
+        ];
+        RunAtLoad = true;
+      };
+    };
   };
 }
