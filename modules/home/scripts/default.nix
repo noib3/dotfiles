@@ -10,6 +10,12 @@
     type = lib.types.attrsOf lib.types.path;
     readOnly = true;
     default = {
+      fuzzy-cd-directory = pkgs.writeShellApplication {
+        name = "fuzzy-cd-directory";
+        runtimeInputs = [ config.programs.fzf.package ];
+        text = builtins.readFile ./fuzzy-cd-directory.sh;
+      };
+
       fuzzy-edit-files = pkgs.writeShellApplication {
         name = "fuzzy-edit-files";
         runtimeInputs = [

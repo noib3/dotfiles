@@ -9,6 +9,7 @@ with lib;
 let
   cfg = config.modules.lf;
   inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
+  fuzzy-cd-directory = lib.getExe config.modules.scripts.fuzzy-cd-directory;
   fuzzy-edit-files = lib.getExe config.modules.scripts.fuzzy-edit-files;
   preview = lib.getExe config.modules.scripts.preview;
   chmod = "${pkgs.uutils-coreutils-noprefix}/bin/chmod";
@@ -19,7 +20,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.sessionVariables.LF_ICONS = builtins.readFile ./LF_ICONS;
+    xdg.configFile."lf/icons".source = ./icons;
 
     programs.lf = {
       enable = true;
@@ -181,8 +182,8 @@ in
         fuzzy-cd = ''
           ''${{
             clear
-            dirname="$(eval "$FZF_ALT_C_COMMAND" | eval "fzf $FZF_ALT_C_OPTS")"
-            [ -z "$dirname" ] || lf -remote "send $id cd '$HOME/$dirname'"
+            dirname="$(${fuzzy-cd-directory})"
+            [ -z "$dirname" ] || lf -remote "send $id cd '$dirname'"
           }}
         '';
 
@@ -269,7 +270,7 @@ in
         unm = "unmount-device";
         x = "cut";
         "+" = "make-ex";
-        "-" = "remove-ex";
+        "-" = "jump-prev";
         "<enter>" = "push $";
         "<super-d>" = "fuzzy-cd";
         "<super-e>" = "fuzzy-edit";
