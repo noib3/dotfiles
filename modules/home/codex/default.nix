@@ -45,7 +45,7 @@ let
     };
     cli_auth_credentials_store = "ephemeral";
     features.apps = false;
-    model = "gpt-5.6-sol";
+    model = "gpt-6.1-sol";
     model_provider = activeModelProviders |> builtins.attrNames |> builtins.head;
     model_providers =
       cfg.modelProviders
@@ -54,7 +54,7 @@ let
     notice.hide_rate_limit_model_nudge = true;
     plan_mode_reasoning_effort = "xhigh";
     sandbox_mode = "danger-full-access";
-    tui.model_availability_nux."gpt-5.6-sol" = 4;
+    tui.model_availability_nux."gpt-6.1-sol" = 4;
   };
 
   codexLb = inputs.codex-lb.packages.${pkgs.stdenv.hostPlatform.system}.default;
