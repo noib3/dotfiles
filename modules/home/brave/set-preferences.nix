@@ -9,13 +9,17 @@
   prefUpdates,
   hashFile,
   isDarwin,
+  extraCommands ? "",
 }:
 
 let
   sha = lib.getExe' openssl "openssl";
 
   pgrep =
-    if isDarwin then ''/usr/bin/pgrep -x "Brave Browser"'' else "pgrep -x brave";
+    if isDarwin then
+      "/usr/bin/pgrep -x 'Brave Browser|Brave Browser.orig' "
+    else
+      "pgrep -x brave";
 
   quit =
     if isDarwin then
@@ -30,7 +34,9 @@ in
     [[ -f "${preferencesPath}" ]] || return 0
 
     local pref_hash
-    pref_hash=$(echo -n '${prefUpdates}' | ${sha} dgst -sha256 | cut -d' ' -f2)
+    pref_hash=$(printf '%s' ${
+      lib.escapeShellArg (prefUpdates + extraCommands)
+    } | ${sha} dgst -sha256 | cut -d' ' -f2)
 
     if [[ -f "${hashFile}" ]] && [[ "$(cat "${hashFile}")" == "$pref_hash" ]]; then
       return 0
@@ -40,11 +46,21 @@ in
     if ${pgrep} > /dev/null 2>&1; then
       brave_was_running=1
       ${quit}
-      while ${pgrep} > /dev/null 2>&1; do sleep 0.5; done
+      local attempts=0
+      while ${pgrep} > /dev/null 2>&1; do
+        if [[ "$attempts" -ge 60 ]]; then
+          echo "Brave is still running; preferences were not changed" >&2
+          return 1
+        fi
+        sleep 0.25
+        attempts=$((attempts + 1))
+      done
     fi
 
+    ${extraCommands}
+
     run ${lib.getExe jq} \
-      --argjson updates '${prefUpdates}' \
+      --argjson updates ${lib.escapeShellArg prefUpdates} \
       'reduce $updates[] as $update (.; setpath($update.path; $update.value))' \
       "${preferencesPath}" > "${preferencesPath}.tmp"
 

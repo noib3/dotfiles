@@ -40,6 +40,37 @@ let
     };
   };
 
+  profileType = types.submodule {
+    options = {
+      preferences = mkOption {
+        type = types.attrs;
+        default = { };
+        description = "Nested attrset of Brave JSON preferences for this profile";
+      };
+      searchEngines = mkOption {
+        type = types.attrsOf searchEngineType;
+        default = { };
+        description = ''
+          Custom search engines for this profile. The attribute name is
+          used as the keyword (shortcut).
+        '';
+      };
+    };
+  };
+
+  scriptletType = types.submodule {
+    options = {
+      domains = mkOption {
+        type = types.listOf (types.strMatching "[a-zA-Z0-9.*-]+");
+        description = "Domains on which to inject the scriptlet";
+      };
+      script = mkOption {
+        type = types.path;
+        description = "JavaScript file to inject on matching pages";
+      };
+    };
+  };
+
   searchEngineType = types.submodule {
     options = {
       name = mkOption {
@@ -55,24 +86,6 @@ let
         default = null;
         description = ''
           Path to a favicon image, in any format ImageMagick can read
-        '';
-      };
-    };
-  };
-
-  profileType = types.submodule {
-    options = {
-      preferences = mkOption {
-        type = types.attrs;
-        default = { };
-        description = "Nested attrset of Brave JSON preferences for this profile";
-      };
-      searchEngines = mkOption {
-        type = types.attrsOf searchEngineType;
-        default = { };
-        description = ''
-          Custom search engines for this profile. The attribute name is
-          used as the keyword (shortcut).
         '';
       };
     };
@@ -153,10 +166,14 @@ let
 
   profilePreferences =
     profileCfg:
-    profileCfg.preferences
-    // optionalAttrs (pinnedExtensionIds != [ ]) {
-      extensions.pinned_extensions = pinnedExtensionIds;
-    };
+    recursiveUpdate profileCfg.preferences (
+      optionalAttrs (pinnedExtensionIds != [ ]) {
+        extensions.pinned_extensions = pinnedExtensionIds;
+      }
+      // optionalAttrs (cfg.scriptlets != { }) {
+        brave.ad_block.developer_mode = true;
+      }
+    );
 
   mkPreferencesActivation =
     profileName: profileCfg:
@@ -254,9 +271,24 @@ in
         (e.g. "Default", "Profile-1", etc.).
       '';
     };
+
+    scriptlets = mkOption {
+      type = types.attrsOf scriptletType;
+      default = { };
+      description = ''
+        Native Brave scriptlets installed in every configured profile.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
+    assertions = mapAttrsToList (name: scriptlet: {
+      assertion =
+        builtins.match "[a-zA-Z0-9][a-zA-Z0-9_-]*" name != null
+        && scriptlet.domains != [ ];
+      message = "Brave scriptlet ${name} needs a simple name and at least one domain";
+    }) cfg.scriptlets;
+
     modules.brave = {
       isDefaultBrowser = true;
 
@@ -332,6 +364,8 @@ in
           # for 130% we have log(1.3)/(log1.2) ~= 1.43902.
           partition.default_zoom_level.x = 1.43902;
           toolbar.pinned_actions = [ ];
+          translate.enabled = true;
+          translate_allowlists.id = "en";
         };
 
         searchEngines =
@@ -378,6 +412,13 @@ in
               };
           };
       };
+
+      scriptlets = {
+        translate-tokopedia = {
+          domains = [ "tokopedia.com" ];
+          script = ./scriptlets/tokopedia-translate.js;
+        };
+      };
     };
 
     programs.brave = {
@@ -400,7 +441,7 @@ in
     home.activation =
       (
         cfg.profiles
-        |> filterAttrs (_: p: p.preferences != { } || pinnedExtensionIds != [ ])
+        |> filterAttrs (_: p: profilePreferences p != { })
         |> mapAttrs' mkPreferencesActivation
       )
       // (
@@ -408,6 +449,30 @@ in
         |> filterAttrs (_: p: p.searchEngines != { })
         |> mapAttrs' mkSearchEnginesActivation
       )
+      // {
+        # We also run this when the list is empty to remove previously managed
+        # scriptlets and filter rules.
+        setBraveScriptlets =
+          lib.hm.dag.entryAfter
+            (
+              [ "writeBoundary" ]
+              ++ mapAttrsToList (name: _: "setBravePreferences-${name}") (
+                filterAttrs (_: p: profilePreferences p != { }) cfg.profiles
+              )
+              ++ mapAttrsToList (name: _: "setBraveSearchEngines-${name}") (
+                filterAttrs (_: p: p.searchEngines != { }) cfg.profiles
+              )
+            )
+            (
+              pkgs.callPackage ./set-scriptlets.nix {
+                inherit (cfg) scriptlets;
+                profiles = attrNames cfg.profiles;
+                dataDir = braveDataDir;
+                hashFile = "${config.xdg.cacheHome}/home-manager/brave-scriptlets.hash";
+                inherit isDarwin;
+              }
+            );
+      }
       // optionalAttrs (isDarwin && needsWrapping) {
         codesignBraveAppBundle = lib.hm.dag.entryAfter [ "copyApps" ] (
           let
