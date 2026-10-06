@@ -25,7 +25,7 @@ in
         }
       ];
 
-      settings.url."git@${sshHostname}:project-snowstorm/".insteadOf = [
+      settings.url."ssh://git@${sshHostname}/project-snowstorm/".insteadOf = [
         "git@github.com:project-snowstorm/"
         "ssh://git@github.com/project-snowstorm/"
       ];
