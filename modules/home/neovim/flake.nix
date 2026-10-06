@@ -15,6 +15,11 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Remove once nixpkgs' Zig 0.16 is fixed (ghostty-org/ghostty#14489).
+    zig-overlay = {
+      url = "github:mitchellh/zig-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Plugins.
     blink-cmp = {

@@ -68,10 +68,33 @@ let
     rev = ghosttyMetadata.rev;
   };
 
-  ghostty-vt = pkgs.callPackage "${ghosttySrc}/nix/libghostty-vt.nix" {
-    revision = ghosttyMetadata.rev;
-    optimize = "ReleaseFast";
-  };
+  ghostty-vt =
+    (pkgs.callPackage "${ghosttySrc}/nix/libghostty-vt.nix" {
+      revision = ghosttyMetadata.rev;
+      optimize = "ReleaseFast";
+      # nixpkgs' Zig 0.16 emits malformed compiler_rt.o section symbols on Linux.
+      # Use upstream binaries to keep libghostty-vt statically linked.
+      # https://github.com/ghostty-org/ghostty/pull/14489
+      zig_0_16 =
+        if pkgs.stdenv.hostPlatform.isLinux then
+          inputs.zig-overlay.packages.${pkgs.stdenv.hostPlatform.system}."0.16.0".overrideAttrs
+            (_: {
+              dontFixup = false;
+              dontStrip = true;
+              setupHook = "${pkgs.path}/pkgs/development/compilers/zig/setup-hook.sh";
+              env = pkgs.zig_0_16.env;
+            })
+        else
+          pkgs.zig_0_16;
+    }).overrideAttrs
+      (oa: {
+        # Zig's automatic libc detection selects musl; this build uses glibc.
+        zigBuildFlags =
+          oa.zigBuildFlags
+          ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            "-Dtarget=${pkgs.stdenv.hostPlatform.system}-gnu"
+          ];
+      });
 in
 (import "${overlayPackages}/neovim.nix" {
   inherit (inputs) neovim-src;
