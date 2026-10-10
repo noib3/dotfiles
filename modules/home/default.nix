@@ -139,7 +139,8 @@ in
       ''
       + lib.optionalString isDarwin ''
         if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
-          export XDG_RUNTIME_DIR="''${TMPDIR:-/tmp}"
+          export XDG_RUNTIME_DIR="${config.xdg.stateHome}/run"
+          install -d -m 700 "$XDG_RUNTIME_DIR"
         fi
       ''
       + ''
@@ -167,7 +168,6 @@ in
     kubectl.enable = true;
     lazygit.enable = true;
     lf.enable = true;
-    lima.enable = isDarwin && config.machines.current.name != "skunk@macos";
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;
     macosDefaults.enable = isDarwin;
