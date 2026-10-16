@@ -29,6 +29,8 @@ in
 
     xdg.configFile."claude/settings.json" = {
       text = builtins.toJSON {
+        modelSettings."claude-opus-5-5".effortLevel = "high";
+        tui = "default";
         enabledPlugins = {
           "rust-analyzer-lsp@claude-plugins-official" = true;
         };
@@ -37,15 +39,11 @@ in
           ANTHROPIC_AUTH_TOKEN = config.modules.cli-proxy-api.apiKey;
         };
         permissions = {
+          defaultMode = "acceptEdits";
           allow = [
             "Bash"
             "WebFetch"
             "WebSearch"
-          ];
-          ask = [
-            "Edit"
-            "NotebookEdit"
-            "Write"
           ];
         };
       };
