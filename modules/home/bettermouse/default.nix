@@ -178,10 +178,13 @@ in
     launchd.agents.bettermouse = {
       enable = true;
       config = {
+        # Launch the copy made by home-manager instead of the one in the store.
+        # macOS protects launched app bundles from modification, which would
+        # make the store path impossible to garbage-collect.
         ProgramArguments = [
           "/usr/bin/open"
           "-g"
-          "${package}/Applications/BetterMouse.app"
+          "${config.home.homeDirectory}/${config.targets.darwin.copyApps.directory}/BetterMouse.app"
         ];
         RunAtLoad = true;
       };

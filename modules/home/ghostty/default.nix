@@ -73,9 +73,12 @@ in
     modules.terminals.ghostty = {
       enabled = true;
       inherit package;
+      # On macOS, launch the copy made by home-manager instead of the one in the
+      # store. macOS protects launched app bundles from modification, which
+      # would make the store path impossible to garbage-collect.
       launchCommand =
         if isDarwin then
-          "/usr/bin/open -na ${lib.escapeShellArg "${package}/Applications/Ghostty.app"} --args --working-directory=${config.home.homeDirectory}"
+          "/usr/bin/open -na ${lib.escapeShellArg "${config.home.homeDirectory}/${config.targets.darwin.copyApps.directory}/Ghostty.app"} --args --working-directory=${config.home.homeDirectory}"
         else
           "${lib.getExe package} --working-directory=${config.home.homeDirectory}";
     };
