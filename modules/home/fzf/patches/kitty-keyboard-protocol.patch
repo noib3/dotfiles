@@ -198,3 +198,29 @@ Enables Kitty keyboard protocol mode while fzf is active.
  	assertEscSequence("\x1b[1;9H", "alt-home")
  	assertEscSequence("\x1b[1;9F", "alt-end")
  	assertEscSequence("\x1b[3;9~", "alt-delete")
+--- a/src/tui/light_csi_test.go	2026-10-24 15:59:31
++++ b/src/tui/light_csi_test.go	2026-10-24 15:59:31
+@@ -12,14 +12,8 @@
+ 		size     int
+ 	}{
+ 		// Key encodings fzf does not implement
+-		{"\x1b[97;5u", Invalid, 7},
+-		{"\x1b[70;5u", Invalid, 7}, // not Home, which its prefix \e[7 matches
+-		{"\x1b[42;5u", Invalid, 7}, // nor End
+ 		{"\x1b[4;5~", Invalid, 6},
+-		{"\x1b[127;5u", Invalid, 8},
+ 		{"\x1b[27;5;127~", Invalid, 11},
+-		{"\x1b[57441;1u", Invalid, 10},
+-		{"\x1b\x1b[97;5u", Invalid, 7}, // ALT prefixed, the first ESC is dropped
+ 
+ 		// Replies to queries fzf did not send, or sent and stopped waiting for
+ 		{"\x1b[?1;2c", Invalid, 7},
+@@ -66,8 +60,6 @@
+ 
+ 		// A parse that gives up past the frame consumes only the frame, so the
+ 		// typed ~ after these stays in the buffer
+-		{"\x1b[3;1u~", Invalid, 6},
+-		{"\x1b[5;1u~", Invalid, 6},
+ 		{"\x1b[2$~", Invalid, 4}, // rxvt SHIFT-INSERT
+ 		{"\x1b[2^~", Invalid, 4}, // rxvt CTRL-INSERT
+ 		{"\x1b[2A~", Invalid, 4},
