@@ -295,6 +295,9 @@ in
       features = {
         enabled = [
           "BraveEnableAutoTranslate"
+          # TODO: remove once Brave is based on Chromium 157+, where it's
+          # enabled by default.
+          "CheckAutoCommitInCommitAndRollback"
           "ExtensionsManifestV2"
         ];
         disabled = [ "GlobalMediaControls" ];
@@ -429,7 +432,10 @@ in
       }) cfg.extensions;
     };
 
-    modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies;
+    modules.macOSPreferences.apps."com.brave.Browser".forced = cfg.policies // {
+      SUAutomaticallyUpdate = false;
+      SUEnableAutomaticChecks = false;
+    };
 
     # Brave imports this file when it creates the first profile. The filename is
     # hard-coded by Chromium on macOS.
