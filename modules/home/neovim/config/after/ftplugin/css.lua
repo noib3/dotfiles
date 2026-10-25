@@ -1,2 +1,3 @@
-vim.opt_local.formatoptions:remove({ "r", "o" })
-vim.opt_local.shiftwidth = 2
+vim.opt_local.formatoptions:remove("r")
+vim.opt_local.formatoptions:remove("o")
+vim.bo.shiftwidth = 2

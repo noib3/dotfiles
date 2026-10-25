@@ -3,12 +3,15 @@ vim.g.rustaceanvim = { server = { auto_attach = false } }
 local neotest = require("neotest")
 local palette = require("palette")
 
----@diagnostic disable-next-line: undefined-field
+-- neotest annotates setup() with its resolved config, where every field is
+-- required.
+---@diagnostic disable-next-line: missing-fields, param-type-mismatch
 neotest.setup({
   adapters = {
     require("rustaceanvim.neotest"),
   },
   status = {
+    enabled = true,
     signs = false,
     virtual_text = true,
   },

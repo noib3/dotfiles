@@ -1,11 +1,12 @@
 local M = {}
 
 local initial_buf = vim.api.nvim_get_current_buf()
+---@type integer?
 local base_buf
 
 ---Records the terminal created from Neovim's initial buffer as the session's
 ---base terminal.
----@param buf number
+---@param buf integer
 M.register_base = function(buf)
   if base_buf or buf ~= initial_buf then return end
   if not vim.api.nvim_buf_is_valid(buf) then return end
@@ -15,7 +16,7 @@ M.register_base = function(buf)
 end
 
 ---Returns the session's base terminal if it still exists.
----@return number?
+---@return integer?
 M.get_base = function()
   if
     type(base_buf) ~= "number"
@@ -32,6 +33,8 @@ M.reveal_base_if_idle = function()
   local base = M.get_base()
   if not base then return end
 
+  -- `Iter:any()` has no return annotation, and EmmyLua infers `false`.
+  ---@type boolean
   local has_other_listed_buffer = vim
     .iter(vim.fn.getbufinfo({ buflisted = 1 }))
     :any(function(info) return info.bufnr ~= base end)

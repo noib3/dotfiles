@@ -1,10 +1,8 @@
 local conform = require("conform")
 
-local methods = vim.lsp.protocol.Methods
-
 local handlers = {}
 
-handlers[methods.initialize] = function(_, callback)
+handlers.initialize = function(_, callback)
   callback(nil, {
     capabilities = {
       documentFormattingProvider = true,
@@ -12,11 +10,14 @@ handlers[methods.initialize] = function(_, callback)
   })
 end
 
-handlers[methods.shutdown] = function(_, callback) callback(nil, nil) end
+handlers.shutdown = function(_, callback) callback(nil, nil) end
 
-handlers[methods.textDocument_formatting] = function(params, callback)
+handlers["textDocument/formatting"] = function(params, callback)
   local uri = params and params.textDocument and params.textDocument.uri
   local bufnr = uri and vim.uri_to_bufnr(uri) or vim.api.nvim_get_current_buf()
+  -- conform writes its literal types as `'"never"'`, which EmmyLua reads as a
+  -- string containing the quotes.
+  ---@diagnostic disable-next-line: param-type-mismatch
   conform.format({
     bufnr = bufnr,
     lsp_format = "never",
@@ -46,6 +47,9 @@ return {
   cmd = function()
     local next_request_id = 0
 
+    -- `cmd` is typed as returning a full `vim.lsp.rpc.Client`, but Neovim only
+    -- calls these four methods.
+    ---@diagnostic disable-next-line: return-type-mismatch
     return {
       request = function(method, params, callback, notify_reply_callback)
         local request_id = next_request_id

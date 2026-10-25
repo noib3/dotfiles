@@ -11,8 +11,6 @@
 -- one instance per project root and tearing it down when all buffers in that
 -- project are closed.
 
-local methods = vim.lsp.protocol.Methods
-
 --- Returns whether the given directory contains a `meson.build` whose first
 --- non-comment, non-empty line starts with `project(`.
 ---@param dir_path string
@@ -72,6 +70,7 @@ local start_watcher = function(root_dir)
   local reconfigure_in_flight = false
   local reconfigure_queued = false
 
+  ---@type fun()
   local reconfigure
   reconfigure = function()
     if reconfigure_in_flight then
@@ -191,11 +190,11 @@ return {
 
     local handlers = {}
 
-    handlers[methods.initialize] = function(_, callback)
+    handlers.initialize = function(_, callback)
       callback(nil, { capabilities = {} })
     end
 
-    handlers[methods.shutdown] = function(_, callback)
+    handlers.shutdown = function(_, callback)
       stop_watcher()
       callback(nil, nil)
     end

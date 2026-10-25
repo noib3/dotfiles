@@ -1,7 +1,11 @@
 local utils = require("utils")
 
-local default_underline_handler = vim.diagnostic.handlers.underline
-local default_virtual_text_handler = vim.diagnostic.handlers.virtual_text
+local default_underline_show = assert(vim.diagnostic.handlers.underline.show)
+local default_underline_hide = assert(vim.diagnostic.handlers.underline.hide)
+local default_virtual_text_show =
+  assert(vim.diagnostic.handlers.virtual_text.show)
+local default_virtual_text_hide =
+  assert(vim.diagnostic.handlers.virtual_text.hide)
 
 --- Returns whether the diagnostic is about inactive code.
 ---@param diagnostic vim.Diagnostic
@@ -68,15 +72,13 @@ M.handlers.underline = {
       if diagnostic._tags then diagnostic._tags.unnecessary = nil end
     end
 
-    default_underline_handler.show(namespace, bufnr, rest, opts)
+    default_underline_show(namespace, bufnr, rest, opts)
 
     for _, d in ipairs(inactives) do
       fade_out(namespace, bufnr, d.lnum, d.col, d.end_lnum, d.end_col)
     end
   end,
-  hide = function(namespace, bufnr)
-    default_underline_handler.hide(namespace, bufnr)
-  end,
+  hide = function(namespace, bufnr) default_underline_hide(namespace, bufnr) end,
 }
 
 M.handlers.virtual_text = {
@@ -94,20 +96,13 @@ M.handlers.virtual_text = {
       orig_messages[idx] = diagnostic.message
       diagnostic.message = diagnostic.message:match("^[^\n]*")
     end
-    default_virtual_text_handler.show(
-      namespace,
-      bufnr,
-      active_diagnostics,
-      opts
-    )
+    default_virtual_text_show(namespace, bufnr, active_diagnostics, opts)
 
     for idx, diagnostic in ipairs(active_diagnostics) do
       diagnostic.message = orig_messages[idx]
     end
   end,
-  hide = function(namespace, bufnr)
-    default_virtual_text_handler.hide(namespace, bufnr)
-  end,
+  hide = function(namespace, bufnr) default_virtual_text_hide(namespace, bufnr) end,
 }
 
 return M

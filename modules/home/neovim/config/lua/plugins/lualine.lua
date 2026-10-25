@@ -26,7 +26,8 @@ local current_diagnostics = function()
     :fold({}, function(acc, client)
       acc[vim.lsp.diagnostic.get_namespace(client.id)] = true
       client:_provider_foreach("textDocument/diagnostic", function(cap)
-        local identifier = type(cap) == "table" and cap.identifier or "nil"
+        local identifier = type(cap) == "table" and cap.identifier
+        if type(identifier) ~= "string" then identifier = "nil" end
         acc[vim.lsp.diagnostic.get_namespace(client.id, true, identifier)] =
           true
       end)
@@ -59,6 +60,9 @@ local current_diagnostics = function()
   }
 end
 
+-- lualine assigns its module table at the end of the file, after EmmyLua has
+-- already typed it as empty.
+---@diagnostic disable-next-line: undefined-field
 lualine.setup({
   options = {
     component_separators = "",
@@ -110,10 +114,8 @@ lualine.setup({
     lualine_c = {
       {
         function()
-          return string.rep(
-            vim.opt.fillchars:get().horiz or "─",
-            vim.o.columns
-          )
+          local fillchars = vim.opt.fillchars:get() --[[@as table<string, string>]]
+          return string.rep(fillchars.horiz or "─", vim.o.columns)
         end,
         color = "WinSeparator",
         cond = all_splits_are_terminals,
@@ -136,8 +138,7 @@ lualine.setup({
         "branch",
         cond = not_all_splits_are_terminals,
         color = {
-          ---@diagnostic disable-next-line: undefined-field
-          fg = vim.opt.background:get() == "dark" and "#928374" or "#7c6f64",
+          fg = vim.o.background == "dark" and "#928374" or "#7c6f64",
         },
       },
     },
@@ -151,6 +152,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "TermOpen", "WinClosed", "WinNew" }, {
   desc = "Renders terminal-only statuslines as split separators",
   callback = vim.schedule_wrap(function()
     vim.o.laststatus = all_splits_are_terminals() and 0 or 3
+    ---@diagnostic disable-next-line: undefined-field
     lualine.refresh({ place = { "statusline" } })
   end),
 })
@@ -159,6 +161,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "TermOpen", "WinClosed", "WinNew" }, {
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("noib3/lualine", { clear = true }),
   pattern = "LspProgressStatusUpdated",
+  ---@diagnostic disable-next-line: undefined-field
   callback = lualine.refresh --[[@as fun()]],
 })
 
@@ -169,6 +172,7 @@ vim.api.nvim_create_autocmd(
       "noib3/lualine-diagnostics",
       { clear = true }
     ),
+    ---@diagnostic disable-next-line: undefined-field
     callback = lualine.refresh --[[@as fun()]],
   }
 )

@@ -1,5 +1,4 @@
 local keymap = vim.keymap
-local methods = vim.lsp.protocol.Methods
 
 local lsp_group = vim.api.nvim_create_augroup("noib3/lsp", {})
 
@@ -12,16 +11,16 @@ local on_attach = function(client, bufnr)
   -- opt out of LSP-enabled formatting, but that doesn't work for dynamically
   -- set capabilities. See https://github.com/neovim/neovim/issues/31430 for
   -- more infos.
-  vim.keymap.set({ "n", "v" }, "gq", "gw", { buffer = bufnr })
-  vim.keymap.set({ "n", "v" }, "gqq", "gww", { buffer = bufnr })
+  keymap.set({ "n", "v" }, "gq", "gw", { buffer = bufnr })
+  keymap.set({ "n", "v" }, "gqq", "gww", { buffer = bufnr })
 
   -- Display infos about the symbol under the cursor in a floating window.
-  if client:supports_method(methods.textDocument_hover) then
+  if client:supports_method("textDocument/hover") then
     keymap.set("n", "K", vim.lsp.buf.hover, opts)
   end
 
   -- Rename the symbol under the cursor.
-  if client:supports_method(methods.textDocument_rename) then
+  if client:supports_method("textDocument/rename") then
     local inc_rename = function()
       return ":IncRename " .. vim.fn.expand("<cword>")
     end
@@ -29,24 +28,24 @@ local on_attach = function(client, bufnr)
   end
 
   -- Selects a code action available at the current cursor position.
-  if client:supports_method(methods.textDocument_codeAction) then
+  if client:supports_method("textDocument/codeAction") then
     keymap.set("n", "A", vim.lsp.buf.code_action, opts)
   end
 
   -- Jumps to the definition of the symbol under the cursor.
-  if client:supports_method(methods.textDocument_definition) then
+  if client:supports_method("textDocument/definition") then
     keymap.set("n", "gd", vim.lsp.buf.definition, opts)
   end
 
   -- Jumps to the definition of the type of the symbol under the cursor.
-  if client:supports_method(methods.textDocument_typeDefinition) then
+  if client:supports_method("textDocument/typeDefinition") then
     keymap.set("n", "gtd", vim.lsp.buf.type_definition, opts)
   end
 end
 
 local on_detach = function(client, bufnr)
   -- Remove the autocommand that formats the buffer on save.
-  if client:supports_method(methods.textDocument_formatting) then
+  if client:supports_method("textDocument/formatting") then
     vim.api.nvim_clear_autocmds({
       event = "BufWritePre",
       group = lsp_group,
@@ -75,7 +74,7 @@ vim.api.nvim_create_autocmd("LspDetach", {
 
 vim.lsp.enable("bashls")
 vim.lsp.enable("clangd")
-vim.lsp.enable("lua_ls")
+vim.lsp.enable("emmylua_ls")
 vim.lsp.enable("luacheck")
 vim.lsp.enable("marksman")
 vim.lsp.enable("meson_watcher")

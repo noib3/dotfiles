@@ -31,14 +31,18 @@ local close = function()
   local base_terminal = terminal.get_base()
 
   if current_buf == base_terminal and #other_listed_bufs > 0 then
-    local switch_buf = vim
-      .iter(other_listed_bufs)
-      :fold(nil, function(most_recent, buf)
-        if not most_recent then return buf end
-        local lastused = vim.fn.getbufinfo(buf)[1].lastused
-        local most_recent_lastused = vim.fn.getbufinfo(most_recent)[1].lastused
-        return lastused > most_recent_lastused and buf or most_recent
-      end)
+    ---@param buf integer
+    ---@return integer
+    local lastused = function(buf)
+      return assert(vim.fn.getbufinfo(buf)[1]).lastused
+    end
+
+    local switch_buf = vim.iter(other_listed_bufs):fold(
+      other_listed_bufs[1],
+      function(most_recent, buf)
+        return lastused(buf) > lastused(most_recent) and buf or most_recent
+      end
+    )
 
     vim.bo[current_buf].buflisted = false
     for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -274,8 +278,6 @@ local fzf_files = function(search_root)
   fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
     actions = {
       default = function(selected_paths)
-        if #selected_paths == 0 then return end
-
         local qf_entries = {}
 
         for _, path in ipairs(selected_paths) do
@@ -285,6 +287,7 @@ local fzf_files = function(search_root)
         end
 
         local first = qf_entries[1]
+        if not first then return end
         vim.cmd(("edit %s"):format(first.filename))
 
         if #qf_entries > 1 then locations.open_trouble_qf(qf_entries) end
@@ -329,24 +332,28 @@ local fzf_live_ripgrep = function(search_root)
     )
   end
 
+  -- fzf-lua annotates fzf_live()'s options with its resolved config, where every
+  -- field is required.
+  ---@diagnostic disable-next-line: missing-fields, param-type-mismatch
   fzf_lua.fzf_live(query, {
     actions = {
       default = function(selected_paths)
-        if #selected_paths == 0 then return end
-
         local regex = "^([^:]*):([^:]*):([^:]*):.*$"
         local qf_entries = {}
 
         for _, item in ipairs(selected_paths) do
           local path, line, col = item:match(regex)
-          table.insert(qf_entries, {
-            filename = vim.fs.joinpath(search_root, path),
-            lnum = tonumber(line),
-            col = tonumber(col),
-          })
+          if path then
+            table.insert(qf_entries, {
+              filename = vim.fs.joinpath(search_root, path),
+              lnum = tonumber(line),
+              col = tonumber(col),
+            })
+          end
         end
 
         local first = qf_entries[1]
+        if not first then return end
         vim.cmd(("edit %s"):format(first.filename))
         vim.fn.cursor(first.lnum, first.col)
 

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/0.25.1/crates/emmylua_code_analysis/resources/schema.json",
+  "diagnostics": {
+    "disable": [
+      "preferred-local-alias",
+      "redefined-local"
+    ],
+    "globals": [
+      "vim"
+    ]
+  },
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "ignoreDir": [
+      ".git"
+    ],
+    "library": [
+      "$VIMRUNTIME/lua",
+      {
+        "path": "$NVIM_PLUGINS_LUA",
+        "ignoreGlobs": [
+          "**/plenary/busted.lua"
+        ]
+      }
+    ],
+    "workspaceRoots": [
+      "./lua"
+    ]
+  }
+}

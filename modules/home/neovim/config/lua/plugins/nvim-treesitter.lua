@@ -1,3 +1,6 @@
+-- treesitter-modules returns its module through `setmetatable()`, which EmmyLua
+-- types as the metatable.
+---@diagnostic disable-next-line: undefined-field
 require("treesitter-modules").setup({
   highlight = { enable = true },
   indent = { enable = true },
@@ -11,6 +14,8 @@ require("treesitter-modules").setup({
   },
 })
 
+---@param buf integer
+---@return string
 local get_language = function(buf)
   local filetype = vim.bo[buf].filetype
   return vim.treesitter.language.get_lang(filetype) or filetype
@@ -25,7 +30,7 @@ vim.keymap.set({ "n", "x" }, "<Tab>", function()
 
   if vim.api.nvim_get_mode().mode == "n" or not initial_cursor then
     initial_cursor = vim.api.nvim_win_get_cursor(0)
-    ---@diagnostic disable-next-line: invisible
+    ---@diagnostic disable-next-line: access-invisible
     selection.nodes:clear(buf)
     selection.init_selection(buf, lang)
   else

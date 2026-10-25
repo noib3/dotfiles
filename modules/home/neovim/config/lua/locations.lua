@@ -34,8 +34,8 @@ local parse_cli_file = function(argument)
   return {
     argument_filename = literal_filename,
     filename = filename,
-    lnum = tonumber(line),
-    col = tonumber(col),
+    lnum = tonumber(line) --[[@as integer]],
+    col = tonumber(col) --[[@as integer]],
   }
 end
 
@@ -44,6 +44,8 @@ end
 --- those references.
 ---@param locations locations.Location[]
 local resolve_arglist = function(locations)
+  -- `Iter:any()` has no return annotation, and EmmyLua infers `false`.
+  ---@type boolean
   local has_references = vim.iter(locations):any(
     function(location) return location.argument_filename ~= location.filename end
   )
@@ -94,6 +96,9 @@ M.open_trouble_qf = function(qf_entries)
 
   local win = vim.api.nvim_get_current_win()
   vim.fn.setqflist(qf_entries, "r")
+  -- trouble's module is a metatable that forwards to `trouble.api`, which
+  -- EmmyLua can't see through.
+  ---@diagnostic disable-next-line: undefined-field
   trouble.open({
     mode = "quickfix",
     new = false,

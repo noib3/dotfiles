@@ -1,9 +1,7 @@
-local methods = vim.lsp.protocol.Methods
-
 local M = {}
 
 ---@class BufferSaveOptions
----@field bufnr? number Buffer number to save (defaults to current buffer)
+---@field bufnr? integer Buffer number to save (defaults to current buffer)
 
 local check_modified_augroup_id = vim.api.nvim_create_augroup(
   "noib3/check_if_buffer_was_modified_since_formatting_request",
@@ -28,7 +26,7 @@ M.save = function(opts)
   })
 
   for _, client in ipairs(clients) do
-    if client:supports_method(methods.textDocument_formatting) then
+    if client:supports_method("textDocument/formatting") then
       formatting_client = client
       break
     end

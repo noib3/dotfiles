@@ -9,8 +9,6 @@
 -- normal buffer lifecycle from interfering with our "all files open" state, and
 -- we watch `compile_commands.json` to keep the file set in sync.
 
-local methods = vim.lsp.protocol.Methods
-
 ---@param config vim.lsp.ClientConfig
 ---@return boolean
 local workspace_diagnostics_enabled = function(config)
@@ -129,12 +127,12 @@ local notify_handlers = {}
 --- `didOpen` (which would be a protocol violation) and send `didChange` instead
 --- to sync clangd with the buffer contents. We also restore any cached
 --- diagnostics since clangd won't re-send them if the content matches.
-notify_handlers[methods.textDocument_didOpen] = function(state, client, params)
+notify_handlers["textDocument/didOpen"] = function(state, client, params)
   local path = vim.uri_to_fname(params.textDocument.uri)
   if not state.workspace_files[path] then return end
 
   state.workspace_files[path] = state.workspace_files[path] + 1
-  state.original_notify(client, methods.textDocument_didChange, {
+  state.original_notify(client, "textDocument/didChange", {
     textDocument = {
       uri = params.textDocument.uri,
       version = state.workspace_files[path],
@@ -156,7 +154,7 @@ end
 --- "open" in clangd. If the buffer had unsaved changes we send `didChange` with
 --- the on-disk contents to revert clangd's view. We also cache and restore
 --- diagnostics since Neovim's `_on_detach` clears them.
-notify_handlers[methods.textDocument_didClose] = function(state, client, params)
+notify_handlers["textDocument/didClose"] = function(state, client, params)
   local path = vim.uri_to_fname(params.textDocument.uri)
   if not state.workspace_files[path] then return end
 
@@ -167,7 +165,7 @@ notify_handlers[methods.textDocument_didClose] = function(state, client, params)
     local text = read_file(path)
     if text then
       state.workspace_files[path] = state.workspace_files[path] + 1
-      state.original_notify(client, methods.textDocument_didChange, {
+      state.original_notify(client, "textDocument/didChange", {
         textDocument = {
           uri = params.textDocument.uri,
           version = state.workspace_files[path],
@@ -193,10 +191,9 @@ end
 ---@param client vim.lsp.Client
 ---@param state table
 local install_progress_handler = function(client, state)
-  local default_handler =
-    vim.lsp.handlers[methods.textDocument_publishDiagnostics]
+  local default_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
 
-  client.handlers[methods.textDocument_publishDiagnostics] = function(
+  client.handlers["textDocument/publishDiagnostics"] = function(
     err,
     result,
     ctx,
@@ -252,7 +249,7 @@ local new_progress_reporter = function(client)
       value.title = "Opening workspace files"
       client.progress.pending[token] = value.title
     else
-      value.title = client.progress.pending[token]
+      value.title = client.progress.pending[token] --[[@as string]]
       if kind == "end" then client.progress.pending[token] = nil end
     end
     client.progress:push({ token = token, value = value })
@@ -279,7 +276,7 @@ local sync_workspace_files = function(client, state, cc_path)
   -- Close files no longer in the compilation database.
   for path in pairs(state.workspace_files) do
     if not new_files[path] then
-      original_notify(client, methods.textDocument_didClose, {
+      original_notify(client, "textDocument/didClose", {
         textDocument = { uri = vim.uri_from_fname(path) },
       })
       state.workspace_files[path] = nil
@@ -293,7 +290,7 @@ local sync_workspace_files = function(client, state, cc_path)
       local text = read_file(path)
       if text then
         state.workspace_files[path] = 0
-        original_notify(client, methods.textDocument_didOpen, {
+        original_notify(client, "textDocument/didOpen", {
           textDocument = {
             uri = vim.uri_from_fname(path),
             languageId = get_language_id(path),

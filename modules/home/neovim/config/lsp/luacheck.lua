@@ -1,6 +1,6 @@
-local luacheck = require("lint").linters.luacheck
-
-local methods = vim.lsp.protocol.Methods
+-- nvim-lint lets linters be functions returning a `lint.Linter`, but luacheck's
+-- is a table.
+local luacheck = require("lint").linters.luacheck --[[@as lint.Linter]]
 
 --- Converts a list of `vim.Diagnostic`s into LSP-formatted diagnostics.
 ---@param diagnostics vim.Diagnostic[]
@@ -69,7 +69,9 @@ local run_luacheck = function(bufnr, cwd, callback)
         return
       end
 
-      local diagnostics = luacheck.parser(result.stdout or "", bufnr, "")
+      -- luacheck's parser is a function rather than a `lint.Parser` table.
+      local parse = luacheck.parser --[[@as lint.parse]]
+      local diagnostics = parse(result.stdout or "", bufnr, "")
       callback(to_lsp_diagnostics(diagnostics))
     end)
   )
@@ -77,7 +79,7 @@ end
 
 local handlers = {}
 
-handlers[methods.initialize] = function(_, callback)
+handlers.initialize = function(_, callback)
   callback(nil, {
     capabilities = {
       diagnosticProvider = {
@@ -94,7 +96,7 @@ handlers[methods.initialize] = function(_, callback)
   })
 end
 
-handlers[methods.shutdown] = function(_, callback) callback(nil, nil) end
+handlers.shutdown = function(_, callback) callback(nil, nil) end
 
 ---@type vim.lsp.Config
 return {
@@ -112,7 +114,7 @@ return {
     local root_dir = assert(config.root_dir)
 
     local handlers = vim.tbl_extend("force", handlers, {
-      [methods.textDocument_diagnostic] = function(params, callback)
+      ["textDocument/diagnostic"] = function(params, callback)
         local uri = params and params.textDocument and params.textDocument.uri
 
         if not uri then

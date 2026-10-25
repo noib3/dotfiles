@@ -11,7 +11,9 @@ package.loaded["blink.cmp.lib.async"] = (function()
   return task
 end)()
 
----@type blink.cmp.Config
+-- blink's keymap type mixes named fields with a `[string]` index, which
+-- EmmyLua checks `preset` against.
+---@diagnostic disable-next-line: param-type-mismatch
 blink.setup({
   keymap = {
     preset = "none",

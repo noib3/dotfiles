@@ -9,6 +9,9 @@ vim.api.nvim_create_user_command("Qall", function()
     return
   end
 
+  -- trouble's module is a metatable that forwards to `trouble.api`, which
+  -- EmmyLua can't see through.
+  ---@diagnostic disable-next-line: undefined-field
   while trouble.close() do
   end
 

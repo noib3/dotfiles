@@ -83,7 +83,7 @@ in
       ++ [ actionlint ]
       # Lua.
       ++ [
-        lua-language-server
+        emmylua-ls
         stylua
       ]
       # Markdown.

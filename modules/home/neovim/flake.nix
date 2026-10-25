@@ -241,16 +241,16 @@
         default =
           pkgs.runCommand "check-config"
             {
-              env.NVIM_PLUGINS = self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS;
+              env.NVIM_PLUGINS_LUA =
+                self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS_LUA;
               env.VIMRUNTIME = "${
                 self.packages.${pkgs.stdenv.system}.default.neovim
               }/share/nvim/runtime";
             }
             ''
-              ${pkgs.lib.getExe pkgs.lua-language-server} \
-                --check ${./config} \
-                --logpath="$TMPDIR" \
-                --metapath="$TMPDIR/meta" \
+              ${pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check"} \
+                --warnings-as-errors \
+                ${./config} \
                 2>&1 | tee "$out"
             '';
       });

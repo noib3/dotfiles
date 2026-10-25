@@ -149,22 +149,32 @@ let
   ++ treeSitterQueries
   ++ [ (writeTextDir "lua/palette.lua" "return ${toLua paletteData}") ];
 
-  # A directory containing one symlink per plugin, used by lua-language-server
-  # to resolve plugin type definitions.
-  pluginsDir = linkFarm "nvim-plugins" (
-    builtins.map (plugin: {
-      name = builtins.baseNameOf (builtins.unsafeDiscardStringContext plugin);
-      path = plugin;
-    }) plugins
-  );
-
   env = {
     COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
-    NVIM_PLUGINS = pluginsDir;
-    XDG_DATA_DIRS = runCommandLocal "nvim-site" { } ''
-      mkdir -p "$out/nvim/site/pack/noib3/start"
-      ln -s ${pluginsDir}/* "$out/nvim/site/pack/noib3/start/"
+    # The plugins' `lua` directories merged into a single tree, used by EmmyLua
+    # to resolve plugin type definitions. EmmyLua names modules by their path
+    # relative to a library root, so the root has to be where `require()`
+    # starts looking.
+    NVIM_PLUGINS_LUA = runCommandLocal "nvim-plugins-lua" { } ''
+      mkdir -p "$out"
+      for plugin in ${lib.escapeShellArgs plugins}; do
+        if [ -d "$plugin/lua" ]; then
+          cp -rs --no-preserve=mode "$plugin/lua/." "$out/"
+        fi
+      done
     '';
+    XDG_DATA_DIRS = linkFarm "nvim-site" (
+      builtins.map (
+        plugin:
+        let
+          name = builtins.baseNameOf (builtins.unsafeDiscardStringContext plugin);
+        in
+        {
+          name = "nvim/site/pack/noib3/start/${name}";
+          path = plugin;
+        }
+      ) plugins
+    );
   }
   // lib.optionalAttrs includeConfig {
     XDG_CONFIG_HOME = runCommandLocal "nvim-config-home" { } ''

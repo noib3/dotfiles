@@ -2,7 +2,7 @@ local locations = require("locations")
 local terminal = require("terminal")
 
 ---@param name string
----@return number
+---@return integer
 local create_augroup = function(name)
   return vim.api.nvim_create_augroup(name, { clear = true })
 end
@@ -49,8 +49,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
   desc = "Disables line numbers and enters insert mode in terminals",
   callback = function(ev)
     terminal.register_base(ev.buf)
-    vim.opt_local.number = false
-    vim.opt_local.relativenumber = false
+    vim.wo[0][0].number = false
+    vim.wo[0][0].relativenumber = false
     if vim.startswith(vim.api.nvim_buf_get_name(0), "term://") then
       vim.cmd("startinsert")
     end
@@ -103,7 +103,7 @@ vim.api.nvim_create_autocmd("TermClose", {
   end,
 })
 
-local local_hostname = assert(vim.uv.os_gethostname()):lower()
+local local_hostname = vim.uv.os_gethostname():lower()
 
 ---@param sequence string
 ---@return string?
@@ -123,7 +123,7 @@ local osc7_directory = function(sequence)
   local ok, directory = pcall(vim.uri_to_fname, "file://" .. encoded_path)
   if not ok then return end
 
-  return vim.uv.fs_realpath(directory)
+  return (vim.uv.fs_realpath(directory))
 end
 
 vim.api.nvim_create_autocmd("TermRequest", {

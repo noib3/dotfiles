@@ -1,2 +1,2 @@
-vim.opt.termguicolors = true
+vim.o.termguicolors = true
 require("colorizer").setup({ "*" }, { names = false })

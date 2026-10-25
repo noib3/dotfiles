@@ -1,1 +1,1 @@
-vim.opt_local.textwidth = 0
+vim.bo.textwidth = 0

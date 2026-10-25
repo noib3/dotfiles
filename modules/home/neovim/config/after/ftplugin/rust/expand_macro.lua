@@ -147,13 +147,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     -- Prevent wrapping the same client multiple times if it attaches to
     -- multiple buffers.
+    ---@diagnostic disable-next-line: undefined-field
     if client._expand_macro_wrapped then return end
     ---@diagnostic disable-next-line: inject-field
     client._expand_macro_wrapped = true
 
     local orig_request = client.request
 
-    client.request = function(self, method, params, handler, bufnr_arg)
+    function client:request(method, params, handler, bufnr_arg)
+      ---@cast self vim.lsp.Client
       if method == "textDocument/codeAction" and handler then
         if cursor_is_on_macro_invocation() then
           local orig_handler = handler
