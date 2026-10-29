@@ -31,7 +31,14 @@ in
       text = builtins.toJSON {
         modelSettings."claude-opus-5-5".effortLevel = "high";
         tui = "default";
+        extraKnownMarketplaces = {
+          cloudflare.source = {
+            source = "github";
+            repo = "cloudflare/skills";
+          };
+        };
         enabledPlugins = {
+          "cloudflare@cloudflare" = true;
           "rust-analyzer-lsp@claude-plugins-official" = true;
         };
         env = lib.optionalAttrs config.modules.cli-proxy-api.enable {
@@ -42,6 +49,8 @@ in
           defaultMode = "acceptEdits";
           allow = [
             "Bash"
+            "Edit"
+            "Read"
             "WebFetch"
             "WebSearch"
           ];
