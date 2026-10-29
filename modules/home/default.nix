@@ -35,6 +35,7 @@ in
     packages =
       with pkgs;
       [
+        cf
         delta
         dua
         gh
