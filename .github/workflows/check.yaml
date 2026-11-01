@@ -26,6 +26,9 @@ jobs:
   neovim-config:
     name: Neovim config
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - name: Install Nix
@@ -36,8 +39,6 @@ jobs:
             experimental-features = pipe-operators
       - name: Setup Nix cache
         uses: sub60/setup-cache@main
-        with:
-          auth-token: token
       - name: Check the Neovim config
         run: nix run .#check-neovim-config
 
