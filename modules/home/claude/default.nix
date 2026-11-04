@@ -50,7 +50,9 @@ in
           allow = [
             "Bash"
             "Edit"
+            "Edit(//**)"
             "Read"
+            "Read(//**)"
             "WebFetch"
             "WebSearch"
           ];
