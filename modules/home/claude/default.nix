@@ -41,7 +41,10 @@ in
           "cloudflare@cloudflare" = true;
           "rust-analyzer-lsp@claude-plugins-official" = true;
         };
-        env = lib.optionalAttrs config.modules.cli-proxy-api.enable {
+        env = {
+          CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
+        }
+        // lib.optionalAttrs config.modules.cli-proxy-api.enable {
           ANTHROPIC_BASE_URL = config.modules.cli-proxy-api.endpoint;
           ANTHROPIC_AUTH_TOKEN = config.modules.cli-proxy-api.apiKey;
         };
@@ -56,6 +59,7 @@ in
             "WebFetch"
             "WebSearch"
           ];
+          deny = [ "SendFeedback" ];
         };
       };
     };
