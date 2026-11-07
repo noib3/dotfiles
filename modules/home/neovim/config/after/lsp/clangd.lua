@@ -128,7 +128,7 @@ local notify_handlers = {}
 --- to sync clangd with the buffer contents. We also restore any cached
 --- diagnostics since clangd won't re-send them if the content matches.
 notify_handlers["textDocument/didOpen"] = function(state, client, params)
-  local path = vim.uri_to_fname(params.textDocument.uri)
+  local path = vim.uri.to_fname(params.textDocument.uri)
   if not state.workspace_files[path] then return end
 
   state.workspace_files[path] = state.workspace_files[path] + 1
@@ -142,7 +142,7 @@ notify_handlers["textDocument/didOpen"] = function(state, client, params)
 
   local cached = state.diagnostics_cache[path]
   if cached then
-    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    local bufnr = vim.uri.to_buf(params.textDocument.uri)
     local ns = vim.lsp.diagnostic.get_namespace(client.id)
     vim.schedule(function() vim.diagnostic.set(ns, bufnr, cached) end)
   end
@@ -155,7 +155,7 @@ end
 --- the on-disk contents to revert clangd's view. We also cache and restore
 --- diagnostics since Neovim's `_on_detach` clears them.
 notify_handlers["textDocument/didClose"] = function(state, client, params)
-  local path = vim.uri_to_fname(params.textDocument.uri)
+  local path = vim.uri.to_fname(params.textDocument.uri)
   if not state.workspace_files[path] then return end
 
   local bufnr = vim.fn.bufnr(path)
@@ -205,7 +205,7 @@ local install_progress_handler = function(client, state)
 
     local uri = result and result.uri
     if not uri then return end
-    local path = vim.uri_to_fname(uri)
+    local path = vim.uri.to_fname(uri)
     if not state.workspace_files[path] then return end
 
     state.diagnostics_received = state.diagnostics_received + 1
@@ -277,7 +277,7 @@ local sync_workspace_files = function(client, state, cc_path)
   for path in pairs(state.workspace_files) do
     if not new_files[path] then
       original_notify(client, "textDocument/didClose", {
-        textDocument = { uri = vim.uri_from_fname(path) },
+        textDocument = { uri = vim.uri.from_fname(path) },
       })
       state.workspace_files[path] = nil
     end
@@ -292,7 +292,7 @@ local sync_workspace_files = function(client, state, cc_path)
         state.workspace_files[path] = 0
         original_notify(client, "textDocument/didOpen", {
           textDocument = {
-            uri = vim.uri_from_fname(path),
+            uri = vim.uri.from_fname(path),
             languageId = get_language_id(path),
             version = 0,
             text = text,

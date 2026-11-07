@@ -14,7 +14,7 @@ handlers.shutdown = function(_, callback) callback(nil, nil) end
 
 handlers["textDocument/formatting"] = function(params, callback)
   local uri = params and params.textDocument and params.textDocument.uri
-  local bufnr = uri and vim.uri_to_bufnr(uri) or vim.api.nvim_get_current_buf()
+  local bufnr = uri and vim.uri.to_buf(uri) or vim.api.nvim_get_current_buf()
   -- conform writes its literal types as `'"never"'`, which EmmyLua reads as a
   -- string containing the quotes.
   ---@diagnostic disable-next-line: param-type-mismatch

@@ -44,6 +44,19 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileRenamed", {
+  group = create_augroup("noib3/follow-renamed-files"),
+  desc = "Renames buffers when their file is renamed",
+  nested = true,
+  callback = function(ev)
+    vim.cmd.file({
+      ev.data.new,
+      magic = { file = false },
+      mods = { keepalt = true },
+    })
+  end,
+})
+
 vim.api.nvim_create_autocmd("TermOpen", {
   group = create_augroup("noib3/setup-terminal"),
   desc = "Disables line numbers and enters insert mode in terminals",
@@ -120,7 +133,7 @@ local osc7_directory = function(sequence)
     return
   end
 
-  local ok, directory = pcall(vim.uri_to_fname, "file://" .. encoded_path)
+  local ok, directory = pcall(vim.uri.to_fname, "file://" .. encoded_path)
   if not ok then return end
 
   return (vim.uv.fs_realpath(directory))

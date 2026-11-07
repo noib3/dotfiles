@@ -19,7 +19,7 @@ vim.api.nvim_create_user_command("Qall", function()
     local window = vim
       .iter(vim.api.nvim_tabpage_list_wins(0))
       :find(function(win) return vim.fn.win_gettype(win) == "" end)
-    vim.api.nvim_set_current_win(window)
+    if window then vim.api.nvim_set_current_win(window) end
   end
 
   vim.cmd.only({ bang = true })

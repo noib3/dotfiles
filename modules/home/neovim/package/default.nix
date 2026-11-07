@@ -40,6 +40,7 @@ let
     nix
     rust
     scss
+    sql
     svelte
     toml
     typescript
@@ -62,6 +63,7 @@ let
     nix
     rust
     scss
+    sql
     svelte
     toml
     typescript

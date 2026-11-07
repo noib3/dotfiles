@@ -123,7 +123,7 @@ return {
         end
 
         run_luacheck(
-          vim.uri_to_bufnr(uri),
+          vim.uri.to_buf(uri),
           root_dir,
           function(diagnostics)
             callback(nil, { kind = "full", items = diagnostics })

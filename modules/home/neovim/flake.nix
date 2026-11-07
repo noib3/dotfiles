@@ -3,7 +3,7 @@
 
   inputs = {
     neovim-src = {
-      url = "github:neovim/neovim/pull/39773/head";
+      url = "github:noib3/neovim/noib3";
       flake = false;
     };
     nix-community-neovim = {
@@ -15,7 +15,7 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Remove once nixpkgs' Zig 0.16 is fixed (ghostty-org/ghostty#14489).
+    # Remove once nixpkgs has Zig 0.17.
     zig-overlay = {
       url = "github:mitchellh/zig-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
