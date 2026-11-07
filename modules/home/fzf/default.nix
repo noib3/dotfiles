@@ -29,7 +29,7 @@ in
         ];
       });
 
-      defaultCommand = "${lib.getExe config.modules.scripts.lf-recursive} $HOME";
+      defaultCommand = "${lib.getExe config.modules.scripts.list-files} $HOME";
 
       defaultOptions = [
         "--reverse"

@@ -7,8 +7,7 @@ fi
 cd "$root" || exit
 
 if selected_files="$(
-  lf-recursive . |
-    frecency sort files "$root" |
+  list-files --frecent-first "$root" |
     fzf --multi --prompt='Edit> ' --preview='preview {}'
 )"; then
   status=0
@@ -24,6 +23,11 @@ if [ "$status" -ne 0 ]; then
   exit "$status"
 fi
 
+selected_paths=()
+
 while IFS= read -r filename; do
-  printf '%s/%s\n' "$root" "$filename"
+  selected_paths+=("$root/$filename")
 done <<<"$selected_files"
+
+frecency add files "${selected_paths[@]}"
+printf '%s\n' "${selected_paths[@]}"

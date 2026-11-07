@@ -5,7 +5,6 @@ usage() {
   cat >&2 <<EOF
 usage: frecency add <store> <path>...
        frecency list <store>
-       frecency sort <store> <root>
 EOF
   exit 1
 }
@@ -78,30 +77,6 @@ list() {
     done
 }
 
-# Reorders the lines read from stdin, which are paths relative to the given root
-# and can contain ANSI escape codes, by moving the ones in the store to the top,
-# from the most to the least frecent.
-sort_lines() {
-  local root="${2%/}/"
-
-  awk -v root="$root" '
-    FILENAME != "-" {
-      if (index($0, root) == 1) rank[substr($0, length(root) + 1)] = ++num_frecent
-      next
-    }
-    {
-      key = $0
-      gsub(/\x1b\[[0-9;]*m/, "", key)
-      if (key in rank) frecent[rank[key]] = $0
-      else rest[++num_rest] = $0
-    }
-    END {
-      for (i = 1; i <= num_frecent; i++) if (i in frecent) print frecent[i]
-      for (i = 1; i <= num_rest; i++) print rest[i]
-    }
-  ' <(list "$1") -
-}
-
 case "${1-}" in
   add)
     [ $# -ge 3 ] || usage
@@ -111,10 +86,6 @@ case "${1-}" in
   list)
     [ $# -eq 2 ] || usage
     list "$2"
-    ;;
-  sort)
-    [ $# -eq 3 ] || usage
-    sort_lines "$2" "$3"
     ;;
   *)
     usage

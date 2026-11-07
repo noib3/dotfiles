@@ -32,7 +32,7 @@
         name = "fuzzy-edit-files";
         runtimeInputs = [
           config.modules.scripts.frecency
-          config.modules.scripts.lf-recursive
+          config.modules.scripts.list-files
           config.modules.scripts.preview
           config.programs.fzf.package
           pkgs.git
@@ -52,7 +52,7 @@
         text = builtins.readFile ./fuzzy-ripgrep.sh;
       };
 
-      lf-recursive = import ./lf-recursive.nix { inherit config pkgs; };
+      list-files = import ./list-files.nix { inherit config pkgs; };
 
       pc = pkgs.writeShellApplication {
         name = "pc";

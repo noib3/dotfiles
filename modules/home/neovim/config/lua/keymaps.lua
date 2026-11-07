@@ -269,7 +269,6 @@ local fzf_opts = {
 }
 
 --- Fuzzy searches files in the given directory, and opens the selected ones.
---- @param search_root string
 --- @param use_frecency boolean Whether to list the frecent files first and to
 --- add a frecency visit to the selected ones.
 local fzf_files = function(search_root, use_frecency)
@@ -278,10 +277,10 @@ local fzf_files = function(search_root, use_frecency)
     ["--prompt"] = "Open> ",
   })
 
-  local cmd = ("lf-recursive %s"):format(search_root)
-  if use_frecency then
-    cmd = ("%s | frecency sort files %s"):format(cmd, search_root)
-  end
+  local cmd = ("list-files %s%s"):format(
+    use_frecency and "--frecent-first " or "",
+    search_root
+  )
 
   fzf_lua.fzf_exec(cmd, {
     actions = {
