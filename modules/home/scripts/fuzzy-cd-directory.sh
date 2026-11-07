@@ -17,6 +17,9 @@ if [ "$status" -ne 0 ]; then
 fi
 
 case "$selection" in
-  /*) printf '%s\n' "$selection" ;;
-  *) printf '%s\n' "$HOME/$selection" ;;
+  /*) dirname="$selection" ;;
+  *) dirname="$HOME/$selection" ;;
 esac
+
+frecency add dirs "$dirname"
+printf '%s\n' "$dirname"

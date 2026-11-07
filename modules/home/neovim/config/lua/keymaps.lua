@@ -269,13 +269,21 @@ local fzf_opts = {
 }
 
 --- Fuzzy searches files in the given directory, and opens the selected ones.
-local fzf_files = function(search_root)
+--- @param search_root string
+--- @param use_frecency boolean Whether to list the frecent files first and to
+--- add a frecency visit to the selected ones.
+local fzf_files = function(search_root, use_frecency)
   local opts = vim.tbl_extend("force", fzf_opts, {
     ["--preview"] = ("preview %s/{}"):format(search_root),
     ["--prompt"] = "Open> ",
   })
 
-  fzf_lua.fzf_exec(("lf-recursive %s"):format(search_root), {
+  local cmd = ("lf-recursive %s"):format(search_root)
+  if use_frecency then
+    cmd = ("%s | frecency sort files %s"):format(cmd, search_root)
+  end
+
+  fzf_lua.fzf_exec(cmd, {
     actions = {
       default = function(selected_paths)
         local qf_entries = {}
@@ -288,6 +296,15 @@ local fzf_files = function(search_root)
 
         local first = qf_entries[1]
         if not first then return end
+
+        if use_frecency then
+          local add_visits = { "frecency", "add", "files" }
+          for _, entry in ipairs(qf_entries) do
+            table.insert(add_visits, entry.filename)
+          end
+          vim.system(add_visits)
+        end
+
         vim.cmd(("edit %s"):format(first.filename))
 
         if #qf_entries > 1 then locations.open_trouble_qf(qf_entries) end
@@ -302,13 +319,13 @@ vim.api.nvim_set_keymap("n", "<D-e>", "", {
   callback = function()
     local git_root =
       vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
-    fzf_files(git_root or vim.env.HOME)
+    fzf_files(git_root or vim.env.HOME, true)
   end,
 })
 
 vim.api.nvim_set_keymap("n", "<D-h>", "", {
   desc = "Fuzzy find files in the home directory",
-  callback = function() fzf_files(vim.env.HOME) end,
+  callback = function() fzf_files(vim.env.HOME, false) end,
 })
 
 local fzf_live_ripgrep = function(search_root)

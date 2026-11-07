@@ -53,46 +53,26 @@ in
       changeDirWidget = {
         command =
           let
-            fdOpts = "--strip-cwd-prefix --hidden --type=d --color=always";
             fzf-alt-c = pkgs.writeShellApplication {
               name = "fzf-alt-c";
               runtimeInputs = with pkgs; [
+                config.modules.scripts.frecency
                 config.programs.fd.package
+                gawk
                 gnused
               ];
-              text = ''
-                emit_dir_tree() {
-                  root="$1"
-                  home="${config.home.homeDirectory}"
-
-                  if [ ! -d "$root" ]; then
-                    return
-                  fi
-
-                  case "$root" in
-                    "$home"/*)
-                      prefix="''${root#"$home"/}"
-                      ;;
-                    *)
-                      prefix="$root"
-                      ;;
-                  esac
-
-                  (cd "$root" && fd ${fdOpts}) \
-                    | sed -u "s|^|"$'\x1b[${col-dirs}m'"$prefix/|"
-                }
-
-                {
-                  emit_dir_tree "${config.home.homeDirectory}/Desktop"
-                  emit_dir_tree "${config.home.homeDirectory}/Dev"
-                  emit_dir_tree "${config.home.homeDirectory}/Downloads"
-                  emit_dir_tree "${config.lib.mine.documentsDir}"
-                  emit_dir_tree "${config.xdg.configHome}"
-                } \
-                  | sed -u 's|\(.*\)\x1b\[${col-dirs}m/|\1|' \
-                  | sed -u 's|\x1b\[${col-dirs}m|\x1b\[${col-grayed-out-dirs}m|g' \
-                  | sed -u 's|\(.*\)\x1b\[${col-grayed-out-dirs}m|\1\x1b\[${col-dirs}m|'
-              '';
+              runtimeEnv = {
+                COL_DIRS = col-dirs;
+                COL_GRAYED_OUT_DIRS = col-grayed-out-dirs;
+                ROOTS = [
+                  "${config.home.homeDirectory}/Desktop"
+                  "${config.home.homeDirectory}/Dev"
+                  "${config.home.homeDirectory}/Downloads"
+                  config.lib.mine.documentsDir
+                  config.xdg.configHome
+                ];
+              };
+              text = builtins.readFile ./fzf-alt-c.sh;
             };
           in
           "${lib.getExe fzf-alt-c}";

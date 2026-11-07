@@ -8,6 +8,7 @@ cd "$root" || exit
 
 if selected_files="$(
   lf-recursive . |
+    frecency sort files "$root" |
     fzf --multi --prompt='Edit> ' --preview='preview {}'
 )"; then
   status=0

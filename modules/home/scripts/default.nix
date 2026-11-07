@@ -10,15 +10,28 @@
     type = lib.types.attrsOf lib.types.path;
     readOnly = true;
     default = {
+      frecency = pkgs.writeShellApplication {
+        name = "frecency";
+        runtimeInputs = with pkgs; [
+          gawk
+          uutils-coreutils-noprefix
+        ];
+        text = builtins.readFile ./frecency.sh;
+      };
+
       fuzzy-cd-directory = pkgs.writeShellApplication {
         name = "fuzzy-cd-directory";
-        runtimeInputs = [ config.programs.fzf.package ];
+        runtimeInputs = [
+          config.modules.scripts.frecency
+          config.programs.fzf.package
+        ];
         text = builtins.readFile ./fuzzy-cd-directory.sh;
       };
 
       fuzzy-edit-files = pkgs.writeShellApplication {
         name = "fuzzy-edit-files";
         runtimeInputs = [
+          config.modules.scripts.frecency
           config.modules.scripts.lf-recursive
           config.modules.scripts.preview
           config.programs.fzf.package
