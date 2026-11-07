@@ -15,6 +15,15 @@ vim.api.nvim_create_user_command("Qall", function()
   while trouble.close() do
   end
 
+  if vim.fn.win_gettype() ~= "" then
+    local window = vim
+      .iter(vim.api.nvim_tabpage_list_wins(0))
+      :find(function(win) return vim.fn.win_gettype(win) == "" end)
+    vim.api.nvim_set_current_win(window)
+  end
+
+  vim.cmd.only({ bang = true })
+
   local buffers = vim
     .iter(vim.fn.getbufinfo({ buflisted = 1 }))
     :map(function(info) return info.bufnr end)
@@ -24,7 +33,9 @@ vim.api.nvim_create_user_command("Qall", function()
   if #buffers == 0 then return end
 
   bufdelete.bufdelete(buffers, true, { base_terminal })
-end, { desc = "Discards all buffers and returns to the base terminal" })
+end, {
+  desc = "Closes all other windows, discards all buffers and returns to the base terminal",
+})
 
 vim.cmd([[
   cnoreabbrev <expr> qa getcmdtype() ==# ':' && getcmdline() ==# 'qa' && v:char ==# "\r" ? 'Qall' : 'qa'
