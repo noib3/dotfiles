@@ -175,7 +175,6 @@ in
     neovim.enable = true;
     ripgrep.enable = true;
     rust.enable = true;
-    snowstorm-work.enable = true;
     ssh.enable = true;
     starship.enable = true;
     terminfo.enable = true;
