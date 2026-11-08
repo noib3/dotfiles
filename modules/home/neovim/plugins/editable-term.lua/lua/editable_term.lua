@@ -135,6 +135,16 @@ local function set_term_cursor(buf, cursor, term_keys)
   return true
 end
 
+--- Sends `keys` to the terminal, but only while the shell is showing a prompt,
+--- i.e. not while a command (lf, lazygit, `git add -p`, ...) is reading input.
+---@param buf integer
+---@param keys string
+local function send_keys_at_prompt(buf, keys)
+  local bufinfo = M.buffers[buf]
+  if not bufinfo or not bufinfo.cmd_cursor then return end
+  vim.fn.chansend(vim.bo[buf].channel, vim.keycode(keys))
+end
+
 ---@param buf integer
 ---@param new_lines string[]
 ---@param term_keys editable_term.TermKeys
@@ -204,18 +214,12 @@ M.setup = function(config)
       M.buffers[args.buf] = {}
 
       vim.keymap.set("n", "A", function()
-        vim.fn.chansend(
-          vim.bo[args.buf].channel,
-          vim.keycode(term_keys.goto_line_end)
-        )
+        send_keys_at_prompt(args.buf, term_keys.goto_line_end)
         vim.cmd.startinsert()
       end, { buffer = args.buf })
 
       vim.keymap.set("n", "I", function()
-        vim.fn.chansend(
-          vim.bo[args.buf].channel,
-          vim.keycode(term_keys.goto_line_start)
-        )
+        send_keys_at_prompt(args.buf, term_keys.goto_line_start)
         vim.cmd.startinsert()
       end, { buffer = args.buf })
 
@@ -223,21 +227,14 @@ M.setup = function(config)
         local bufinfo = M.buffers[args.buf]
         local cursor = api.nvim_win_get_cursor(0)
         if
-          bufinfo
-          and bufinfo.cmd_cursor
-          and cursor_in_cmd_region(args.buf, bufinfo.cmd_cursor, cursor)
-        then
-          if not set_term_cursor(args.buf, cursor, term_keys) then
-            vim.fn.chansend(
-              vim.bo[args.buf].channel,
-              vim.keycode(term_keys.goto_line_end)
-            )
-          end
-        else
-          vim.fn.chansend(
-            vim.bo[args.buf].channel,
-            vim.keycode(term_keys.goto_line_end)
+          not (
+            bufinfo
+            and bufinfo.cmd_cursor
+            and cursor_in_cmd_region(args.buf, bufinfo.cmd_cursor, cursor)
+            and set_term_cursor(args.buf, cursor, term_keys)
           )
+        then
+          send_keys_at_prompt(args.buf, term_keys.goto_line_end)
         end
         vim.cmd.startinsert()
       end, { buffer = args.buf })
@@ -246,22 +243,18 @@ M.setup = function(config)
         local bufinfo = M.buffers[args.buf]
         local cursor = api.nvim_win_get_cursor(0)
         if
-          bufinfo
-          and bufinfo.cmd_cursor
-          and cursor_in_cmd_region(args.buf, bufinfo.cmd_cursor, cursor)
-        then
-          cursor[2] = cursor[2] + 1
-          if not set_term_cursor(args.buf, cursor, term_keys) then
-            vim.fn.chansend(
-              vim.bo[args.buf].channel,
-              vim.keycode(term_keys.goto_line_end)
+          not (
+            bufinfo
+            and bufinfo.cmd_cursor
+            and cursor_in_cmd_region(args.buf, bufinfo.cmd_cursor, cursor)
+            and set_term_cursor(
+              args.buf,
+              { cursor[1], cursor[2] + 1 },
+              term_keys
             )
-          end
-        else
-          vim.fn.chansend(
-            vim.bo[args.buf].channel,
-            vim.keycode(term_keys.goto_line_end)
           )
+        then
+          send_keys_at_prompt(args.buf, term_keys.goto_line_end)
         end
         vim.cmd.startinsert()
       end, { buffer = args.buf })
@@ -270,20 +263,18 @@ M.setup = function(config)
         "n",
         "dd",
         function()
-          vim.fn.chansend(
-            vim.bo[args.buf].channel,
-            vim.keycode(
-              term_keys.clear_current_line .. term_keys.goto_line_start
-            )
+          send_keys_at_prompt(
+            args.buf,
+            term_keys.clear_current_line .. term_keys.goto_line_start
           )
         end,
         { buffer = args.buf }
       )
 
       vim.keymap.set("n", "cc", function()
-        vim.fn.chansend(
-          vim.bo[args.buf].channel,
-          vim.keycode(term_keys.clear_current_line .. term_keys.goto_line_start)
+        send_keys_at_prompt(
+          args.buf,
+          term_keys.clear_current_line .. term_keys.goto_line_start
         )
         vim.cmd.startinsert()
       end, { buffer = args.buf })
