@@ -58,7 +58,7 @@ local signal = assert(vim.uv.new_signal())
 signal:start(vim.uv.constants.SIGUSR1, function() finished = true end)
 
 local launch_code = [[
-local wrapper_pid, filepaths, commands, environment = ...
+local wrapper_pid, filepaths, commands, cwd = ...
 local done = function()
   pcall(vim.uv.kill, wrapper_pid, vim.uv.constants.SIGUSR1)
 end
@@ -67,7 +67,7 @@ vim.schedule(function()
   local ok, err = pcall(require("nvim_flatten").launch, {
     filepaths = filepaths,
     commands = commands,
-    environment = environment,
+    cwd = cwd,
     on_done = done,
   })
 
@@ -93,7 +93,7 @@ if ok and type(channel) == "number" and channel > 0 then
     channel,
     "nvim_exec_lua",
     launch_code,
-    { wrapper_pid, filepaths, commands, vim.fn.environ() }
+    { wrapper_pid, filepaths, commands, vim.env.PWD or vim.uv.cwd() }
   )
   pcall(vim.fn.chanclose, channel)
 else

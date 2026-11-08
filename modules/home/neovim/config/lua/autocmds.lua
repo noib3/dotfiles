@@ -223,6 +223,23 @@ vim.api.nvim_create_autocmd("User", {
   end,
 })
 
+vim.api.nvim_create_autocmd("User", {
+  group = create_augroup("noib3/nvim-direnv"),
+  pattern = "NvimDirenvChanged",
+  desc = "Restarts the LSP clients whose root uses the changed environment",
+  callback = function(ev)
+    local direnv = require("nvim_direnv")
+    for _, client in ipairs(vim.lsp.get_clients()) do
+      if
+        client.root_dir
+        and direnv.dir_for_path(client.root_dir) == ev.data.dir
+      then
+        client:_restart(client.exit_timeout)
+      end
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("BufAdd", {
   group = create_augroup("noib3/disable-wrapping-in-lock-files"),
   pattern = "*.lock,lazy-lock.json",
