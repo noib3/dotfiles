@@ -46,6 +46,7 @@
       url = "github:stevearc/conform.nvim";
       flake = false;
     };
+    # Only used for its C library, libvscode-diff.
     codediff-nvim = {
       url = "github:esmuellert/codediff.nvim";
       flake = false;
@@ -60,10 +61,6 @@
     };
     fzf-lua = {
       url = "github:ibhagwan/fzf-lua";
-      flake = false;
-    };
-    gitsigns-nvim = {
-      url = "github:lewis6991/gitsigns.nvim";
       flake = false;
     };
     gruvbox-nvim = {

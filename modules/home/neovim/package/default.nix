@@ -70,34 +70,21 @@ let
     vimdoc
   ];
 
-  codediff-nvim = pkgs.stdenv.mkDerivation {
-    pname = "codediff.nvim";
+  # VSCode's diff algorithm as a C library.
+  libvscode-diff = pkgs.stdenv.mkDerivation {
+    pname = "libvscode-diff";
     version = lib.trim (builtins.readFile "${inputs.codediff-nvim}/VERSION");
     src = inputs.codediff-nvim;
 
     nativeBuildInputs = [ pkgs.cmake ];
+    buildInputs = [ pkgs.utf8proc ];
 
-    buildInputs =
-      lib.optionals pkgs.stdenv.hostPlatform.isDarwin [ pkgs.llvmPackages.openmp ]
-      ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.stdenv.cc.cc.lib ];
-
-    configurePhase = ''
-      runHook preConfigure
-      cmake -B build -S .
-      runHook postConfigure
-    '';
-
-    buildPhase = ''
-      runHook preBuild
-      cmake --build build
-      runHook postBuild
-    '';
+    cmakeDir = "../libvscode-diff";
+    cmakeFlags = [ "-DENABLE_OPENMP=OFF" ];
 
     installPhase = ''
       runHook preInstall
-      mkdir -p "$out"
-      cp -R . "$out"
-      rm -rf "$out/build"
+      install -Dm644 -t "$out/lib" libvscode_diff${stdenvNoCC.hostPlatform.extensions.sharedLibrary}
       runHook postInstall
     '';
   };
@@ -112,14 +99,12 @@ let
     inputs.blink-cmp.inputs.blink-lib.packages.${stdenvNoCC.system}.default
     inputs.blink-emoji-nvim
     inputs.bufdelete-nvim
-    codediff-nvim
     inputs.colorful-menu-nvim
     inputs.comment-nvim
     inputs.conform-nvim
     inputs.copilot-lua
     inputs.crates-nvim
     inputs.fzf-lua
-    inputs.gitsigns-nvim
     inputs.gruvbox-nvim
     inputs.hop-nvim
     inputs.inc-rename-nvim
@@ -153,6 +138,7 @@ let
 
   env = {
     COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
+    LIBVSCODE_DIFF = "${libvscode-diff}/lib/libvscode_diff${stdenvNoCC.hostPlatform.extensions.sharedLibrary}";
     # The plugins' `lua` directories merged into a single tree, used by EmmyLua
     # to resolve plugin type definitions. EmmyLua names modules by their path
     # relative to a library root, so the root has to be where `require()`
