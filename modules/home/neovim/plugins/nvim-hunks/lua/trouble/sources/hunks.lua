@@ -4,6 +4,9 @@ local hunks = require("nvim_hunks")
 
 local M = {}
 
+--- The user event refreshing the lists of hunks once a listing is ready.
+local listed_event = "NvimHunksTroubleListed"
+
 ---@class nvim_hunks.trouble.Entry
 ---@field file nvim_hunks.File
 ---@field hunk? nvim_hunks.Hunk Unset on the row of the file itself.
@@ -27,13 +30,6 @@ local counts = function(hunk_list)
       { text = " -" .. deleted, hl = "HunksDeletedCount" }
   end
   return segments
-end
-
----@param file nvim_hunks.File
----@param path string
----@return string
-local display_path = function(file, path)
-  return vim.fn.fnamemodify(vim.fs.joinpath(file.root, path), ":~:.")
 end
 
 --- Returns the 1-based line a hunk starts at in the buffer, or the line its
@@ -280,7 +276,8 @@ M.config = {
       local segments = { Format.formatters.file_icon(ctx), { text = " " } }
       if file.status == "renamed" then
         segments[#segments + 1] = {
-          text = display_path(file, assert(file.old_path)) .. " → ",
+          -- Like the tree's directories, relative to the workspace's root.
+          text = assert(file.old_path) .. " → ",
         }
       end
       segments[#segments + 1] = {
@@ -310,7 +307,11 @@ M.config = {
       events = {
         {
           event = "User",
-          pattern = { "NvimHunksChanged", "NvimHunksFilesChanged" },
+          pattern = {
+            "NvimHunksChanged",
+            "NvimHunksFilesChanged",
+            listed_event,
+          },
         },
       },
       groups = {
@@ -323,6 +324,9 @@ M.config = {
       format = "{hunks_row}",
       -- The list places its own cursor when it opens.
       follow = false,
+      -- The preview covers the main window, but not the floats on it with
+      -- the default z-index, like incline.nvim's.
+      preview = { zindex = 49 },
     },
   },
 }
@@ -431,21 +435,42 @@ local when_shown = function(items, focused, on_shown)
   )
 end
 
---- The time it takes the main loop to report a cursor movement.
-local cursor_moved_ms = 50
+--- The lists of hunks whose previews are turned off while their cursors are
+--- moved, with the `auto_preview` options to restore.
+---@type table<trouble.View, boolean>
+local previews_off = setmetatable({}, { __mode = "k" })
 
---- Calls a function that moves the cursor of a list of hunks, without
---- previewing the item it moves to.
+--- Calls a function that moves the cursor of a focused list of hunks,
+--- without previewing the item it moves to. The preview is turned back on
+--- once the move is reported, after trouble's own handler skipped it, or
+--- right away if the cursor didn't move.
 ---@param view trouble.View
 ---@param move fun()
 local without_preview = function(view, move)
-  local auto_preview = view.opts.auto_preview
+  local win = list_win(view)
+  if not win then return move() end
+
+  local cursor = vim.api.nvim_win_get_cursor(win)
+  if previews_off[view] == nil then
+    previews_off[view] = view.opts.auto_preview
+  end
   view.opts.auto_preview = false
   move()
-  vim.defer_fn(
-    function() view.opts.auto_preview = auto_preview end,
-    cursor_moved_ms
-  )
+
+  local restore = function()
+    if previews_off[view] == nil then return end
+    view.opts.auto_preview = previews_off[view]
+    previews_off[view] = nil
+  end
+  local moved = vim.api.nvim_win_is_valid(win)
+    and win == vim.api.nvim_get_current_win()
+    and not vim.deep_equal(vim.api.nvim_win_get_cursor(win), cursor)
+  if not moved then return restore() end
+  vim.api.nvim_create_autocmd("CursorMoved", {
+    buffer = vim.api.nvim_win_get_buf(win),
+    once = true,
+    callback = restore,
+  })
 end
 
 --- Moves the cursor of a list of hunks to an item's row, or else to the first
@@ -520,80 +545,181 @@ local when_mounted = function(on_mounted)
   return false
 end
 
+---@class nvim_hunks.trouble.Listing
+---@field items trouble.Item[]
+---@field new_files table<trouble.Item, true> The rows of the files new to the list.
+
+--- The rows the lists of hunks show while the next listing runs.
+---@type trouble.Item[]
+local shown_items = {}
+
+--- The listing done since the lists of hunks were last refreshed.
+---@type nvim_hunks.trouble.Listing?
+local ready
+
+--- Whether a listing is running, and whether another one is due once it's
+--- done.
+local is_listing, is_listing_due = false, false
+
+--- The number of times the list was closed, which discards the listings that
+--- were running then.
+local generation = 0
+
+---@class nvim_hunks.trouble.Opening
+---@field main? trouble.Main The window the list is opened from.
+--- The callback of the refresh opening the list, which gets the first listing.
+---@field cb? fun(items: trouble.Item[])
+
+--- The list that's opening, until it shows its first listing.
+---@type nvim_hunks.trouble.Opening?
+local opening
+
+--- Turns the changed files into the rows of the list.
+---@param files nvim_hunks.File[]
+---@return nvim_hunks.trouble.Listing
+local listing_of = function(files)
+  local in_several = #assert(roots) > 1
+  local items = {}
+  ---@type table<trouble.Item, true>
+  local new_files = {}
+  for _, file in ipairs(files) do
+    local file_item = new_item(file)
+    items[#items + 1] = file_item
+    if not listed_files[file_item.id] then
+      listed_files[file_item.id] = true
+      new_files[file_item] = true
+    end
+    if file.status == "modified" or file.status == "renamed" then
+      for _, hunk in ipairs(file.hunks) do
+        items[#items + 1] = new_item(file, hunk, file_item)
+      end
+    end
+  end
+  for _, item in ipairs(items) do
+    -- The tree of directories starts at the workspaces' roots.
+    item.dirname = listed_dir(item.item.file, in_several)
+  end
+  return { items = items, new_files = new_files }
+end
+
+--- Gives a listing to trouble, then places the cursor of a list that's
+--- opening and collapses the rows of new files.
+---@param listing nvim_hunks.trouble.Listing
+---@param cb fun(items: trouble.Item[])
+local show = function(listing, cb)
+  shown_items = listing.items
+  cb(listing.items)
+
+  local opened = opening
+  opening = nil
+  local main = opened and opened.main
+  local target = main and row_at(listing.items, main) or nil
+  ---@type table<trouble.Item, true>
+  local batch = {}
+  for _, item in ipairs(listing.items) do
+    batch[item] = true
+  end
+  when_shown(batch, opened ~= nil, function(view)
+    local win = list_win(view)
+    if win then draw_recap(win) end
+    if not opened then return collapse_files(view, listing.new_files, false) end
+    -- Only placing the cursor moves it to another item.
+    without_preview(view, function()
+      collapse_files(view, listing.new_files, true, target and target.item.file)
+      move_cursor_to(view, target)
+    end)
+  end)
+end
+
+--- Lists the changed files in the background. The first listing goes to the
+--- list that's opening, and the others refresh the lists when they're done.
+local list = function()
+  is_listing = true
+  local listed_generation = generation
+  local listed_roots = assert(roots)
+  ---@type fun()
+  local run
+  run = function()
+    hunks.files(listed_roots, function(files)
+      if generation ~= listed_generation then return end
+      if #listed_roots == 1 then
+        hunks.working_copy(listed_roots[1], function(revision)
+          if generation ~= listed_generation then return end
+          working_copy = revision
+          draw_recaps()
+        end)
+      else
+        working_copy = nil
+      end
+      listed = files
+      local listing = listing_of(files)
+      local opening_cb = opening and opening.cb
+      if opening_cb then
+        show(listing, opening_cb)
+      else
+        ready = listing
+        vim.api.nvim_exec_autocmds("User", { pattern = listed_event })
+      end
+
+      -- The listing requested while this one ran starts after it's shown.
+      if is_listing_due then
+        is_listing_due = false
+        run()
+        return
+      end
+      is_listing = false
+    end)
+  end
+  run()
+end
+
 --- Lists every changed file, with the hunks of the modified and renamed ones
 --- nested under it, collapsed. A list that's opening starts on the hunk or
 --- file under the cursor of the window it's opened from, with only that file
 --- expanded. The listed workspaces are the ones around the list's `cwd`
 --- option, or else the current working directory when it opens. With the
 --- `center` option, the window it's opened from has its cursor line centered.
+---
+--- The list opens with its first listing. Afterwards it shows the rows of the
+--- previous listing while the next one runs in the background.
 ---@param cb fun(items: trouble.Item[])
 ---@param ctx { main?: trouble.Main, opts: { cwd?: string, center?: boolean } }
 M.get = function(cb, ctx)
-  local is_opening = roots == nil
-  roots = roots or hunks.workspaces(ctx.opts.cwd)
-  hunks.files(roots, function(files)
-    if #roots == 1 then
-      hunks.working_copy(roots[1], function(revision)
-        working_copy = revision
-        draw_recaps()
-      end)
-    else
-      working_copy = nil
-    end
-    listed = files
-    local in_several = #roots > 1
-    local items = {}
-    ---@type table<trouble.Item, true>
-    local batch, new_files = {}, {}
-    for _, file in ipairs(files) do
-      local file_item = new_item(file)
-      items[#items + 1] = file_item
-      if not listed_files[file_item.id] then
-        listed_files[file_item.id] = true
-        new_files[file_item] = true
-      end
-      if file.status == "modified" or file.status == "renamed" then
-        for _, hunk in ipairs(file.hunks) do
-          items[#items + 1] = new_item(file, hunk, file_item)
-        end
-      end
-    end
-    for _, item in ipairs(items) do
-      batch[item] = true
-      -- The tree of directories starts at the workspaces' roots.
-      item.dirname = listed_dir(item.item.file, in_several)
-    end
-    -- The buffers draw their diffs from the listing's bases when the list's
-    -- window opens, and appear together with it.
+  if roots == nil then
+    roots = hunks.workspaces(ctx.opts.cwd)
+    opening = { main = ctx.main }
+    hunks.show_all(true)
+
     local main_win = ctx.main and ctx.main.win --[[@as integer?]]
-    local on_opened = function()
-      hunks.show_all(true)
-      if
-        ctx.opts.center
-        and main_win
-        and vim.api.nvim_win_is_valid(main_win)
-      then
+    if ctx.opts.center and main_win then
+      when_mounted(function()
+        if not vim.api.nvim_win_is_valid(main_win) then return end
         vim.api.nvim_win_call(
           main_win,
           function() vim.cmd.normal({ "zz", bang = true }) end
         )
-      end
-    end
-    if not (is_opening and when_mounted(on_opened)) then
-      hunks.show_all(true)
-    end
-    cb(items)
-
-    local target = is_opening and ctx.main and row_at(items, ctx.main) or nil
-    when_shown(batch, is_opening, function(view)
-      local win = list_win(view)
-      if win then draw_recap(win) end
-      without_preview(view, function()
-        collapse_files(view, new_files, is_opening, target and target.item.file)
-        if is_opening then move_cursor_to(view, target) end
       end)
-    end)
-  end)
+    end
+  end
+
+  if ready then
+    local listing = ready
+    ready = nil
+    return show(listing, cb)
+  end
+
+  -- An opening list shows up with its first listing, or else with trouble's
+  -- message that there's nothing to list.
+  if opening and not opening.cb then
+    opening.cb = cb
+  else
+    cb(shown_items)
+  end
+  if is_listing then
+    is_listing_due = true
+  else
+    list()
+  end
 end
 
 --- Draws the hunks on a preview, laid out for the preview's window, and
@@ -685,6 +811,11 @@ vim.api.nvim_create_autocmd("WinClosed", {
     listed_files = {}
     listed = {}
     working_copy = nil
+    shown_items = {}
+    ready = nil
+    is_listing, is_listing_due = false, false
+    opening = nil
+    generation = generation + 1
     if hunks.is_showing_all() then hunks.show_all(false) end
   end),
 })

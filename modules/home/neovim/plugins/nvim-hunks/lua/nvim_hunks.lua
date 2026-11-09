@@ -285,6 +285,10 @@ local repo_for = function(root)
 
   repo = { root = root }
   repos[root] = repo
+  -- What was cached while the repo wasn't watched may predate its last jj
+  -- operations.
+  base_texts[root] = nil
+  listed_files[root] = nil
 
   local timer = assert(uv.new_timer())
   local watcher = assert(uv.new_fs_event())
@@ -656,6 +660,40 @@ end
 ---@field hunks nvim_hunks.Hunk[]
 ---@field binary boolean
 
+--- Reloads the bases of a workspace's buffers and refreshes the lists of its
+--- changed files, without waiting for the watcher of its jj operations.
+---@param root string
+local reload_root = function(root)
+  local repo = repos[root]
+  if repo then return reload_repo(repo) end
+  fire(files_changed_event)
+end
+
+--- Calls back if a file's base is still the one its hunks were computed
+--- against. Otherwise, e.g. when a move right before hasn't been reloaded
+--- yet, the moves built on the hunks would undo it, so it reports that and
+--- reloads the diffs.
+---@param file nvim_hunks.File
+---@param on_current fun()
+local check_base = function(file, on_current)
+  jj.file_at(
+    file.root,
+    config.base,
+    file.old_path or file.path,
+    function(err, text)
+      vim.schedule(function()
+        if err then return notify_error(err) end
+        local base_lines = text and split_lines(text) or {}
+        if vim.deep_equal(base_lines, file.base_lines) then
+          return on_current()
+        end
+        notify_error("The diff was out of date, try again")
+        reload_root(file.root)
+      end)
+    end
+  )
+end
+
 --- Moves the selected lines of a file's hunks into another revision. A
 --- renamed file's rename is moved with them.
 ---@param file nvim_hunks.File
@@ -674,22 +712,25 @@ local move_lines = function(file, selected_old, selected_new, into, on_moved)
 
   check_single_revision(file.root, into, function(err)
     if err then return notify_error(err) end
-    jj.squash_file(
-      file.root,
-      into,
-      file.path,
-      text,
-      other_paths,
-      function(squash_err)
-        vim.schedule(function()
-          if squash_err then return notify_error(squash_err) end
-          if on_moved then on_moved() end
-          -- Moving changes into a descendant takes them out of the files on
-          -- disk.
-          reload_files(file.root, { file.path, file.old_path or false })
-        end)
-      end
-    )
+    check_base(file, function()
+      jj.squash_file(
+        file.root,
+        into,
+        file.path,
+        text,
+        other_paths,
+        function(squash_err)
+          vim.schedule(function()
+            if squash_err then return notify_error(squash_err) end
+            if on_moved then on_moved() end
+            -- Moving changes into a descendant takes them out of the files
+            -- on disk.
+            reload_files(file.root, { file.path, file.old_path or false })
+            reload_root(file.root)
+          end)
+        end
+      )
+    end)
   end)
 end
 
@@ -742,15 +783,20 @@ local workspace_files = function(root, on_done)
         if not file.binary then
           file.hunks = diff.compute(file.base_lines, file.lines)
         end
-        listed_files[root] = listed_files[root] or {}
-        listed_files[root][file.path] = file
+        if repos[root] then
+          listed_files[root] = listed_files[root] or {}
+          listed_files[root][file.path] = file
+        end
 
         pending = pending - 1
         if pending == 0 then on_done(files) end
       end)
 
-      base_texts[root] = base_texts[root] or {}
-      local cached = base_texts[root][change.source]
+      -- The caches are only dropped after the jj operations of watched repos.
+      local is_watched = repos[root] ~= nil
+      local cached = is_watched
+        and base_texts[root]
+        and base_texts[root][change.source]
       if status == "added" or status == "copied" then
         compute("")
       elseif cached then
@@ -758,6 +804,7 @@ local workspace_files = function(root, on_done)
       else
         jj.file_at(root, config.base, change.source, function(_, text)
           vim.schedule(function()
+            if not repos[root] then return end
             base_texts[root] = base_texts[root] or {}
             base_texts[root][change.source] = text or ""
           end)
@@ -854,6 +901,7 @@ M.move_file = function(file, into)
     vim.schedule(function()
       if err then return notify_error(err) end
       reload_files(file.root, { file.path, file.old_path or false })
+      reload_root(file.root)
     end)
   end
 
@@ -863,13 +911,18 @@ M.move_file = function(file, into)
       local text = #file.base_lines > 0
           and table.concat(file.base_lines, "\n") .. "\n"
         or ""
-      jj.squash_file(
-        file.root,
-        into,
-        file.path,
-        text,
-        { file.old_path },
-        on_moved
+      check_base(
+        file,
+        function()
+          jj.squash_file(
+            file.root,
+            into,
+            file.path,
+            text,
+            { file.old_path },
+            on_moved
+          )
+        end
       )
     else
       local paths = { file.path, file.old_path }

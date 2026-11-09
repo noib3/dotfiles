@@ -258,10 +258,14 @@
             pkgs.writeText "emmyrc.json" (
               builtins.toJSON (
                 pkgs.lib.recursiveUpdate config {
+                  # The tests' runner defines `test()`.
+                  diagnostics.globals = config.diagnostics.globals ++ [ "test" ];
                   workspace.library = library;
-                  workspace.workspaceRoots = map (name: "./${name}/lua") (
-                    builtins.attrNames (builtins.readDir ./plugins)
-                  );
+                  workspace.workspaceRoots = pkgs.lib.concatMap (
+                    name:
+                    [ "./${name}/lua" ]
+                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests) "./${name}/tests"
+                  ) (builtins.attrNames (builtins.readDir ./plugins));
                 }
               )
             );
@@ -277,6 +281,52 @@
                 ${emmylua_check} --warnings-as-errors ${./config} 2>&1 | tee "$out"
                 ${emmylua_check} --warnings-as-errors --config ${pluginsConfig} ${./plugins} \
                   2>&1 | tee -a "$out"
+              '';
+        }
+      );
+
+      tests = eachSystem (
+        pkgs:
+        let
+          nvim = self.packages.${pkgs.stdenv.system}.default;
+          localPlugins = builtins.attrNames (builtins.readDir ./plugins);
+
+          # The `lua` directories of the other plugins, which the tests can
+          # require, as a single runtimepath entry.
+          thirdPartyRtp = pkgs.linkFarm "nvim-third-party-rtp" [
+            {
+              name = "lua";
+              path = nvim.thirdPartyLua;
+            }
+          ];
+
+          rtp = pkgs.lib.concatStringsSep "," (
+            map (name: "${./plugins}/${name}") localPlugins ++ [ "${thirdPartyRtp}" ]
+          );
+        in
+        {
+          # Runs the `tests/*_test.lua` files of the plugins in this repo, each
+          # in its own headless Neovim.
+          plugins =
+            pkgs.runCommand "test-neovim-plugins"
+              {
+                nativeBuildInputs = [ pkgs.jujutsu ];
+                env = {
+                  JJ_USER = "test";
+                  JJ_EMAIL = "test@example.com";
+                  LIBVSCODE_DIFF = nvim.env.LIBVSCODE_DIFF;
+                };
+              }
+              ''
+                export HOME="$TMPDIR"
+                for test in ${./plugins}/*/tests/*_test.lua; do
+                  echo "--- ''${test#${./plugins}/}"
+                  TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
+                    --cmd "set rtp^=${rtp}" \
+                    -c "luafile ${./tests/run.lua}" \
+                    || echo "$test" >> "$TMPDIR/failed"
+                done 2>&1 | tee "$out"
+                [ ! -e "$TMPDIR/failed" ]
               '';
         }
       );

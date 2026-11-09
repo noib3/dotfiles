@@ -2,5 +2,6 @@
   imports = [
     ./checks
     ./machines
+    ./tests
   ];
 }
