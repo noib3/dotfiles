@@ -220,6 +220,32 @@ M.screen = function(bufnr)
   return lines
 end
 
+--- Returns the status drawn after the change on a subject's line of a log
+--- buffer, as `<kind>: <text>`, or nothing if there's none.
+---@param bufnr integer
+---@param subject string
+---@return string?
+M.status = function(bufnr, subject)
+  local namespace = vim.api.nvim_create_namespace("nvim-jj")
+  local line = M.row(bufnr, subject) - 1
+  local marks = vim.api.nvim_buf_get_extmarks(
+    bufnr,
+    namespace,
+    { line, 0 },
+    { line, -1 },
+    { details = true }
+  )
+  for _, mark in ipairs(marks) do
+    for _, chunk in ipairs(assert(mark[4]).virt_text or {}) do
+      local kind = type(chunk[2]) == "string" and chunk[2]:match("^JjStatus(%a+)$")
+      if kind then
+        local text = vim.trim(chunk[1]):gsub("^%S+%s+", "")
+        return ("%s: %s"):format(kind:lower(), text)
+      end
+    end
+  end
+end
+
 --- Creates a jj repo whose working-copy commit is on top of a linear history
 --- of empty commits, and returns its root.
 ---@param count integer The number of commits.

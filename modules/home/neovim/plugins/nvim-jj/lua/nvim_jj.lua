@@ -54,13 +54,50 @@ local config = {
 ---@field cut table<string, true?> The IDs of the cut changes.
 ---@field copied table<string, true?> The IDs of the copied changes.
 ---@field unpadded? integer The line whose pad was emptied for insert mode.
+---@field statuses table<string, nvim_jj.Status?> The statuses of the operations on changes, keyed by change ID.
+---@field github_repo? string The `owner/name` of the remote's GitHub repo, if it's on GitHub.
+---@field pull_requests table<string, nvim_jj.PullRequest?> The open pull requests of the remote's GitHub repo, keyed by their bookmark.
+---@field pull_requests_version integer The number of changes to the pull requests made since the log was created.
 ---@field load? nvim_jj.Load The read of jj's log in progress.
 ---@field on_drawn fun()[] The callbacks waiting for the next redraw.
 ---@field timer? uv.uv_timer_t
 ---@field watcher? uv.uv_fs_event_t
 
+---@alias nvim_jj.StatusKind "busy"|"done"|"failed"|"warning"
+
+---@class nvim_jj.Status
+---@field kind nvim_jj.StatusKind
+---@field text string
+---@field timer? uv.uv_timer_t The timer clearing a finished status.
+
 ---@type table<integer, nvim_jj.Log?>
 local logs = {}
+
+--- The frames of the spinner of the operations in progress.
+local spinner_frames = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+
+--- The delay between two frames of the spinner.
+local spinner_interval_ms = 100
+
+--- The spinner's current frame and the timer advancing it while operations
+--- are in progress.
+---@type { frame: integer, timer?: uv.uv_timer_t }
+local spinner = { frame = 1 }
+
+--- The icons of the finished operations, from Nerd Fonts.
+---@type table<nvim_jj.StatusKind, string>
+local status_icons = {
+  done = "\239\144\174", -- nf-oct-check
+  failed = "\239\145\167", -- nf-oct-x
+  warning = "\239\144\161", -- nf-oct-alert
+}
+
+--- How long the statuses of finished operations stay drawn.
+---@type table<nvim_jj.StatusKind, integer>
+local status_durations_ms = { done = 2500, failed = 10000, warning = 5000 }
+
+--- The GitHub logo, from Nerd Fonts.
+local github_icon = "\239\144\136" -- nf-oct-mark_github
 
 --- The log buffer in insert mode, if any.
 ---@type integer?
@@ -193,15 +230,30 @@ local draw_right = function(bufnr, row, line, text)
   if placeholder then
     chunks[#chunks + 1] = { "(no description set) ", "JjPlaceholder" }
   end
+  local log = logs[bufnr]
   for _, bookmark in ipairs(change.bookmarks) do
     local hl = vim.endswith(bookmark, "??") and "JjConflict" or "JjBookmark"
     chunks[#chunks + 1] = { bookmark .. " ", hl }
+    local pull_request = log and log.pull_requests[bookmark:gsub("[*?]+$", "")]
+    if pull_request then
+      local badge = ("%s #%d "):format(github_icon, pull_request.number)
+      chunks[#chunks + 1] = { badge, "JjPullRequest" }
+    end
   end
   if change.divergent then
     chunks[#chunks + 1] = { "(divergent) ", "JjDivergent" }
   end
   if change.conflict then
     chunks[#chunks + 1] = { "(conflict) ", "JjConflict" }
+  end
+  local status = log and log.statuses[change.id]
+  if status then
+    local icon = status.kind == "busy" and spinner_frames[spinner.frame]
+      or status_icons[status.kind]
+    chunks[#chunks + 1] = {
+      ("%s %s "):format(icon, status.text),
+      "JjStatus" .. status.kind:sub(1, 1):upper() .. status.kind:sub(2),
+    }
   end
 
   local marks = assert(row.marks)
@@ -227,6 +279,104 @@ local draw_rows = function(bufnr, log, first)
     draw_left(bufnr, row, line)
     draw_right(bufnr, row, line, texts[index - first + 1] or "")
   end
+end
+
+--- Redraws what follows the subjects of a log buffer's changes, all of them
+--- or only the given one's.
+---@param bufnr integer
+---@param id? string
+local redraw_right = function(bufnr, id)
+  local log = logs[bufnr]
+  if not log or not vim.api.nvim_buf_is_valid(bufnr) then return end
+  if vim.api.nvim_buf_line_count(bufnr) ~= #log.rows then return end
+  for index, row in ipairs(log.rows) do
+    if row.marks and (not id or row.change.id == id) then
+      local text = vim.api.nvim_buf_get_lines(bufnr, index - 1, index, false)[1]
+      draw_right(bufnr, row, index - 1, text or "")
+    end
+  end
+end
+
+--- Returns whether any operation on the changes of the log buffers is in
+--- progress.
+---@return boolean
+local any_busy = function()
+  for _, log in pairs(logs) do
+    for _, status in pairs(log.statuses) do
+      if status.kind == "busy" then return true end
+    end
+  end
+  return false
+end
+
+--- Starts animating the spinners of the operations in progress, or stops it
+--- once there are none.
+local update_spinner = function()
+  if not any_busy() then
+    if spinner.timer then
+      spinner.timer:close()
+      spinner.timer = nil
+    end
+    return
+  end
+  if spinner.timer then return end
+
+  spinner.timer = assert(uv.new_timer())
+  spinner.timer:start(
+    spinner_interval_ms,
+    spinner_interval_ms,
+    vim.schedule_wrap(function()
+      spinner.frame = spinner.frame % #spinner_frames + 1
+      for bufnr, log in pairs(logs) do
+        for id, status in pairs(log.statuses) do
+          if status.kind == "busy" then redraw_right(bufnr, id) end
+        end
+      end
+    end)
+  )
+end
+
+--- Returns a message on a single line.
+---@param text string
+---@return string
+local single_line = function(text)
+  return (vim.trim(text):gsub(":\n", ": "):gsub("\n", ", "))
+end
+
+--- Draws the status of an operation on a change of a log buffer. A finished
+--- operation's status is cleared after a while.
+---@param bufnr integer
+---@param id string
+---@param kind nvim_jj.StatusKind
+---@param text string
+local set_status = function(bufnr, id, kind, text)
+  local log = logs[bufnr]
+  if not log then return end
+
+  local previous = log.statuses[id]
+  if previous and previous.timer and not previous.timer:is_closing() then
+    previous.timer:close()
+  end
+
+  ---@type nvim_jj.Status
+  local status = { kind = kind, text = single_line(text) }
+  log.statuses[id] = status
+  if kind ~= "busy" then
+    local timer = assert(uv.new_timer())
+    status.timer = timer
+    timer:start(
+      status_durations_ms[kind],
+      0,
+      vim.schedule_wrap(function()
+        if not timer:is_closing() then timer:close() end
+        if log.statuses[id] ~= status then return end
+        log.statuses[id] = nil
+        redraw_right(bufnr, id)
+      end)
+    )
+  end
+  redraw_right(bufnr, id)
+  update_spinner()
 end
 
 ---@class nvim_jj.Mark
@@ -521,7 +671,11 @@ local release = function(bufnr)
   if log.load then log.load.stream.kill() end
   if log.watcher then log.watcher:close() end
   if log.timer then log.timer:close() end
+  for _, status in pairs(log.statuses) do
+    if status.timer and not status.timer:is_closing() then status.timer:close() end
+  end
   logs[bufnr] = nil
+  update_spinner()
 end
 
 --- Starts redrawing a log buffer after each of its repo's jj operations. A
@@ -554,6 +708,7 @@ end
 --- The commands of the code actions on the changes of the log buffers.
 local commands = {
   open_pull_request = "nvim-jj.openPullRequest",
+  browse = "nvim-jj.browse",
 }
 
 --- Returns the log buffer of a URI.
@@ -572,20 +727,39 @@ end
 local code_actions = function(bufnr, line)
   local log = logs[bufnr]
   local row = log and log.rows[line]
-  if not row then return {} end
+  if not log or not row or not log.github_repo then return {} end
 
   ---@type lsp.CodeAction[]
   local actions = {}
-  if #row.change.local_bookmarks > 0 then
-    local title = "Open a pull request"
+  ---@param title string
+  ---@param command string
+  ---@param arguments any[]
+  local add = function(title, command, arguments)
     actions[#actions + 1] = {
       title = title,
-      command = {
-        title = title,
-        command = commands.open_pull_request,
-        arguments = { bufnr, line },
-      },
+      command = { title = title, command = command, arguments = arguments },
     }
+  end
+
+  local without_pull_request = false
+  for _, name in ipairs(row.change.local_bookmarks) do
+    local pull_request = log.pull_requests[name]
+    if pull_request then
+      add(
+        ("%s Open PR #%d in the browser"):format(github_icon, pull_request.number),
+        commands.browse,
+        { pull_request.url }
+      )
+    else
+      without_pull_request = true
+    end
+  end
+  if without_pull_request then
+    add(
+      ("%s Open a PR on GitHub"):format(github_icon),
+      commands.open_pull_request,
+      { bufnr, line }
+    )
   end
   return actions
 end
@@ -620,6 +794,8 @@ local server = function(dispatchers)
       local args = params.arguments or {}
       if params.command == commands.open_pull_request then
         M.open_pull_request(args[1], args[2])
+      elseif params.command == commands.browse then
+        vim.ui.open(args[1])
       end
       return vim.NIL
     end
@@ -651,6 +827,36 @@ local server = function(dispatchers)
   return client --[[@as vim.lsp.rpc.Client]]
 end
 
+--- Reads the open pull requests of a log buffer's GitHub repo, and draws
+--- them next to their bookmarks.
+---@param bufnr integer
+local refresh_pull_requests = function(bufnr)
+  local log = logs[bufnr]
+  if not log or not log.github_repo then return end
+  -- A read that started before a pull request was opened from the log
+  -- doesn't have it.
+  local version = log.pull_requests_version
+  github.pull_requests(log.root, config.gh, log.github_repo, function(err, pull_requests)
+    if err or not pull_requests or logs[bufnr] ~= log then return end
+    if log.pull_requests_version ~= version then return end
+    log.pull_requests = pull_requests
+    redraw_right(bufnr)
+  end)
+end
+
+--- Finds out whether a log buffer's remote is on GitHub, and reads its open
+--- pull requests if it is.
+---@param bufnr integer
+local detect_github = function(bufnr)
+  local log = logs[bufnr]
+  if not log then return end
+  jj.remote_url(log.root, config.remote, function(err, url)
+    if err or not url or logs[bufnr] ~= log then return end
+    log.github_repo = github.repo_of(url)
+    refresh_pull_requests(bufnr)
+  end)
+end
+
 --- Draws the log of the workspace a buffer is named after, with the cursor
 --- on the working-copy commit.
 ---@param bufnr integer
@@ -662,10 +868,14 @@ local load = function(bufnr)
       rows = {},
       cut = {},
       copied = {},
+      statuses = {},
+      pull_requests = {},
+      pull_requests_version = 0,
       on_drawn = {},
     }
     logs[bufnr] = log
     watch(bufnr, log)
+    detect_github(bufnr)
   end
 
   vim.bo[bufnr].buftype = "acwrite"
@@ -1296,6 +1506,15 @@ M.toggle = function(path)
   return win
 end
 
+--- Moves the cursor of the current window to a line, if it shows a log
+--- buffer.
+---@param bufnr integer
+---@param line integer
+local move_cursor = function(bufnr, line)
+  if vim.api.nvim_get_current_buf() ~= bufnr then return end
+  vim.api.nvim_win_set_cursor(0, { line, 0 })
+end
+
 --- Returns the line of a log buffer's topmost change among the given ones.
 ---@param log nvim_jj.Log
 ---@param ids string[]
@@ -1311,7 +1530,7 @@ end
 --- children become its children. Below them, it's their parent, and their
 --- parents become its parents. On a branch, it takes no children, which
 --- makes it a new branch on top of them above them, and their sibling below
---- them.
+--- them. The new change is then edited in insert mode, to name it.
 ---@param bufnr integer
 ---@param position "above"|"below"
 ---@param branch boolean
@@ -1340,7 +1559,12 @@ M.insert_change = function(bufnr, position, branch, first, last, on_done)
     if create_err or not id then return notify(create_err or "") end
     render(bufnr, false, function()
       local line = topmost_row(log, { id })
-      if line and on_done then on_done(line) end
+      if not line then return end
+      if vim.api.nvim_get_current_buf() == bufnr then
+        move_cursor(bufnr, line)
+        vim.cmd.startinsert()
+      end
+      if on_done then on_done(line) end
     end)
   end)
 end
@@ -1470,7 +1694,8 @@ end
 --- parents and it becomes their child. Above it, it becomes their parent and
 --- its children become theirs. On a branch, they take no children, which
 --- makes them its siblings below it and a new branch of it above it. The
---- copied changes stay copied.
+--- copied changes stay copied, and the cursor moves to the topmost pasted
+--- change.
 ---@param bufnr integer
 ---@param line integer The 1-based line.
 ---@param position "above"|"below"
@@ -1502,7 +1727,9 @@ M.paste = function(bufnr, line, position, branch, on_done)
   local redraw = function(pasted)
     render(bufnr, false, function()
       local pasted_line = topmost_row(log, pasted)
-      if pasted_line and on_done then on_done(pasted_line) end
+      if not pasted_line then return end
+      move_cursor(bufnr, pasted_line)
+      if on_done then on_done(pasted_line) end
     end)
   end
 
@@ -1605,9 +1832,11 @@ end
 --- are on top of is moved to it. On a new branch, or without a remote
 --- bookmark below them, the bookmark is prompted for, by default the `push-`
 --- one jj would name after the change, and an existing bookmark is only moved
---- once confirmed. The changes that are already pushed are skipped with a
---- warning, and each of their ancestors that isn't selected has to be pushed
---- already.
+--- once confirmed. A bookmark whose pushed version isn't below the change
+--- anymore is only overwritten once confirmed too. The changes that are
+--- already pushed are skipped with a warning, and each of their ancestors
+--- that isn't selected has to be pushed already. The progress is drawn after
+--- the pushed change.
 ---@param bufnr integer
 ---@param first integer The first line, 1-based.
 ---@param last integer The last line, inclusive.
@@ -1618,14 +1847,22 @@ M.push = function(bufnr, first, last, branch, on_done)
   if not log then return end
   local root, remote = log.root, config.remote
 
-  ---@param err? string
-  local finish = function(err)
-    if err then notify(err) end
+  local err, selected = changes_between(bufnr, log, first, last)
+  if err or not selected then
+    notify(err or "")
     if on_done then on_done(err) end
+    return
   end
 
-  local err, selected = changes_between(bufnr, log, first, last)
-  if err or not selected then return finish(err) end
+  --- The change whose line shows the push's progress, the pushed one once
+  --- it's known.
+  local shown = assert(selected[1]).id
+
+  ---@param push_err? string
+  local finish = function(push_err)
+    if push_err then set_status(bufnr, shown, "failed", push_err) end
+    if on_done then on_done(push_err) end
+  end
 
   local pushed =
     ("::remote_bookmarks(remote=exact:%s)"):format(jj.quote(remote))
@@ -1636,29 +1873,59 @@ M.push = function(bufnr, first, last, branch, on_done)
   local unpushed = ("(%s ~ %s)"):format(selection, pushed)
 
   ---@param name string
-  ---@param head nvim_jj.Change
-  local push_bookmark = function(name, head)
-    notify(
-      ("Pushing %s to %s@%s"):format(label(head), name, remote),
-      vim.log.levels.INFO
+  ---@return string
+  local remote_bookmark = function(name)
+    return ("remote_bookmarks(exact:%s, remote=exact:%s)"):format(
+      jj.quote(name),
+      jj.quote(remote)
     )
+  end
+
+  ---@param name string
+  ---@param head nvim_jj.Change
+  local send = function(name, head)
+    local target = ("%s@%s"):format(name, remote)
+    set_status(bufnr, head.id, "busy", "Pushing to " .. target)
     jj.push(root, name, remote, function(push_err)
       if push_err then return finish(push_err) end
-      notify(
-        ("Pushed %s to %s@%s"):format(label(head), name, remote),
-        vim.log.levels.INFO
-      )
+      set_status(bufnr, head.id, "done", "Pushed to " .. target)
+      refresh_pull_requests(bufnr)
       finish()
+    end)
+  end
+
+  --- Pushes a bookmark, once confirmed if its pushed version isn't below the
+  --- change, which overwrites it.
+  ---@param name string
+  ---@param head nvim_jj.Change
+  ---@param confirmed? boolean
+  local push_bookmark = function(name, head, confirmed)
+    shown = head.id
+    if confirmed then return send(name, head) end
+    local overwritten = ("%s ~ ::%s"):format(remote_bookmark(name), head.id)
+    jj.changes(root, overwritten, function(changes_err, changes)
+      if changes_err or not changes then return finish(changes_err) end
+      if #changes == 0 then return send(name, head) end
+      local overwrite = "Overwrite it"
+      vim.ui.select({ overwrite, "Cancel" }, {
+        prompt = ("%s@%s has changed since it was pushed, and pushing overwrites it"):format(
+          name,
+          remote
+        ),
+      }, function(choice)
+        if choice ~= overwrite then return finish() end
+        send(name, head)
+      end)
     end)
   end
 
   ---@param name string
   ---@param head nvim_jj.Change
-  ---@param backwards? boolean Whether the bookmark can move off its descendants.
+  ---@param backwards? boolean Whether the bookmark can move off its descendants, once confirmed.
   local push = function(name, head, backwards)
     jj.set_bookmark(root, name, head.id, backwards == true, function(set_err)
       if set_err then return finish(set_err) end
-      push_bookmark(name, head)
+      push_bookmark(name, head, backwards)
     end)
   end
 
@@ -1686,12 +1953,8 @@ M.push = function(bufnr, first, last, branch, on_done)
       ),
     }, function(choice)
       if choice ~= move then return finish() end
-      local remote_rev = ("remote_bookmarks(exact:%s, remote=exact:%s)"):format(
-        jj.quote(name),
-        jj.quote(remote)
-      )
-      jj.remote_bookmarks(root, remote_rev, remote, function(err, remotes)
-        if err or not remotes then return finish(err) end
+      jj.remote_bookmarks(root, remote_bookmark(name), remote, function(remotes_err, remotes)
+        if remotes_err or not remotes then return finish(remotes_err) end
         local tracked = not remotes[1] or remotes[1].tracked
         track_and_push({ name = name, tracked = tracked }, head, true)
       end)
@@ -1710,14 +1973,12 @@ M.push = function(bufnr, first, last, branch, on_done)
       local name = vim.trim(input or "")
       if name == "" then return finish() end
 
-      local quoted = jj.quote(name)
-      local existing = ("bookmarks(exact:%s) | remote_bookmarks(exact:%s, remote=exact:%s)"):format(
-        quoted,
-        quoted,
-        jj.quote(remote)
+      local existing = ("bookmarks(exact:%s) | %s"):format(
+        jj.quote(name),
+        remote_bookmark(name)
       )
-      jj.changes(root, existing, function(err, holders)
-        if err or not holders then return finish(err) end
+      jj.changes(root, existing, function(changes_err, holders)
+        if changes_err or not holders then return finish(changes_err) end
         if #holders == 0 then
           return jj.create_bookmark(root, name, head.id, function(create_err)
             if create_err then return finish(create_err) end
@@ -1734,6 +1995,7 @@ M.push = function(bufnr, first, last, branch, on_done)
 
   ---@param head nvim_jj.Change
   local push_head = function(head)
+    shown = head.id
     local own = head.local_bookmarks
     if not branch and #own == 1 then return push_bookmark(own[1], head) end
     if not branch and #own > 1 then
@@ -1767,10 +2029,7 @@ M.push = function(bufnr, first, last, branch, on_done)
   jj.changes(root, selection .. " & " .. pushed, function(pushed_err, already)
     if pushed_err or not already then return finish(pushed_err) end
     for _, change in ipairs(already) do
-      notify(
-        ("%s is already pushed"):format(label(change)),
-        vim.log.levels.WARN
-      )
+      set_status(bufnr, change.id, "warning", "Already pushed")
     end
     if #already == #selected then return finish() end
 
@@ -1962,41 +2221,217 @@ M.fetch = function(bufnr, on_done)
   end)
 end
 
+--- The prefix of the names of the buffers editing pull requests, which is
+--- followed by the workspace root and the bookmark.
+local pull_request_scheme = "jj-pr://"
+
+local editor_namespace = vim.api.nvim_create_namespace("nvim-jj-editor")
+
+--- Returns the pull request template of a workspace, if it has one, from
+--- the places GitHub looks for it.
+---@param root string
+---@return string?
+local pull_request_template = function(root)
+  for _, dir in ipairs({ ".github", "", "docs" }) do
+    local path = vim.fs.joinpath(root, dir)
+    for name, type in vim.fs.dir(path) do
+      if type == "file" and name:lower() == "pull_request_template.md" then
+        local file = io.open(vim.fs.joinpath(path, name), "r")
+        if file then
+          local text = file:read("*a")
+          file:close()
+          return text
+        end
+      end
+    end
+  end
+end
+
+--- Returns the title GitHub gives a pull request of several commits, from
+--- its branch's name.
+---@param name string
+---@return string
+local title_of_branch = function(name)
+  local title = name:gsub("[-_]", " ")
+  return (title:gsub("^%l", string.upper))
+end
+
+--- Edits a pull request's title and description in a buffer taking over a
+--- log buffer's window, whose first line is the title and the rest the
+--- description. Writing the buffer and then quitting it confirms them, and
+--- quitting it without writing it aborts. The log buffer is shown again in
+--- the window afterwards.
+---@param bufnr integer The log buffer.
+---@param name string The pull request's bookmark.
+---@param lines string[]
+---@param on_confirm fun(title: string, body: string)
+---@param on_abort fun()
+local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
+  local log = assert(logs[bufnr])
+  local win = vim.fn.bufwinid(bufnr)
+  if win == -1 then win = vim.api.nvim_get_current_win() end
+
+  local editor = vim.api.nvim_create_buf(false, false)
+  without_autocmds(function()
+    vim.api.nvim_buf_set_name(editor, ("%s%s/%s#%d"):format(pull_request_scheme, log.root, name, editor))
+  end)
+  vim.api.nvim_buf_set_lines(editor, 0, -1, false, lines)
+  vim.bo[editor].buftype = "acwrite"
+  vim.bo[editor].bufhidden = "wipe"
+  vim.bo[editor].swapfile = false
+  vim.bo[editor].filetype = "markdown"
+  vim.bo[editor].modified = false
+  vim.api.nvim_buf_set_extmark(editor, editor_namespace, 0, 0, {
+    virt_lines = {
+      { {
+        ("The title of the pull request of %s, then its description. :wq opens it, :q! doesn't."):format(name),
+        "JjPlaceholder",
+      } },
+    },
+    virt_lines_above = true,
+  })
+
+  ---@type string[]?
+  local saved
+  local group = vim.api.nvim_create_augroup("nvim-jj-editor-" .. editor, { clear = true })
+
+  vim.api.nvim_create_autocmd("BufWriteCmd", {
+    group = group,
+    buffer = editor,
+    callback = function()
+      saved = vim.api.nvim_buf_get_lines(editor, 0, -1, false)
+      vim.bo[editor].modified = false
+    end,
+  })
+
+  -- Quitting the editor's window would close the log's split, so the log
+  -- takes the window's place first. If the quit is refused, e.g. for unsaved
+  -- changes, the log's window goes away again.
+  vim.api.nvim_create_autocmd("QuitPre", {
+    group = group,
+    buffer = editor,
+    callback = function()
+      local quitting = vim.api.nvim_get_current_win()
+      if vim.api.nvim_win_get_buf(quitting) ~= editor then return end
+      without_autocmds(function() vim.cmd("split") end)
+      local replacement = vim.api.nvim_get_current_win()
+      vim.api.nvim_win_set_buf(replacement, bufnr)
+      vim.schedule(function()
+        if not vim.api.nvim_win_is_valid(quitting) then return end
+        if not vim.api.nvim_win_is_valid(replacement) then return end
+        without_autocmds(function() vim.api.nvim_win_close(replacement, true) end)
+        vim.api.nvim_set_current_win(quitting)
+      end)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufWipeout", {
+    group = group,
+    buffer = editor,
+    callback = function()
+      vim.api.nvim_del_augroup_by_id(group)
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(bufnr) then
+          vim.bo[bufnr].bufhidden = "wipe"
+          if vim.fn.bufwinid(bufnr) == -1 then M.toggle(log.root) end
+        end
+        if not saved then return on_abort() end
+        local title = vim.trim(saved[1] or "")
+        local body = vim.trim(table.concat(vim.list_slice(saved, 2), "\n"))
+        if title == "" then return on_abort() end
+        on_confirm(title, body)
+      end)
+    end,
+  })
+
+  -- The log stays loaded while the editor shows instead of it.
+  vim.bo[bufnr].bufhidden = "hide"
+  vim.api.nvim_win_set_buf(win, editor)
+  vim.wo[win][0].wrap = true
+  vim.wo[win][0].conceallevel = 0
+end
+
 --- Opens a pull request of the bookmark of the change on a line of a log
---- buffer, into the remote bookmark the change is on top of. The bookmark
---- has to be pushed already, and the pull request's title is the change's
---- subject.
+--- buffer, into the remote bookmark the change is on top of, once its title
+--- and description are edited. The bookmark has to be pushed already. A
+--- single change's subject is the title, and the description is the repo's
+--- template, or else the change's description. The progress is drawn after
+--- the change.
 ---@param bufnr integer
 ---@param line integer The 1-based line.
----@param on_done? fun(err?: string, url?: string)
+---@param on_done? fun(err?: string, pull_request?: nvim_jj.PullRequest) Called once the pull request is opened, or wasn't.
 M.open_pull_request = function(bufnr, line, on_done)
   local log = logs[bufnr]
   if not log then return end
   local root, remote = log.root, config.remote
 
-  ---@param err? string
-  ---@param url? string
-  local finish = function(err, url)
-    if err then notify(err) end
-    if url then notify(("Opened %s"):format(url), vim.log.levels.INFO) end
-    if on_done then on_done(err, url) end
+  local err, changes = changes_between(bufnr, log, line, line)
+  if err or not changes then
+    notify(err or "")
+    if on_done then on_done(err) end
+    return
+  end
+  local change = assert(changes[1])
+
+  ---@param open_err? string
+  ---@param pull_request? nvim_jj.PullRequest
+  local finish = function(open_err, pull_request)
+    if open_err then set_status(bufnr, change.id, "failed", open_err) end
+    if on_done then on_done(open_err, pull_request) end
   end
 
-  local err, changes = changes_between(bufnr, log, line, line)
-  if err or not changes then return finish(err) end
-  local change = assert(changes[1])
+  local repo = log.github_repo
+  if not repo then return finish(("%s isn't on GitHub"):format(remote)) end
 
   ---@param head string
   ---@param base string
-  local create = function(head, base)
-    jj.remote_url(root, remote, function(url_err, url)
-      if url_err or not url then return finish(url_err) end
-      local repo = github.repo_of(url)
-      if not repo then
-        return finish(("%s isn't a GitHub repo"):format(remote))
-      end
-      notify(("Opening a pull request of %s into %s"):format(head, base), vim.log.levels.INFO)
-      github.create_pull_request(root, config.gh, repo, head, base, change.subject, finish)
+  ---@param title string
+  ---@param body string
+  local create = function(head, base, title, body)
+    set_status(bufnr, change.id, "busy", ("Opening a pull request into %s"):format(base))
+    github.create_pull_request(root, config.gh, repo, head, base, title, body, function(create_err, pull_request)
+      if create_err or not pull_request then return finish(create_err) end
+      log.pull_requests[head] = pull_request
+      log.pull_requests_version = log.pull_requests_version + 1
+      set_status(bufnr, change.id, "done", ("Opened pull request #%d"):format(pull_request.number))
+      finish(nil, pull_request)
+    end)
+  end
+
+  ---@param head string
+  ---@param base string
+  local edit = function(head, base)
+    local range = ("remote_bookmarks(exact:%s, remote=exact:%s)..%s"):format(
+      jj.quote(base),
+      jj.quote(remote),
+      change.id
+    )
+    jj.changes(root, range, function(range_err, stack)
+      if range_err or not stack then return finish(range_err) end
+      jj.description(root, change.id, function(desc_err, description)
+        if desc_err or not description then return finish(desc_err) end
+        local single = #stack == 1
+        local title = single and change.subject or title_of_branch(head)
+        local body = pull_request_template(root)
+          or (single and description:gsub("^[^\n]*\n?", "") or "")
+        local lines = { title, "" }
+        body = vim.trim(body)
+        if body ~= "" then
+          vim.list_extend(lines, vim.split(body, "\n", { plain = true }))
+        end
+        edit_pull_request(
+          bufnr,
+          head,
+          lines,
+          function(confirmed_title, confirmed_body)
+            create(head, base, confirmed_title, confirmed_body)
+          end,
+          function()
+            set_status(bufnr, change.id, "warning", "Didn't open a pull request")
+            finish()
+          end
+        )
+      end)
     end)
   end
 
@@ -2013,22 +2448,30 @@ M.open_pull_request = function(bufnr, line, on_done)
         return finish(("Push %s to %s first"):format(head, remote))
       end
 
-      local base = ("heads(::%s- & ::remote_bookmarks(remote=exact:%s))"):format(
-        change.id,
+      -- The base is the closest other bookmark of the remote below the
+      -- change, or else the trunk's.
+      local others = ("remote_bookmarks(remote=exact:%s) ~ remote_bookmarks(exact:%s, remote=exact:%s)"):format(
+        jj.quote(remote),
+        jj.quote(head),
         jj.quote(remote)
       )
-      jj.remote_bookmarks(root, base, remote, function(base_err, bookmarks)
-        if base_err or not bookmarks then return finish(base_err) end
+      local base = ("coalesce(heads(::%s- & (%s)), trunk())"):format(change.id, others)
+      jj.remote_bookmarks(root, base, remote, function(base_err, found)
+        if base_err or not found then return finish(base_err) end
+        local bookmarks = vim.tbl_filter(
+          function(bookmark) return bookmark.name ~= head end,
+          found
+        )
         if #bookmarks == 0 then
-          return finish(("%s isn't on top of a bookmark of %s"):format(label(change), remote))
+          return finish(("It isn't on top of a bookmark of %s"):format(remote))
         end
-        if #bookmarks == 1 then return create(head, bookmarks[1].name) end
+        if #bookmarks == 1 then return edit(head, bookmarks[1].name) end
         vim.ui.select(bookmarks, {
           prompt = "Bookmark to pull into",
           format_item = function(bookmark) return bookmark.name end,
         }, function(bookmark)
           if bookmark then
-            create(head, bookmark.name)
+            edit(head, bookmark.name)
           else
             finish()
           end
@@ -2037,9 +2480,12 @@ M.open_pull_request = function(bufnr, line, on_done)
     end)
   end
 
-  local own = change.local_bookmarks
+  local own = vim.tbl_filter(
+    function(name) return not log.pull_requests[name] end,
+    change.local_bookmarks
+  )
   if #own == 0 then
-    return finish(("%s has no bookmark to open a pull request of"):format(label(change)))
+    return finish("It has no bookmark without a pull request")
   end
   if #own == 1 then return open(own[1]) end
   vim.ui.select(own, { prompt = "Bookmark to open a pull request of" }, function(name)
@@ -2116,6 +2562,11 @@ local set_highlights = function()
     JjDivergent = { link = "DiagnosticWarn" },
     JjGraph = { link = "NonText" },
     JjPlaceholder = { link = "Comment" },
+    JjPullRequest = { link = "Special" },
+    JjStatusBusy = { fg = comment },
+    JjStatusDone = { link = "DiagnosticOk" },
+    JjStatusFailed = { link = "DiagnosticError" },
+    JjStatusWarning = { link = "DiagnosticWarn" },
     JjTimestamp = { fg = comment },
     JjWorkingCopy = { link = "Title" },
   }

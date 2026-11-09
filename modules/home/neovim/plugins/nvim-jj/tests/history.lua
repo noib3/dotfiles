@@ -39,6 +39,8 @@ test("an inserted change is undone and redone", function()
   wait_for(function(on_done)
     nvim_jj.insert_change(bufnr, "above", false, line, line, on_done)
   end)
+  -- The new change is edited in insert mode, which the tests don't need.
+  vim.cmd.stopinsert()
   h.eq(history(root), { "[@]", "[two]", "[]", "[one]" })
   undo(bufnr)
   h.eq(history(root), { "[@]", "[two]", "[one]" })
@@ -54,6 +56,8 @@ test("undoing an inserted change that isn't empty anymore is an error", function
   wait_for(function(on_done)
     nvim_jj.insert_change(bufnr, "above", false, line, line, on_done)
   end)
+  -- The new change is edited in insert mode, which the tests don't need.
+  vim.cmd.stopinsert()
   h.run(root, { "jj", "describe", "--quiet", "-r", "@-", "-m", "filled" })
   local file = assert(io.open(vim.fs.joinpath(root, "new"), "w"))
   file:write("new\n")

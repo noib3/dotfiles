@@ -587,6 +587,12 @@ local generation = 0
 ---@type nvim_hunks.trouble.Opening?
 local opening
 
+--- The folded rows of the lists of hunks, keyed by node ID, which stay folded
+--- when a list is closed and opened again. The IDs of the directories' and
+--- files' rows are made of their paths.
+---@type table<string, true>
+local folds = {}
+
 --- Forgets the listings, and stops showing all diffs.
 local reset = function()
   roots = nil
@@ -745,6 +751,10 @@ end
 ---@param cb fun(items: trouble.Item[])
 ---@param ctx { main?: trouble.Main, opts: { cwd?: string, center?: boolean } }
 M.get = function(cb, ctx)
+  for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
+    open.view.renderer._folded = folds
+  end
+
   if roots == nil then
     roots = hunks.workspaces(ctx.opts.cwd)
     hunks.show_all(true)
@@ -819,26 +829,51 @@ M.preview = function(item, ctx)
   end
 end
 
---- Moves the change under the cursor into another revision: the hunk, all of
---- the file's changes, or all the changes in the directory.
----@param ctx trouble.Action.ctx
+--- Moves the changes of rows of a list of hunks into another revision: the
+--- whole files of folder and file rows, and the hunks of hunk rows, except
+--- the ones of files moved whole.
+---@param nodes trouble.Node[]
 ---@param into string
-M.move = function(ctx, into)
-  local node = ctx.node
-  if not node then return end
-
-  if node:source() == "fs" then
-    return hunks.move_files(files_of(node), into)
+M.move = function(nodes, into)
+  ---@type nvim_hunks.File[], table<nvim_hunks.File, true?>
+  local files, whole = {}, {}
+  ---@param file nvim_hunks.File
+  local add_file = function(file)
+    if whole[file] then return end
+    whole[file] = true
+    files[#files + 1] = file
   end
 
-  ---@type nvim_hunks.trouble.Entry?
-  local entry = node.item and node.item.item --[[@as nvim_hunks.trouble.Entry?]]
-  if not entry or not entry.file then return end
-  if entry.hunk then
-    hunks.move_hunk(entry.file, entry.hunk, into)
-  else
-    hunks.move_file(entry.file, into)
+  ---@type nvim_hunks.HunkSelection[], table<nvim_hunks.File, nvim_hunks.HunkSelection?>
+  local selections, by_file = {}, {}
+  for _, node in ipairs(nodes) do
+    if node:source() == "fs" then
+      for _, file in ipairs(files_of(node)) do
+        add_file(file)
+      end
+    else
+      ---@type nvim_hunks.trouble.Entry?
+      local entry = node.item and node.item.item --[[@as nvim_hunks.trouble.Entry?]]
+      if entry and entry.file and entry.hunk then
+        local selection = by_file[entry.file]
+        if not selection then
+          selection = { file = entry.file, hunks = {} }
+          by_file[entry.file] = selection
+          selections[#selections + 1] = selection
+        end
+        table.insert(selection.hunks, entry.hunk)
+      elseif entry and entry.file then
+        add_file(entry.file)
+      end
+    end
   end
+
+  selections = vim.tbl_filter(
+    function(selection) return not whole[selection.file] end,
+    selections
+  )
+  if #files == 0 and #selections == 0 then return end
+  hunks.move_many(files, selections, into)
 end
 
 local group =

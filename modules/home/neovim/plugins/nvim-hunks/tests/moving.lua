@@ -295,3 +295,35 @@ test("moving into several parents asks which one", function()
   vim.ui.select = select
   h.eq(labels, { "p1", "p2" })
 end)
+
+test("several hunks of a file move together", function()
+  local repo = h.repo(
+    { ["g.txt"] = text({ "a", "b", "c", "d", "e", "f", "g" }) },
+    { ["g.txt"] = text({ "A", "b", "c", "D", "e", "f", "G" }) }
+  )
+  local file = changed("g.txt", repo)
+  hunks.move_many({}, {
+    { file = file, hunks = { assert(file.hunks[1]), assert(file.hunks[3]) } },
+  }, "@-")
+  wait_in_parent("g.txt", text({ "A", "b", "c", "d", "e", "f", "G" }), repo)
+end)
+
+test("hunks of several files and whole files move one after the other", function()
+  local repo = h.repo({
+    ["a.txt"] = text({ "a", "b", "c", "d" }),
+    ["b.txt"] = text({ "a", "b" }),
+    ["c.txt"] = text({ "a" }),
+  }, {
+    ["a.txt"] = text({ "A", "b", "c", "D" }),
+    ["b.txt"] = text({ "A", "b" }),
+    ["c.txt"] = text({ "C" }),
+  })
+  local a, b = changed("a.txt", repo), changed("b.txt", repo)
+  hunks.move_many({ changed("c.txt", repo) }, {
+    { file = a, hunks = { assert(a.hunks[1]) } },
+    { file = b, hunks = { assert(b.hunks[1]) } },
+  }, "@-")
+  wait_in_parent("b.txt", text({ "A", "b" }), repo)
+  h.eq(in_parent("a.txt", repo), text({ "A", "b", "c", "d" }))
+  h.eq(in_parent("c.txt", repo), text({ "C" }))
+end)

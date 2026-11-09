@@ -1086,6 +1086,110 @@ M.move_hunk = function(file, hunk, into)
   move_lines(file, selected_old, selected_new, into)
 end
 
+---@class nvim_hunks.HunkSelection
+---@field file nvim_hunks.File
+---@field hunks nvim_hunks.Hunk[]
+
+--- Returns the lines of a file's hunks, in the base and in the working copy.
+---@param hunk_list nvim_hunks.Hunk[]
+---@return table<integer, true?> selected_old
+---@return table<integer, true?> selected_new
+local lines_of_hunks = function(hunk_list)
+  ---@type table<integer, true?>, table<integer, true?>
+  local selected_old, selected_new = {}, {}
+  for _, hunk in ipairs(hunk_list) do
+    for line = hunk.old_start, hunk.old_start + hunk.old_count - 1 do
+      selected_old[line] = true
+    end
+    for line = hunk.new_start, hunk.new_start + hunk.new_count - 1 do
+      selected_new[line] = true
+    end
+  end
+  return selected_old, selected_new
+end
+
+--- Moves whole files and some of the hunks of others into another revision.
+--- The revision is picked once per workspace. Each workspace's whole files
+--- are moved together, and then each file's hunks together, with its rename
+--- if it was renamed, one jj operation after the other.
+---@param files nvim_hunks.File[] The files moved whole.
+---@param selections nvim_hunks.HunkSelection[]
+---@param into string
+M.move_many = function(files, selections, into)
+  ---@type string[], table<string, { paths: string[], selections: nvim_hunks.HunkSelection[] }>
+  local roots, groups = {}, {}
+  ---@param root string
+  local group_of = function(root)
+    local group = groups[root]
+    if not group then
+      group = { paths = {}, selections = {} }
+      groups[root] = group
+      roots[#roots + 1] = root
+    end
+    return group
+  end
+
+  for _, file in ipairs(files) do
+    for _, path in ipairs({ file.path, file.old_path }) do
+      local bufnr = buffer_of(vim.fs.joinpath(file.root, path))
+      if bufnr and vim.bo[bufnr].modified then
+        return notify_error("Save the buffers first")
+      end
+      table.insert(group_of(file.root).paths, path)
+    end
+  end
+
+  for _, selection in ipairs(selections) do
+    local file = selection.file
+    local path = vim.fs.joinpath(file.root, file.path)
+    local bufnr = buffer_of(path)
+    if bufnr and vim.bo[bufnr].modified then
+      return notify_error("Save the buffers first")
+    end
+    local lines = file.status == "removed" and {} or read_lines(path) or {}
+    if not vim.deep_equal(lines, file.lines) then
+      notify_error("A file changed since its hunks were computed")
+      return fire(files_changed_event)
+    end
+    table.insert(group_of(file.root).selections, selection)
+  end
+
+  for _, root in ipairs(roots) do
+    local group = groups[root]
+    pick_revision(root, into, function(target)
+      ---@type fun(on_done: fun())[]
+      local steps = {}
+      if #group.paths > 0 then
+        steps[#steps + 1] = function(on_done)
+          jj.squash_paths(root, target, group.paths, function(squash_err)
+            vim.schedule(function()
+              if squash_err then return notify_error(squash_err) end
+              reload_files(root, group.paths)
+              on_done()
+            end)
+          end)
+        end
+      end
+      for _, selection in ipairs(group.selections) do
+        steps[#steps + 1] = function(on_done)
+          local selected_old, selected_new = lines_of_hunks(selection.hunks)
+          move_lines(selection.file, selected_old, selected_new, target, on_done)
+        end
+      end
+
+      local index = 0
+      ---@type fun()
+      local step
+      step = function()
+        index = index + 1
+        local next_step = steps[index]
+        if next_step then next_step(step) end
+      end
+      step()
+    end)
+  end
+end
+
 --- Draws the contents of a deleted file's buffer as deleted lines, laid out
 --- for a window showing it.
 ---@param bufnr integer

@@ -78,16 +78,6 @@ vim.api.nvim_create_autocmd("FileType", {
     -- close it while scrolling, so `q` closes it instead.
     vim.keymap.set("n", "j", "j", { buffer = bufnr, nowait = true })
     map("n", "q", function() jj.toggle() end, "Close the jj log")
-    -- The log isn't a file, so closing it doesn't delete its buffer or go
-    -- back to the base terminal's terminal mode.
-    map("n", "<D-w>", function() jj.toggle() end, "Close the jj log")
-
-    ---@param line integer
-    local move_cursor = function(line)
-      if vim.api.nvim_get_current_buf() == bufnr then
-        vim.api.nvim_win_set_cursor(0, { line, 0 })
-      end
-    end
 
     -- Children are drawn above their parents, so a change opened above the
     -- line is a child, and one opened below it is a parent. With `g`, it
@@ -99,7 +89,7 @@ vim.api.nvim_create_autocmd("FileType", {
           (branch and "g" or "") .. keys,
           function()
             local first, last = selected_lines()
-            jj.insert_change(bufnr, position, branch, first, last, move_cursor)
+            jj.insert_change(bufnr, position, branch, first, last)
           end,
           ("Insert an empty change %s the selected ones%s"):format(
             position,
@@ -148,7 +138,7 @@ vim.api.nvim_create_autocmd("FileType", {
     for keys, position in pairs({ p = "below", P = "above" }) do
       map("n", keys, function()
         if jj.has_held(bufnr) then
-          jj.paste(bufnr, vim.fn.line("."), position, false, move_cursor)
+          jj.paste(bufnr, vim.fn.line("."), position, false)
         else
           local count = vim.v.count > 0 and tostring(vim.v.count) or ""
           local register = '"' .. vim.v.register
@@ -161,7 +151,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "n",
         "g" .. keys,
         function()
-          jj.paste(bufnr, vim.fn.line("."), position, true, move_cursor)
+          jj.paste(bufnr, vim.fn.line("."), position, true)
         end,
         ("Paste the cut or copied changes %s the change, on a new branch"):format(
           position

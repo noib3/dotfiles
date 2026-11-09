@@ -191,6 +191,8 @@ local insert = function(bufnr, position, first, last, branch)
     function(l) line = l end
   )
   h.wait(function() return line ~= nil end, "the change is inserted")
+  -- The new change is edited in insert mode, which the tests don't need.
+  vim.cmd.stopinsert()
   return assert(line)
 end
 
