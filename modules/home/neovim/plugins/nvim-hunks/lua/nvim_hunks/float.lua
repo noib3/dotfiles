@@ -193,6 +193,7 @@ M.open = function(source_win, buf, hunk, old_lines, syntax, line_count)
 
   local layout = render.layout(buf, source_win)
   layout.wrap_width = nil
+  layout.leftcol = 0
   highlight(float_buf, hunk, lines, syntax, layout)
 
   -- The float is placed at the screen rows of the virtual lines, which don't

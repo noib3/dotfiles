@@ -42,6 +42,7 @@ local config = {
 
 ---@class nvim_hunks.Buffer
 ---@field base_lines? string[] The file's lines at the base revision, unset until they're loaded or when the file isn't tracked.
+---@field base_eol? boolean Whether the file ends with a newline at the base revision.
 ---@field hunks nvim_hunks.Hunk[]
 ---@field old_path? string The file's path in the base revision if it was renamed since.
 ---@field path string The file's path relative to the repo's root.
@@ -49,6 +50,7 @@ local config = {
 ---@field request integer The number of base loads started for the buffer.
 ---@field syntax? nvim_hunks.Syntax The syntax of the base lines.
 ---@field syntax_filetype? string The filetype the syntax was computed for.
+---@field top_deleted? integer The number of deleted lines above the buffer's first line.
 ---@field timer? uv.uv_timer_t
 
 --- Whether the buffers of all files in jj workspaces show their diffs.
@@ -103,6 +105,14 @@ local fire = function(pattern, data)
   })
 end
 
+--- Returns whether a file's text ends with a newline, which its lines leave
+--- out. An empty file counts as ending with one.
+---@param text string
+---@return boolean
+local ends_with_newline = function(text)
+  return text == "" or text:sub(-1) == "\n"
+end
+
 ---@param text string
 ---@return string[]
 local split_lines = function(text)
@@ -134,6 +144,34 @@ local syntax_of = function(bufnr, state)
   return state.syntax
 end
 
+--- Returns the number of deleted lines drawn above a buffer's first line.
+---@param hunks nvim_hunks.Hunk[]
+---@param line_count integer
+---@return integer
+local top_deleted = function(hunks, line_count)
+  for _, hunk in ipairs(hunks) do
+    local row, above = render.deleted_anchor(hunk, line_count)
+    if hunk.old_count > 0 and row == 0 and above then return hunk.old_count end
+  end
+  return 0
+end
+
+--- Shows the deleted lines above a buffer's first line in a window scrolled
+--- to the top. Neovim keeps the virtual lines above a window's first line
+--- hidden until its 'topfill' reveals them.
+---@param win integer
+local show_top_deleted = function(win)
+  local state = buffers[vim.api.nvim_win_get_buf(win)]
+  local count = state and state.top_deleted or 0
+  if count == 0 then return end
+  vim.api.nvim_win_call(win, function()
+    local view = vim.fn.winsaveview()
+    if view.topline == 1 and view.topfill == 0 then
+      vim.fn.winrestview({ topfill = count })
+    end
+  end)
+end
+
 --- Draws the buffer's hunks laid out for a window showing it, without
 --- computing them again.
 ---@param bufnr integer
@@ -153,14 +191,16 @@ local draw = function(bufnr, win)
     .iter(state.hunks)
     :any(function(hunk) return hunk.old_count > 0 end)
   local syntax = has_deletions and syntax_of(bufnr, state) or {}
-  render.render(
-    bufnr,
-    state.hunks,
-    state.base_lines,
-    buffer_lines(bufnr),
-    syntax,
-    win
-  )
+  local lines = buffer_lines(bufnr)
+  render.render(bufnr, state.hunks, state.base_lines, lines, syntax, win)
+
+  local previous = state.top_deleted
+  state.top_deleted = top_deleted(state.hunks, #lines)
+  if state.top_deleted ~= previous then
+    for _, shown in ipairs(vim.fn.win_findbuf(bufnr)) do
+      show_top_deleted(shown)
+    end
+  end
 end
 
 ---@param bufnr integer
@@ -191,8 +231,10 @@ end
 ---@param bufnr integer
 ---@param state nvim_hunks.Buffer
 ---@param base_lines? string[]
-local set_base = function(bufnr, state, base_lines)
+---@param base_eol? boolean
+local set_base = function(bufnr, state, base_lines, base_eol)
   state.base_lines = base_lines
+  state.base_eol = base_eol ~= false
   state.syntax = nil
   update(bufnr)
 end
@@ -222,7 +264,7 @@ local load_base = function(bufnr)
   local listed = listed_files[root] and listed_files[root][state.path]
   if listed then
     state.old_path = listed.old_path
-    return set_base(bufnr, state, listed.base_lines)
+    return set_base(bufnr, state, listed.base_lines, listed.base_eol)
   end
 
   ---@param source string
@@ -232,7 +274,7 @@ local load_base = function(bufnr)
         if not is_current() then return end
         if err or not text then return notify(err or "Missing " .. source) end
         state.old_path = source
-        set_base(bufnr, state, split_lines(text))
+        set_base(bufnr, state, split_lines(text), ends_with_newline(text))
       end)
     end)
   end
@@ -244,7 +286,7 @@ local load_base = function(bufnr)
       if err then
         notify(err)
       elseif text then
-        set_base(bufnr, state, split_lines(text))
+        set_base(bufnr, state, split_lines(text), ends_with_newline(text))
       else
         -- A file missing from the base was either renamed, added or copied
         -- since, or isn't tracked at all.
@@ -558,36 +600,61 @@ local open_float = function(win, bufnr, hunk)
 end
 
 --- Returns the old lines with the selected lines of the hunks applied, i.e.
---- with the selected old lines deleted and the selected new lines added.
+--- with the selected old lines deleted and the selected new lines added, and
+--- whether the result ends with a newline: like the file its last line comes
+--- from if it's that file's last line, and otherwise always.
 ---@param old_lines string[]
 ---@param new_lines string[]
 ---@param hunks nvim_hunks.Hunk[]
 ---@param selected_old table<integer, true?>
 ---@param selected_new table<integer, true?>
----@return string[]
-local apply = function(old_lines, new_lines, hunks, selected_old, selected_new)
+---@param old_eol boolean
+---@param new_eol boolean
+---@return string[] lines
+---@return boolean eol
+local apply = function(
+  old_lines,
+  new_lines,
+  hunks,
+  selected_old,
+  selected_new,
+  old_eol,
+  new_eol
+)
   local lines = {}
   local next_old = 1
+  local eol = true
+
+  ---@param line integer
+  local add_old = function(line)
+    lines[#lines + 1] = old_lines[line]
+    eol = line < #old_lines or old_eol
+  end
+  ---@param line integer
+  local add_new = function(line)
+    lines[#lines + 1] = new_lines[line]
+    eol = line < #new_lines or new_eol
+  end
 
   for _, hunk in ipairs(hunks) do
     local first_old = hunk.old_count > 0 and hunk.old_start
       or hunk.old_start + 1
     for line = next_old, first_old - 1 do
-      lines[#lines + 1] = old_lines[line]
+      add_old(line)
     end
     for line = first_old, first_old + hunk.old_count - 1 do
-      if not selected_old[line] then lines[#lines + 1] = old_lines[line] end
+      if not selected_old[line] then add_old(line) end
     end
     for line = hunk.new_start, hunk.new_start + hunk.new_count - 1 do
-      if selected_new[line] then lines[#lines + 1] = new_lines[line] end
+      if selected_new[line] then add_new(line) end
     end
     next_old = first_old + hunk.old_count
   end
 
   for line = next_old, #old_lines do
-    lines[#lines + 1] = old_lines[line]
+    add_old(line)
   end
-  return lines
+  return lines, eol
 end
 
 --- Returns the loaded buffer of the file at the given absolute path.
@@ -605,19 +672,23 @@ local buffer_of = function(path)
 end
 
 --- Returns the lines of the file at the given absolute path, taken from its
---- buffer if it's loaded, and whether the file is binary.
+--- buffer if it's loaded, whether the file is binary, and whether it ends
+--- with a newline.
 ---@param path string
 ---@return string[]? lines
 ---@return boolean binary
+---@return boolean eol
 local read_lines = function(path)
   local bufnr = buffer_of(path)
-  if bufnr then return buffer_lines(bufnr), false end
+  if bufnr then return buffer_lines(bufnr), false, vim.bo[bufnr].eol end
 
   local file = io.open(path, "rb")
-  if not file then return nil, false end
+  if not file then return nil, false, true end
   local text = file:read("*a")
   file:close()
-  return split_lines(text), text:find("\0", 1, true) ~= nil
+  return split_lines(text),
+    text:find("\0", 1, true) ~= nil,
+    ends_with_newline(text)
 end
 
 --- Reloads the loaded buffers of the given files from disk.
@@ -656,7 +727,9 @@ end
 ---@field old_path? string The file's path in the base revision if it was renamed.
 ---@field status nvim_hunks.Status
 ---@field base_lines string[]
+---@field base_eol boolean Whether the file ends with a newline at the base revision.
 ---@field lines string[]
+---@field eol boolean Whether the file ends with a newline in the working copy.
 ---@field hunks nvim_hunks.Hunk[]
 ---@field binary boolean
 
@@ -684,7 +757,11 @@ local check_base = function(file, on_current)
       vim.schedule(function()
         if err then return notify_error(err) end
         local base_lines = text and split_lines(text) or {}
-        if vim.deep_equal(base_lines, file.base_lines) then
+        local base_eol = not text or ends_with_newline(text)
+        if
+          vim.deep_equal(base_lines, file.base_lines)
+          and base_eol == file.base_eol
+        then
           return on_current()
         end
         notify_error("The diff was out of date, try again")
@@ -702,12 +779,20 @@ end
 ---@param into string
 ---@param on_moved? fun()
 local move_lines = function(file, selected_old, selected_new, into, on_moved)
-  local lines =
-    apply(file.base_lines, file.lines, file.hunks, selected_old, selected_new)
-  if vim.deep_equal(lines, file.base_lines) then
+  local lines, eol = apply(
+    file.base_lines,
+    file.lines,
+    file.hunks,
+    selected_old,
+    selected_new,
+    file.base_eol,
+    file.eol
+  )
+  if vim.deep_equal(lines, file.base_lines) and eol == file.base_eol then
     return notify_error("The selection doesn't contain any changes")
   end
-  local text = #lines > 0 and table.concat(lines, "\n") .. "\n" or ""
+  local text = #lines > 0 and table.concat(lines, "\n") .. (eol and "\n" or "")
+    or ""
   local other_paths = file.old_path and { file.old_path } or {}
 
   check_single_revision(file.root, into, function(err)
@@ -765,7 +850,9 @@ local workspace_files = function(root, on_done)
         old_path = status == "renamed" and change.source or nil,
         status = status,
         base_lines = {},
+        base_eol = true,
         lines = {},
+        eol = true,
         hunks = {},
         binary = false,
       }
@@ -774,10 +861,13 @@ local workspace_files = function(root, on_done)
       ---@param base_text string
       local compute = vim.schedule_wrap(function(base_text)
         file.base_lines = split_lines(base_text)
+        file.base_eol = ends_with_newline(base_text)
         file.binary = base_text:find("\0", 1, true) ~= nil
         if status ~= "removed" then
-          local lines, binary = read_lines(vim.fs.joinpath(root, file.path))
+          local lines, binary, eol =
+            read_lines(vim.fs.joinpath(root, file.path))
           file.lines = lines or {}
+          file.eol = eol
           file.binary = file.binary or binary
         end
         if not file.binary then
@@ -909,7 +999,7 @@ M.move_file = function(file, into)
     if err then return notify_error(err) end
     if file.status == "renamed" and not file.binary then
       local text = #file.base_lines > 0
-          and table.concat(file.base_lines, "\n") .. "\n"
+          and table.concat(file.base_lines, "\n") .. (file.base_eol and "\n" or "")
         or ""
       check_base(
         file,
@@ -1177,7 +1267,9 @@ M.move = function(into)
       path = deleted.path,
       status = "removed",
       base_lines = {},
+      base_eol = true,
       lines = {},
+      eol = true,
       hunks = {},
       binary = false,
     }, into)
@@ -1232,7 +1324,9 @@ M.move = function(into)
       old_path = state.old_path,
       status = state.old_path and "renamed" or "modified",
       base_lines = state.base_lines,
+      base_eol = state.base_eol ~= false,
       lines = buffer_lines(bufnr),
+      eol = vim.bo[bufnr].eol,
       hunks = state.hunks,
       binary = false,
     },
@@ -1289,11 +1383,12 @@ M.setup = function(opts)
   })
 
   ---@param bufnr integer
-  local redraw = function(bufnr)
+  ---@param win? integer
+  local redraw = function(bufnr, win)
     if buffers[bufnr] then
-      draw(bufnr)
+      draw(bufnr, win)
     elseif deleted_buffers[bufnr] then
-      draw_deleted(bufnr)
+      draw_deleted(bufnr, win)
     end
   end
 
@@ -1301,6 +1396,26 @@ M.setup = function(opts)
     group = group,
     desc = "Redraws the diff to fit the buffer's window",
     callback = function(ev) redraw(ev.buf) end,
+  })
+
+  ---@type table<integer, { topline: integer, leftcol: integer }?>
+  local views = {}
+  vim.api.nvim_create_autocmd("WinScrolled", {
+    group = group,
+    desc = "Redraws the diffs of windows scrolled sideways, and shows the deleted lines above the first line of buffers scrolled to the top",
+    callback = function()
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
+        local previous = views[win]
+        views[win] = { topline = view.topline, leftcol = view.leftcol }
+        if (previous and previous.leftcol or 0) ~= view.leftcol then
+          redraw(vim.api.nvim_win_get_buf(win), win)
+        end
+        if previous and previous.topline ~= 1 and view.topline == 1 then
+          show_top_deleted(win)
+        end
+      end
+    end,
   })
 
   vim.api.nvim_create_autocmd("WinResized", {

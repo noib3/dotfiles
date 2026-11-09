@@ -5,7 +5,8 @@ h.setup(40, 16)
 
 ---@param root string
 ---@param path string
-local show_diff = function(root, path)
+---@param options? table<string, any> The window options other than the defaults.
+local show_diff = function(root, path, options)
   vim.cmd.edit(vim.fs.joinpath(root, path))
   vim.wo.number = true
   vim.wo.relativenumber = false
@@ -15,6 +16,10 @@ local show_diff = function(root, path)
   vim.wo.listchars = "eol:¬"
   vim.wo.showbreak = "↪ "
   vim.wo.colorcolumn = "12"
+  -- OptionSet doesn't fire during startup, which runs the tests.
+  for name, value in pairs(options or {}) do
+    vim.wo[name] = value
+  end
   hunks.toggle()
   h.wait(function() return #(hunks.hunks() or {}) > 0 end, "the diff is drawn")
 end
@@ -95,4 +100,96 @@ test("the floats close when the window is resized", function()
     ),
     {}
   )
+end)
+
+-- The kept line shows where Neovim draws the colorcolumns of the added one.
+local wide = ("a"):rep(35) .. "漢字\tbbbbbbb"
+local wide_root = h.repo(
+  { ["w.txt"] = wide .. "\n" },
+  { ["w.txt"] = wide .. "\n" .. wide .. "\n" }
+)
+
+test("wide characters move to the next row of wrapped lines", function()
+  show_diff(
+    wide_root,
+    "w.txt",
+    { listchars = "eol:¬,tab:  ", colorcolumn = "12,45,47" }
+  )
+  h.eq(
+    h.screen(1, 4),
+    table.concat({
+      "  1 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa>",
+      "ggggaaaaaaaaaaacaaaaaaaaaaaaaaaaaaaaaaaa",
+      "    ↪ 漢字      bbbbbbb¬",
+      "ggggaaaaaaaacacaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "  2 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa>",
+      "...............c........................",
+      "    ↪ 漢字      bbbbbbb¬",
+      "............c.c.........................",
+    }, "\n")
+  )
+end)
+
+test("lines scrolled sideways keep their boxes and colorcolumns", function()
+  local repo = h.repo(
+    { ["s.txt"] = "keep\nold\tline 漢字 that is gone\nkeep\n" },
+    { ["s.txt"] = "keep\nnew\tline\nkeep\n" .. ("x"):rep(60) .. "\n" }
+  )
+  show_diff(
+    repo,
+    "s.txt",
+    { wrap = false, listchars = "eol:¬,tab:  ", colorcolumn = "6,16" }
+  )
+  vim.api.nvim_win_set_cursor(0, { 4, 0 })
+
+  -- The main loop reports the scrolls, which headless tests don't run.
+  vim.cmd("normal! 5zl")
+  vim.api.nvim_exec_autocmds("WinScrolled", {})
+  h.eq(
+    h.screen(2, 3),
+    table.concat({
+      "       line 漢字 that is gone¬",
+      "hhhhcddddddDDDccDDDDDDDDDDDDDddddddddddd",
+      "  2    line¬",
+      "ggggcaaaaaaaaacaaaaaaaaaaaaaaaaaaaaaaaaa",
+    }, "\n")
+  )
+
+  vim.cmd("normal! 9zl")
+  vim.api.nvim_exec_autocmds("WinScrolled", {})
+  h.eq(
+    h.screen(2, 3),
+    table.concat({
+      "     字 that is gone¬",
+      "hhhhDccDDDDDDDDDDDDDdddddddddddddddddddd",
+      "  2",
+      "ggggacaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    }, "\n"),
+    "a line's end scrolled out of view keeps its box"
+  )
+end)
+
+test("deleted lines above the first line show at the top", function()
+  local rest = ("x\n"):rep(40)
+  local repo = h.repo(
+    { ["top.txt"] = "gone 1\ngone 2\nkeep\n" .. rest },
+    { ["top.txt"] = "keep\n" .. rest }
+  )
+  show_diff(repo, "top.txt")
+  local expected = table.concat({
+    "    gone 1¬",
+    "hhhhdddddddddddcdddddddddddddddddddddddd",
+    "    gone 2¬",
+    "hhhhdddddddddddcdddddddddddddddddddddddd",
+    "  1 keep¬",
+    "...............c........................",
+  }, "\n")
+  h.eq(h.screen(1, 3), expected)
+
+  -- The main loop reports the scrolls, which headless tests don't run.
+  vim.cmd("normal! G")
+  vim.api.nvim_exec_autocmds("WinScrolled", {})
+  vim.cmd("normal! gg")
+  vim.api.nvim_exec_autocmds("WinScrolled", {})
+  h.eq(h.screen(1, 3), expected, "scrolling back to the top shows them again")
 end)

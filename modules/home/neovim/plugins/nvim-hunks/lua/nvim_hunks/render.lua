@@ -178,6 +178,9 @@ end
 ---@field win? integer The window the lines are laid out in.
 ---@field gutter integer The width of the columns to the left of the text.
 ---@field text_width integer The width of the text area.
+--- The number of columns the lines are scrolled sideways by, if they don't
+--- wrap.
+---@field leftcol integer
 --- The width of the text area, if lines wrap in it.
 ---@field wrap_width? integer
 ---@field showbreak string The text shown at the start of wrapped rows.
@@ -197,6 +200,7 @@ M.layout = function(bufnr, win)
   local layout = {
     gutter = 0,
     text_width = 0,
+    leftcol = 0,
     showbreak = "",
     showbreak_width = 0,
     columns = {},
@@ -211,6 +215,7 @@ M.layout = function(bufnr, win)
   end
   local info = win and vim.fn.getwininfo(win)[1]
   if not info then return layout end
+  ---@cast win integer
 
   layout.win = win
   layout.gutter = info.textoff
@@ -222,6 +227,8 @@ M.layout = function(bufnr, win)
       layout.showbreak = showbreak
       layout.showbreak_width = vim.api.nvim_strwidth(showbreak)
     end
+  else
+    layout.leftcol = vim.api.nvim_win_call(win, vim.fn.winsaveview).leftcol
   end
 
   if vim.wo[win].list then
@@ -341,90 +348,6 @@ M.syntax_segments = function(text, captures)
   return segments
 end
 
---- Replaces the tabs in a text with the spaces they'd be displayed as.
----@param text string
----@param width integer The display width of what precedes the text on its line.
----@param tabstop integer
----@return string expanded
----@return integer width The display width up to the end of the text.
-local expand_tabs = function(text, width, tabstop)
-  local parts = {}
-  local start = 1
-
-  while true do
-    local tab = text:find("\t", start, true)
-    local segment = text:sub(start, tab and tab - 1 or #text)
-    parts[#parts + 1] = segment
-    width = width + vim.api.nvim_strwidth(segment)
-    if not tab then break end
-    local spaces = tabstop - width % tabstop
-    parts[#parts + 1] = (" "):rep(spaces)
-    width = width + spaces
-    start = tab + 1
-  end
-
-  return table.concat(parts), width
-end
-
---- Returns the display width of a line, with its tabs expanded.
----@param text string
----@param tabstop integer
----@return integer
-local line_width = function(text, tabstop)
-  local _, width = expand_tabs(text, 0, tabstop)
-  return width
-end
-
---- Returns the number of screen rows a line of the given display width takes
---- up, and the display width of its last row, including the 'showbreak' of
---- wrapped rows.
----@param width integer
----@param layout nvim_hunks.Layout
----@return integer rows
----@return integer last_width
-local rows_of = function(width, layout)
-  local wrap_width = layout.wrap_width
-  if not wrap_width or width <= wrap_width then return 1, width end
-  local continued = wrap_width - layout.showbreak_width
-  if continued <= 0 then return 1, width end
-  local rows = 1 + math.ceil((width - wrap_width) / continued) --[[@as integer]]
-  local last = width - wrap_width - (rows - 2) * continued
-  return rows, layout.showbreak_width + last
-end
-
---- Returns the virtual column displayed at a screen column of a line's row,
---- or nothing if the 'showbreak' of a wrapped row is displayed there.
----@param row integer The 1-based row.
----@param column integer The 1-based screen column of the text area.
----@param layout nvim_hunks.Layout
----@return integer?
-local virtcol_at = function(row, column, layout)
-  if row == 1 then return column end
-  if column <= layout.showbreak_width then return end
-  local wrap_width = assert(layout.wrap_width)
-  local continued = wrap_width - layout.showbreak_width
-  return wrap_width + (row - 2) * continued + column - layout.showbreak_width
-end
-
---- Returns the 0-based byte range of the character displayed at a 1-based
---- virtual column of a line, if the line reaches it.
----@param text string
----@param virtcol integer
----@param tabstop integer
----@return integer? start
----@return integer? end_
-local char_at = function(text, virtcol, tabstop)
-  local width = 0
-  for _, start in ipairs(vim.str_utf_pos(text)) do
-    local end_ = start + vim.str_utf_end(text, start)
-    local char = text:sub(start, end_)
-    local char_width = char == "\t" and tabstop - width % tabstop
-      or vim.api.nvim_strwidth(char)
-    width = width + char_width
-    if width >= virtcol then return start - 1, end_ end
-  end
-end
-
 --- Returns the chunks of the cells between the end of a line's row and a
 --- screen column, with the colorcolumn over the diff's background. The first
 --- one shows the 'listchars' end of line, which they cover.
@@ -487,36 +410,115 @@ local colored_columns = function(row, layout)
   return columns
 end
 
---- Returns the 0-based byte ranges of the characters of a line under its
---- colorcolumns.
+---@class nvim_hunks.Row
+--- The row's width, its 'showbreak' and filler cells included.
+---@field width integer
+--- The 0-based byte ranges of the characters at the row's 1-based screen
+--- columns.
+---@field chars table<integer, [integer, integer]>
+--- The 0-based byte of the row's first character, unless the character is a
+--- wide one displayed past the previous row's filler cells, whose byte is on
+--- that row.
+---@field anchor? integer
+--- The filler cells at the end of the row, in front of a wide character that
+--- doesn't fit on it.
+---@field filler? { byte: integer, column: integer }
+
+--- Returns the screen rows a line takes up. A character wider than the room
+--- left on a row moves to the next one, which the row fills up with filler
+--- cells. A tab's width counts every cell before it, including those of the
+--- 'showbreak' and of the filler.
 ---@param text string
 ---@param layout nvim_hunks.Layout
----@return [integer, integer][]
-M.colored_chars = function(text, layout)
-  local ranges = {}
-  local rows = rows_of(line_width(text, layout.tabstop), layout)
-  for column in pairs(layout.columns) do
-    local row, screen_column = column_position(column, layout)
-    local virtcol = row <= rows and virtcol_at(row, screen_column, layout)
-    local start, end_ = nil, nil
-    if virtcol then
-      start, end_ = char_at(text, virtcol, layout.tabstop)
-    end
-    if start then ranges[#ranges + 1] = { start, end_ } end
+---@param wrap_width? integer The width the rows wrap at, if they do.
+---@return nvim_hunks.Row[]
+local rows_of = function(text, layout, wrap_width)
+  if wrap_width and wrap_width <= layout.showbreak_width then
+    wrap_width = nil
   end
-  return ranges
+
+  ---@type nvim_hunks.Row
+  local row = { width = 0, chars = {} }
+  local rows = { row }
+  local vcol = 0
+  local is_full = function() return wrap_width and row.width >= wrap_width end
+  local next_row = function()
+    row = { width = layout.showbreak_width, chars = {} } --[[@as nvim_hunks.Row]]
+    rows[#rows + 1] = row
+    vcol = vcol + layout.showbreak_width
+  end
+
+  for _, start in ipairs(vim.str_utf_pos(text)) do
+    local end_ = start + vim.str_utf_end(text, start)
+    local char = text:sub(start, end_)
+    local range = { start - 1, end_ }
+    if is_full() then next_row() end
+
+    local is_tab = char == "\t"
+    local width = is_tab and layout.tabstop - vcol % layout.tabstop
+      or vim.api.nvim_strwidth(char)
+    if wrap_width and not is_tab and row.width + width > wrap_width then
+      row.filler = { byte = range[1], column = row.width + 1 }
+      vcol = vcol + wrap_width - row.width
+      row.width = wrap_width
+      next_row()
+    elseif not row.anchor then
+      row.anchor = range[1]
+    end
+
+    -- Only a tab's cells continue on the next row.
+    for _ = 1, width do
+      if is_full() then next_row() end
+      row.width = row.width + 1
+      row.chars[row.width] = range
+    end
+    vcol = vcol + width
+  end
+
+  return rows
+end
+
+--- Returns chunks without the cells of their first columns. A character
+--- partly among those cells leaves spaces in its remaining ones.
+---@param chunks [string, string|string[]][]
+---@param count integer The number of cells.
+---@return [string, string|string[]][]
+local drop_cells = function(chunks, count)
+  local kept = {}
+  for _, chunk in ipairs(chunks) do
+    local text = chunk[1]
+    if count > 0 then
+      local width = vim.api.nvim_strwidth(text)
+      if width <= count then
+        text = ""
+        count = count - width
+      else
+        local chars = vim.fn.split(text, "\\zs")
+        local idx, dropped = 0, 0
+        while dropped < count do
+          idx = idx + 1
+          dropped = dropped + vim.api.nvim_strwidth(assert(chars[idx]))
+        end
+        text = (" "):rep(dropped - count) .. table.concat(chars, "", idx + 1)
+        count = 0
+      end
+    end
+    if text ~= "" then kept[#kept + 1] = { text, chunk[2] } end
+  end
+  return kept
 end
 
 --- Returns the chunks of the virtual line displaying a deleted line, each
---- combining its syntax highlight with the diff's background.
+--- combining its syntax highlight with the diff's background. The chunks
+--- start at the window's 'leftcol'.
 ---@param text string
 ---@param captures? [integer, integer, string][]
 ---@param changes nvim_hunks.Range[]
 ---@param layout nvim_hunks.Layout
 ---@return [string, string|string[]][]
 local deleted_line = function(text, captures, changes, layout)
-  local tabstop = layout.tabstop
-  local text_width = line_width(text, tabstop)
+  -- Virtual lines don't wrap, so they only have the colorcolumn of first rows.
+  local row = rows_of(text, layout)[1] --[[@as nvim_hunks.Row]]
 
   ---@type table<integer, string?>
   local groups = {}
@@ -534,55 +536,49 @@ local deleted_line = function(text, captures, changes, layout)
     end
   end
 
-  -- Virtual lines don't wrap, so they only have the colorcolumn of first rows.
-  ---@type table<integer, boolean>
-  local colored = {}
-  for column in pairs(colored_columns(1, layout)) do
-    local start, end_ = char_at(text, column, tabstop)
-    if start then
-      for col = start + 1, end_ do
-        colored[col] = true
+  local colored = colored_columns(1, layout)
+  local chunks = {}
+  for column, range in ipairs(row.chars) do
+    local col = range[1] + 1
+    local is_tab = text:byte(col) == 9
+    -- A tab is drawn as its cells, any other character on its first one.
+    if is_tab or row.chars[column - 1] ~= range then
+      -- The later groups take precedence.
+      local hl_group = { changed[col] and "HunksDeleteText" or "HunksDelete" }
+      if groups[col] then table.insert(hl_group, 1, groups[col]) end
+      local is_colored = colored[column]
+        or (
+          not is_tab
+          and row.chars[column + 1] == range
+          and colored[column + 1]
+        )
+      if is_colored then hl_group[#hl_group + 1] = "ColorColumn" end
+
+      local cell = is_tab and " " or text:sub(col, range[2])
+      local last = chunks[#chunks]
+      if last and vim.deep_equal(last[2], hl_group) then
+        last[1] = last[1] .. cell
+      else
+        chunks[#chunks + 1] = { cell, hl_group }
       end
     end
   end
 
-  local chunks = {}
-  local start = 1
-  local line_end = 0
-
-  for col = 1, #text do
-    local next_col = col + 1
-    if
-      next_col > #text
-      or groups[next_col] ~= groups[col]
-      or changed[next_col] ~= changed[col]
-      or colored[next_col] ~= colored[col]
-    then
-      -- The later groups take precedence.
-      local hl_group = { changed[col] and "HunksDeleteText" or "HunksDelete" }
-      if groups[col] then table.insert(hl_group, 1, groups[col]) end
-      if colored[col] then hl_group[#hl_group + 1] = "ColorColumn" end
-      local segment
-      segment, line_end = expand_tabs(text:sub(start, col), line_end, tabstop)
-      chunks[#chunks + 1] = { segment, hl_group }
-      start = next_col
-    end
-  end
-
   -- The virtual line spans the text area like the lines' highlights do.
-  if text_width < layout.text_width then
+  local last_column = layout.leftcol + layout.text_width
+  if row.width < last_column then
     vim.list_extend(
       chunks,
       blank_chunks(
-        text_width + 1,
-        layout.text_width,
+        row.width + 1,
+        last_column,
         "HunksDelete",
-        colored_columns(1, layout),
+        colored,
         layout.eol
       )
     )
   end
-  return chunks
+  return drop_cells(chunks, layout.leftcol)
 end
 
 ---@param bufnr integer
@@ -608,41 +604,60 @@ M.deleted_anchor = function(hunk, line_count)
   return math.max(hunk.new_start - 1, 0), hunk.new_start == 0
 end
 
---- Draws the 'showbreak' of a wrapped line's rows over the diff's background,
---- which doesn't reach it.
+--- Draws the 'showbreak' and the filler cells of a wrapped line's rows over
+--- the diff's background, which doesn't reach them.
 ---@param bufnr integer
 ---@param row integer The line's 0-based row.
 ---@param text string
+---@param rows nvim_hunks.Row[] The line's rows.
 ---@param layout nvim_hunks.Layout
 ---@param hl_group string The diff's background.
-local render_showbreaks = function(bufnr, row, text, layout, hl_group)
-  if layout.showbreak_width == 0 then return end
-  local rows = rows_of(line_width(text, layout.tabstop), layout)
-  if rows == 1 then return end
-
-  for wrapped = 2, rows do
-    local colored = colored_columns(wrapped, layout)
+local render_wrapping = function(bufnr, row, text, rows, layout, hl_group)
+  ---@param chars string[]
+  ---@param column integer The 1-based screen column of the first one.
+  ---@param colored table<integer, boolean>
+  local chunks_of = function(chars, column, colored)
     local chunks = {}
-    local column = 1
-    for _, char in ipairs(vim.fn.split(layout.showbreak, "\\zs")) do
-      local is_colored = colored[column]
+    for _, char in ipairs(chars) do
       chunks[#chunks + 1] = {
         char,
-        is_colored and { "NonText", hl_group, "ColorColumn" }
+        colored[column] and { "NonText", hl_group, "ColorColumn" }
           or { "NonText", hl_group },
       }
       column = column + vim.api.nvim_strwidth(char)
     end
+    return chunks
+  end
 
-    local start = char_at(
-      text,
-      assert(virtcol_at(wrapped, layout.showbreak_width + 1, layout)),
-      layout.tabstop
-    )
-    if start then
-      set_extmark(bufnr, row, start, {
+  for idx, wrapped in ipairs(rows) do
+    local colored = colored_columns(idx, layout)
+
+    -- The bytes of the characters after filler cells are on the filler's row.
+    local filler = wrapped.filler
+    if filler then
+      local width = assert(layout.wrap_width) - filler.column + 1
+      set_extmark(bufnr, row, filler.byte, {
         priority = line_priority,
-        virt_text = chunks,
+        virt_text = chunks_of(
+          vim.split((">"):rep(width), ""),
+          filler.column,
+          colored
+        ),
+        virt_text_pos = "overlay",
+        virt_text_win_col = filler.column - 1,
+      })
+    end
+
+    -- The end of the line is on its last row.
+    local anchor = wrapped.anchor or (idx == #rows and #text or nil)
+    if idx > 1 and layout.showbreak_width > 0 and anchor then
+      set_extmark(bufnr, row, anchor, {
+        priority = line_priority,
+        virt_text = chunks_of(
+          vim.fn.split(layout.showbreak, "\\zs"),
+          1,
+          colored
+        ),
         virt_text_pos = "overlay",
         virt_text_win_col = 0,
       })
@@ -659,6 +674,7 @@ end
 ---@param kind "Add"|"Delete"
 M.render_lines = function(bufnr, first, lines, layout, kind)
   local hl_group = "Hunks" .. kind
+  local last_column = layout.leftcol + layout.text_width
   for idx, text in ipairs(lines) do
     local row = first + idx - 2
     set_extmark(bufnr, row, 0, {
@@ -668,28 +684,54 @@ M.render_lines = function(bufnr, first, lines, layout, kind)
       priority = line_priority,
     })
 
-    local rows, last_width = rows_of(line_width(text, layout.tabstop), layout)
-    if last_width < layout.text_width then
+    local rows = rows_of(text, layout, layout.wrap_width)
+    local last_width = rows[#rows].width
+    if last_width < last_column then
+      local chunks = blank_chunks(
+        last_width + 1,
+        last_column,
+        hl_group,
+        colored_columns(#rows, layout),
+        layout.eol
+      )
+      -- A line's end scrolled out of view sideways gets its overlay drawn from
+      -- the window's left edge.
       set_extmark(bufnr, row, #text, {
         priority = line_priority,
-        virt_text = blank_chunks(
-          last_width + 1,
-          layout.text_width,
-          hl_group,
-          colored_columns(rows, layout),
-          layout.eol
+        virt_text = drop_cells(
+          chunks,
+          math.max(layout.leftcol - last_width, 0)
         ),
         virt_text_pos = "overlay",
       })
     end
 
-    render_showbreaks(bufnr, row, text, layout, hl_group)
-    for _, range in ipairs(M.colored_chars(text, layout)) do
-      set_extmark(bufnr, row, range[1], {
-        end_col = range[2],
-        hl_group = "ColorColumn",
-        priority = M.column_priority,
-      })
+    render_wrapping(bufnr, row, text, rows, layout, hl_group)
+    for column in pairs(layout.columns) do
+      local wrapped, screen_column = column_position(column, layout)
+      local range = rows[wrapped] and rows[wrapped].chars[screen_column]
+      local previous = rows[wrapped - 1]
+      local win_col = screen_column - 1 - layout.leftcol
+      if not range then
+      elseif text:byte(range[1] + 1) ~= 9 then
+        set_extmark(bufnr, row, range[1], {
+          end_col = range[2],
+          hl_group = "ColorColumn",
+          priority = M.column_priority,
+        })
+      -- A tab's highlight covers all of its cells, so the colorcolumn's cell
+      -- gets a space drawn over it, from the row the tab starts on.
+      elseif
+        (not previous or previous.chars[layout.wrap_width] ~= range)
+        and win_col >= 0
+      then
+        set_extmark(bufnr, row, range[1], {
+          priority = M.column_priority,
+          virt_text = { { " ", { hl_group, "ColorColumn" } } },
+          virt_text_pos = "overlay",
+          virt_text_win_col = win_col,
+        })
+      end
     end
   end
 end
@@ -759,7 +801,6 @@ local render_deleted = function(
     virt_lines = virt_lines,
     virt_lines_above = above,
     virt_lines_leftcol = true,
-    virt_lines_overflow = "scroll",
   })
 end
 

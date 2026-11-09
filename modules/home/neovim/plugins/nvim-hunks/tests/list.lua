@@ -191,6 +191,39 @@ test("moving the cursor previews below the file's floats", function()
   h.eq(#padded, 2, "both deleted lines are padded")
 end)
 
+test("the list follows the cursor of other windows", function()
+  local list = assert(list_win())
+  vim.api.nvim_set_current_win(file_win)
+  ---@param line integer
+  ---@return string
+  local row_after_moving_to = function(line)
+    vim.api.nvim_win_set_cursor(file_win, { line, 0 })
+    -- The main loop reports the move, which headless tests don't run.
+    vim.api.nvim_exec_autocmds(
+      "CursorMoved",
+      { buffer = vim.api.nvim_win_get_buf(file_win) }
+    )
+    local row = vim.api.nvim_win_get_cursor(list)[1]
+    local buf = vim.api.nvim_win_get_buf(list)
+    return vim.trim(
+      assert(vim.api.nvim_buf_get_lines(buf, row - 1, row, false)[1])
+    )
+  end
+
+  h.eq(row_after_moving_to(2), "├╴L2 +1 -1")
+  h.eq(row_after_moving_to(10):match("x%.txt") ~= nil, true, "on the file")
+  h.eq(row_after_moving_to(30), "└╴L30 +1 -1")
+  vim.cmd.edit(vim.fs.joinpath(root, "root.txt"))
+  h.eq(
+    row_after_moving_to(1):match("root%.txt") ~= nil,
+    true,
+    "on the collapsed file of the hunk"
+  )
+  vim.cmd.edit(vim.fs.joinpath(root, "modules/a/x.txt"))
+  h.eq(preview_win(), nil, "nothing is previewed")
+  vim.api.nvim_set_current_win(list)
+end)
+
 test("the list refreshes after jj operations", function()
   h.run(root, { "jj", "describe", "--message", "listed" })
   h.wait(function()
@@ -223,4 +256,24 @@ test("the list doesn't open without changes", function()
     messages[1]
   )
   h.eq(list_win(), nil)
+  h.eq(hunks.is_showing_all(), false, "the diffs aren't all shown")
+end)
+
+test("a listing slower than trouble waits for still opens the list", function()
+  local files = hunks.files
+  ---@diagnostic disable-next-line: duplicate-set-field
+  hunks.files = function(listed_roots, on_done)
+    files(listed_roots, function(listed)
+      vim.defer_fn(function() on_done(listed) end, 2500)
+    end)
+  end
+  ---@diagnostic disable-next-line: undefined-field
+  require("trouble").open({ mode = "hunks", focus = true, cwd = root })
+  h.wait(function() return list_win() ~= nil end, "the list opens", 5000)
+  hunks.files = files
+  h.wait(
+    function() return vim.api.nvim_get_current_win() == list_win() end,
+    "the list is focused"
+  )
+  vim.api.nvim_win_close(assert(list_win()), true)
 end)

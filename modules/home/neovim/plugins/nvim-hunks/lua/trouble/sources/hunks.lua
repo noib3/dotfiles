@@ -241,6 +241,19 @@ local list_win = function(view)
   return win and vim.api.nvim_win_is_valid(win) and win or nil
 end
 
+--- Returns the rows a list of hunks shows, from the top.
+---@param view trouble.View
+---@return trouble.Render.Location[]
+local rows_of = function(view)
+  local rows = {}
+  local win = list_win(view)
+  if not win then return rows end
+  for row = 1, vim.api.nvim_buf_line_count(vim.api.nvim_win_get_buf(win)) do
+    rows[row] = view:at({ row, 0 })
+  end
+  return rows
+end
+
 --- Draws the recaps of the open lists of hunks.
 local draw_recaps = function()
   for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
@@ -322,7 +335,10 @@ M.config = {
       },
       sort = {},
       format = "{hunks_row}",
-      -- The list places its own cursor when it opens.
+      -- A listing can take longer than trouble waits for it, so the list
+      -- says itself when there's nothing to list.
+      warn_no_results = false,
+      -- The list follows the cursor itself, except while it opens.
       follow = false,
       -- The preview covers the main window, but not the floats on it with
       -- the default z-index, like incline.nvim's.
@@ -371,20 +387,21 @@ end
 ---@type string[]?
 local roots
 
---- Returns the row of the hunk containing the cursor of a window, or else
---- the row of the window's file, if it's listed.
+--- Returns the row of the hunk containing a buffer's line, or else the row
+--- of the buffer's file, if it's listed.
 ---@param items trouble.Item[]
----@param main trouble.Main
+---@param buf integer
+---@param line integer The 1-based line.
 ---@return trouble.Item?
-local row_at = function(items, main)
-  local line = main.cursor[1]
+local row_at = function(items, buf, line)
+  local name = vim.api.nvim_buf_get_name(buf)
   ---@type trouble.Item?
   local found
   for _, item in ipairs(items) do
     local range = item.range
       or { pos = item.pos, end_pos = item.end_pos or item.pos }
     if
-      item.buf == main.buf
+      (item.buf == buf or item.filename == name)
       and line >= range.pos[1]
       and line <= range.end_pos[1]
     then
@@ -421,7 +438,7 @@ local when_shown = function(items, focused, on_shown)
         local is_ready = win
           and (not focused or win == vim.api.nvim_get_current_win())
         if is_ready and not done then
-          for _, location in pairs(view.renderer._locations) do
+          for _, location in pairs(rows_of(view)) do
             if location.item and items[location.item] then
               done = true
               on_shown(view)
@@ -482,11 +499,11 @@ local move_cursor_to = function(view, target)
   if not win then return end
   ---@type integer?
   local first
-  for row, location in pairs(view.renderer._locations) do
+  for row, location in ipairs(rows_of(view)) do
     if target and location.item == target then
       return vim.api.nvim_win_set_cursor(win, { row, 0 })
     end
-    if location.node and (not first or row < first) then first = row end
+    if location.node and not first then first = row end
   end
   if first then vim.api.nvim_win_set_cursor(win, { first, 0 }) end
 end
@@ -498,7 +515,7 @@ end
 ---@param is_opening boolean
 ---@param expanded? nvim_hunks.File
 local collapse_files = function(view, new_files, is_opening, expanded)
-  for _, location in pairs(view.renderer._locations) do
+  for _, location in pairs(rows_of(view)) do
     local item, node = location.item, location.node
     local is_file = item and node and not item.item.hunk and not node:is_leaf()
     if item and node and is_file and (is_opening or new_files[item]) then
@@ -506,6 +523,7 @@ local collapse_files = function(view, new_files, is_opening, expanded)
       view.renderer:fold(node, { action = action })
     end
   end
+  -- A view's own `render` is throttled, and the rows are needed right away.
   require("trouble.view").render(view)
 end
 
@@ -525,24 +543,18 @@ local listed_dir = function(file, in_several)
   return dir ~= "" and dir or nil
 end
 
---- Calls a function once the window of an opening list of hunks is created,
---- before it's drawn. Returns whether a list is opening.
+--- Calls a function once the window of a list of hunks is created, before
+--- it's drawn.
+---@param view trouble.View
 ---@param on_mounted fun()
----@return boolean
-local when_mounted = function(on_mounted)
-  for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
-    local opts = open.view.win.opts
-    if not list_win(open.view) then
-      local on_mount = opts.on_mount
-      opts.on_mount = function(win)
-        opts.on_mount = on_mount
-        if on_mount then on_mount(win) end
-        on_mounted()
-      end
-      return true
-    end
+local when_mounted = function(view, on_mounted)
+  local opts = view.win.opts
+  local on_mount = opts.on_mount
+  opts.on_mount = function(win)
+    opts.on_mount = on_mount
+    if on_mount then on_mount(win) end
+    on_mounted()
   end
-  return false
 end
 
 ---@class nvim_hunks.trouble.Listing
@@ -567,12 +579,27 @@ local generation = 0
 
 ---@class nvim_hunks.trouble.Opening
 ---@field main? trouble.Main The window the list is opened from.
+---@field view? trouble.View
 --- The callback of the refresh opening the list, which gets the first listing.
 ---@field cb? fun(items: trouble.Item[])
 
 --- The list that's opening, until it shows its first listing.
 ---@type nvim_hunks.trouble.Opening?
 local opening
+
+--- Forgets the listings, and stops showing all diffs.
+local reset = function()
+  roots = nil
+  listed_files = {}
+  listed = {}
+  working_copy = nil
+  shown_items = {}
+  ready = nil
+  is_listing, is_listing_due = false, false
+  opening = nil
+  generation = generation + 1
+  if hunks.is_showing_all() then hunks.show_all(false) end
+end
 
 --- Turns the changed files into the rows of the list.
 ---@param files nvim_hunks.File[]
@@ -613,7 +640,12 @@ local show = function(listing, cb)
   local opened = opening
   opening = nil
   local main = opened and opened.main
-  local target = main and row_at(listing.items, main) or nil
+  ---@type trouble.Item?
+  local target
+  if main then
+    local line = main.cursor[1] --[[@as integer]]
+    target = row_at(listing.items, main.buf --[[@as integer]], line)
+  end
   ---@type table<trouble.Item, true>
   local batch = {}
   for _, item in ipairs(listing.items) do
@@ -653,8 +685,36 @@ local list = function()
       end
       listed = files
       local listing = listing_of(files)
-      local opening_cb = opening and opening.cb
-      if opening_cb then
+      local opened = opening
+      local view = opened and opened.view
+      local opening_cb = opened and opened.cb
+      if opening_cb and #listing.items == 0 then
+        opening_cb(listing.items)
+        vim.notify(
+          "No results for **hunks**",
+          vim.log.levels.WARN,
+          { title = "Trouble" }
+        )
+        return reset()
+      elseif
+        opening_cb
+        and opened
+        and view
+        and not view.first_update:is_pending()
+      then
+        -- trouble stops waiting for the first listing after a timeout, so the
+        -- list opens again with the listing ready.
+        ready = listing
+        opened.cb = nil
+        view:open()
+        -- Like `trouble.open()`, the list is focused unless told otherwise.
+        if
+          view.opts.focus --[[@as boolean?]]
+          ~= false
+        then
+          view:wait(function() view.win:focus() end)
+        end
+      elseif opening_cb then
         show(listing, opening_cb)
       else
         ready = listing
@@ -687,12 +747,18 @@ end
 M.get = function(cb, ctx)
   if roots == nil then
     roots = hunks.workspaces(ctx.opts.cwd)
-    opening = { main = ctx.main }
     hunks.show_all(true)
 
+    ---@type trouble.View?
+    local view
+    for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
+      if not list_win(open.view) then view = open.view end
+    end
+    opening = { main = ctx.main, view = view }
+
     local main_win = ctx.main and ctx.main.win --[[@as integer?]]
-    if ctx.opts.center and main_win then
-      when_mounted(function()
+    if view and ctx.opts.center and main_win then
+      when_mounted(view, function()
         if not vim.api.nvim_win_is_valid(main_win) then return end
         vim.api.nvim_win_call(
           main_win,
@@ -788,6 +854,36 @@ vim.api.nvim_create_autocmd("WinResized", {
   end,
 })
 
+vim.api.nvim_create_autocmd("CursorMoved", {
+  group = group,
+  desc = "Moves the cursors of the lists of hunks to the row under the cursor",
+  callback = function(ev)
+    local win = vim.api.nvim_get_current_win()
+    if opening or vim.w[win].trouble or vim.w[win].trouble_preview then
+      return
+    end
+    local found =
+      row_at(shown_items, ev.buf, vim.api.nvim_win_get_cursor(win)[1])
+    if not found then return end
+
+    -- Moving the cursor of a list that isn't focused doesn't preview the row
+    -- under it. A collapsed file's row stands for the rows of its hunks.
+    for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
+      local list = list_win(open.view)
+      ---@type integer?, integer?
+      local row, file_row
+      for idx, location in ipairs(list and rows_of(open.view) or {}) do
+        if location.item == found then row = idx end
+        if found.parent and location.item == found.parent then
+          file_row = idx
+        end
+      end
+      row = row or file_row
+      if list and row then vim.api.nvim_win_set_cursor(list, { row, 0 }) end
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("WinClosed", {
   group = group,
   desc = "Stops showing all diffs once no list of hunks is open",
@@ -807,16 +903,7 @@ vim.api.nvim_create_autocmd("WinClosed", {
       local trouble = vim.w[win].trouble
       if trouble and trouble.mode == "hunks" then return end
     end
-    roots = nil
-    listed_files = {}
-    listed = {}
-    working_copy = nil
-    shown_items = {}
-    ready = nil
-    is_listing, is_listing_due = false, false
-    opening = nil
-    generation = generation + 1
-    if hunks.is_showing_all() then hunks.show_all(false) end
+    reset()
   end),
 })
 
