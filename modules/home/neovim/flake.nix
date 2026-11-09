@@ -264,7 +264,7 @@
                   workspace.workspaceRoots = pkgs.lib.concatMap (
                     name:
                     [ "./${name}/lua" ]
-                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests) "./${name}/tests"
+                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests/lib) "./${name}/tests/lib"
                   ) (builtins.attrNames (builtins.readDir ./plugins));
                 }
               )
@@ -305,29 +305,32 @@
           );
         in
         {
-          # Runs the `tests/*_test.lua` files of the plugins in this repo, each
-          # in its own headless Neovim.
-          plugins =
-            pkgs.runCommand "test-neovim-plugins"
-              {
-                nativeBuildInputs = [ pkgs.jujutsu ];
-                env = {
-                  JJ_USER = "test";
-                  JJ_EMAIL = "test@example.com";
-                  LIBVSCODE_DIFF = nvim.env.LIBVSCODE_DIFF;
-                };
-              }
-              ''
-                export HOME="$TMPDIR"
-                for test in ${./plugins}/*/tests/*_test.lua; do
-                  echo "--- ''${test#${./plugins}/}"
-                  TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
-                    --cmd "set rtp^=${rtp}" \
-                    -c "luafile ${./tests/run.lua}" \
-                    || echo "$test" >> "$TMPDIR/failed"
-                done 2>&1 | tee "$out"
-                [ ! -e "$TMPDIR/failed" ]
-              '';
+          # Runs the `tests/*.lua` files of the plugins in this repo, each
+          # in its own headless Neovim, and exits with an error if any of them
+          # failed.
+          plugins = pkgs.writeShellApplication {
+            name = "test-neovim-plugins";
+            runtimeInputs = [ pkgs.jujutsu ];
+            text = ''
+              # The tests' repos and jj's config are kept out of the user's.
+              tmp=$(mktemp -d)
+              trap 'rm -rf "$tmp"' EXIT
+              export HOME="$tmp" TMPDIR="$tmp"
+              export JJ_USER=test JJ_EMAIL=test@example.com
+              export LIBVSCODE_DIFF=${nvim.env.LIBVSCODE_DIFF}
+
+              failed=0
+              for test in ${./plugins}/*/tests/*.lua; do
+                echo "--- ''${test#${./plugins}/}"
+                if ! TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
+                  --cmd "set rtp^=${rtp}" \
+                  -c "luafile ${./tests/run.lua}"; then
+                  failed=1
+                fi
+              done
+              exit "$failed"
+            '';
+          };
         }
       );
 
