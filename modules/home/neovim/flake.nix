@@ -246,7 +246,7 @@
           # both, and EmmyLua would see each of their classes twice.
           pluginsConfig =
             let
-              config = builtins.fromJSON (builtins.readFile ./config/.emmyrc.json);
+              config = builtins.fromJSON (builtins.readFile ./plugins/.emmyrc.json);
               library = map (
                 entry:
                 if entry.path or null == "$NVIM_PLUGINS_LUA" then
@@ -254,20 +254,17 @@
                 else
                   entry
               ) config.workspace.library;
+              plugins = builtins.attrNames (
+                pkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./plugins)
+              );
+              missing = builtins.filter (
+                name: !builtins.elem "./${name}/lua" config.workspace.workspaceRoots
+              ) plugins;
             in
+            assert pkgs.lib.assertMsg (missing == [ ])
+              "plugins/.emmyrc.json's workspaceRoots are missing ${toString missing}";
             pkgs.writeText "emmyrc.json" (
-              builtins.toJSON (
-                pkgs.lib.recursiveUpdate config {
-                  # The tests' runner defines `test()`.
-                  diagnostics.globals = config.diagnostics.globals ++ [ "test" ];
-                  workspace.library = library;
-                  workspace.workspaceRoots = pkgs.lib.concatMap (
-                    name:
-                    [ "./${name}/lua" ]
-                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests/lib) "./${name}/tests/lib"
-                  ) (builtins.attrNames (builtins.readDir ./plugins));
-                }
-              )
+              builtins.toJSON (pkgs.lib.recursiveUpdate config { workspace.library = library; })
             );
         in
         {
@@ -310,7 +307,10 @@
           # failed.
           plugins = pkgs.writeShellApplication {
             name = "test-neovim-plugins";
-            runtimeInputs = [ pkgs.jujutsu ];
+            runtimeInputs = [
+              pkgs.git
+              pkgs.jujutsu
+            ];
             text = ''
               # The tests' repos and jj's config are kept out of the user's.
               tmp=$(mktemp -d)

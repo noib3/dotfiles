@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/0.25.1/crates/emmylua_code_analysis/resources/schema.json",
+  "diagnostics": {
+    "disable": [
+      "preferred-local-alias",
+      "redefined-local"
+    ],
+    "globals": [
+      "test",
+      "vim"
+    ]
+  },
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "ignoreDir": [
+      ".git",
+      ".jj"
+    ],
+    "library": [
+      "$VIMRUNTIME/lua",
+      {
+        "path": "$NVIM_PLUGINS_LUA",
+        "ignoreGlobs": [
+          "**/plenary/busted.lua",
+          "**/editable_term.lua",
+          "**/nvim_direnv.lua",
+          "**/nvim_flatten.lua",
+          "**/nvim_flatten/**",
+          "**/nvim_hunks.lua",
+          "**/nvim_hunks/**",
+          "**/trouble/sources/hunks.lua",
+          "**/nvim_jj.lua",
+          "**/nvim_jj/**"
+        ]
+      }
+    ],
+    "workspaceRoots": [
+      "./editable-term.lua/lua",
+      "./nvim-direnv/lua",
+      "./nvim-flatten/lua",
+      "./nvim-hunks/lua",
+      "./nvim-hunks/tests/lib",
+      "./nvim-jj/lua",
+      "./nvim-jj/tests/lib"
+    ]
+  }
+}

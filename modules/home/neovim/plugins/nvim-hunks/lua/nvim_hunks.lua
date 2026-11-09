@@ -18,14 +18,15 @@ local buffer_debounce_ms = 100
 --- The delay between a jj operation and the reload of the bases it triggers.
 local op_debounce_ms = 100
 
+--- A file's base is its contents in the working-copy commit's parents,
+--- merged like `jj diff` merges them.
+
 ---@class nvim_hunks.Config
----@field base string The revision the buffers are diffed against.
 ---@field colors nvim_hunks.Colors The colors blended into the diff's backgrounds.
 ---@field library? string The path of libvscode-diff's shared library.
 
 ---@type nvim_hunks.Config
 local config = {
-  base = "@-",
   colors = {
     added = "#2ea043",
     deleted = "#f85149",
@@ -41,10 +42,10 @@ local config = {
 ---@field watcher? uv.uv_fs_event_t
 
 ---@class nvim_hunks.Buffer
----@field base_lines? string[] The file's lines at the base revision, unset until they're loaded or when the file isn't tracked.
----@field base_eol? boolean Whether the file ends with a newline at the base revision.
+---@field base_lines? string[] The file's lines in the base, unset until they're loaded or when the file isn't tracked.
+---@field base_eol? boolean Whether the file ends with a newline in the base.
 ---@field hunks nvim_hunks.Hunk[]
----@field old_path? string The file's path in the base revision if it was renamed since.
+---@field old_path? string The file's path in the base if it was renamed since.
 ---@field path string The file's path relative to the repo's root.
 ---@field repo nvim_hunks.Repo
 ---@field request integer The number of base loads started for the buffer.
@@ -80,9 +81,9 @@ local listed_roots = {}
 ---@field root string
 ---@field path string The deleted file's path relative to the root.
 
---- The base revision's contents of the changed files listed so far, keyed
---- by workspace root and then by path. A workspace's are dropped after each
---- of its jj operations.
+--- The bases of the changed files listed so far, keyed by workspace root
+--- and then by path. A workspace's are dropped after each of its jj
+--- operations.
 ---@type table<string, table<string, string?>?>
 local base_texts = {}
 
@@ -269,7 +270,7 @@ local load_base = function(bufnr)
 
   ---@param source string
   local load_renamed = function(source)
-    jj.file_at(root, config.base, source, function(err, text)
+    jj.parent_file(root, source, function(err, text)
       vim.schedule(function()
         if not is_current() then return end
         if err or not text then return notify(err or "Missing " .. source) end
@@ -279,7 +280,7 @@ local load_base = function(bufnr)
     end)
   end
 
-  jj.file_at(root, config.base, state.path, function(err, text)
+  jj.parent_file(root, state.path, function(err, text)
     vim.schedule(function()
       if not is_current() then return end
 
@@ -290,7 +291,7 @@ local load_base = function(bufnr)
       else
         -- A file missing from the base was either renamed, added or copied
         -- since, or isn't tracked at all.
-        jj.changed_files(root, config.base, function(files_err, files)
+        jj.changed_files(root, function(files_err, files)
           vim.schedule(function()
             if not is_current() then return end
             if files_err then return notify(files_err) end
@@ -701,33 +702,41 @@ local reload_files = function(root, paths)
   end
 end
 
---- Calls back with an error unless the revset resolves to a single revision.
+--- Calls back with the change ID of the revision a revset resolves to,
+--- picked with `vim.ui.select` when it resolves to several. A revset
+--- resolving to none is an error.
 ---@param root string
 ---@param revset string
----@param on_done fun(err?: string)
-local check_single_revision = function(root, revset, on_done)
-  jj.resolve(root, revset, function(err, change_ids)
+---@param on_picked fun(change_id: string)
+local pick_revision = function(root, revset, on_picked)
+  jj.resolve(root, revset, function(err, targets)
     vim.schedule(function()
-      if err then return on_done(err) end
-      local count = #assert(change_ids)
-      if count == 1 then return on_done() end
-      on_done(
-        count == 0 and ("`%s` doesn't resolve to any revision"):format(revset)
-          or ("`%s` resolves to %d revisions"):format(revset, count)
-      )
+      if err then return notify_error(err) end
+      targets = assert(targets)
+      if #targets == 0 then
+        return notify_error(("`%s` doesn't resolve to any revision"):format(revset))
+      end
+      if #targets == 1 then return on_picked(targets[1].change_id) end
+      vim.ui.select(targets, {
+        prompt = ("Move into which of `%s`?"):format(revset),
+        ---@param target nvim_hunks.Target
+        format_item = function(target) return target.label end,
+      }, function(target)
+        if target then on_picked(target.change_id) end
+      end)
     end)
   end)
 end
 
 ---@class nvim_hunks.File
 ---@field root string The root of the file's jj workspace.
---- The file's path in the working-copy commit, or in the base revision if it
+--- The file's path in the working-copy commit, or in the base if it
 --- was deleted, relative to the root.
 ---@field path string
----@field old_path? string The file's path in the base revision if it was renamed.
+---@field old_path? string The file's path in the base if it was renamed.
 ---@field status nvim_hunks.Status
 ---@field base_lines string[]
----@field base_eol boolean Whether the file ends with a newline at the base revision.
+---@field base_eol boolean Whether the file ends with a newline in the base.
 ---@field lines string[]
 ---@field eol boolean Whether the file ends with a newline in the working copy.
 ---@field hunks nvim_hunks.Hunk[]
@@ -749,9 +758,8 @@ end
 ---@param file nvim_hunks.File
 ---@param on_current fun()
 local check_base = function(file, on_current)
-  jj.file_at(
+  jj.parent_file(
     file.root,
-    config.base,
     file.old_path or file.path,
     function(err, text)
       vim.schedule(function()
@@ -795,12 +803,11 @@ local move_lines = function(file, selected_old, selected_new, into, on_moved)
     or ""
   local other_paths = file.old_path and { file.old_path } or {}
 
-  check_single_revision(file.root, into, function(err)
-    if err then return notify_error(err) end
+  pick_revision(file.root, into, function(target)
     check_base(file, function()
       jj.squash_file(
         file.root,
-        into,
+        target,
         file.path,
         text,
         other_paths,
@@ -819,11 +826,11 @@ local move_lines = function(file, selected_old, selected_new, into, on_moved)
   end)
 end
 
---- Computes the files changed in a workspace since the base revision.
+--- Computes the files changed by a workspace's working-copy commit.
 ---@param root string
 ---@param on_done fun(files: nvim_hunks.File[])
 local workspace_files = function(root, on_done)
-  jj.changed_files(root, config.base, function(err, changed)
+  jj.changed_files(root, function(err, changed)
     if err then
       vim.schedule(function()
         notify_error(err)
@@ -892,7 +899,7 @@ local workspace_files = function(root, on_done)
       elseif cached then
         compute(cached)
       else
-        jj.file_at(root, config.base, change.source, function(_, text)
+        jj.parent_file(root, change.source, function(_, text)
           vim.schedule(function()
             if not repos[root] then return end
             base_texts[root] = base_texts[root] or {}
@@ -925,7 +932,7 @@ M.workspaces = function(dir)
   return roots
 end
 
---- Computes the files changed since the base revision in the given jj
+--- Computes the files changed by the working-copy commits of the given jj
 --- workspaces.
 ---@param roots string[]
 ---@param on_done fun(files: nvim_hunks.File[])
@@ -995,8 +1002,7 @@ M.move_file = function(file, into)
     end)
   end
 
-  check_single_revision(file.root, into, function(err)
-    if err then return notify_error(err) end
+  pick_revision(file.root, into, function(target)
     if file.status == "renamed" and not file.binary then
       local text = #file.base_lines > 0
           and table.concat(file.base_lines, "\n") .. (file.base_eol and "\n" or "")
@@ -1006,7 +1012,7 @@ M.move_file = function(file, into)
         function()
           jj.squash_file(
             file.root,
-            into,
+            target,
             file.path,
             text,
             { file.old_path },
@@ -1016,7 +1022,7 @@ M.move_file = function(file, into)
       )
     else
       local paths = { file.path, file.old_path }
-      jj.squash_paths(file.root, into, paths, on_moved)
+      jj.squash_paths(file.root, target, paths, on_moved)
     end
   end)
 end
@@ -1040,9 +1046,8 @@ M.move_files = function(files, into)
   end
 
   for root, paths in pairs(paths_by_root) do
-    check_single_revision(root, into, function(err)
-      if err then return notify_error(err) end
-      jj.squash_paths(root, into, paths, function(squash_err)
+    pick_revision(root, into, function(target)
+      jj.squash_paths(root, target, paths, function(squash_err)
         vim.schedule(function()
           if squash_err then return notify_error(squash_err) end
           reload_files(root, paths)
@@ -1091,8 +1096,8 @@ local draw_deleted = function(bufnr, win)
   render.render_lines(bufnr, 1, lines, render.layout(bufnr, win), "Delete")
 end
 
---- Returns a buffer displaying a deleted file's contents in the base
---- revision, highlighted as deleted.
+--- Returns a buffer displaying a deleted file's contents in the base,
+--- highlighted as deleted.
 ---@param file nvim_hunks.File
 ---@return integer
 M.deleted_buffer = function(file)
@@ -1243,7 +1248,7 @@ end
 --- In a float, the selected lines are deleted ones. Returns false without
 --- doing anything if the buffer's diff isn't shown or, outside of visual mode
 --- and floats, if the cursor isn't on a hunk.
----@param into string A revset resolving to a single revision, e.g. `@-`.
+---@param into string A revset, e.g. `@-`. When it resolves to several revisions, one is picked with `vim.ui.select`.
 ---@return boolean
 M.move = function(into)
   local mode = vim.fn.mode()
@@ -1341,7 +1346,7 @@ M.move = function(into)
   return true
 end
 
----@param opts? { base?: string, colors?: nvim_hunks.Colors, library?: string }
+---@param opts? { colors?: nvim_hunks.Colors, library?: string }
 M.setup = function(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
 
