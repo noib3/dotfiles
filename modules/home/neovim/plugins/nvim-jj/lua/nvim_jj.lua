@@ -106,6 +106,12 @@ local github_icon = "\239\144\136 " -- nf-oct-mark_github
 ---@type integer?
 local inserting
 
+--- The value of 'backspace' from before a log buffer entered insert mode,
+--- which is restored when it leaves it. In between, backspacing can't join
+--- the log's lines.
+---@type string?
+local backspace
+
 --- The text of the line of a change without a subject. Neovim draws the
 --- cursor of an empty line in the window's first column, before the line's
 --- inline virtual text, and the cursor of any other line after it.
@@ -898,6 +904,16 @@ local load = function(bufnr)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].filetype = filetype
+
+  -- Each change keeps its own line, so the keys splitting or joining lines
+  -- do nothing. Backspacing can't join them either while in insert mode.
+  for _, keys in ipairs({ "<CR>", "<NL>", "<kEnter>" }) do
+    vim.keymap.set("i", keys, "<Nop>", { buffer = bufnr })
+  end
+  for _, keys in ipairs({ "J", "gJ" }) do
+    vim.keymap.set({ "n", "x" }, keys, "<Nop>", { buffer = bufnr })
+  end
+
   vim.lsp.start(
     { name = "nvim-jj", cmd = server, root_dir = log.root },
     { bufnr = bufnr }
@@ -2856,10 +2872,18 @@ M.setup = function(opts)
       local log = logs[ev.buf]
       if ev.event == "InsertEnter" then
         inserting = ev.buf
-        if log then unpad(ev.buf, log) end
+        if log then
+          unpad(ev.buf, log)
+          backspace = vim.o.backspace
+          vim.opt.backspace:remove("eol")
+        end
       elseif ev.event == "InsertLeave" then
         inserting = nil
         if log then repad(ev.buf, log) end
+        if backspace then
+          vim.o.backspace = backspace
+          backspace = nil
+        end
       end
       if log then redraw_edited(ev.buf, log) end
     end,

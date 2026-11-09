@@ -432,3 +432,26 @@ test(
     h.eq(vim.bo[bufnr].modified, false)
   end
 )
+
+test(
+  "the keys joining or splitting lines leave the log's lines alone",
+  function()
+    local root = h.repo({ "one", "two" })
+    local bufnr = h.open(root)
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+    vim.api.nvim_win_set_cursor(0, { h.row(bufnr, "one"), 0 })
+    for _, keys in ipairs({
+      "i<BS><Esc>",
+      "i<C-w><Esc>",
+      "A<Del><Esc>",
+      "A<CR><Esc>",
+      "J",
+      "gJ",
+    }) do
+      vim.api.nvim_feedkeys(vim.keycode(keys), "x", false)
+      h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), lines, keys)
+    end
+    h.eq(vim.o.backspace:find("eol") ~= nil, true)
+  end
+)
