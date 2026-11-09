@@ -305,8 +305,8 @@
         in
         {
           # Runs the `tests/*.lua` files of the plugins in this repo, each
-          # in its own headless Neovim, and exits with an error if any of them
-          # failed.
+          # in its own headless Neovim and all at once, then prints their
+          # results in order and exits with an error if any of them failed.
           plugins = pkgs.writeShellApplication {
             name = "test-neovim-plugins";
             runtimeInputs = [
@@ -321,14 +321,25 @@
               export JJ_USER=test JJ_EMAIL=test@example.com
               export LIBVSCODE_DIFF=${nvim.env.LIBVSCODE_DIFF}
 
-              failed=0
-              for test in ${./plugins}/*/tests/*.lua; do
-                echo "--- ''${test#${./plugins}/}"
-                if ! TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
+              tests=(${./plugins}/*/tests/*.lua)
+              pids=()
+              for i in "''${!tests[@]}"; do
+                # Each file gets its own temporary directory.
+                mkdir "$tmp/$i"
+                TEST_FILE="''${tests[$i]}" HOME="$tmp/$i" TMPDIR="$tmp/$i" \
+                  ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
                   --cmd "set rtp^=${rtp}" \
-                  -c "luafile ${./tests/run.lua}"; then
-                  failed=1
-                fi
+                  -c "luafile ${./tests/run.lua}" >"$tmp/$i.out" 2>&1 &
+                pids+=("$!")
+              done
+
+              failed=0
+              for i in "''${!tests[@]}"; do
+                status=0
+                wait "''${pids[$i]}" || status=$?
+                echo "--- ''${tests[$i]#${./plugins}/}"
+                cat "$tmp/$i.out"
+                if [ "$status" -ne 0 ]; then failed=1; fi
               done
               exit "$failed"
             '';
