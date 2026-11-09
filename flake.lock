@@ -274,23 +274,6 @@
         "type": "github"
       }
     },
-    "copilot-lua": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1775725859,
-        "narHash": "sha256-WME7jWuQ/QwOKgOD+AN5GfIwkcIo6FGSrFkDNP7Q6Wo=",
-        "owner": "noib3",
-        "repo": "copilot.lua",
-        "rev": "653257d9201b2886b94999e6cd01bc6beee6f644",
-        "type": "github"
-      },
-      "original": {
-        "owner": "noib3",
-        "ref": "fix-insert-special-key-passthrough",
-        "repo": "copilot.lua",
-        "type": "github"
-      }
-    },
     "crates-nvim": {
       "flake": false,
       "locked": {
@@ -434,22 +417,6 @@
       "original": {
         "owner": "ibhagwan",
         "repo": "fzf-lua",
-        "type": "github"
-      }
-    },
-    "gitsigns-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1792836575,
-        "narHash": "sha256-9IRkV52EsmDJUmPkacZmeedCbnG5a7JNwS/FGK3P1Z4=",
-        "owner": "lewis6991",
-        "repo": "gitsigns.nvim",
-        "rev": "d4854fa9a94b5c8b37dd209fb4a19e98e764186f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lewis6991",
-        "repo": "gitsigns.nvim",
         "type": "github"
       }
     },
@@ -635,10 +602,8 @@
         "colorful-menu-nvim": "colorful-menu-nvim",
         "comment-nvim": "comment-nvim",
         "conform-nvim": "conform-nvim",
-        "copilot-lua": "copilot-lua",
         "crates-nvim": "crates-nvim",
         "fzf-lua": "fzf-lua",
-        "gitsigns-nvim": "gitsigns-nvim",
         "gruvbox-nvim": "gruvbox-nvim",
         "hop-nvim": "hop-nvim",
         "inc-rename-nvim": "inc-rename-nvim",
@@ -675,14 +640,18 @@
         "zig-overlay": "zig-overlay"
       },
       "locked": {
-        "path": "modules/home/neovim",
-        "type": "path"
+        "lastModified": 1794412142,
+        "narHash": "sha256-YkuKjK7DIUQbpcVMrOn8zuu+RO3T7b78823xBsQzlFI=",
+        "owner": "noib3",
+        "repo": "nvim-config",
+        "rev": "406be3e0482fca69feebb75cdc3db7a868e7586b",
+        "type": "github"
       },
       "original": {
-        "path": "modules/home/neovim",
-        "type": "path"
-      },
-      "parent": []
+        "owner": "noib3",
+        "repo": "nvim-config",
+        "type": "github"
+      }
     },
     "neovim-src": {
       "flake": false,

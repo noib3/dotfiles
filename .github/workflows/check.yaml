@@ -23,25 +23,6 @@ jobs:
       - name: Check formatting
         run: nix run .#check-formatting
 
-  neovim-config:
-    name: Neovim config
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install Nix
-        uses: NixOS/nix-installer-action@main
-        with:
-          extra-conf: |
-            accept-flake-config = true
-            experimental-features = pipe-operators
-      - name: Setup Nix cache
-        uses: sub60/setup-cache@main
-      - name: Check the Neovim config
-        run: nix run .#check-neovim-config
-
   nix-lints:
     name: Nix lints
     runs-on: ubuntu-latest

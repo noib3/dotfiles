@@ -35,7 +35,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim = {
-      url = ./modules/home/neovim;
+      url = "github:noib3/nvim-config";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
@@ -93,10 +93,12 @@
   nixConfig = {
     extra-substituters = [
       "https://cache.sub60.dev/noib3/dotfiles"
+      "https://cache.sub60.dev/noib3/nvim-config"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "cache.sub60.dev/noib3/dotfiles-2:2bE8/BIPanep3bOeWPG/h8Pw4Eijjs+6pw/QBXTsEcs="
+      "cache.sub60.dev/noib3/nvim-config-1:Kg7WpOPB6yjSOK8G9qnjnsni45H07Z7eOYmrJozA9B8="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };

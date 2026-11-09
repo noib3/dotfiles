@@ -25,10 +25,6 @@
           enable = true;
           useEditorConfig = true;
         };
-        programs.stylua = {
-          enable = true;
-          settings = builtins.fromTOML (builtins.readFile ../../../stylua.toml);
-        };
       };
     };
 }

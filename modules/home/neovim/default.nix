@@ -27,16 +27,6 @@ in
       MANPAGER = "nvim +Man! -";
     };
 
-    neovim = {
-      includeConfig = false;
-      palette = config.modules.colorschemes.palette;
-      enableClaudeCodeIntegration = config.modules.claude-code.enable;
-    };
-
-    xdg.configFile.nvim = {
-      source = config.lib.file.mkOutOfStoreSymlink (
-        config.lib.mine.mkAbsolute ./config
-      );
-    };
+    neovim.enableClaudeCodeIntegration = config.modules.claude-code.enable;
   };
 }
