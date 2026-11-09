@@ -79,7 +79,7 @@ blink.setup({
         name = "Emoji",
         module = "blink-emoji",
         enabled = function()
-          local enabled_in_filetypes = { "gitcommit", "markdown" }
+          local enabled_in_filetypes = { "jjdescription", "markdown" }
           return vim.tbl_contains(enabled_in_filetypes, vim.o.filetype)
         end,
         opts = {

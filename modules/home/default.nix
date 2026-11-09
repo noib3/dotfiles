@@ -161,13 +161,11 @@ in
     fd.enable = true;
     fish.enable = true;
     fzf.enable = true;
-    gc-git-repos.enable = true;
     git.enable = true;
     gnupg.enable = true;
     home-manager.enable = true;
     jujutsu.enable = true;
     kubectl.enable = true;
-    lazygit.enable = true;
     lf.enable = true;
     macOSPreferences.enable = isDarwin;
     macOSProfile.enable = isDarwin;

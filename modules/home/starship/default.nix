@@ -23,11 +23,7 @@ in
           "$kubernetes"
           "$directory"
           "$vcsh"
-          "$git_branch"
-          "$git_commit"
-          "$git_state"
-          "$git_status"
-          "$hg_branch"
+          "$vcs"
           "$docker_context"
           "$package"
           "$cmake"
@@ -104,6 +100,16 @@ in
           ssh_only = false;
         };
 
+        jj_status = {
+          format = "([\\($added$modified$renamed$deleted$conflicted\\)]($style) )";
+          added = "[$\{count\}a](fg:green bold)";
+          modified = "[$\{count\}m](fg:yellow bold)";
+          renamed = "[$\{count\}r](fg:purple bold)";
+          deleted = "[$\{count\}d](fg:red bold)";
+          conflicted = "[$\{count\}c](fg:red bold)";
+          style = "bold purple";
+        };
+
         nodejs = {
           detect_folders = [ ];
         };
@@ -120,6 +126,16 @@ in
         username = {
           format = "[$user]($style)";
           show_always = true;
+        };
+
+        # Colocated repos show jj's state instead of Git's.
+        vcs = {
+          order = [
+            "jj"
+            "git"
+          ];
+          git_modules = "$git_branch$git_commit$git_state$git_status";
+          jj_modules = "$jj_bookmark$jj_change$jj_status";
         };
       };
     };

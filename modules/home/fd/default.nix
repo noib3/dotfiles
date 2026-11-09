@@ -24,6 +24,7 @@ in
         "**/.dropbox"
         "**/.dropbox.cache"
         "**/.git"
+        "**/.jj"
         "**/.ipython"
         "**/.stfolder"
         "**/gnupg/*"

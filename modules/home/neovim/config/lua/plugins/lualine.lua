@@ -133,15 +133,7 @@ lualine.setup({
         cond = not_all_splits_are_terminals,
       },
     },
-    lualine_z = {
-      {
-        "branch",
-        cond = not_all_splits_are_terminals,
-        color = {
-          fg = vim.o.background == "dark" and "#928374" or "#7c6f64",
-        },
-      },
-    },
+    lualine_z = {},
   },
 })
 

@@ -136,7 +136,7 @@ local function set_term_cursor(buf, cursor, term_keys)
 end
 
 --- Sends `keys` to the terminal, but only while the shell is showing a prompt,
---- i.e. not while a command (lf, lazygit, `git add -p`, ...) is reading input.
+--- i.e. not while a command (lf, `git add -p`, ...) is reading input.
 ---@param buf integer
 ---@param keys string
 local function send_keys_at_prompt(buf, keys)

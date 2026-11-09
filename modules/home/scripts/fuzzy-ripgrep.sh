@@ -1,5 +1,11 @@
-if git status &>/dev/null; then
-  cd "$(git rev-parse --show-toplevel)" || exit
+# The innermost jj or Git repo containing the current directory.
+root="$PWD"
+while [ -n "$root" ] && [ ! -e "$root/.jj" ] && [ ! -e "$root/.git" ]; do
+  root="${root%/*}"
+done
+
+if [ -n "$root" ]; then
+  cd "$root" || exit
 fi
 
 if results="$(

@@ -1,8 +1,10 @@
-if root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
-  :
-else
-  root="$HOME"
-fi
+# The innermost jj or Git repo containing the current directory, or the home
+# directory if there isn't one.
+root="$PWD"
+while [ -n "$root" ] && [ ! -e "$root/.jj" ] && [ ! -e "$root/.git" ]; do
+  root="${root%/*}"
+done
+root="${root:-$HOME}"
 
 cd "$root" || exit
 

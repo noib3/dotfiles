@@ -313,13 +313,16 @@ local fzf_files = function(search_root, use_frecency)
   })
 end
 
+--- Returns the root of the innermost jj or Git repo containing the current
+--- working directory.
+---@return string?
+local repo_root = function()
+  return vim.fs.root(vim.fn.getcwd(), { { ".jj", ".git" } })
+end
+
 vim.api.nvim_set_keymap("n", "<D-e>", "", {
-  desc = "Fuzzy find files in the current git repo",
-  callback = function()
-    local git_root =
-      vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
-    fzf_files(git_root or vim.env.HOME, true)
-  end,
+  desc = "Fuzzy find files in the current repo",
+  callback = function() fzf_files(repo_root() or vim.env.HOME, true) end,
 })
 
 vim.api.nvim_set_keymap("n", "<D-h>", "", {
@@ -382,10 +385,6 @@ local fzf_live_ripgrep = function(search_root)
 end
 
 vim.api.nvim_set_keymap("n", "<D-r>", "", {
-  desc = "Execute a live ripgrep search in the current git repo",
-  callback = function()
-    local git_root =
-      vim.fn.systemlist("git rev-parse --show-toplevel 2>/dev/null")[1]
-    fzf_live_ripgrep(git_root or vim.env.HOME)
-  end,
+  desc = "Execute a live ripgrep search in the current repo",
+  callback = function() fzf_live_ripgrep(repo_root() or vim.env.HOME) end,
 })

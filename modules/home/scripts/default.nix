@@ -35,7 +35,6 @@
           config.modules.scripts.list-files
           config.modules.scripts.preview
           config.programs.fzf.package
-          pkgs.git
         ];
         text = builtins.readFile ./fuzzy-edit-files.sh;
       };
@@ -45,7 +44,6 @@
         runtimeInputs = with pkgs; [
           config.modules.scripts.rg-pattern
           config.programs.fzf.package
-          git
           gnused
           uutils-coreutils-noprefix # Contains `head`
         ];

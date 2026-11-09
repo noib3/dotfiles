@@ -18,16 +18,6 @@ local open = function(path)
   vim.fn.jobstart({ opener, path }, { detach = true })
 end
 
-local setup_lazygit = function()
-  local Terminal = require("toggleterm.terminal").Terminal
-  local lazygit = Terminal:new({
-    cmd = "lazygit",
-    dir = "git_dir",
-    hidden = true,
-  })
-  vim.keymap.set("n", "lg", function() lazygit:toggle() end, { silent = true })
-end
-
 local setup_lf = function()
   local Terminal = require("toggleterm.terminal").Terminal
 
@@ -111,5 +101,4 @@ require("toggleterm").setup({
   },
 })
 
-setup_lazygit()
 setup_lf()

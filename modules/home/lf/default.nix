@@ -260,7 +260,6 @@ in
         t = null;
         u = null;
         d = "delete";
-        lg = "$lazygit";
         mk = "push :mkdir<space>";
         mtb = "push :make-tarball<space>";
         pc = "$pc";

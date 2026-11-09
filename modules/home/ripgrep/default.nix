@@ -23,6 +23,7 @@ in
         "--hidden"
         "--iglob=!LICENSE"
         "--glob=!**/.git/**"
+        "--glob=!**/.jj/**"
         "--glob=!**/.cache/**"
       ];
     };

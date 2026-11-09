@@ -39,7 +39,7 @@ in
 
       shellAliases = {
         cat = "bat";
-        gcl = "git clone";
+        gcl = "jj git clone";
         grep = "rg";
         ipython = "ipython --no-confirm-exit";
         ls = "ls -Alhv --color --file-type --group-directories-first --quoting-style=literal";
@@ -58,7 +58,6 @@ in
         hmn = cfg.homeManagerNewsAbbreviation;
         hms = cfg.homeManagerSwitchAbbreviation;
         ipy = "ipython";
-        lg = "lazygit";
       }
       // lib.attrsets.optionalAttrs (machine.nixosConfigurationName != null) {
         nrs = "nixos-rebuild switch --flake ${dotfilesDir}#${machine.nixosConfigurationName} --sudo";
@@ -171,7 +170,6 @@ in
         fuzzy-kill = builtins.readFile ./functions/fuzzy-kill.fish;
         fuzzy-ripgrep-fish = "fuzzy-ripgrep; commandline -f repaint";
         fuzzy-search = builtins.readFile ./functions/fuzzy-search.fish;
-        gri = builtins.readFile ./functions/gri.fish;
       };
     };
   };
