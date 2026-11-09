@@ -394,6 +394,9 @@ end
 ---@type table<string, true>
 local listed_files = {}
 
+--- The longest a list of hunks takes to show its rows after getting them.
+local open_timeout_ms = 2000
+
 --- Calls back with the open list of hunks once it shows one of the given
 --- items, and is focused if asked to.
 ---@param items table<trouble.Item, true>
@@ -401,7 +404,7 @@ local listed_files = {}
 ---@param on_shown fun(view: trouble.View)
 local when_shown = function(items, focused, on_shown)
   local timer = assert(vim.uv.new_timer())
-  local deadline = vim.uv.now() + 2000
+  local deadline = vim.uv.now() + open_timeout_ms
   timer:start(
     10,
     10,
@@ -497,17 +500,37 @@ local listed_dir = function(file, in_several)
   return dir ~= "" and dir or nil
 end
 
+--- Calls a function once the window of an opening list of hunks is created,
+--- before it's drawn. Returns whether a list is opening.
+---@param on_mounted fun()
+---@return boolean
+local when_mounted = function(on_mounted)
+  for _, open in ipairs(require("trouble.view").get({ mode = "hunks" })) do
+    local opts = open.view.win.opts
+    if not list_win(open.view) then
+      local on_mount = opts.on_mount
+      opts.on_mount = function(win)
+        opts.on_mount = on_mount
+        if on_mount then on_mount(win) end
+        on_mounted()
+      end
+      return true
+    end
+  end
+  return false
+end
+
 --- Lists every changed file, with the hunks of the modified and renamed ones
 --- nested under it, collapsed. A list that's opening starts on the hunk or
 --- file under the cursor of the window it's opened from, with only that file
 --- expanded. The listed workspaces are the ones around the list's `cwd`
---- option, or else the current working directory when it opens.
+--- option, or else the current working directory when it opens. With the
+--- `center` option, the window it's opened from has its cursor line centered.
 ---@param cb fun(items: trouble.Item[])
----@param ctx { main?: trouble.Main, opts: { cwd?: string } }
+---@param ctx { main?: trouble.Main, opts: { cwd?: string, center?: boolean } }
 M.get = function(cb, ctx)
   local is_opening = roots == nil
   roots = roots or hunks.workspaces(ctx.opts.cwd)
-  hunks.show_all(true)
   hunks.files(roots, function(files)
     if #roots == 1 then
       hunks.working_copy(roots[1], function(revision)
@@ -539,6 +562,25 @@ M.get = function(cb, ctx)
       batch[item] = true
       -- The tree of directories starts at the workspaces' roots.
       item.dirname = listed_dir(item.item.file, in_several)
+    end
+    -- The buffers draw their diffs from the listing's bases when the list's
+    -- window opens, and appear together with it.
+    local main_win = ctx.main and ctx.main.win --[[@as integer?]]
+    local on_opened = function()
+      hunks.show_all(true)
+      if
+        ctx.opts.center
+        and main_win
+        and vim.api.nvim_win_is_valid(main_win)
+      then
+        vim.api.nvim_win_call(
+          main_win,
+          function() vim.cmd.normal({ "zz", bang = true }) end
+        )
+      end
+    end
+    if not (is_opening and when_mounted(on_opened)) then
+      hunks.show_all(true)
     end
     cb(items)
 

@@ -84,6 +84,11 @@ local listed_roots = {}
 ---@type table<string, table<string, string?>?>
 local base_texts = {}
 
+--- The changed files listed so far, keyed by workspace root and then by
+--- path. A workspace's are dropped after each of its jj operations.
+---@type table<string, table<string, nvim_hunks.File?>?>
+local listed_files = {}
+
 --- The buffers displaying deleted files.
 ---@type table<integer, nvim_hunks.DeletedBuffer?>
 local deleted_buffers = {}
@@ -213,6 +218,13 @@ local load_base = function(bufnr)
   local root = state.repo.root
   state.old_path = nil
 
+  -- A listed file's base is already loaded.
+  local listed = listed_files[root] and listed_files[root][state.path]
+  if listed then
+    state.old_path = listed.old_path
+    return set_base(bufnr, state, listed.base_lines)
+  end
+
   ---@param source string
   local load_renamed = function(source)
     jj.file_at(root, config.base, source, function(err, text)
@@ -257,10 +269,11 @@ end
 
 ---@param repo nvim_hunks.Repo
 local reload_repo = function(repo)
+  base_texts[repo.root] = nil
+  listed_files[repo.root] = nil
   for bufnr, state in pairs(buffers) do
     if state.repo == repo then load_base(bufnr) end
   end
-  base_texts[repo.root] = nil
   if listed_roots[repo.root] then fire(files_changed_event) end
 end
 
@@ -441,6 +454,7 @@ M.show_all = function(show)
     local roots = vim.tbl_keys(listed_roots)
     listed_roots = {}
     base_texts = {}
+    listed_files = {}
     for _, root in ipairs(roots) do
       if repos[root] then release_repo(repos[root]) end
     end
@@ -728,6 +742,8 @@ local workspace_files = function(root, on_done)
         if not file.binary then
           file.hunks = diff.compute(file.base_lines, file.lines)
         end
+        listed_files[root] = listed_files[root] or {}
+        listed_files[root][file.path] = file
 
         pending = pending - 1
         if pending == 0 then on_done(files) end
@@ -783,12 +799,6 @@ M.files = function(roots, on_done)
   if pending == 0 then return on_done({}) end
 
   for _, root in ipairs(roots) do
-    -- The list is refreshed after the workspace's jj operations.
-    if showing_all then
-      listed_roots[root] = true
-      repo_for(root)
-    end
-
     workspace_files(root, function(files)
       vim.list_extend(all, files)
       pending = pending - 1
@@ -801,6 +811,16 @@ M.files = function(roots, on_done)
         end
       )
       on_done(all)
+
+      -- The list of the workspaces' files is refreshed after their jj
+      -- operations while all diffs are shown, which the callback may have
+      -- just turned on.
+      if showing_all then
+        for _, listed_root in ipairs(roots) do
+          listed_roots[listed_root] = true
+          repo_for(listed_root)
+        end
+      end
     end)
   end
 end

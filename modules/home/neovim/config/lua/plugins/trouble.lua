@@ -82,7 +82,8 @@ trouble.setup({
       },
     },
     hunks = {
-      -- The list opens at the top, without previewing a hunk.
+      center = true,
+      -- The list places its own cursor when it opens.
       restore = false,
       keys = {
         ["<cr>"] = fold_or_jump,
