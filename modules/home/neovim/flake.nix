@@ -234,23 +234,52 @@
         }
       );
 
-      checks = eachSystem (pkgs: {
-        default =
-          pkgs.runCommand "check-config"
-            {
-              env.NVIM_PLUGINS_LUA =
-                self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS_LUA;
-              env.VIMRUNTIME = "${
-                self.packages.${pkgs.stdenv.system}.default.neovim
-              }/share/nvim/runtime";
-            }
-            ''
-              ${pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check"} \
-                --warnings-as-errors \
-                ${./config} \
-                2>&1 | tee "$out"
-            '';
-      });
+      checks = eachSystem (
+        pkgs:
+        let
+          nvim = self.packages.${pkgs.stdenv.system}.default;
+          emmylua_check = pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check";
+
+          # The configuration's settings, with the `lua` directories of the
+          # plugins in this repo as the workspace roots, and only the other
+          # plugins as libraries. Otherwise the plugins in this repo would be
+          # both, and EmmyLua would see each of their classes twice.
+          pluginsConfig =
+            let
+              config = builtins.fromJSON (builtins.readFile ./config/.emmyrc.json);
+              library = map (
+                entry:
+                if entry.path or null == "$NVIM_PLUGINS_LUA" then
+                  entry // { path = "${nvim.thirdPartyLua}"; }
+                else
+                  entry
+              ) config.workspace.library;
+            in
+            pkgs.writeText "emmyrc.json" (
+              builtins.toJSON (
+                pkgs.lib.recursiveUpdate config {
+                  workspace.library = library;
+                  workspace.workspaceRoots = map (name: "./${name}/lua") (
+                    builtins.attrNames (builtins.readDir ./plugins)
+                  );
+                }
+              )
+            );
+        in
+        {
+          default =
+            pkgs.runCommand "check-config"
+              {
+                env.NVIM_PLUGINS_LUA = nvim.env.NVIM_PLUGINS_LUA;
+                env.VIMRUNTIME = "${nvim.neovim}/share/nvim/runtime";
+              }
+              ''
+                ${emmylua_check} --warnings-as-errors ${./config} 2>&1 | tee "$out"
+                ${emmylua_check} --warnings-as-errors --config ${pluginsConfig} ${./plugins} \
+                  2>&1 | tee -a "$out"
+              '';
+        }
+      );
 
       formatter = eachSystem (pkgs: (mkTreefmt pkgs).config.build.wrapper);
     };

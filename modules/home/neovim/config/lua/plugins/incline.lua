@@ -32,9 +32,9 @@ local line_stats = function(bufnr)
   local stats = hunks.line_stats(bufnr)
   if not stats or (stats.added == 0 and stats.deleted == 0) then return "" end
   return {
-    { "+" .. stats.added, guifg = palette.bright.green },
+    { "+" .. stats.added, group = "HunksAddedCount" },
     " ",
-    { "-" .. stats.deleted, guifg = palette.bright.red },
+    { "-" .. stats.deleted, group = "HunksDeletedCount" },
     "  ",
   }
 end

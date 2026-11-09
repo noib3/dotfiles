@@ -72,6 +72,31 @@ ffi.cdef([[
   void free_lines_diff(LinesDiff* diff);
 ]])
 
+-- The C structs used through the FFI, which EmmyLua can't see.
+
+---@class nvim_hunks.c.LineRange
+---@field start_line integer
+---@field end_line integer
+
+---@class nvim_hunks.c.CharRange
+---@field start_line integer
+---@field start_col integer
+---@field end_line integer
+---@field end_col integer
+
+---@class nvim_hunks.c.RangeMapping
+---@field original nvim_hunks.c.CharRange
+---@field modified nvim_hunks.c.CharRange
+
+---@class nvim_hunks.c.DetailedLineRangeMapping
+---@field original nvim_hunks.c.LineRange
+---@field modified nvim_hunks.c.LineRange
+---@field inner_changes nvim_hunks.c.RangeMapping[]
+---@field inner_change_count integer
+
+---@class nvim_hunks.c.LinesDiff
+---@field changes { mappings: nvim_hunks.c.DetailedLineRangeMapping[], count: integer }
+
 ---@class nvim_hunks.Range
 ---@field line integer The 1-based line the range is on.
 ---@field start_col integer The 0-based byte column the range starts at.
@@ -105,6 +130,7 @@ M.is_loaded = function() return lib ~= nil end
 local c_lines = function(lines)
   local array = ffi.new("const char*[?]", math.max(#lines, 1))
   for idx, line in ipairs(lines) do
+    ---@diagnostic disable-next-line: inject-field
     array[idx - 1] = line
   end
   return array
@@ -122,7 +148,7 @@ end
 --- appends the non-empty ones.
 ---@param ranges nvim_hunks.Range[]
 ---@param lines string[]
----@param range ffi.cdata*
+---@param range nvim_hunks.c.CharRange
 local add_range = function(ranges, lines, range)
   for line = range.start_line, range.end_line do
     local text = lines[line]
@@ -149,13 +175,14 @@ local drop_whole_lines = function(ranges, lines)
   ---@type table<integer, integer>
   local covered = {}
   for _, range in ipairs(ranges) do
-    local text = lines[range.line]:sub(range.start_col + 1, range.end_col)
+    local text =
+      assert(lines[range.line]):sub(range.start_col + 1, range.end_col)
     covered[range.line] = (covered[range.line] or 0) + #text:gsub("%s", "")
   end
 
   return vim.tbl_filter(
     function(range)
-      return covered[range.line] < #lines[range.line]:gsub("%s", "")
+      return covered[range.line] < #assert(lines[range.line]):gsub("%s", "")
     end,
     ranges
   )
@@ -166,6 +193,21 @@ end
 ---@param new_lines string[]
 ---@return nvim_hunks.Hunk[]
 M.compute = function(old_lines, new_lines)
+  -- libvscode-diff finds no changes when either side is empty.
+  if #old_lines == 0 or #new_lines == 0 then
+    if #old_lines == 0 and #new_lines == 0 then return {} end
+    return {
+      {
+        old_start = #old_lines > 0 and 1 or 0,
+        old_count = #old_lines,
+        new_start = #new_lines > 0 and 1 or 0,
+        new_count = #new_lines,
+        old_changes = {},
+        new_changes = {},
+      },
+    }
+  end
+
   local opts = ffi.new("DiffOptions", {
     ignore_trim_whitespace = false,
     max_computation_time_ms = max_computation_time_ms,
@@ -173,19 +215,20 @@ M.compute = function(old_lines, new_lines)
     extend_to_subwords = false,
   })
 
-  local result = assert(lib).compute_diff(
+  local diff_lib = assert(lib)
+  local result = diff_lib.compute_diff(
     c_lines(old_lines),
     #old_lines,
     c_lines(new_lines),
     #new_lines,
     opts
-  )
+  ) --[[@as nvim_hunks.c.LinesDiff?]]
   if result == nil then error("libvscode-diff failed to compute the diff") end
 
   ---@type nvim_hunks.Hunk[]
   local hunks = {}
   for idx = 0, result.changes.count - 1 do
-    local mapping = result.changes.mappings[idx]
+    local mapping = assert(result.changes.mappings[idx])
     local old_count = mapping.original.end_line - mapping.original.start_line
     local new_count = mapping.modified.end_line - mapping.modified.start_line
 
@@ -201,7 +244,7 @@ M.compute = function(old_lines, new_lines)
 
     if old_count > 0 and new_count > 0 then
       for inner = 0, mapping.inner_change_count - 1 do
-        local change = mapping.inner_changes[inner]
+        local change = assert(mapping.inner_changes[inner])
         add_range(hunk.old_changes, old_lines, change.original)
         add_range(hunk.new_changes, new_lines, change.modified)
       end
@@ -212,7 +255,7 @@ M.compute = function(old_lines, new_lines)
     hunks[#hunks + 1] = hunk
   end
 
-  lib.free_lines_diff(result)
+  diff_lib.free_lines_diff(result)
   return hunks
 end
 

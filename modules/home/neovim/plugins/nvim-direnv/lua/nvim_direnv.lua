@@ -24,11 +24,12 @@ local original_system = vim.system
 ---@field last_error? string
 ---@field rerun boolean Whether to export again once the current job exits.
 ---@field timer? uv.uv_timer_t
----@field watchers table<string, nvim_direnv.Watcher> The watched directories, keyed by path.
+---@field watchers table<string, nvim_direnv.Watcher?> The watched directories, keyed by path.
 
----@type table<string, nvim_direnv.State>
+---@type table<string, nvim_direnv.State?>
 local states = {}
 
+---@type fun(state: nvim_direnv.State)
 local load
 
 ---@param key string

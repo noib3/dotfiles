@@ -136,21 +136,26 @@ let
   ++ treeSitterQueries
   ++ [ (writeTextDir "lua/palette.lua" "return ${toLua paletteData}") ];
 
-  env = {
-    COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
-    LIBVSCODE_DIFF = "${libvscode-diff}/lib/libvscode_diff${stdenvNoCC.hostPlatform.extensions.sharedLibrary}";
-    # The plugins' `lua` directories merged into a single tree, used by EmmyLua
-    # to resolve plugin type definitions. EmmyLua names modules by their path
-    # relative to a library root, so the root has to be where `require()`
-    # starts looking.
-    NVIM_PLUGINS_LUA = runCommandLocal "nvim-plugins-lua" { } ''
+  # Merges the plugins' `lua` directories into a single tree, used by EmmyLua
+  # to resolve plugin type definitions. EmmyLua names modules by their path
+  # relative to a library root, so the root has to be where `require()` starts
+  # looking. Interpolating the plugins' paths copies the ones in this repo to
+  # the store.
+  mergeLua =
+    name: plugins:
+    runCommandLocal name { } ''
       mkdir -p "$out"
-      for plugin in ${lib.escapeShellArgs plugins}; do
+      for plugin in ${lib.escapeShellArgs (map (plugin: "${plugin}") plugins)}; do
         if [ -d "$plugin/lua" ]; then
           cp -rs --no-preserve=mode "$plugin/lua/." "$out/"
         fi
       done
     '';
+
+  env = {
+    COPILOT_SERVER_PATH = lib.getExe copilot-language-server;
+    LIBVSCODE_DIFF = "${libvscode-diff}/lib/libvscode_diff${stdenvNoCC.hostPlatform.extensions.sharedLibrary}";
+    NVIM_PLUGINS_LUA = mergeLua "nvim-plugins-lua" plugins;
     XDG_DATA_DIRS = linkFarm "nvim-site" (
       builtins.map (
         plugin:
@@ -198,6 +203,11 @@ pkgs.symlinkJoin {
 
   passthru = {
     inherit env neovim;
+    # The `lua` directories of the plugins that aren't in this repo, merged
+    # into a single tree.
+    thirdPartyLua = mergeLua "nvim-third-party-lua" (
+      lib.subtractLists localPlugins plugins
+    );
   };
 
   meta.mainProgram = "nvim";

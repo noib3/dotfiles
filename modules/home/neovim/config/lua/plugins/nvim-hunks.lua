@@ -2,8 +2,8 @@ local hunks = require("nvim_hunks")
 
 hunks.setup()
 
-vim.keymap.set("n", "th", hunks.toggle, {
-  desc = "Toggle the diffs against the parent jj change",
+vim.keymap.set("n", "th", function() hunks.toggle() end, {
+  desc = "Toggle the buffer's diff against the parent jj change",
 })
 
 --- Sets the keys of a diffed buffer, or of a float of its deleted lines.

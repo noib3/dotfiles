@@ -29,11 +29,13 @@ M.get = function(win) return floats[win] end
 ---@param buf integer
 ---@return integer[]
 M.of_buffer = function(buf)
-  return vim
-    .iter(floats)
-    :filter(function(_, float) return float.buf == buf end)
-    :map(function(win) return win end)
-    :totable()
+  -- `vim.iter()` would take the table of floats, keyed by window IDs, for an
+  -- array.
+  local wins = {}
+  for win, float in pairs(floats) do
+    if float.buf == buf then wins[#wins + 1] = win end
+  end
+  return wins
 end
 
 ---@param win integer
@@ -50,7 +52,8 @@ end
 ---@param hunk nvim_hunks.Hunk
 ---@param lines string[]
 ---@param syntax nvim_hunks.Syntax The syntax of the old lines.
-local highlight = function(buf, hunk, lines, syntax)
+---@param layout nvim_hunks.Layout The layout of the lines, which don't wrap.
+local highlight = function(buf, hunk, lines, syntax, layout)
   for idx, text in ipairs(lines) do
     local captures = syntax[hunk.old_start + idx - 1]
     for _, segment in ipairs(render.syntax_segments(text, captures)) do
@@ -60,19 +63,7 @@ local highlight = function(buf, hunk, lines, syntax)
         priority = vim.hl.priorities.treesitter,
       })
     end
-
-    if text == "" then
-      vim.api.nvim_buf_set_extmark(buf, render.namespace, idx - 1, 0, {
-        virt_text = { { " ", "HunksDelete" } },
-        virt_text_pos = "overlay",
-      })
-    else
-      vim.api.nvim_buf_set_extmark(buf, render.namespace, idx - 1, 0, {
-        end_col = #text,
-        hl_group = "HunksDelete",
-        priority = render.line_priority,
-      })
-    end
+    render.render_lines(buf, idx, { text }, layout, "Delete")
   end
 
   for _, change in ipairs(hunk.old_changes) do
@@ -112,7 +103,7 @@ local visible_rows = function(win, row, above, count)
   -- Brings the window's scroll position up to date with its cursor.
   vim.api.nvim_win_call(win, vim.fn.winline)
 
-  local info = vim.fn.getwininfo(win)[1]
+  local info = assert(vim.fn.getwininfo(win)[1])
   local top, bottom = info.winrow, info.winrow + info.height - 1
   local anchor_row = vim.fn.screenpos(win, row + 1, 1).row
   if above and anchor_row > 0 then
@@ -180,8 +171,8 @@ end
 ---@param line_count integer The number of lines in the buffer.
 ---@return integer?
 M.open = function(source_win, buf, hunk, old_lines, syntax, line_count)
-  local info = vim.fn.getwininfo(source_win)[1]
-  local width = info and info.width - info.textoff or 0
+  local info = assert(vim.fn.getwininfo(source_win)[1])
+  local width = info.width - info.textoff
   if width < 1 or hunk.old_count == 0 then return end
 
   local lines = vim.list_slice(
@@ -200,7 +191,9 @@ M.open = function(source_win, buf, hunk, old_lines, syntax, line_count)
   vim.bo[float_buf].modifiable = false
   vim.bo[float_buf].tabstop = vim.bo[buf].tabstop
 
-  highlight(float_buf, hunk, lines, syntax)
+  local layout = render.layout(buf, source_win)
+  layout.wrap_width = nil
+  highlight(float_buf, hunk, lines, syntax, layout)
 
   -- The float is placed at the screen rows of the virtual lines, which don't
   -- move unless the source window scrolls, and that closes the float.
