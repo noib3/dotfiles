@@ -150,9 +150,7 @@ vim.api.nvim_create_autocmd("FileType", {
       map(
         "n",
         "g" .. keys,
-        function()
-          jj.paste(bufnr, vim.fn.line("."), position, true)
-        end,
+        function() jj.paste(bufnr, vim.fn.line("."), position, true) end,
         ("Paste the cut or copied changes %s the change, on a new branch"):format(
           position
         )
@@ -190,10 +188,17 @@ vim.api.nvim_create_autocmd("FileType", {
       "Create, rename or delete the change's bookmark"
     )
     for _, branch in ipairs({ false, true }) do
-      map({ "n", "x" }, (branch and "g" or "") .. "U", function()
-        local first, last = selected_lines()
-        jj.push(bufnr, first, last, branch)
-      end, ("Push the selected changes%s"):format(branch and " on a new branch" or ""))
+      map(
+        { "n", "x" },
+        (branch and "g" or "") .. "U",
+        function()
+          local first, last = selected_lines()
+          jj.push(bufnr, first, last, branch)
+        end,
+        ("Push the selected changes%s"):format(
+          branch and " on a new branch" or ""
+        )
+      )
     end
   end,
 })

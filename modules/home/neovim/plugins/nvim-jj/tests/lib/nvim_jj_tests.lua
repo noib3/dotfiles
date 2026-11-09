@@ -81,7 +81,17 @@ end
 ---@return string
 M.repo = function(descriptions, pushed)
   local dir = tempdir()
-  M.run(dir, { "git", "init", "--quiet", "--bare", "remote.git" })
+  -- Clones only track the remote's default branch, which is otherwise up to
+  -- git's configuration.
+  M.run(dir, {
+    "git",
+    "init",
+    "--quiet",
+    "--bare",
+    "--initial-branch",
+    "main",
+    "remote.git",
+  })
   M.run(dir, { "jj", "git", "init", "--quiet", "repo" })
 
   local root = vim.fs.joinpath(dir, "repo")
@@ -166,13 +176,8 @@ end
 M.screen = function(bufnr)
   local namespace = vim.api.nvim_create_namespace("nvim-jj")
   local texts = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local marks = vim.api.nvim_buf_get_extmarks(
-    bufnr,
-    namespace,
-    0,
-    -1,
-    { details = true }
-  )
+  local marks =
+    vim.api.nvim_buf_get_extmarks(bufnr, namespace, 0, -1, { details = true })
 
   ---@type table<integer, { before: string, after: string, below: string[] }>
   local decorations = {}
@@ -212,7 +217,11 @@ M.screen = function(bufnr)
     local decoration = decorations[row]
     local parts = vim.tbl_filter(
       function(part) return part ~= "" end,
-      { vim.trim(decoration.before), vim.trim(text), vim.trim(decoration.after) }
+      {
+        vim.trim(decoration.before),
+        vim.trim(text),
+        vim.trim(decoration.after),
+      }
     )
     lines[#lines + 1] = table.concat(parts, " ")
     vim.list_extend(lines, decoration.below)
@@ -237,7 +246,8 @@ M.status = function(bufnr, subject)
   )
   for _, mark in ipairs(marks) do
     for _, chunk in ipairs(assert(mark[4]).virt_text or {}) do
-      local kind = type(chunk[2]) == "string" and chunk[2]:match("^JjStatus(%a+)$")
+      local kind = type(chunk[2]) == "string"
+        and chunk[2]:match("^JjStatus(%a+)$")
       if kind then
         local text = vim.trim(chunk[1]):gsub("^%S+%s+", "")
         return ("%s: %s"):format(kind:lower(), text)

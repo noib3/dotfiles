@@ -261,10 +261,13 @@
                 name: !builtins.elem "./${name}/lua" config.workspace.workspaceRoots
               ) plugins;
             in
-            assert pkgs.lib.assertMsg (missing == [ ])
-              "plugins/.emmyrc.json's workspaceRoots are missing ${toString missing}";
+            assert pkgs.lib.assertMsg (
+              missing == [ ]
+            ) "plugins/.emmyrc.json's workspaceRoots are missing ${toString missing}";
             pkgs.writeText "emmyrc.json" (
-              builtins.toJSON (pkgs.lib.recursiveUpdate config { workspace.library = library; })
+              builtins.toJSON (
+                pkgs.lib.recursiveUpdate config { workspace.library = library; }
+              )
             );
         in
         {

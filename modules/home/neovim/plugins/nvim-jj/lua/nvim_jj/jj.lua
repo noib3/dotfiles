@@ -484,7 +484,10 @@ M.new = function(root, place, check_out, on_done)
   local args = { "new" }
   if not check_out then args[#args + 1] = "--no-edit" end
   if place.onto then args[#args + 1] = place.onto end
-  vim.list_extend(args, place_args({ after = place.after, before = place.before }))
+  vim.list_extend(
+    args,
+    place_args({ after = place.after, before = place.before })
+  )
   run(root, args, function(result)
     if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
     on_done(nil, prefixes_in(result, "Created new commit (%S+)")[1])
@@ -525,7 +528,9 @@ M.duplicate = function(root, revs, place, on_done)
     if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
     ---@type nvim_jj.Copy[]
     local copies = {}
-    for source, change in (result.stderr or ""):gmatch("Duplicated (%S+) as (%S+)") do
+    for source, change in
+      (result.stderr or ""):gmatch("Duplicated (%S+) as (%S+)")
+    do
       copies[#copies + 1] = { source = source, change = change }
     end
     on_done(nil, copies)

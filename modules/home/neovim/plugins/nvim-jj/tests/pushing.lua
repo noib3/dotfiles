@@ -97,20 +97,23 @@ test("pushing a change on a new branch names it after the change", function()
   h.eq(remote_main(root), { "one" })
 end)
 
-test("naming an existing bookmark on a new branch asks before moving it", function()
-  local root = h.repo({ "one", "two" }, 1)
-  local bufnr = h.open(root)
+test(
+  "naming an existing bookmark on a new branch asks before moving it",
+  function()
+    local root = h.repo({ "one", "two" }, 1)
+    local bufnr = h.open(root)
 
-  local prompt = answer_select("Cancel")
-  push(bufnr, "two", nil, { branch = true, name = "main" })
-  h.eq(without_ids(prompt()), "main is already on <id> one")
-  h.eq(h.status(bufnr, "two"), nil)
-  h.eq(remote_main(root), { "one" })
+    local prompt = answer_select("Cancel")
+    push(bufnr, "two", nil, { branch = true, name = "main" })
+    h.eq(without_ids(prompt()), "main is already on <id> one")
+    h.eq(h.status(bufnr, "two"), nil)
+    h.eq(remote_main(root), { "one" })
 
-  answer_select("Move it")
-  push(bufnr, "two", nil, { branch = true, name = "main" })
-  h.eq(remote_main(root), { "two", "one" })
-end)
+    answer_select("Move it")
+    push(bufnr, "two", nil, { branch = true, name = "main" })
+    h.eq(remote_main(root), { "two", "one" })
+  end
+)
 
 test("pushing a change whose parent isn't pushed is an error", function()
   local root = h.repo({ "one", "two", "three" }, 1)
@@ -151,16 +154,19 @@ test("the pushed changes among the selected ones are skipped", function()
   h.eq(remote_main(root), { "two", "one" })
 end)
 
-test("pushing a change off a remote bookmark prompts for a new branch", function()
-  local root = h.repo({ "one", "two" }, 2)
-  h.run(root, { "jj", "new", "--quiet", "@--", "-m", "three" })
-  local bufnr = h.open(root)
+test(
+  "pushing a change off a remote bookmark prompts for a new branch",
+  function()
+    local root = h.repo({ "one", "two" }, 2)
+    h.run(root, { "jj", "new", "--quiet", "@--", "-m", "three" })
+    local bufnr = h.open(root)
 
-  local branch = "push-" .. h.query(root, "@", "change_id.short()")[1]
-  push(bufnr, "three")
-  h.eq(prompted, branch)
-  h.eq(remote_main(root, branch), { "three", "one" })
-end)
+    local branch = "push-" .. h.query(root, "@", "change_id.short()")[1]
+    push(bufnr, "three")
+    h.eq(prompted, branch)
+    h.eq(remote_main(root, branch), { "three", "one" })
+  end
+)
 
 test("a confirmed bookmark moves off its descendants", function()
   local root = h.repo({ "one", "two" }, 2)
@@ -183,23 +189,29 @@ test("pushing a change with a bookmark pushes the bookmark", function()
   h.eq(remote_main(root), { "one" })
 end)
 
-test("pushing a rewritten change asks before overwriting its bookmark", function()
-  local root = h.repo({ "one", "two" }, 1)
-  h.run(root, { "jj", "bookmark", "create", "--quiet", "feature", "-r", "@-" })
-  local bufnr = h.open(root)
-  push(bufnr, "two")
+test(
+  "pushing a rewritten change asks before overwriting its bookmark",
+  function()
+    local root = h.repo({ "one", "two" }, 1)
+    h.run(
+      root,
+      { "jj", "bookmark", "create", "--quiet", "feature", "-r", "@-" }
+    )
+    local bufnr = h.open(root)
+    push(bufnr, "two")
 
-  h.run(root, { "jj", "describe", "--quiet", "-r", "@-", "-m", "dos" })
-  h.settle()
-  local prompt = answer_select("Cancel")
-  push(bufnr, "dos")
-  h.eq(
-    prompt(),
-    "feature@origin has changed since it was pushed, and pushing overwrites it"
-  )
-  h.eq(remote_main(root, "feature"), { "two", "one" })
+    h.run(root, { "jj", "describe", "--quiet", "-r", "@-", "-m", "dos" })
+    h.settle()
+    local prompt = answer_select("Cancel")
+    push(bufnr, "dos")
+    h.eq(
+      prompt(),
+      "feature@origin has changed since it was pushed, and pushing overwrites it"
+    )
+    h.eq(remote_main(root, "feature"), { "two", "one" })
 
-  answer_select("Overwrite it")
-  push(bufnr, "dos")
-  h.eq(remote_main(root, "feature"), { "dos", "one" })
-end)
+    answer_select("Overwrite it")
+    push(bufnr, "dos")
+    h.eq(remote_main(root, "feature"), { "dos", "one" })
+  end
+)

@@ -68,8 +68,5 @@ test("a scroll before jj's first output doesn't empty the log", function()
   require("nvim_jj").toggle(root)
   local bufnr = vim.api.nvim_get_current_buf()
   vim.api.nvim_exec_autocmds("WinScrolled", {})
-  h.wait(
-    function() return line_count(bufnr) > 1 end,
-    "the log is drawn"
-  )
+  h.wait(function() return line_count(bufnr) > 1 end, "the log is drawn")
 end)

@@ -18,7 +18,8 @@ local cut_subjects = function(bufnr)
   local subjects = {}
   for _, mark in ipairs(marks) do
     if assert(mark[4]).line_hl_group == "JjCut" then
-      local line = vim.api.nvim_buf_get_lines(bufnr, mark[2], mark[2] + 1, false)
+      local line =
+        vim.api.nvim_buf_get_lines(bufnr, mark[2], mark[2] + 1, false)
       subjects[#subjects + 1] = line[1]
     end
   end
@@ -53,21 +54,37 @@ local paste = function(bufnr, target, position, branch)
   return assert(line)
 end
 
-test("cutting a change highlights its line, and cutting it again doesn't", function()
-  local root = h.repo({ "one", "two" })
-  local bufnr = h.open(root)
+test(
+  "cutting a change highlights its line, and cutting it again doesn't",
+  function()
+    local root = h.repo({ "one", "two" })
+    local bufnr = h.open(root)
 
-  cut(bufnr, "one")
-  h.eq(cut_subjects(bufnr), { "one" })
-  -- The text after the subject keeps the line's highlight.
-  local namespace = vim.api.nvim_create_namespace("nvim-jj")
-  for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(bufnr, namespace, 0, -1, { details = true })) do
-    h.eq(assert(mark[4]).hl_mode, "combine")
+    cut(bufnr, "one")
+    h.eq(cut_subjects(bufnr), { "one" })
+    -- The text after the subject keeps the line's highlight.
+    local namespace = vim.api.nvim_create_namespace("nvim-jj")
+    for _, mark in
+      ipairs(
+        vim.api.nvim_buf_get_extmarks(
+          bufnr,
+          namespace,
+          0,
+          -1,
+          { details = true }
+        )
+      )
+    do
+      h.eq(assert(mark[4]).hl_mode, "combine")
+    end
+    h.eq(
+      vim.api.nvim_buf_get_lines(bufnr, 0, -1, false),
+      { " ", "two", "one", " " }
+    )
+    cut(bufnr, "one")
+    h.eq(cut_subjects(bufnr), {})
   end
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), { " ", "two", "one", " " })
-  cut(bufnr, "one")
-  h.eq(cut_subjects(bufnr), {})
-end)
+)
 
 test("cut changes stay cut when the log is redrawn", function()
   local root = h.repo({ "one", "two" })
@@ -82,30 +99,36 @@ test("cut changes stay cut when the log is redrawn", function()
   h.eq(cut_subjects(bufnr), { "one" })
 end)
 
-test("pasting below a change puts the cut ones between it and its parents", function()
-  local root = h.repo({ "one", "two", "three" })
-  local bufnr = h.open(root)
+test(
+  "pasting below a change puts the cut ones between it and its parents",
+  function()
+    local root = h.repo({ "one", "two", "three" })
+    local bufnr = h.open(root)
 
-  cut(bufnr, "three")
-  h.eq(paste(bufnr, "one", "below"), 4)
-  h.eq(
-    h.query(root, "::@ ~ root()", subject),
-    { "[@]", "[two]", "[one]", "[three]" }
-  )
-  h.eq(cut_subjects(bufnr), {})
-end)
+    cut(bufnr, "three")
+    h.eq(paste(bufnr, "one", "below"), 4)
+    h.eq(
+      h.query(root, "::@ ~ root()", subject),
+      { "[@]", "[two]", "[one]", "[three]" }
+    )
+    h.eq(cut_subjects(bufnr), {})
+  end
+)
 
-test("pasting above a change puts the cut ones between it and its children", function()
-  local root = h.repo({ "one", "two", "three" })
-  local bufnr = h.open(root)
+test(
+  "pasting above a change puts the cut ones between it and its children",
+  function()
+    local root = h.repo({ "one", "two", "three" })
+    local bufnr = h.open(root)
 
-  cut(bufnr, "one")
-  h.eq(paste(bufnr, "two", "above"), 3)
-  h.eq(
-    h.query(root, "::@ ~ root()", subject),
-    { "[@]", "[three]", "[one]", "[two]" }
-  )
-end)
+    cut(bufnr, "one")
+    h.eq(paste(bufnr, "two", "above"), 3)
+    h.eq(
+      h.query(root, "::@ ~ root()", subject),
+      { "[@]", "[three]", "[one]", "[two]" }
+    )
+  end
+)
 
 test("several cut changes keep the edges between them", function()
   local root = h.repo({ "one", "two", "three", "four" })
@@ -119,15 +142,21 @@ test("several cut changes keep the edges between them", function()
   )
 end)
 
-test("pasting on a branch below a change makes the cut ones its siblings", function()
-  local root = h.repo({ "one", "two", "three" })
-  local bufnr = h.open(root)
+test(
+  "pasting on a branch below a change makes the cut ones its siblings",
+  function()
+    local root = h.repo({ "one", "two", "three" })
+    local bufnr = h.open(root)
 
-  cut(bufnr, "three")
-  paste(bufnr, "two", "below", true)
-  h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })
-  h.eq(h.query(root, 'parents(description(exact:"three\\n"))', subject), { "[one]" })
-end)
+    cut(bufnr, "three")
+    paste(bufnr, "two", "below", true)
+    h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })
+    h.eq(
+      h.query(root, 'parents(description(exact:"three\\n"))', subject),
+      { "[one]" }
+    )
+  end
+)
 
 test("pasting on a branch above a change takes none of its children", function()
   local root = h.repo({ "one", "two", "three" })
@@ -136,7 +165,10 @@ test("pasting on a branch above a change takes none of its children", function()
   cut(bufnr, "three")
   paste(bufnr, "one", "above", true)
   h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })
-  h.eq(h.query(root, 'parents(description(exact:"three\\n"))', subject), { "[one]" })
+  h.eq(
+    h.query(root, 'parents(description(exact:"three\\n"))', subject),
+    { "[one]" }
+  )
 end)
 
 test("pasting next to a cut change is an error", function()
@@ -156,7 +188,10 @@ test("cutting an immutable change is an error", function()
   h.messages = {}
   cut(bufnr, "one")
   h.eq(#h.messages, 1)
-  h.eq(assert(h.messages[1]):match("^error: .* one is immutable: ") ~= nil, true)
+  h.eq(
+    assert(h.messages[1]):match("^error: .* one is immutable: ") ~= nil,
+    true
+  )
   h.eq(cut_subjects(bufnr), {})
 end)
 
@@ -194,7 +229,8 @@ test("a cut change's details are highlighted like its line", function()
   for _, mark in ipairs(marks) do
     for _, virt_line in ipairs(assert(mark[4]).virt_lines or {}) do
       local last = virt_line[#virt_line]
-      highlights[#highlights + 1] = type(last[2]) == "table" and last[2][#last[2]]
+      highlights[#highlights + 1] = type(last[2]) == "table"
+          and last[2][#last[2]]
         or last[2]
     end
   end
@@ -206,14 +242,24 @@ test("the descendants text objects cut a change's descendants", function()
   local bufnr = h.open(root)
 
   local done = false
-  nvim_jj.cut_descendants(bufnr, h.row(bufnr, "two"), true, function() done = true end)
+  nvim_jj.cut_descendants(
+    bufnr,
+    h.row(bufnr, "two"),
+    true,
+    function() done = true end
+  )
   h.wait(function() return done end, "the descendants are cut")
   h.eq(cut_subjects(bufnr), { " ", "three", "two" })
 
   -- Only the descendants of `one` are the ones already cut, which uncuts them.
   for _, expected in ipairs({ {}, { " ", "three", "two" } }) do
     done = false
-    nvim_jj.cut_descendants(bufnr, h.row(bufnr, "one"), false, function() done = true end)
+    nvim_jj.cut_descendants(
+      bufnr,
+      h.row(bufnr, "one"),
+      false,
+      function() done = true end
+    )
     h.wait(function() return done end, "the descendants are toggled")
     h.eq(cut_subjects(bufnr), expected)
   end
@@ -236,7 +282,8 @@ test("pasting a copy on a branch below a change makes a sibling", function()
   local line = h.row(bufnr, "two")
   nvim_jj.copy(bufnr, line, line)
   paste(bufnr, "two", "below", true)
-  local children = h.query(root, 'children(description(exact:"one\\n"))', subject)
+  local children =
+    h.query(root, 'children(description(exact:"one\\n"))', subject)
   table.sort(children)
   h.eq(children, { "[two]", "[two]" })
   h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })

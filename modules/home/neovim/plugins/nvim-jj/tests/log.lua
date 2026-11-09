@@ -37,7 +37,10 @@ test("the log shows each change's subject as its text", function()
     "│  test <test@example.com>",
     "◆  <id> (no description set)",
   })
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), { " ", "two", "one", " " })
+  h.eq(
+    vim.api.nvim_buf_get_lines(bufnr, 0, -1, false),
+    { " ", "two", "one", " " }
+  )
   h.eq(vim.api.nvim_win_get_cursor(0)[1], 1)
   h.eq(vim.bo[bufnr].modified, false)
 end)
@@ -55,7 +58,10 @@ test("saving describes the changes whose subjects were edited", function()
     "two",
     "uno||body",
   })
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), { "wip", "two", "uno", " " })
+  h.eq(
+    vim.api.nvim_buf_get_lines(bufnr, 0, -1, false),
+    { "wip", "two", "uno", " " }
+  )
 end)
 
 test("saving keeps the cursor where it was", function()
@@ -90,7 +96,10 @@ test("editing an immutable change's subject is an error", function()
   vim.cmd.write()
   h.wait(function() return #h.messages > messages end, "an error is shown")
 
-  h.eq(h.messages[#h.messages]:match("^error: %S+ one is immutable: ") ~= nil, true)
+  h.eq(
+    h.messages[#h.messages]:match("^error: %S+ one is immutable: ") ~= nil,
+    true
+  )
   h.eq(vim.bo[bufnr].modified, true)
   h.eq(h.query(root, "@-", "description.first_line()"), { "two" })
 end)
@@ -100,7 +109,10 @@ test("the graph and details between changes are virtual lines", function()
   h.run(root, { "jj", "new", "--quiet", "@--", "-m", "three" })
   local bufnr = h.open(root)
 
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), { "three", "two", "one", " " })
+  h.eq(
+    vim.api.nvim_buf_get_lines(bufnr, 0, -1, false),
+    { "three", "two", "one", " " }
+  )
   h.eq(h.screen(bufnr), {
     "@  <id> three",
     "│  <date>",
@@ -145,7 +157,11 @@ test("moving lines is an error", function()
   vim.cmd.write()
   h.wait(function() return #h.messages > messages end, "an error is shown")
 
-  h.eq(h.messages[#h.messages]:match("^error: Lines were added, removed or moved") ~= nil, true)
+  h.eq(
+    h.messages[#h.messages]:match("^error: Lines were added, removed or moved")
+      ~= nil,
+    true
+  )
   h.eq(h.query(root, "@--", "description.first_line()"), { "one" })
 end)
 
@@ -206,7 +222,10 @@ test("a change opened above one goes between it and its children", function()
   local bufnr = h.open(root)
 
   h.eq(insert(bufnr, "above", "one"), 3)
-  h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[]", "[one]" })
+  h.eq(
+    h.query(root, "::@ ~ root()", subject),
+    { "[@]", "[two]", "[]", "[one]" }
+  )
 end)
 
 test("a change opened below one goes between it and its parents", function()
@@ -214,7 +233,10 @@ test("a change opened below one goes between it and its parents", function()
   local bufnr = h.open(root)
 
   h.eq(insert(bufnr, "below", "one"), 4)
-  h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]", "[]" })
+  h.eq(
+    h.query(root, "::@ ~ root()", subject),
+    { "[@]", "[two]", "[one]", "[]" }
+  )
 end)
 
 test("a change opened below the working copy leaves it checked out", function()
@@ -237,51 +259,59 @@ test("a change opened above several merges them", function()
   h.eq(parents, { "three", "two" })
 end)
 
-test("code's backticks are concealed unless the cursor is in the code", function()
-  local root = h.repo({ "add `foo` and `bar`" })
-  local bufnr = h.open(root)
-  local win = vim.api.nvim_get_current_win()
-  vim.wo[win].conceallevel = 2
-  vim.wo[win].concealcursor = "ni"
+test(
+  "code's backticks are concealed unless the cursor is in the code",
+  function()
+    local root = h.repo({ "add `foo` and `bar`" })
+    local bufnr = h.open(root)
+    local win = vim.api.nvim_get_current_win()
+    vim.wo[win].conceallevel = 2
+    vim.wo[win].concealcursor = "ni"
 
-  ---@param col integer
-  ---@return string
-  local text_at = function(col)
-    vim.api.nvim_win_set_cursor(win, { 2, col })
-    vim.api.nvim_exec_autocmds("CursorMoved", { buffer = bufnr })
-    vim.cmd.redraw()
-    local row = vim.fn.screenpos(win, 2, 1).row
-    local chars = {}
-    for screen_col = 1, vim.api.nvim_win_get_width(win) do
-      chars[#chars + 1] = vim.fn.screenstring(row, screen_col)
+    ---@param col integer
+    ---@return string
+    local text_at = function(col)
+      vim.api.nvim_win_set_cursor(win, { 2, col })
+      vim.api.nvim_exec_autocmds("CursorMoved", { buffer = bufnr })
+      vim.cmd.redraw()
+      local row = vim.fn.screenpos(win, 2, 1).row
+      local chars = {}
+      for screen_col = 1, vim.api.nvim_win_get_width(win) do
+        chars[#chars + 1] = vim.fn.screenstring(row, screen_col)
+      end
+      return vim.trim(table.concat(chars)):match("add.*$") or ""
     end
-    return vim.trim(table.concat(chars)):match("add.*$") or ""
+
+    h.eq(text_at(0), "add foo and bar")
+    h.eq(text_at(6), "add `foo` and bar")
+    h.eq(text_at(4), "add `foo` and bar")
+    h.eq(text_at(15), "add foo and `bar`")
+    h.eq(text_at(11), "add foo and bar")
   end
+)
 
-  h.eq(text_at(0), "add foo and bar")
-  h.eq(text_at(6), "add `foo` and bar")
-  h.eq(text_at(4), "add `foo` and bar")
-  h.eq(text_at(15), "add foo and `bar`")
-  h.eq(text_at(11), "add foo and bar")
-end)
+test(
+  "a change opened on a branch above one takes none of its children",
+  function()
+    local root = h.repo({ "one", "two" })
+    local bufnr = h.open(root)
 
-test("a change opened on a branch above one takes none of its children", function()
-  local root = h.repo({ "one", "two" })
-  local bufnr = h.open(root)
-
-  insert(bufnr, "above", "one", nil, true)
-  h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })
-  local children = h.query(root, 'children(description(exact:"one\\n"))', subject)
-  table.sort(children)
-  h.eq(children, { "[]", "[two]" })
-end)
+    insert(bufnr, "above", "one", nil, true)
+    h.eq(h.query(root, "::@ ~ root()", subject), { "[@]", "[two]", "[one]" })
+    local children =
+      h.query(root, 'children(description(exact:"one\\n"))', subject)
+    table.sort(children)
+    h.eq(children, { "[]", "[two]" })
+  end
+)
 
 test("a change opened on a branch below one is its sibling", function()
   local root = h.repo({ "one", "two" })
   local bufnr = h.open(root)
 
   insert(bufnr, "below", "two", nil, true)
-  local children = h.query(root, 'children(description(exact:"one\\n"))', subject)
+  local children =
+    h.query(root, 'children(description(exact:"one\\n"))', subject)
   table.sort(children)
   h.eq(children, { "[]", "[two]" })
 end)
@@ -336,7 +366,10 @@ test("the date shows the commit's UTC offset", function()
   local bufnr = h.open(root)
 
   h.eq(details_of(bufnr, h.row(bufnr, "zero"))[1], "2001-02-03 04:05:06 UTC")
-  h.eq(details_of(bufnr, h.row(bufnr, "plus"))[1], "2001-02-03 04:05:06 UTC+5:30")
+  h.eq(
+    details_of(bufnr, h.row(bufnr, "plus"))[1],
+    "2001-02-03 04:05:06 UTC+5:30"
+  )
   h.eq(details_of(bufnr, h.row(bufnr, "minus"))[1], "2001-02-03 04:05:06 UTC-3")
 end)
 
@@ -370,29 +403,32 @@ local screen_row = function(row)
   return (table.concat(chars):gsub("%s+$", ""))
 end
 
-test("an empty subject's placeholder follows the ID, under the cursor", function()
-  local root = h.repo({ "one" })
-  local bufnr = h.open(root)
-  local win = vim.api.nvim_get_current_win()
-  vim.api.nvim_win_set_cursor(win, { 1, 0 })
-  vim.cmd.redraw()
+test(
+  "an empty subject's placeholder follows the ID, under the cursor",
+  function()
+    local root = h.repo({ "one" })
+    local bufnr = h.open(root)
+    local win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_cursor(win, { 1, 0 })
+    vim.cmd.redraw()
 
-  local row = vim.fn.screenpos(win, 1, 1).row
-  local text = screen_row(row)
-  h.eq(text:match("^@%s+%S+ %(no description set%)$") ~= nil, true, text)
-  local _, col = text:find("^@%s+%S+ ")
-  local expected = vim.fn.strdisplaywidth(text:sub(1, col)) + 1
-  h.eq(vim.fn.wincol(), expected)
+    local row = vim.fn.screenpos(win, 1, 1).row
+    local text = screen_row(row)
+    h.eq(text:match("^@%s+%S+ %(no description set%)$") ~= nil, true, text)
+    local _, col = text:find("^@%s+%S+ ")
+    local expected = vim.fn.strdisplaywidth(text:sub(1, col)) + 1
+    h.eq(vim.fn.wincol(), expected)
 
-  -- Insert mode empties the line and hides the placeholder, until it ends
-  -- without anything typed.
-  vim.api.nvim_exec_autocmds("InsertEnter", { buffer = bufnr })
-  vim.cmd.redraw()
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, 1, false), { "" })
-  h.eq(screen_row(row):match("no description") == nil, true, screen_row(row))
-  vim.api.nvim_exec_autocmds("InsertLeave", { buffer = bufnr })
-  vim.cmd.redraw()
-  h.eq(screen_row(row):match("%(no description set%)$") ~= nil, true)
-  h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, 1, false), { " " })
-  h.eq(vim.bo[bufnr].modified, false)
-end)
+    -- Insert mode empties the line and hides the placeholder, until it ends
+    -- without anything typed.
+    vim.api.nvim_exec_autocmds("InsertEnter", { buffer = bufnr })
+    vim.cmd.redraw()
+    h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, 1, false), { "" })
+    h.eq(screen_row(row):match("no description") == nil, true, screen_row(row))
+    vim.api.nvim_exec_autocmds("InsertLeave", { buffer = bufnr })
+    vim.cmd.redraw()
+    h.eq(screen_row(row):match("%(no description set%)$") ~= nil, true)
+    h.eq(vim.api.nvim_buf_get_lines(bufnr, 0, 1, false), { " " })
+    h.eq(vim.bo[bufnr].modified, false)
+  end
+)

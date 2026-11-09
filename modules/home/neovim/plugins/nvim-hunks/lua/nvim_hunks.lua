@@ -714,7 +714,9 @@ local pick_revision = function(root, revset, on_picked)
       if err then return notify_error(err) end
       targets = assert(targets)
       if #targets == 0 then
-        return notify_error(("`%s` doesn't resolve to any revision"):format(revset))
+        return notify_error(
+          ("`%s` doesn't resolve to any revision"):format(revset)
+        )
       end
       if #targets == 1 then return on_picked(targets[1].change_id) end
       vim.ui.select(targets, {
@@ -758,25 +760,21 @@ end
 ---@param file nvim_hunks.File
 ---@param on_current fun()
 local check_base = function(file, on_current)
-  jj.parent_file(
-    file.root,
-    file.old_path or file.path,
-    function(err, text)
-      vim.schedule(function()
-        if err then return notify_error(err) end
-        local base_lines = text and split_lines(text) or {}
-        local base_eol = not text or ends_with_newline(text)
-        if
-          vim.deep_equal(base_lines, file.base_lines)
-          and base_eol == file.base_eol
-        then
-          return on_current()
-        end
-        notify_error("The diff was out of date, try again")
-        reload_root(file.root)
-      end)
-    end
-  )
+  jj.parent_file(file.root, file.old_path or file.path, function(err, text)
+    vim.schedule(function()
+      if err then return notify_error(err) end
+      local base_lines = text and split_lines(text) or {}
+      local base_eol = not text or ends_with_newline(text)
+      if
+        vim.deep_equal(base_lines, file.base_lines)
+        and base_eol == file.base_eol
+      then
+        return on_current()
+      end
+      notify_error("The diff was out of date, try again")
+      reload_root(file.root)
+    end)
+  end)
 end
 
 --- Moves the selected lines of a file's hunks into another revision. A
@@ -1173,7 +1171,13 @@ M.move_many = function(files, selections, into)
       for _, selection in ipairs(group.selections) do
         steps[#steps + 1] = function(on_done)
           local selected_old, selected_new = lines_of_hunks(selection.hunks)
-          move_lines(selection.file, selected_old, selected_new, target, on_done)
+          move_lines(
+            selection.file,
+            selected_old,
+            selected_new,
+            target,
+            on_done
+          )
         end
       end
 

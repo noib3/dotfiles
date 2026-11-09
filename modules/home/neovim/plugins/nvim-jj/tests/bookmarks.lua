@@ -18,7 +18,11 @@ local edit = function(bufnr, subject, answer)
     on_confirm(answer)
   end
   local done = false
-  nvim_jj.edit_bookmark(bufnr, h.row(bufnr, subject), function() done = true end)
+  nvim_jj.edit_bookmark(
+    bufnr,
+    h.row(bufnr, subject),
+    function() done = true end
+  )
   h.wait(function() return done end, "the bookmark is edited")
   return default
 end
@@ -26,7 +30,11 @@ end
 ---@param root string
 ---@return string[]
 local bookmarks = function(root)
-  return h.query(root, "bookmarks()", 'local_bookmarks.map(|b| b.name() ++ ":" ++ description.first_line()).join(" ")')
+  return h.query(
+    root,
+    "bookmarks()",
+    'local_bookmarks.map(|b| b.name() ++ ":" ++ description.first_line()).join(" ")'
+  )
 end
 
 test("a new name creates a bookmark", function()

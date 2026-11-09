@@ -261,7 +261,10 @@ end
 test("folded directories stay folded when the list opens again", function()
   ---@diagnostic disable-next-line: undefined-field
   require("trouble").open({ mode = "hunks", focus = true, cwd = root })
-  h.wait(function() return list_win() ~= nil and #rows() > 1 end, "the list opens")
+  h.wait(
+    function() return list_win() ~= nil and #rows() > 1 end,
+    "the list opens"
+  )
 
   local view = assert(require("trouble.view").get({ mode = "hunks" })[1]).view
   ---@type integer?
@@ -271,7 +274,9 @@ test("folded directories stay folded when the list opens again", function()
   end
   view:fold(assert(view.renderer:at(assert(src)).node), { action = "close" })
   h.wait(
-    function() return not vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt") end,
+    function()
+      return not vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt")
+    end,
     "src/ is folded"
   )
 
@@ -279,9 +284,16 @@ test("folded directories stay folded when the list opens again", function()
   h.wait(function() return not hunks.is_showing_all() end, "the list is closed")
   ---@diagnostic disable-next-line: undefined-field
   require("trouble").open({ mode = "hunks", focus = true, cwd = root })
-  h.wait(function() return list_win() ~= nil and #rows() > 1 end, "the list opens again")
+  h.wait(
+    function() return list_win() ~= nil and #rows() > 1 end,
+    "the list opens again"
+  )
   h.eq(vim.tbl_contains(rows(), " # #  src/ 1r"), true, vim.inspect(rows()))
-  h.eq(vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt"), false, vim.inspect(rows()))
+  h.eq(
+    vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt"),
+    false,
+    vim.inspect(rows())
+  )
   vim.api.nvim_win_close(assert(list_win()), true)
   h.wait(function() return not hunks.is_showing_all() end, "the list is closed")
 end)

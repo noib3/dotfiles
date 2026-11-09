@@ -62,7 +62,8 @@ M.pull_requests = function(root, gh, repo, on_done)
     local pull_requests = {}
     for _, item in ipairs(list) do
       if not item.isCrossRepository and item.headRefName then
-        pull_requests[item.headRefName] = { number = item.number, url = item.url }
+        pull_requests[item.headRefName] =
+          { number = item.number, url = item.url }
       end
     end
     on_done(nil, pull_requests)
@@ -78,7 +79,16 @@ end
 ---@param title string
 ---@param body string
 ---@param on_done fun(err?: string, pull_request?: nvim_jj.PullRequest)
-M.create_pull_request = function(root, gh, repo, head, base, title, body, on_done)
+M.create_pull_request = function(
+  root,
+  gh,
+  repo,
+  head,
+  base,
+  title,
+  body,
+  on_done
+)
   local args = {
     "pr",
     "create",
@@ -97,8 +107,13 @@ M.create_pull_request = function(root, gh, repo, head, base, title, body, on_don
     if err or not stdout then return on_done(err) end
     local url = stdout:match("https://%S+") or vim.trim(stdout)
     local number = tonumber(url:match("/pull/(%d+)"))
-    if not number then return on_done(("gh didn't print the pull request's URL: %s"):format(url)) end
-    on_done(nil, { number = number --[[@as integer]], url = url })
+    if not number then
+      return on_done(("gh didn't print the pull request's URL: %s"):format(url))
+    end
+    on_done(nil, {
+      number = number --[[@as integer]],
+      url = url,
+    })
   end)
 end
 

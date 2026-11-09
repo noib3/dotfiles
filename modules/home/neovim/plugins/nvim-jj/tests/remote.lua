@@ -10,7 +10,9 @@ local gh_list = gh .. ".list"
 local file = assert(io.open(gh, "w"))
 file:write(table.concat({
   "#!/bin/sh",
-  ('if [ "$1 $2" = "pr list" ]; then cat %q 2>/dev/null || echo "[]"; exit 0; fi'):format(gh_list),
+  ('if [ "$1 $2" = "pr list" ]; then cat %q 2>/dev/null || echo "[]"; exit 0; fi'):format(
+    gh_list
+  ),
   ('printf "%%s\\n" "$@" > %q'):format(gh_args),
   "echo https://github.com/o/r/pull/1",
   "",
@@ -33,7 +35,10 @@ test("fetching offers to move the working copy onto the new trunk", function()
   h.run(root, { "jj", "describe", "--quiet", "-m", "mine" })
 
   local other = vim.fs.joinpath(vim.fs.dirname(root), "other")
-  h.run(vim.fs.dirname(root), { "jj", "git", "clone", "--quiet", "remote.git", other })
+  h.run(
+    vim.fs.dirname(root),
+    { "jj", "git", "clone", "--quiet", "remote.git", other }
+  )
   local theirs = assert(io.open(vim.fs.joinpath(other, "theirs"), "w"))
   theirs:write("theirs\n")
   theirs:close()
@@ -86,7 +91,11 @@ end
 ---@return fun() wait
 local start_pull_request = function(bufnr, subject)
   local done = false
-  nvim_jj.open_pull_request(bufnr, h.row(bufnr, subject), function() done = true end)
+  nvim_jj.open_pull_request(
+    bufnr,
+    h.row(bufnr, subject),
+    function() done = true end
+  )
   h.wait(
     function() return vim.startswith(vim.api.nvim_buf_get_name(0), "jj-pr://") end,
     "the editor is shown"
@@ -114,7 +123,13 @@ test("a pull request is opened once its editor is written and quit", function()
 
   local lines, wait = start_pull_request(bufnr, "two")
   h.eq(lines, { "two", "" })
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "A title", "", "A description" })
+  vim.api.nvim_buf_set_lines(
+    0,
+    0,
+    -1,
+    false,
+    { "A title", "", "A description" }
+  )
   vim.cmd.write()
   vim.cmd.quit()
   wait()
@@ -137,27 +152,35 @@ test("a pull request is opened once its editor is written and quit", function()
   h.eq(#vim.api.nvim_tabpage_list_wins(0), windows)
   h.eq(h.status(bufnr, "two"), "done: Opened pull request #1")
   local drawn = vim.iter(h.screen(bufnr)):any(
-    function(line) return vim.startswith(line, "○  <id> two feature \239\144\136  #1 ") end
+    function(line)
+      return vim.startswith(line, "○  <id> two feature \239\144\136  #1 ")
+    end
   )
   h.eq(drawn, true)
 end)
 
-test("quitting the pull request's editor without writing it abandons it", function()
-  os.remove(gh_args)
-  local _, bufnr = github_repo({ "one", "two" })
+test(
+  "quitting the pull request's editor without writing it abandons it",
+  function()
+    os.remove(gh_args)
+    local _, bufnr = github_repo({ "one", "two" })
 
-  local _, wait = start_pull_request(bufnr, "two")
-  vim.cmd("quit!")
-  wait()
+    local _, wait = start_pull_request(bufnr, "two")
+    vim.cmd("quit!")
+    wait()
 
-  h.eq(gh_arguments(), {})
-  h.eq(vim.api.nvim_get_current_buf(), bufnr)
-  h.eq(h.status(bufnr, "two"), "warning: Didn't open a pull request")
-end)
+    h.eq(gh_arguments(), {})
+    h.eq(vim.api.nvim_get_current_buf(), bufnr)
+    h.eq(h.status(bufnr, "two"), "warning: Didn't open a pull request")
+  end
+)
 
 test("a pull request of several changes starts from the template", function()
   local root = h.repo({ "one", "two", "three" }, 1)
-  h.run(root, { "jj", "bookmark", "create", "--quiet", "my-feature", "-r", "@-" })
+  h.run(
+    root,
+    { "jj", "bookmark", "create", "--quiet", "my-feature", "-r", "@-" }
+  )
   h.run(root, { "jj", "git", "push", "--quiet", "--bookmark", "my-feature" })
   h.run(root, {
     "jj",
@@ -168,7 +191,9 @@ test("a pull request of several changes starts from the template", function()
     "https://github.com/o/r.git",
   })
   vim.fn.mkdir(vim.fs.joinpath(root, ".github"), "p")
-  local template = assert(io.open(vim.fs.joinpath(root, ".github", "PULL_REQUEST_TEMPLATE.md"), "w"))
+  local template = assert(
+    io.open(vim.fs.joinpath(root, ".github", "PULL_REQUEST_TEMPLATE.md"), "w")
+  )
   template:write("## Summary\n")
   template:close()
   local bufnr = h.open(root)
@@ -192,7 +217,11 @@ test("a pull request of a bookmark that isn't pushed is an error", function()
   })
   local bufnr = h.open(root)
 
-  wait_for(function(on_done) nvim_jj.open_pull_request(bufnr, h.row(bufnr, "two"), on_done) end)
+  wait_for(
+    function(on_done)
+      nvim_jj.open_pull_request(bufnr, h.row(bufnr, "two"), on_done)
+    end
+  )
   h.eq(h.status(bufnr, "two"), "failed: Push feature to origin first")
 end)
 
@@ -201,7 +230,8 @@ end)
 ---@param line integer
 ---@return lsp.CodeAction[]
 local code_actions = function(bufnr, line)
-  local client = assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
+  local client =
+    assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
   local response = client:request_sync("textDocument/codeAction", {
     textDocument = { uri = vim.uri.from_buf(bufnr) },
     range = {
@@ -219,38 +249,66 @@ local titles = function(actions)
   return vim.tbl_map(function(action) return action.title end, actions)
 end
 
-test("opening a pull request is a code action of a change with a bookmark", function()
-  os.remove(gh_list)
-  local _, bufnr = github_repo({ "one", "two" })
-  h.wait(function() return #code_actions(bufnr, h.row(bufnr, "two")) > 0 end, "the repo is found")
+test(
+  "opening a pull request is a code action of a change with a bookmark",
+  function()
+    os.remove(gh_list)
+    local _, bufnr = github_repo({ "one", "two" })
+    h.wait(
+      function() return #code_actions(bufnr, h.row(bufnr, "two")) > 0 end,
+      "the repo is found"
+    )
 
-  h.eq(code_actions(bufnr, 1), {})
-  h.eq(titles(code_actions(bufnr, h.row(bufnr, "two"))), { "\239\144\136  Open a PR on GitHub" })
-end)
+    h.eq(code_actions(bufnr, 1), {})
+    h.eq(
+      titles(code_actions(bufnr, h.row(bufnr, "two"))),
+      { "\239\144\136  Open a PR on GitHub" }
+    )
+  end
+)
 
-test("an open pull request is drawn after its bookmark, and can be browsed", function()
-  local list = assert(io.open(gh_list, "w"))
-  list:write(vim.json.encode({
-    { number = 7, headRefName = "feature", url = "https://github.com/o/r/pull/7", isCrossRepository = false },
-    { number = 8, headRefName = "main", url = "https://github.com/x/r/pull/8", isCrossRepository = true },
-  }))
-  list:close()
-  local _, bufnr = github_repo({ "one", "two" })
-  h.wait(
-    function() return vim.tbl_contains(h.screen(bufnr), "○  <id> two feature \239\144\136  #7") end,
-    "the pull request is drawn"
-  )
-  os.remove(gh_list)
+test(
+  "an open pull request is drawn after its bookmark, and can be browsed",
+  function()
+    local list = assert(io.open(gh_list, "w"))
+    list:write(vim.json.encode({
+      {
+        number = 7,
+        headRefName = "feature",
+        url = "https://github.com/o/r/pull/7",
+        isCrossRepository = false,
+      },
+      {
+        number = 8,
+        headRefName = "main",
+        url = "https://github.com/x/r/pull/8",
+        isCrossRepository = true,
+      },
+    }))
+    list:close()
+    local _, bufnr = github_repo({ "one", "two" })
+    h.wait(
+      function()
+        return vim.tbl_contains(
+          h.screen(bufnr),
+          "○  <id> two feature \239\144\136  #7"
+        )
+      end,
+      "the pull request is drawn"
+    )
+    os.remove(gh_list)
 
-  local actions = code_actions(bufnr, h.row(bufnr, "two"))
-  h.eq(titles(actions), { "\239\144\136  Open PR #7 in the browser" })
-  local opened
-  local open = vim.ui.open
-  ---@diagnostic disable-next-line: duplicate-set-field
-  vim.ui.open = function(url) opened = url end
-  local client = assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
-  client:exec_cmd(assert(assert(actions[1]).command), { bufnr = bufnr })
-  h.wait(function() return opened ~= nil end, "the pull request is browsed")
-  vim.ui.open = open
-  h.eq(opened, "https://github.com/o/r/pull/7")
-end)
+    local actions = code_actions(bufnr, h.row(bufnr, "two"))
+    h.eq(titles(actions), { "\239\144\136  Open PR #7 in the browser" })
+    local opened
+    local open = vim.ui.open
+    ---@diagnostic disable-next-line: duplicate-set-field
+    vim.ui.open = function(url) opened = url end
+    local client =
+      assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
+    client:exec_cmd(assert(assert(actions[1]).command), { bufnr = bufnr })
+    h.wait(function() return opened ~= nil end, "the pull request is browsed")
+    vim.ui.open = open
+    h.eq(opened, "https://github.com/o/r/pull/7")
+  end
+)

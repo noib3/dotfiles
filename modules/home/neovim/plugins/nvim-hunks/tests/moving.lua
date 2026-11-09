@@ -256,7 +256,10 @@ test("a merge's hunk moves into one of its parents", function()
     end,
     "the hunk is in p1"
   )
-  h.eq(h.file_at(merge, "@", "f.txt"), text({ "A", "b", "c", "D", "e", "f", "G" }))
+  h.eq(
+    h.file_at(merge, "@", "f.txt"),
+    text({ "A", "b", "c", "D", "e", "f", "G" })
+  )
 end)
 
 test("moving into several parents asks which one", function()
@@ -277,9 +280,9 @@ test("moving into several parents asks which one", function()
       labels[#labels + 1] = format(item):match("%S+ (.*)")
     end
     table.sort(labels)
-    on_choice(vim.iter(items):find(
-      function(item) return format(item):match(" p2$") end
-    ))
+    on_choice(
+      vim.iter(items):find(function(item) return format(item):match(" p2$") end)
+    )
   end
 
   local file = changed("f.txt", repo)
@@ -308,22 +311,25 @@ test("several hunks of a file move together", function()
   wait_in_parent("g.txt", text({ "A", "b", "c", "d", "e", "f", "G" }), repo)
 end)
 
-test("hunks of several files and whole files move one after the other", function()
-  local repo = h.repo({
-    ["a.txt"] = text({ "a", "b", "c", "d" }),
-    ["b.txt"] = text({ "a", "b" }),
-    ["c.txt"] = text({ "a" }),
-  }, {
-    ["a.txt"] = text({ "A", "b", "c", "D" }),
-    ["b.txt"] = text({ "A", "b" }),
-    ["c.txt"] = text({ "C" }),
-  })
-  local a, b = changed("a.txt", repo), changed("b.txt", repo)
-  hunks.move_many({ changed("c.txt", repo) }, {
-    { file = a, hunks = { assert(a.hunks[1]) } },
-    { file = b, hunks = { assert(b.hunks[1]) } },
-  }, "@-")
-  wait_in_parent("b.txt", text({ "A", "b" }), repo)
-  h.eq(in_parent("a.txt", repo), text({ "A", "b", "c", "d" }))
-  h.eq(in_parent("c.txt", repo), text({ "C" }))
-end)
+test(
+  "hunks of several files and whole files move one after the other",
+  function()
+    local repo = h.repo({
+      ["a.txt"] = text({ "a", "b", "c", "d" }),
+      ["b.txt"] = text({ "a", "b" }),
+      ["c.txt"] = text({ "a" }),
+    }, {
+      ["a.txt"] = text({ "A", "b", "c", "D" }),
+      ["b.txt"] = text({ "A", "b" }),
+      ["c.txt"] = text({ "C" }),
+    })
+    local a, b = changed("a.txt", repo), changed("b.txt", repo)
+    hunks.move_many({ changed("c.txt", repo) }, {
+      { file = a, hunks = { assert(a.hunks[1]) } },
+      { file = b, hunks = { assert(b.hunks[1]) } },
+    }, "@-")
+    wait_in_parent("b.txt", text({ "A", "b" }), repo)
+    h.eq(in_parent("a.txt", repo), text({ "A", "b", "c", "d" }))
+    h.eq(in_parent("c.txt", repo), text({ "C" }))
+  end
+)

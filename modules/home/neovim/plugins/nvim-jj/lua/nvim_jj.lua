@@ -74,7 +74,8 @@ local config = {
 local logs = {}
 
 --- The frames of the spinner of the operations in progress.
-local spinner_frames = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+local spinner_frames =
+  { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
 
 --- The delay between two frames of the spinner.
 local spinner_interval_ms = 100
@@ -162,7 +163,9 @@ local lines_below = function(row, held)
     local detail = line.detail
     if not detail then return { { line.graph, "JjGraph" } } end
     local hl = detail.kind == "authors" and "JjAuthor" or "JjTimestamp"
-    if not held then return { { line.graph, "JjGraph" }, { detail.text, hl } } end
+    if not held then
+      return { { line.graph, "JjGraph" }, { detail.text, hl } }
+    end
     local width = vim.api.nvim_strwidth(line.graph .. detail.text)
     return {
       { line.graph, { "JjGraph", held } },
@@ -483,10 +486,8 @@ local rows_in_view = function(bufnr)
   local rows = 0
   for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
     -- The top line lags behind the cursor until the next redraw.
-    local top = math.max(
-      vim.fn.line("w0", win),
-      vim.api.nvim_win_get_cursor(win)[1]
-    )
+    local top =
+      math.max(vim.fn.line("w0", win), vim.api.nvim_win_get_cursor(win)[1])
     rows = math.max(rows, top + vim.api.nvim_win_get_height(win))
   end
   return rows
@@ -532,13 +533,16 @@ local replace_rows = function(bufnr, log, rows)
   for win, view in pairs(views) do
     local line = row_of(log, view.id)
     if line then
-      vim.api.nvim_win_call(win, function()
-        vim.fn.winrestview({
-          lnum = line,
-          col = view.col,
-          topline = math.max(1, line - view.offset),
-        })
-      end)
+      vim.api.nvim_win_call(
+        win,
+        function()
+          vim.fn.winrestview({
+            lnum = line,
+            col = view.col,
+            topline = math.max(1, line - view.offset),
+          })
+        end
+      )
     end
   end
 end
@@ -674,7 +678,9 @@ local release = function(bufnr)
   if log.watcher then log.watcher:close() end
   if log.timer then log.timer:close() end
   for _, status in pairs(log.statuses) do
-    if status.timer and not status.timer:is_closing() then status.timer:close() end
+    if status.timer and not status.timer:is_closing() then
+      status.timer:close()
+    end
   end
   logs[bufnr] = nil
   update_spinner()
@@ -748,7 +754,10 @@ local code_actions = function(bufnr, line)
     local pull_request = log.pull_requests[name]
     if pull_request then
       add(
-        ("%s Open PR #%d in the browser"):format(github_icon, pull_request.number),
+        ("%s Open PR #%d in the browser"):format(
+          github_icon,
+          pull_request.number
+        ),
         commands.browse,
         { pull_request.url }
       )
@@ -838,12 +847,17 @@ local refresh_pull_requests = function(bufnr)
   -- A read that started before a pull request was opened from the log
   -- doesn't have it.
   local version = log.pull_requests_version
-  github.pull_requests(log.root, config.gh, log.github_repo, function(err, pull_requests)
-    if err or not pull_requests or logs[bufnr] ~= log then return end
-    if log.pull_requests_version ~= version then return end
-    log.pull_requests = pull_requests
-    redraw_right(bufnr)
-  end)
+  github.pull_requests(
+    log.root,
+    config.gh,
+    log.github_repo,
+    function(err, pull_requests)
+      if err or not pull_requests or logs[bufnr] ~= log then return end
+      if log.pull_requests_version ~= version then return end
+      log.pull_requests = pull_requests
+      redraw_right(bufnr)
+    end
+  )
 end
 
 --- Finds out whether a log buffer's remote is on GitHub, and reads its open
@@ -1172,32 +1186,43 @@ local abandon_changes = function(root, ids, what, on_done)
   ---@return fun(done: fun(err?: string))
   local recreate = function(group)
     return function(done)
-      local sources = vim.tbl_map(function(id) return commits[id] end, group.ids)
-      jj.duplicate(root, sources, place_of(history, group), function(err, copies)
-        if err or not copies then
-          done(err)
-          return
-        end
-        local prefixes = vim.tbl_map(function(copy) return copy.change end, copies)
-        full_ids(root, prefixes, function(ids_err, new_ids)
-          if ids_err or not new_ids then
-            done(ids_err)
+      local sources = vim.tbl_map(
+        function(id) return commits[id] end,
+        group.ids
+      )
+      jj.duplicate(
+        root,
+        sources,
+        place_of(history, group),
+        function(err, copies)
+          if err or not copies then
+            done(err)
             return
           end
-          for _, copy in ipairs(copies) do
-            for _, id in ipairs(group.ids) do
-              if vim.startswith(commits[id], copy.source) then
-                history.aliases[id] = new_ids[copy.change]
+          local prefixes = vim.tbl_map(
+            function(copy) return copy.change end,
+            copies
+          )
+          full_ids(root, prefixes, function(ids_err, new_ids)
+            if ids_err or not new_ids then
+              done(ids_err)
+              return
+            end
+            for _, copy in ipairs(copies) do
+              for _, id in ipairs(group.ids) do
+                if vim.startswith(commits[id], copy.source) then
+                  history.aliases[id] = new_ids[copy.change]
+                end
               end
             end
-          end
-          if working_copy and vim.list_contains(group.ids, working_copy) then
-            jj.edit(root, current_id(history, working_copy), done)
-          else
-            done()
-          end
-        end)
-      end)
+            if working_copy and vim.list_contains(group.ids, working_copy) then
+              jj.edit(root, current_id(history, working_copy), done)
+            else
+              done()
+            end
+          end)
+        end
+      )
     end
   end
 
@@ -1227,7 +1252,9 @@ local create_change = function(root, place, what, on_done)
   ---@param done fun(err?: string)
   local create = function(done)
     jj.new(root, place(), false, function(err, prefix)
-      if err or not prefix then return done(err or "jj didn't name the new change") end
+      if err or not prefix then
+        return done(err or "jj didn't name the new change")
+      end
       full_ids(root, { prefix }, function(ids_err, ids)
         if ids_err or not ids then return done(ids_err) end
         local id = ids[prefix]
@@ -1284,7 +1311,10 @@ local copy_changes = function(root, ids, place, what, on_done)
       if err or not changes then return done(err) end
       jj.duplicate(root, revs, place(), function(dup_err, made)
         if dup_err or not made then return done(dup_err) end
-        local prefixes = vim.tbl_map(function(made_copy) return made_copy.change end, made)
+        local prefixes = vim.tbl_map(
+          function(made_copy) return made_copy.change end,
+          made
+        )
         full_ids(root, prefixes, function(ids_err, new_ids)
           if ids_err or not new_ids then return done(ids_err) end
           for _, made_copy in ipairs(made) do
@@ -1292,7 +1322,9 @@ local copy_changes = function(root, ids, place, what, on_done)
               if vim.startswith(change.commit_id, made_copy.source) then
                 local source = originals[change.id] or change.id
                 local new_id = new_ids[made_copy.change]
-                if copies[source] then history.aliases[copies[source]] = new_id end
+                if copies[source] then
+                  history.aliases[copies[source]] = new_id
+                end
                 copies[source] = new_id
               end
             end
@@ -1336,9 +1368,7 @@ local edits_of = function(bufnr, log)
     local text = vim.trim(texts[index] or "")
     local change = row.change
     if text ~= vim.trim(change.subject) then
-      if change.immutable then
-        return immutable(change)
-      end
+      if change.immutable then return immutable(change) end
       edits[#edits + 1] = { change = change, subject = text }
     end
   end
@@ -1587,9 +1617,7 @@ local toggle_held = function(bufnr, log, hold, changes)
   end
   if hold == "cut" and not release then
     for _, change in ipairs(changes) do
-      if change.immutable then
-        return notify(immutable(change))
-      end
+      if change.immutable then return notify(immutable(change)) end
     end
   end
 
@@ -1709,7 +1737,9 @@ M.paste = function(bufnr, line, position, branch, on_done)
   if vim.bo[bufnr].modified then return notify(not_saved) end
 
   local cut, copied = vim.tbl_keys(log.cut), vim.tbl_keys(log.copied)
-  if #cut == 0 and #copied == 0 then return notify("Nothing is cut or copied") end
+  if #cut == 0 and #copied == 0 then
+    return notify("Nothing is cut or copied")
+  end
 
   local err, changes = changes_between(bufnr, log, line, line)
   if err or not changes then return notify(err or "") end
@@ -1721,7 +1751,9 @@ M.paste = function(bufnr, line, position, branch, on_done)
   local history = history_of(log.root)
   local place = function()
     local rev = current_id(history, target.id)
-    if branch then return { onto = position == "above" and rev or rev .. "-" } end
+    if branch then
+      return { onto = position == "above" and rev or rev .. "-" }
+    end
     return position == "above" and { after = rev } or { before = rev }
   end
 
@@ -1774,48 +1806,47 @@ M.edit_bookmark = function(bufnr, line, on_done)
 
   ---@param old? string
   local edit = function(old)
-    vim.ui.input(
-      { prompt = "Bookmark: ", default = old or "" },
-      function(input)
-        if input == nil then return finish() end
-        local new = vim.trim(input)
-        if new == (old or "") then return finish() end
-        local root, history = log.root, history_of(log.root)
-        ---@param name string
-        local create = function(name)
-          return function(done)
-            jj.create_bookmark(root, name, current_id(history, change.id), done)
-          end
+    vim.ui.input({ prompt = "Bookmark: ", default = old or "" }, function(input)
+      if input == nil then return finish() end
+      local new = vim.trim(input)
+      if new == (old or "") then return finish() end
+      local root, history = log.root, history_of(log.root)
+      ---@param name string
+      local create = function(name)
+        return function(done)
+          jj.create_bookmark(root, name, current_id(history, change.id), done)
         end
-        ---@param name string
-        local delete = function(name)
-          return function(done) jj.delete_bookmark(root, name, done) end
-        end
-        ---@param from string
-        ---@param to string
-        local rename = function(from, to)
-          return function(done) jj.rename_bookmark(root, from, to, done) end
-        end
-
-        ---@type nvim_jj.Step
-        local step
-        if not old then
-          step = { label = "creating " .. new, redo = create(new), undo = delete(new) }
-        elseif new == "" then
-          step = { label = "deleting " .. old, redo = delete(old), undo = create(old) }
-        else
-          step = {
-            label = ("renaming %s to %s"):format(old, new),
-            redo = rename(old, new),
-            undo = rename(new, old),
-          }
-        end
-        step.redo(function(edit_err)
-          if not edit_err then record(root, step) end
-          finish(edit_err)
-        end)
       end
-    )
+      ---@param name string
+      local delete = function(name)
+        return function(done) jj.delete_bookmark(root, name, done) end
+      end
+      ---@param from string
+      ---@param to string
+      local rename = function(from, to)
+        return function(done) jj.rename_bookmark(root, from, to, done) end
+      end
+
+      ---@type nvim_jj.Step
+      local step
+      if not old then
+        step =
+          { label = "creating " .. new, redo = create(new), undo = delete(new) }
+      elseif new == "" then
+        step =
+          { label = "deleting " .. old, redo = delete(old), undo = create(old) }
+      else
+        step = {
+          label = ("renaming %s to %s"):format(old, new),
+          redo = rename(old, new),
+          undo = rename(new, old),
+        }
+      end
+      step.redo(function(edit_err)
+        if not edit_err then record(root, step) end
+        finish(edit_err)
+      end)
+    end)
   end
 
   local bookmarks = change.local_bookmarks
@@ -1866,12 +1897,15 @@ M.push = function(bufnr, first, last, branch, on_done)
     if on_done then on_done(push_err) end
   end
 
-  local pushed =
-    ("::remote_bookmarks(remote=exact:%s)"):format(jj.quote(remote))
-  local selection = ("(%s)"):format(table.concat(
-    vim.tbl_map(function(change) return change.id end, selected),
-    " | "
-  ))
+  local pushed = ("::remote_bookmarks(remote=exact:%s)"):format(
+    jj.quote(remote)
+  )
+  local selection = ("(%s)"):format(
+    table.concat(
+      vim.tbl_map(function(change) return change.id end, selected),
+      " | "
+    )
+  )
   local unpushed = ("(%s ~ %s)"):format(selection, pushed)
 
   ---@param name string
@@ -1955,11 +1989,16 @@ M.push = function(bufnr, first, last, branch, on_done)
       ),
     }, function(choice)
       if choice ~= move then return finish() end
-      jj.remote_bookmarks(root, remote_bookmark(name), remote, function(remotes_err, remotes)
-        if remotes_err or not remotes then return finish(remotes_err) end
-        local tracked = not remotes[1] or remotes[1].tracked
-        track_and_push({ name = name, tracked = tracked }, head, true)
-      end)
+      jj.remote_bookmarks(
+        root,
+        remote_bookmark(name),
+        remote,
+        function(remotes_err, remotes)
+          if remotes_err or not remotes then return finish(remotes_err) end
+          local tracked = not remotes[1] or remotes[1].tracked
+          track_and_push({ name = name, tracked = tracked }, head, true)
+        end
+      )
     end)
   end
 
@@ -2035,8 +2074,11 @@ M.push = function(bufnr, first, last, branch, on_done)
     end
     if #already == #selected then return finish() end
 
-    local missing =
-      ("::%s ~ %s ~ %s ~ root()"):format(unpushed, pushed, selection)
+    local missing = ("::%s ~ %s ~ %s ~ root()"):format(
+      unpushed,
+      pushed,
+      selection
+    )
     jj.changes(root, missing, function(missing_err, ancestors)
       if missing_err or not ancestors then return finish(missing_err) end
       if #ancestors > 0 then
@@ -2078,7 +2120,9 @@ local step_history = function(bufnr, direction, on_done)
   local to = history[direction == "undo" and "redo" or "undo"]
   local step = from[#from]
   if not step then
-    return finish(direction == "undo" and "Nothing to undo" or "Nothing to redo")
+    return finish(
+      direction == "undo" and "Nothing to undo" or "Nothing to redo"
+    )
   end
 
   history.busy = true
@@ -2137,28 +2181,37 @@ M.check_out = function(bufnr, line, on_done)
     if not previous then return finish("There's no working-copy commit") end
 
     ---@param done fun(err?: string)
-    local edit = function(done) jj.edit(root, current_id(history, target.id), done) end
+    local edit = function(done)
+      jj.edit(root, current_id(history, target.id), done)
+    end
     ---@param done fun(err?: string)
     local undo = function(done)
       local id = current_id(history, previous)
-      jj.changes(root, ("present(%s)"):format(id), function(present_err, present)
-        if present_err or not present then return done(present_err) end
-        if #present > 0 then return jj.edit(root, id, done) end
-        local place = { onto = revset_of(history, previous_parents or {}) }
-        jj.new(root, place, true, function(new_err, prefix)
-          if new_err or not prefix then return done(new_err) end
-          full_ids(root, { prefix }, function(ids_err, ids)
-            if ids_err or not ids then return done(ids_err) end
-            history.aliases[id] = ids[prefix]
-            done()
+      jj.changes(
+        root,
+        ("present(%s)"):format(id),
+        function(present_err, present)
+          if present_err or not present then return done(present_err) end
+          if #present > 0 then return jj.edit(root, id, done) end
+          local place = { onto = revset_of(history, previous_parents or {}) }
+          jj.new(root, place, true, function(new_err, prefix)
+            if new_err or not prefix then return done(new_err) end
+            full_ids(root, { prefix }, function(ids_err, ids)
+              if ids_err or not ids then return done(ids_err) end
+              history.aliases[id] = ids[prefix]
+              done()
+            end)
           end)
-        end)
-      end)
+        end
+      )
     end
 
     edit(function(edit_err)
       if edit_err then return finish(edit_err) end
-      record(root, { label = "checking out " .. label(target), redo = edit, undo = undo })
+      record(
+        root,
+        { label = "checking out " .. label(target), redo = edit, undo = undo }
+      )
       render(bufnr, false, finish)
     end)
   end)
@@ -2191,7 +2244,9 @@ M.fetch = function(bufnr, on_done)
       jj.changes(root, "trunk()", function(after_err, after)
         if after_err or not after then return finish(after_err) end
         local trunk = after[1]
-        if not trunk or (before[1] and before[1].commit_id == trunk.commit_id) then
+        if
+          not trunk or (before[1] and before[1].commit_id == trunk.commit_id)
+        then
           return render(bufnr, false, finish)
         end
 
@@ -2209,7 +2264,10 @@ M.fetch = function(bufnr, on_done)
             ),
           }, function(choice)
             if choice ~= move then return render(bufnr, false, finish) end
-            local ids = vim.tbl_map(function(change) return change.id end, changes)
+            local ids = vim.tbl_map(
+              function(change) return change.id end,
+              changes
+            )
             local what = ("moving %s onto %s"):format(count_changes(#ids), name)
             local place = function() return { onto = "trunk()" } end
             move_changes(root, ids, place, what, function(move_err)
@@ -2274,9 +2332,14 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
   if win == -1 then win = vim.api.nvim_get_current_win() end
 
   local editor = vim.api.nvim_create_buf(false, false)
-  without_autocmds(function()
-    vim.api.nvim_buf_set_name(editor, ("%s%s/%s#%d"):format(pull_request_scheme, log.root, name, editor))
-  end)
+  without_autocmds(
+    function()
+      vim.api.nvim_buf_set_name(
+        editor,
+        ("%s%s/%s#%d"):format(pull_request_scheme, log.root, name, editor)
+      )
+    end
+  )
   vim.api.nvim_buf_set_lines(editor, 0, -1, false, lines)
   vim.bo[editor].buftype = "acwrite"
   vim.bo[editor].bufhidden = "wipe"
@@ -2285,17 +2348,22 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
   vim.bo[editor].modified = false
   vim.api.nvim_buf_set_extmark(editor, editor_namespace, 0, 0, {
     virt_lines = {
-      { {
-        ("The title of the pull request of %s, then its description. :wq opens it, :q! doesn't."):format(name),
-        "JjPlaceholder",
-      } },
+      {
+        {
+          ("The title of the pull request of %s, then its description. :wq opens it, :q! doesn't."):format(
+            name
+          ),
+          "JjPlaceholder",
+        },
+      },
     },
     virt_lines_above = true,
   })
 
   ---@type string[]?
   local saved
-  local group = vim.api.nvim_create_augroup("nvim-jj-editor-" .. editor, { clear = true })
+  local group =
+    vim.api.nvim_create_augroup("nvim-jj-editor-" .. editor, { clear = true })
 
   vim.api.nvim_create_autocmd("BufWriteCmd", {
     group = group,
@@ -2321,7 +2389,9 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
       vim.schedule(function()
         if not vim.api.nvim_win_is_valid(quitting) then return end
         if not vim.api.nvim_win_is_valid(replacement) then return end
-        without_autocmds(function() vim.api.nvim_win_close(replacement, true) end)
+        without_autocmds(
+          function() vim.api.nvim_win_close(replacement, true) end
+        )
         vim.api.nvim_set_current_win(quitting)
       end)
     end,
@@ -2390,14 +2460,33 @@ M.open_pull_request = function(bufnr, line, on_done)
   ---@param title string
   ---@param body string
   local create = function(head, base, title, body)
-    set_status(bufnr, change.id, "busy", ("Opening a pull request into %s"):format(base))
-    github.create_pull_request(root, config.gh, repo, head, base, title, body, function(create_err, pull_request)
-      if create_err or not pull_request then return finish(create_err) end
-      log.pull_requests[head] = pull_request
-      log.pull_requests_version = log.pull_requests_version + 1
-      set_status(bufnr, change.id, "done", ("Opened pull request #%d"):format(pull_request.number))
-      finish(nil, pull_request)
-    end)
+    set_status(
+      bufnr,
+      change.id,
+      "busy",
+      ("Opening a pull request into %s"):format(base)
+    )
+    github.create_pull_request(
+      root,
+      config.gh,
+      repo,
+      head,
+      base,
+      title,
+      body,
+      function(create_err, pull_request)
+        if create_err or not pull_request then return finish(create_err) end
+        log.pull_requests[head] = pull_request
+        log.pull_requests_version = log.pull_requests_version + 1
+        set_status(
+          bufnr,
+          change.id,
+          "done",
+          ("Opened pull request #%d"):format(pull_request.number)
+        )
+        finish(nil, pull_request)
+      end
+    )
   end
 
   ---@param head string
@@ -2429,7 +2518,12 @@ M.open_pull_request = function(bufnr, line, on_done)
             create(head, base, confirmed_title, confirmed_body)
           end,
           function()
-            set_status(bufnr, change.id, "warning", "Didn't open a pull request")
+            set_status(
+              bufnr,
+              change.id,
+              "warning",
+              "Didn't open a pull request"
+            )
             finish()
           end
         )
@@ -2457,7 +2551,10 @@ M.open_pull_request = function(bufnr, line, on_done)
         jj.quote(head),
         jj.quote(remote)
       )
-      local base = ("coalesce(heads(::%s- & (%s)), trunk())"):format(change.id, others)
+      local base = ("coalesce(heads(::%s- & (%s)), trunk())"):format(
+        change.id,
+        others
+      )
       jj.remote_bookmarks(root, base, remote, function(base_err, found)
         if base_err or not found then return finish(base_err) end
         local bookmarks = vim.tbl_filter(
@@ -2490,13 +2587,17 @@ M.open_pull_request = function(bufnr, line, on_done)
     return finish("It has no bookmark without a pull request")
   end
   if #own == 1 then return open(own[1]) end
-  vim.ui.select(own, { prompt = "Bookmark to open a pull request of" }, function(name)
-    if name then
-      open(name)
-    else
-      finish()
+  vim.ui.select(
+    own,
+    { prompt = "Bookmark to open a pull request of" },
+    function(name)
+      if name then
+        open(name)
+      else
+        finish()
+      end
     end
-  end)
+  )
 end
 
 --- Replaces a log buffer's line without making it undoable, and keeps the
@@ -2648,7 +2749,11 @@ local redraw_cursor_spans = function(win, bufnr)
   if previous and previous[1] == row and previous[2] == index then return end
   ---@param line integer
   local redraw = function(line)
-    vim.api.nvim__redraw({ win = win, range = { line, line + 1 }, flush = false })
+    vim.api.nvim__redraw({
+      win = win,
+      range = { line, line + 1 },
+      flush = false,
+    })
   end
   local previous_row = previous and previous[1]
   if previous_row then redraw(previous_row) end
@@ -2689,7 +2794,13 @@ M.setup = function(opts)
   })
 
   vim.api.nvim_create_autocmd(
-    { "TextChanged", "TextChangedI", "CursorMovedI", "InsertEnter", "InsertLeave" },
+    {
+      "TextChanged",
+      "TextChangedI",
+      "CursorMovedI",
+      "InsertEnter",
+      "InsertLeave",
+    },
     {
       group = group,
       pattern = pattern,
