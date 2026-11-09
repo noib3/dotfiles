@@ -1,4 +1,5 @@
 local devicons = require("nvim-web-devicons")
+local hunks = require("nvim_hunks")
 local incline = require("incline")
 local palette = require("palette")
 
@@ -25,6 +26,19 @@ local diagnostics = function(bufnr)
   return ret
 end
 
+--- Returns the numbers of lines added and deleted in the buffer's diff, if
+--- the diff is shown.
+local line_stats = function(bufnr)
+  local stats = hunks.line_stats(bufnr)
+  if not stats or (stats.added == 0 and stats.deleted == 0) then return "" end
+  return {
+    { "+" .. stats.added, group = "HunksAddedCount" },
+    " ",
+    { "-" .. stats.deleted, group = "HunksDeletedCount" },
+    "  ",
+  }
+end
+
 local dirty_indicator = function(bufnr)
   local is_dirty = vim.bo[bufnr].modified
   return is_dirty and { "•", guifg = palette.bright.green, gui = "bold" }
@@ -46,6 +60,7 @@ incline.setup({
     return {
       " ",
       diagnostics(props.buf),
+      line_stats(props.buf),
       dirty_indicator(props.buf),
       file_icon(props.buf),
       bufname(props.buf),
@@ -69,6 +84,13 @@ local group = vim.api.nvim_create_augroup("noib3/refresh-incline", {
 
 vim.api.nvim_create_autocmd("DiagnosticChanged", {
   group = group,
+  desc = "Re-render incline",
+  callback = incline.refresh,
+})
+
+vim.api.nvim_create_autocmd("User", {
+  group = group,
+  pattern = "NvimHunksChanged",
   desc = "Re-render incline",
   callback = incline.refresh,
 })

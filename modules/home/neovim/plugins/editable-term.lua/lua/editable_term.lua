@@ -4,6 +4,7 @@ local api = vim.api
 
 local M = {}
 
+---@type fun(line: string, cell: integer): integer, integer
 local cell_to_byte
 
 ---@param position any
@@ -35,7 +36,8 @@ local function cursor_in_cmd_region(buf, cmd_start, cursor)
     return not position_lt(cursor, cmd_start)
   end
 
-  local line = api.nvim_buf_get_lines(buf, cursor[1] - 1, cursor[1], true)[1]
+  local row = cursor[1] --[[@as integer]]
+  local line = api.nvim_buf_get_lines(buf, row - 1, row, true)[1] or ""
   return cursor[2] >= cell_to_byte(line, cmd_start[2])
 end
 
@@ -93,7 +95,7 @@ local function n_forward_chars_to_cursor(buf, cmd_start, cursor)
   if #lines == 0 then return nil end
 
   if cursor[1] == cmd_start[1] then
-    local line = lines[1]
+    local line = assert(lines[1])
     return math.max(
       0,
       byte_to_utf32_index(line, cursor[2])
@@ -188,7 +190,7 @@ end
 ---@class editable_term.BufInfo
 ---@field cmd_cursor? {[1]: integer, [2]: integer}
 
----@type {[integer]: editable_term.BufInfo}
+---@type table<integer, editable_term.BufInfo?>
 M.buffers = {}
 
 ---@param config editable_term.Config?
@@ -292,14 +294,15 @@ M.setup = function(config)
         group = editgroup,
         buffer = args.buf,
         callback = function(args2)
+          local event = vim.v.event --[[@as { old_mode: string, new_mode: string }]]
           local intercepting_c_operator = (
-            vim.v.event.old_mode == "v" or vim.v.event.old_mode == "no"
+            event.old_mode == "v" or event.old_mode == "no"
           )
-            and vim.v.event.new_mode == "t"
+            and event.new_mode == "t"
             and vim.v.operator == "c"
           local intercepting_d_or_custom_operator = (
-            (vim.v.event.old_mode == "v" or vim.v.event.old_mode == "no")
-            and vim.v.event.new_mode == "nt"
+            (event.old_mode == "v" or event.old_mode == "no")
+            and event.new_mode == "nt"
             and (vim.v.operator == "d" or vim.v.operator == "g@")
           )
           if
@@ -340,7 +343,7 @@ M.setup = function(config)
 
           -- TODO: check if custom operators that end in terminal mode trigger TextChanged
           -- NOTE: operators that do not end in terminal mode are captured by TextChanged
-          if vim.v.event.new_mode ~= "t" then return end
+          if event.new_mode ~= "t" then return end
 
           local lines =
             api.nvim_buf_get_lines(args2.buf, cmd_start[1] - 1, -1, true)
@@ -427,7 +430,7 @@ M.setup = function(config)
       api.nvim_create_autocmd({ "VimResized", "WinResized" }, {
         group = editgroup,
         callback = function()
-          local bufinfo = M.buffers[args.buf]
+          local bufinfo = M.buffers[args.buf] --[[@as editable_term.BufInfo?]]
           if bufinfo then bufinfo.cmd_cursor = nil end
         end,
       })

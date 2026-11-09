@@ -156,19 +156,35 @@ local overrides = {
   },
 }
 
+local gruvbox = require("gruvbox")
+
 ---@return GruvboxConfig
 local config = function()
-  local overrides = vim.o.background == "dark" and overrides.dark
-    or overrides.light
+  local is_dark = vim.o.background == "dark"
+  local overrides = is_dark and overrides.dark or overrides.light
+  local palette = vim.tbl_extend("force", gruvbox.palette, overrides.palette)
 
   return {
     palette_overrides = overrides.palette,
-    overrides = overrides.hl_groups,
+    overrides = vim.tbl_extend("force", overrides.hl_groups, {
+      -- Numbers of added and deleted lines, and the colors of modified and
+      -- renamed files, in nvim-hunks' diffs.
+      HunksAddedCount = {
+        fg = is_dark and palette.bright_green or palette.faded_green,
+      },
+      HunksDeletedCount = {
+        fg = is_dark and palette.bright_red or palette.faded_red,
+      },
+      HunksModifiedCount = {
+        fg = is_dark and palette.bright_yellow or palette.faded_yellow,
+      },
+      HunksRenamedCount = {
+        fg = is_dark and palette.bright_blue or palette.faded_blue,
+      },
+    }),
     terminal_colors = false,
   }
 end
-
-local gruvbox = require("gruvbox")
 
 vim.api.nvim_create_autocmd("OptionSet", {
   pattern = "background",

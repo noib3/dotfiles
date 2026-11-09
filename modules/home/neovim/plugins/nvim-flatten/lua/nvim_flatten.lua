@@ -4,7 +4,7 @@ local launch_event = "NvimFlattenLaunch"
 local will_swallow_event = "NvimFlattenWillSwallow"
 
 local plugin_root =
-  vim.fs.dirname(vim.fs.dirname(debug.getinfo(1, "S").source:sub(2)))
+  vim.fs.dirname(vim.fs.dirname(assert(debug.getinfo(1, "S")).source:sub(2)))
 local bin_dir = plugin_root .. "/bin"
 
 local buffers_owned_by_flatten = {}
@@ -30,14 +30,14 @@ local normalize = function(path)
 end
 
 --- Returns an iterator over the windows currently displaying the given buffer.
---- @param buf number
+--- @param buf integer
 local buf_get_wins = function(buf)
   return vim
     .iter(vim.api.nvim_list_wins())
     :filter(function(win) return vim.api.nvim_win_get_buf(win) == buf end)
 end
 
---- @param buf number
+--- @param buf integer
 --- @param pattern string
 local emit_for_buffer = function(buf, pattern)
   if not vim.api.nvim_buf_is_valid(buf) then return end
@@ -54,7 +54,7 @@ local emit_for_buffer = function(buf, pattern)
 end
 
 --- @param filepath string
---- @return number, boolean
+--- @return integer, boolean
 local get_or_add_buffer = function(filepath)
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if
@@ -70,7 +70,7 @@ local get_or_add_buffer = function(filepath)
   return bufnr, true
 end
 
---- @param buf number
+--- @param buf integer
 --- @param filepath string
 local prepare_buffer = function(buf, filepath)
   vim.api.nvim_set_option_value("buflisted", true, { buf = buf })
@@ -84,7 +84,7 @@ local prepare_buffer = function(buf, filepath)
   end
 end
 
---- @param buf number
+--- @param buf integer
 --- @param commands string[]
 local run_post_commands = function(buf, commands)
   if #commands == 0 then return end
@@ -93,7 +93,7 @@ local run_post_commands = function(buf, commands)
 
   local run = function()
     for _, command in ipairs(commands) do
-      local ok, err = pcall(vim.cmd, command)
+      local ok, err = pcall(function() vim.cmd(command) end)
       if not ok then
         vim.notify(
           ("nvim-flatten: failed to run command %q: %s"):format(command, err),
@@ -119,6 +119,7 @@ local handle_launch = function(ev)
 
   local orig_buf = ev.buf
   local orig_buflisted = vim.bo[orig_buf].buflisted
+  ---@type integer?
   local file_buf
   local file_buf_owned = false
 
@@ -143,6 +144,7 @@ local handle_launch = function(ev)
         file_buf_owned = owned
       end
     end
+    ---@cast file_buf integer
 
     if #filepaths == 1 and file_buf == orig_buf then
       vim.schedule(on_done)
@@ -195,6 +197,7 @@ local handle_launch = function(ev)
       vim.schedule(function()
         pcall(vim.api.nvim_del_autocmd, window_autocmd)
 
+        ---@type integer?
         local restored_win
 
         if should_restore and vim.api.nvim_buf_is_valid(orig_buf) then
@@ -235,11 +238,7 @@ local handle_launch = function(ev)
           win = current_win
         end
 
-        -- Buffer-deletion plugins may move windows before BufDelete runs. If
-        -- orig_buf is already visible, still return to Terminal-mode there.
-        if not win then win = buf_get_wins(orig_buf):next() end
-
-        if win then vim.api.nvim_win_call(win, vim.cmd.startinsert) end
+        vim.api.nvim_win_call(win, vim.cmd.startinsert)
       end)
     end,
   })

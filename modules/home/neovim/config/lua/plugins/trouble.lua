@@ -20,11 +20,76 @@ vim.keymap.set(
   function() trouble.toggle({ focus = true, mode = "call_sites" }) end
 )
 
+vim.keymap.set("n", "<D-d>", function()
+  -- The list runs in other windows' contexts, which don't see the buffer-local
+  -- working directories of terminals.
+  ---@diagnostic disable-next-line: undefined-field
+  trouble.toggle({ focus = true, mode = "hunks", cwd = vim.fn.getcwd() })
+end)
+
+-- trouble previews and jumps to items in a "main" window, which it never picks
+-- among terminals. Without one, it'd use the list's own window. This falls
+-- back to the first window that isn't a float or a trouble window.
+local Main = require("trouble.view.main")
+---@diagnostic disable-next-line: access-invisible
+local find_main = Main._find
+---@diagnostic disable-next-line: duplicate-set-field
+Main._find = function()
+  ---@diagnostic disable-next-line: access-invisible
+  local main = find_main() --[[@as trouble.Main?]]
+  if main then return main end
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local is_float = vim.fn.win_gettype(win) == "popup"
+    ---@diagnostic disable-next-line: access-invisible
+    if not is_float and not vim.w[win].trouble then return Main._info(win) end
+  end
+end
+
+---@param into string
+---@return trouble.Action
+local move_to = function(into)
+  return {
+    action = function(_, ctx) require("trouble.sources.hunks").move(ctx, into) end,
+    desc = ("Move the hunk or file to `%s`"):format(into),
+  }
+end
+
+-- Rows with nested rows, like folders and files with hunks, fold instead of
+-- jumping.
+---@type trouble.Action
+local fold_or_jump = {
+  action = function(view, ctx)
+    local node = ctx.node
+    if node and not node:is_leaf() then
+      view:fold(node)
+    elseif ctx.item then
+      view:jump(ctx.item)
+    end
+  end,
+  desc = "Show or hide the nested rows, or else jump to the item",
+}
+
 ---@diagnostic disable-next-line: undefined-field
 trouble.setup({
   modes = {
     call_sites = {
       mode = "lsp_references",
+      win = {
+        type = "split",
+        size = {
+          height = 14,
+        },
+      },
+    },
+    hunks = {
+      center = true,
+      -- The list places its own cursor when it opens.
+      restore = false,
+      keys = {
+        ["<cr>"] = fold_or_jump,
+        ["+"] = move_to("@+"),
+        ["-"] = move_to("@-"),
+      },
       win = {
         type = "split",
         size = {

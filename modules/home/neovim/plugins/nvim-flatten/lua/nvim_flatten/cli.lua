@@ -1,6 +1,7 @@
 local fallback_exit_code = 125
 local fallback = function() os.exit(fallback_exit_code) end
 
+---@type string[]
 local original_args = {}
 for index = 1, #arg do
   original_args[index] = arg[index]
@@ -10,12 +11,14 @@ if not vim.env.NVIM or vim.env.NVIM == "" then fallback() end
 
 local can_flatten = true
 local after_double_dash = false
+---@type string[]
 local commands = {}
+---@type string[]
 local file_args = {}
 local index = 1
 
 while index <= #original_args do
-  local value = original_args[index]
+  local value = assert(original_args[index])
 
   if after_double_dash then
     file_args[#file_args + 1] = value
@@ -31,7 +34,7 @@ while index <= #original_args do
       can_flatten = false
       break
     end
-    commands[#commands + 1] = original_args[index]
+    commands[#commands + 1] = assert(original_args[index])
   elseif vim.startswith(value, "-c") then
     commands[#commands + 1] = value:sub(3)
   elseif vim.startswith(value, "-") then
@@ -83,17 +86,21 @@ end)
 return true
 ]]
 
-local ok, channel = pcall(vim.fn.sockconnect, "pipe", vim.env.NVIM, {
+local ok, channel = pcall(vim.fn.sockconnect, "pipe", assert(vim.env.NVIM), {
   rpc = true,
 })
 
 if ok and type(channel) == "number" and channel > 0 then
+  ---@cast channel integer
   ok = pcall(
-    vim.rpcrequest,
-    channel,
-    "nvim_exec_lua",
-    launch_code,
-    { wrapper_pid, filepaths, commands, vim.env.PWD or vim.uv.cwd() }
+    function()
+      return vim.rpcrequest(
+        channel,
+        "nvim_exec_lua",
+        launch_code,
+        { wrapper_pid, filepaths, commands, vim.env.PWD or vim.uv.cwd() }
+      )
+    end
   )
   pcall(vim.fn.chanclose, channel)
 else

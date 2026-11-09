@@ -9,6 +9,18 @@
 with lib;
 let
   cfg = config.modules.claude;
+
+  # Agents running in a Neovim terminal reach that Neovim through `$NVIM`.
+  refresh-nvim-hunks = pkgs.writeShellApplication {
+    name = "refresh-nvim-hunks";
+    runtimeInputs = [ config.neovim.package ];
+    text = ''
+      if [ -n "''${NVIM:-}" ]; then
+        nvim --server "$NVIM" --remote-expr "v:lua.require'nvim_hunks'.refresh()" \
+          >/dev/null 2>&1 || true
+      fi
+    '';
+  };
 in
 {
   options.modules.claude = {
@@ -48,6 +60,17 @@ in
           ANTHROPIC_BASE_URL = config.modules.cli-proxy-api.endpoint;
           ANTHROPIC_AUTH_TOKEN = config.modules.cli-proxy-api.apiKey;
         };
+        hooks.PostToolUse = [
+          {
+            matcher = "Edit|MultiEdit|Write|NotebookEdit";
+            hooks = [
+              {
+                type = "command";
+                command = lib.getExe refresh-nvim-hunks;
+              }
+            ];
+          }
+        ];
         permissions = {
           defaultMode = "acceptEdits";
           allow = [

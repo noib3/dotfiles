@@ -46,6 +46,7 @@
       url = "github:stevearc/conform.nvim";
       flake = false;
     };
+    # Only used for its C library, libvscode-diff.
     codediff-nvim = {
       url = "github:esmuellert/codediff.nvim";
       flake = false;
@@ -60,10 +61,6 @@
     };
     fzf-lua = {
       url = "github:ibhagwan/fzf-lua";
-      flake = false;
-    };
-    gitsigns-nvim = {
-      url = "github:lewis6991/gitsigns.nvim";
       flake = false;
     };
     gruvbox-nvim = {
@@ -237,23 +234,105 @@
         }
       );
 
-      checks = eachSystem (pkgs: {
-        default =
-          pkgs.runCommand "check-config"
+      checks = eachSystem (
+        pkgs:
+        let
+          nvim = self.packages.${pkgs.stdenv.system}.default;
+          emmylua_check = pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check";
+
+          # The configuration's settings, with the `lua` directories of the
+          # plugins in this repo as the workspace roots, and only the other
+          # plugins as libraries. Otherwise the plugins in this repo would be
+          # both, and EmmyLua would see each of their classes twice.
+          pluginsConfig =
+            let
+              config = builtins.fromJSON (builtins.readFile ./config/.emmyrc.json);
+              library = map (
+                entry:
+                if entry.path or null == "$NVIM_PLUGINS_LUA" then
+                  entry // { path = "${nvim.thirdPartyLua}"; }
+                else
+                  entry
+              ) config.workspace.library;
+            in
+            pkgs.writeText "emmyrc.json" (
+              builtins.toJSON (
+                pkgs.lib.recursiveUpdate config {
+                  # The tests' runner defines `test()`.
+                  diagnostics.globals = config.diagnostics.globals ++ [ "test" ];
+                  workspace.library = library;
+                  workspace.workspaceRoots = pkgs.lib.concatMap (
+                    name:
+                    [ "./${name}/lua" ]
+                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests/lib) "./${name}/tests/lib"
+                  ) (builtins.attrNames (builtins.readDir ./plugins));
+                }
+              )
+            );
+        in
+        {
+          default =
+            pkgs.runCommand "check-config"
+              {
+                env.NVIM_PLUGINS_LUA = nvim.env.NVIM_PLUGINS_LUA;
+                env.VIMRUNTIME = "${nvim.neovim}/share/nvim/runtime";
+              }
+              ''
+                ${emmylua_check} --warnings-as-errors ${./config} 2>&1 | tee "$out"
+                ${emmylua_check} --warnings-as-errors --config ${pluginsConfig} ${./plugins} \
+                  2>&1 | tee -a "$out"
+              '';
+        }
+      );
+
+      tests = eachSystem (
+        pkgs:
+        let
+          nvim = self.packages.${pkgs.stdenv.system}.default;
+          localPlugins = builtins.attrNames (builtins.readDir ./plugins);
+
+          # The `lua` directories of the other plugins, which the tests can
+          # require, as a single runtimepath entry.
+          thirdPartyRtp = pkgs.linkFarm "nvim-third-party-rtp" [
             {
-              env.NVIM_PLUGINS_LUA =
-                self.packages.${pkgs.stdenv.system}.default.env.NVIM_PLUGINS_LUA;
-              env.VIMRUNTIME = "${
-                self.packages.${pkgs.stdenv.system}.default.neovim
-              }/share/nvim/runtime";
+              name = "lua";
+              path = nvim.thirdPartyLua;
             }
-            ''
-              ${pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check"} \
-                --warnings-as-errors \
-                ${./config} \
-                2>&1 | tee "$out"
+          ];
+
+          rtp = pkgs.lib.concatStringsSep "," (
+            map (name: "${./plugins}/${name}") localPlugins ++ [ "${thirdPartyRtp}" ]
+          );
+        in
+        {
+          # Runs the `tests/*.lua` files of the plugins in this repo, each
+          # in its own headless Neovim, and exits with an error if any of them
+          # failed.
+          plugins = pkgs.writeShellApplication {
+            name = "test-neovim-plugins";
+            runtimeInputs = [ pkgs.jujutsu ];
+            text = ''
+              # The tests' repos and jj's config are kept out of the user's.
+              tmp=$(mktemp -d)
+              trap 'rm -rf "$tmp"' EXIT
+              export HOME="$tmp" TMPDIR="$tmp"
+              export JJ_USER=test JJ_EMAIL=test@example.com
+              export LIBVSCODE_DIFF=${nvim.env.LIBVSCODE_DIFF}
+
+              failed=0
+              for test in ${./plugins}/*/tests/*.lua; do
+                echo "--- ''${test#${./plugins}/}"
+                if ! TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
+                  --cmd "set rtp^=${rtp}" \
+                  -c "luafile ${./tests/run.lua}"; then
+                  failed=1
+                fi
+              done
+              exit "$failed"
             '';
-      });
+          };
+        }
+      );
 
       formatter = eachSystem (pkgs: (mkTreefmt pkgs).config.build.wrapper);
     };
