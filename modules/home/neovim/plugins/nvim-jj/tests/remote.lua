@@ -137,7 +137,7 @@ test("a pull request is opened once its editor is written and quit", function()
   h.eq(#vim.api.nvim_tabpage_list_wins(0), windows)
   h.eq(h.status(bufnr, "two"), "done: Opened pull request #1")
   local drawn = vim.iter(h.screen(bufnr)):any(
-    function(line) return vim.startswith(line, "○  <id> two feature \239\144\136 #1 ") end
+    function(line) return vim.startswith(line, "○  <id> two feature \239\144\136  #1 ") end
   )
   h.eq(drawn, true)
 end)
@@ -225,7 +225,7 @@ test("opening a pull request is a code action of a change with a bookmark", func
   h.wait(function() return #code_actions(bufnr, h.row(bufnr, "two")) > 0 end, "the repo is found")
 
   h.eq(code_actions(bufnr, 1), {})
-  h.eq(titles(code_actions(bufnr, h.row(bufnr, "two"))), { "\239\144\136 Open a PR on GitHub" })
+  h.eq(titles(code_actions(bufnr, h.row(bufnr, "two"))), { "\239\144\136  Open a PR on GitHub" })
 end)
 
 test("an open pull request is drawn after its bookmark, and can be browsed", function()
@@ -237,13 +237,13 @@ test("an open pull request is drawn after its bookmark, and can be browsed", fun
   list:close()
   local _, bufnr = github_repo({ "one", "two" })
   h.wait(
-    function() return vim.tbl_contains(h.screen(bufnr), "○  <id> two feature \239\144\136 #7") end,
+    function() return vim.tbl_contains(h.screen(bufnr), "○  <id> two feature \239\144\136  #7") end,
     "the pull request is drawn"
   )
   os.remove(gh_list)
 
   local actions = code_actions(bufnr, h.row(bufnr, "two"))
-  h.eq(titles(actions), { "\239\144\136 Open PR #7 in the browser" })
+  h.eq(titles(actions), { "\239\144\136  Open PR #7 in the browser" })
   local opened
   local open = vim.ui.open
   ---@diagnostic disable-next-line: duplicate-set-field

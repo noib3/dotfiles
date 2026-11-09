@@ -84,20 +84,22 @@ local spinner_interval_ms = 100
 ---@type { frame: integer, timer?: uv.uv_timer_t }
 local spinner = { frame = 1 }
 
---- The icons of the finished operations, from Nerd Fonts.
+--- The icons of the finished operations, from Nerd Fonts. Each is followed by
+--- a space, since terminals draw them two cells wide but Neovim counts one.
 ---@type table<nvim_jj.StatusKind, string>
 local status_icons = {
-  done = "\239\144\174", -- nf-oct-check
-  failed = "\239\145\167", -- nf-oct-x
-  warning = "\239\144\161", -- nf-oct-alert
+  done = "\239\144\174 ", -- nf-oct-check
+  failed = "\239\145\167 ", -- nf-oct-x
+  warning = "\239\144\161 ", -- nf-oct-alert
 }
 
 --- How long the statuses of finished operations stay drawn.
 ---@type table<nvim_jj.StatusKind, integer>
 local status_durations_ms = { done = 2500, failed = 10000, warning = 5000 }
 
---- The GitHub logo, from Nerd Fonts.
-local github_icon = "\239\144\136" -- nf-oct-mark_github
+--- The GitHub logo, from Nerd Fonts, followed by a space like the status
+--- icons.
+local github_icon = "\239\144\136 " -- nf-oct-mark_github
 
 --- The log buffer in insert mode, if any.
 ---@type integer?
