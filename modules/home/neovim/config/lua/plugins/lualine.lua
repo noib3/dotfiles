@@ -9,6 +9,9 @@ local all_splits_are_terminals = function()
     :all(function(win)
       local buf = vim.api.nvim_win_get_buf(win)
       return vim.bo[buf].buftype == "terminal"
+        -- Make the jj log count as a terminal so that opening it below a
+        -- terminal doesn't bring up the statusline.
+        or vim.bo[buf].filetype == "jjlog"
     end)
 end
 

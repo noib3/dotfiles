@@ -163,3 +163,173 @@ test("files without a trailing newline keep it missing", function()
   hunks.move_hunk(file, assert(file.hunks[1]), "@-")
   wait_in_parent("g.txt", "ONE\n2\n3\n4", repo)
 end)
+
+--- Creates a jj repo whose working-copy commit merges two changes to the
+--- base files, `p1` and `p2`, and then turns their files into the new ones.
+---@param base table<string, string>
+---@param p1 table<string, string>
+---@param p2 table<string, string>
+---@param new table<string, string>
+---@return string
+local merge_repo = function(base, p1, p2, new)
+  ---@type table<string, string|false>
+  local untouched = {}
+  for path in pairs(base) do
+    untouched[path] = false
+  end
+  local repo = h.repo(base, untouched)
+  ---@param files table<string, string>
+  local write = function(files)
+    for path, contents in pairs(files) do
+      local file = assert(io.open(vim.fs.joinpath(repo, path), "wb"))
+      file:write(contents)
+      file:close()
+    end
+  end
+  write(p1)
+  h.run(repo, { "jj", "commit", "--quiet", "--message", "p1" })
+  h.run(repo, { "jj", "new", "--quiet", 'description(exact:"base\n")' })
+  write(p2)
+  h.run(repo, { "jj", "commit", "--quiet", "--message", "p2" })
+  h.run(repo, {
+    "jj",
+    "new",
+    "--quiet",
+    'description(exact:"p1\n")',
+    'description(exact:"p2\n")',
+  })
+  write(new)
+  return repo
+end
+
+local letters = { "a", "b", "c", "d", "e", "f", "g" }
+
+local merge = merge_repo({
+  ["f.txt"] = text(letters),
+  ["p2.txt"] = text({ "x" }),
+}, {
+  ["f.txt"] = text({ "A", "b", "c", "d", "e", "f", "g" }),
+}, {
+  ["f.txt"] = text({ "a", "b", "c", "d", "e", "f", "G" }),
+  ["p2.txt"] = text({ "y" }),
+}, {
+  ["f.txt"] = text({ "A", "b", "c", "D", "e", "f", "G" }),
+  ["new.txt"] = text({ "new" }),
+})
+
+test("a merge is diffed against its merged parents", function()
+  local file = changed("f.txt", merge)
+  h.eq(#file.hunks, 1)
+  h.eq(assert(file.hunks[1]).new_start, 4)
+
+  vim.cmd.edit(vim.fs.joinpath(merge, "f.txt"))
+  hunks.toggle()
+  h.wait(
+    function() return #(hunks.hunks() or {}) == 1 end,
+    "the buffer's diff only has the merge's own hunk"
+  )
+
+  -- A file only one parent changes is the same in the merge.
+  vim.cmd.edit(vim.fs.joinpath(merge, "p2.txt"))
+  hunks.toggle()
+  h.wait(
+    function() return vim.deep_equal(hunks.hunks(), {}) end,
+    "the unchanged file's diff is empty"
+  )
+
+  vim.cmd.edit(vim.fs.joinpath(merge, "new.txt"))
+  hunks.toggle()
+  h.wait(
+    function() return #(hunks.hunks() or {}) == 1 end,
+    "the new file is one added hunk"
+  )
+end)
+
+test("a merge's hunk moves into one of its parents", function()
+  local file = changed("f.txt", merge)
+  local p1 = 'description(exact:"p1\n")'
+  hunks.move_hunk(file, assert(file.hunks[1]), p1)
+  h.wait(
+    function()
+      return h.file_at(merge, p1, "f.txt")
+        == text({ "A", "b", "c", "D", "e", "f", "g" })
+    end,
+    "the hunk is in p1"
+  )
+  h.eq(
+    h.file_at(merge, "@", "f.txt"),
+    text({ "A", "b", "c", "D", "e", "f", "G" })
+  )
+end)
+
+test("moving into several parents asks which one", function()
+  local repo = merge_repo({ ["f.txt"] = text(letters) }, {
+    ["f.txt"] = text({ "A", "b", "c", "d", "e", "f", "g" }),
+  }, {
+    ["f.txt"] = text({ "a", "b", "c", "d", "e", "f", "G" }),
+  }, {
+    ["f.txt"] = text({ "A", "b", "c", "D", "e", "f", "G" }),
+  })
+
+  local select = vim.ui.select
+  ---@type string[]
+  local labels = {}
+  vim.ui.select = function(items, opts, on_choice)
+    local format = assert(opts.format_item)
+    for _, item in ipairs(items) do
+      labels[#labels + 1] = format(item):match("%S+ (.*)")
+    end
+    table.sort(labels)
+    on_choice(
+      vim.iter(items):find(function(item) return format(item):match(" p2$") end)
+    )
+  end
+
+  local file = changed("f.txt", repo)
+  hunks.move_hunk(file, assert(file.hunks[1]), "@-")
+  local p2 = 'description(exact:"p2\n")'
+  h.wait(
+    function()
+      return h.file_at(repo, p2, "f.txt")
+        == text({ "a", "b", "c", "D", "e", "f", "G" })
+    end,
+    "the hunk is in p2"
+  )
+  vim.ui.select = select
+  h.eq(labels, { "p1", "p2" })
+end)
+
+test("several hunks of a file move together", function()
+  local repo = h.repo(
+    { ["g.txt"] = text({ "a", "b", "c", "d", "e", "f", "g" }) },
+    { ["g.txt"] = text({ "A", "b", "c", "D", "e", "f", "G" }) }
+  )
+  local file = changed("g.txt", repo)
+  hunks.move_many({}, {
+    { file = file, hunks = { assert(file.hunks[1]), assert(file.hunks[3]) } },
+  }, "@-")
+  wait_in_parent("g.txt", text({ "A", "b", "c", "d", "e", "f", "G" }), repo)
+end)
+
+test(
+  "hunks of several files and whole files move one after the other",
+  function()
+    local repo = h.repo({
+      ["a.txt"] = text({ "a", "b", "c", "d" }),
+      ["b.txt"] = text({ "a", "b" }),
+      ["c.txt"] = text({ "a" }),
+    }, {
+      ["a.txt"] = text({ "A", "b", "c", "D" }),
+      ["b.txt"] = text({ "A", "b" }),
+      ["c.txt"] = text({ "C" }),
+    })
+    local a, b = changed("a.txt", repo), changed("b.txt", repo)
+    hunks.move_many({ changed("c.txt", repo) }, {
+      { file = a, hunks = { assert(a.hunks[1]) } },
+      { file = b, hunks = { assert(b.hunks[1]) } },
+    }, "@-")
+    wait_in_parent("b.txt", text({ "A", "b" }), repo)
+    h.eq(in_parent("a.txt", repo), text({ "A", "b", "c", "d" }))
+    h.eq(in_parent("c.txt", repo), text({ "C" }))
+  end
+)

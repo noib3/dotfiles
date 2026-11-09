@@ -240,13 +240,12 @@
           nvim = self.packages.${pkgs.stdenv.system}.default;
           emmylua_check = pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check";
 
-          # The configuration's settings, with the `lua` directories of the
-          # plugins in this repo as the workspace roots, and only the other
-          # plugins as libraries. Otherwise the plugins in this repo would be
-          # both, and EmmyLua would see each of their classes twice.
+          # `plugins/.emmyrc.json`, with the third-party plugins' Lua as the
+          # library instead of `$NVIM_PLUGINS_LUA`, which also has copies of
+          # this repo's plugins.
           pluginsConfig =
             let
-              config = builtins.fromJSON (builtins.readFile ./config/.emmyrc.json);
+              config = builtins.fromJSON (builtins.readFile ./plugins/.emmyrc.json);
               library = map (
                 entry:
                 if entry.path or null == "$NVIM_PLUGINS_LUA" then
@@ -254,19 +253,19 @@
                 else
                   entry
               ) config.workspace.library;
+              plugins = builtins.attrNames (
+                pkgs.lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./plugins)
+              );
+              missing = builtins.filter (
+                name: !builtins.elem "./${name}/lua" config.workspace.workspaceRoots
+              ) plugins;
             in
+            assert pkgs.lib.assertMsg (
+              missing == [ ]
+            ) "plugins/.emmyrc.json's workspaceRoots are missing ${toString missing}";
             pkgs.writeText "emmyrc.json" (
               builtins.toJSON (
-                pkgs.lib.recursiveUpdate config {
-                  # The tests' runner defines `test()`.
-                  diagnostics.globals = config.diagnostics.globals ++ [ "test" ];
-                  workspace.library = library;
-                  workspace.workspaceRoots = pkgs.lib.concatMap (
-                    name:
-                    [ "./${name}/lua" ]
-                    ++ pkgs.lib.optional (builtins.pathExists ./plugins/${name}/tests/lib) "./${name}/tests/lib"
-                  ) (builtins.attrNames (builtins.readDir ./plugins));
-                }
+                pkgs.lib.recursiveUpdate config { workspace.library = library; }
               )
             );
         in
@@ -306,11 +305,14 @@
         in
         {
           # Runs the `tests/*.lua` files of the plugins in this repo, each
-          # in its own headless Neovim, and exits with an error if any of them
-          # failed.
+          # in its own headless Neovim and all at once, then prints their
+          # results in order and exits with an error if any of them failed.
           plugins = pkgs.writeShellApplication {
             name = "test-neovim-plugins";
-            runtimeInputs = [ pkgs.jujutsu ];
+            runtimeInputs = [
+              pkgs.git
+              pkgs.jujutsu
+            ];
             text = ''
               # The tests' repos and jj's config are kept out of the user's.
               tmp=$(mktemp -d)
@@ -319,14 +321,25 @@
               export JJ_USER=test JJ_EMAIL=test@example.com
               export LIBVSCODE_DIFF=${nvim.env.LIBVSCODE_DIFF}
 
-              failed=0
-              for test in ${./plugins}/*/tests/*.lua; do
-                echo "--- ''${test#${./plugins}/}"
-                if ! TEST_FILE="$test" ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
+              tests=(${./plugins}/*/tests/*.lua)
+              pids=()
+              for i in "''${!tests[@]}"; do
+                # Each file gets its own temporary directory.
+                mkdir "$tmp/$i"
+                TEST_FILE="''${tests[$i]}" HOME="$tmp/$i" TMPDIR="$tmp/$i" \
+                  ${nvim.neovim}/bin/nvim --headless --clean -n -i NONE \
                   --cmd "set rtp^=${rtp}" \
-                  -c "luafile ${./tests/run.lua}"; then
-                  failed=1
-                fi
+                  -c "luafile ${./tests/run.lua}" >"$tmp/$i.out" 2>&1 &
+                pids+=("$!")
+              done
+
+              failed=0
+              for i in "''${!tests[@]}"; do
+                status=0
+                wait "''${pids[$i]}" || status=$?
+                echo "--- ''${tests[$i]#${./plugins}/}"
+                cat "$tmp/$i.out"
+                if [ "$status" -ne 0 ]; then failed=1; fi
               done
               exit "$failed"
             '';

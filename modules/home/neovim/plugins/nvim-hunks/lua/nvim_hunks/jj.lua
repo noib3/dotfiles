@@ -1,5 +1,7 @@
 local M = {}
 
+local uv = vim.uv
+
 --- Returns a fileset matching exactly the given path, relative to the repo's
 --- root.
 ---@param path string
@@ -63,7 +65,7 @@ end
 ---@param rev string
 ---@param path string The file's path relative to the root.
 ---@param on_done fun(err?: string, text?: string)
-M.file_at = function(root, rev, path, on_done)
+local file_at = function(root, rev, path, on_done)
   local args = {
     "--ignore-working-copy",
     "file",
@@ -85,11 +87,74 @@ M.file_at = function(root, rev, path, on_done)
   end)
 end
 
---- Returns the change IDs of the revisions in a revset, without snapshotting
---- the working copy.
+--- The shell script copying the two sides of a diff, `$1` and `$2`, into the
+--- `left` and `right` directories of `$3`.
+local copy_sides = 'cp -R "$1" "$3/left" && cp -R "$2" "$3/right"'
+
+---@param path string
+---@return string?
+local read_file = function(path)
+  local file = io.open(path, "rb")
+  if not file then return end
+  local text = file:read("*a")
+  file:close()
+  return text
+end
+
+--- Reads a file's contents in the working-copy commit's parents, merged like
+--- `jj diff` merges them, without snapshotting the working copy. The callback
+--- gets no text and no error when the file doesn't exist in the parents.
+---@param root string
+---@param path string The file's path relative to the root.
+---@param on_done fun(err?: string, text?: string)
+M.parent_file = function(root, path, on_done)
+  local dir = assert(
+    uv.fs_mkdtemp(vim.fs.joinpath(assert(uv.os_tmpdir()), "nvim-hunks-XXXXXX"))
+  )
+  local diff_args = vim
+    .iter({ copy_sides, "sh", "$left", "$right", dir })
+    :map(toml_string)
+    :totable()
+
+  -- A diff tool only gets the files that differ, with their contents in the
+  -- parents on the left.
+  local args = {
+    "--ignore-working-copy",
+    "diff",
+    "--revisions",
+    "@",
+    "--tool",
+    "nvim-hunks",
+    "--config",
+    'merge-tools.nvim-hunks.program="sh"',
+    "--config",
+    ('merge-tools.nvim-hunks.diff-args=["-c", %s]'):format(
+      table.concat(diff_args, ", ")
+    ),
+    "--",
+    root_file(path),
+  }
+
+  run(root, args, function(result)
+    local left = read_file(vim.fs.joinpath(dir, "left", path))
+    local right = uv.fs_stat(vim.fs.joinpath(dir, "right", path))
+    vim.fs.rm(dir, { recursive = true, force = true })
+    if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
+    if left then return on_done(nil, left) end
+    if right then return on_done() end
+    -- A file the working-copy commit doesn't change is the same in it.
+    file_at(root, "@", path, on_done)
+  end)
+end
+
+---@class nvim_hunks.Target
+---@field change_id string
+---@field label string The change ID's shortest prefix and the description's first line.
+
+--- Returns the revisions in a revset, without snapshotting the working copy.
 ---@param root string
 ---@param revset string
----@param on_done fun(err?: string, change_ids?: string[])
+---@param on_done fun(err?: string, targets?: nvim_hunks.Target[])
 M.resolve = function(root, revset, on_done)
   local args = {
     "--ignore-working-copy",
@@ -98,16 +163,27 @@ M.resolve = function(root, revset, on_done)
     "--revisions",
     revset,
     "--template",
-    'change_id ++ "\\n"',
+    table.concat({
+      "change_id",
+      '"\\t"',
+      "change_id.shortest(8)",
+      '" "',
+      'coalesce(description.first_line(), "(no description set)")',
+      '"\\n"',
+    }, " ++ "),
   }
 
   run(root, args, function(result)
-    if result.code == 0 then
-      local ids = vim.split(vim.trim(result.stdout or ""), "\n")
-      on_done(nil, vim.tbl_filter(function(id) return id ~= "" end, ids))
-    else
-      on_done(vim.trim(result.stderr or ""))
+    if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
+    ---@type nvim_hunks.Target[]
+    local targets = {}
+    for line in (result.stdout or ""):gmatch("[^\n]+") do
+      local change_id, label = line:match("^(%S+)\t(.*)$")
+      if change_id and label then
+        targets[#targets + 1] = { change_id = change_id, label = label }
+      end
     end
+    on_done(nil, targets)
   end)
 end
 
@@ -170,7 +246,7 @@ end
 
 --- Moves part of the working-copy commit's changes to a file into another
 --- revision. The part moved is what turns the file's contents in the
---- working-copy commit's parent into the given text. The changes to the
+--- working-copy commit's merged parents into the given text. The changes to the
 --- other given paths are moved in full, e.g. the deletion of a renamed
 --- file's old path.
 ---@param root string
@@ -240,20 +316,17 @@ end
 
 ---@class nvim_hunks.ChangedFile
 ---@field status nvim_hunks.Status
----@field source string The file's path in the base revision, relative to the root.
+---@field source string The file's path in the working-copy commit's parents, relative to the root.
 ---@field target string The file's path in the working-copy commit, relative to the root.
 
---- Returns the files changed between a revision and the working-copy commit,
---- after snapshotting the working copy.
+--- Returns the files changed by the working-copy commit, after snapshotting
+--- the working copy.
 ---@param root string
----@param from string
 ---@param on_done fun(err?: string, files?: nvim_hunks.ChangedFile[])
-M.changed_files = function(root, from, on_done)
+M.changed_files = function(root, on_done)
   local args = {
     "diff",
-    "--from",
-    from,
-    "--to",
+    "--revisions",
     "@",
     "--template",
     'status ++ "\t" ++ source.path() ++ "\t" ++ target.path() ++ "\n"',

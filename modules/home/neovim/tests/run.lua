@@ -23,14 +23,25 @@ if not ok then
   vim.cmd.cquit({ count = 1 })
 end
 
+--- Returns a duration like `716ms`, or `2.3s` from a second on.
+---@param ns integer
+---@return string
+local duration = function(ns)
+  local ms = ns / 1e6
+  if ms < 1000 then return ("%dms"):format(ms) end
+  return ("%.1fs"):format(ms / 1000)
+end
+
 local failed = 0
 for _, t in ipairs(tests) do
+  local start = vim.uv.hrtime()
   local passed, test_err = xpcall(t.run, debug.traceback)
+  local took = duration(vim.uv.hrtime() - start)
   if passed then
-    io.stdout:write(("ok    %s\n"):format(t.name))
+    io.stdout:write(("ok    %s (%s)\n"):format(t.name, took))
   else
     failed = failed + 1
-    io.stdout:write(("FAIL  %s\n%s\n"):format(t.name, test_err))
+    io.stdout:write(("FAIL  %s (%s)\n%s\n"):format(t.name, took, test_err))
   end
   -- Each result shows up as soon as its test is done.
   io.stdout:flush()

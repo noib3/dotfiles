@@ -241,6 +241,63 @@ test("closing the list hides the diffs it showed", function()
   h.wait(function() return recap() == nil end, "the recap is closed")
 end)
 
+--- Returns the rows of the list, without their icons and trailing spaces.
+---@return string[]
+local rows = function()
+  local list = assert(list_win())
+  return vim.tbl_map(
+    function(row)
+      return (
+        row
+          :gsub("[\238\239][\128-\191][\128-\191]", "#")
+          :gsub("\243[\128-\191][\128-\191][\128-\191]", "#")
+          :gsub("%s+$", "")
+      )
+    end,
+    vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(list), 0, -1, false)
+  )
+end
+
+test("folded directories stay folded when the list opens again", function()
+  ---@diagnostic disable-next-line: undefined-field
+  require("trouble").open({ mode = "hunks", focus = true, cwd = root })
+  h.wait(
+    function() return list_win() ~= nil and #rows() > 1 end,
+    "the list opens"
+  )
+
+  local view = assert(require("trouble.view").get({ mode = "hunks" })[1]).view
+  ---@type integer?
+  local src
+  for index, row in ipairs(rows()) do
+    if row:find("src/") then src = index end
+  end
+  view:fold(assert(view.renderer:at(assert(src)).node), { action = "close" })
+  h.wait(
+    function()
+      return not vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt")
+    end,
+    "src/ is folded"
+  )
+
+  vim.api.nvim_win_close(assert(list_win()), true)
+  h.wait(function() return not hunks.is_showing_all() end, "the list is closed")
+  ---@diagnostic disable-next-line: undefined-field
+  require("trouble").open({ mode = "hunks", focus = true, cwd = root })
+  h.wait(
+    function() return list_win() ~= nil and #rows() > 1 end,
+    "the list opens again"
+  )
+  h.eq(vim.tbl_contains(rows(), " # #  src/ 1r"), true, vim.inspect(rows()))
+  h.eq(
+    vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt"),
+    false,
+    vim.inspect(rows())
+  )
+  vim.api.nvim_win_close(assert(list_win()), true)
+  h.wait(function() return not hunks.is_showing_all() end, "the list is closed")
+end)
+
 test("the list doesn't open without changes", function()
   local unchanged = h.repo({ ["a.txt"] = "a\n" }, { ["a.txt"] = "a\n" })
   local messages = {}

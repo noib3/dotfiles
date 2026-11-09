@@ -49,8 +49,12 @@ end
 ---@return trouble.Action
 local move_to = function(into)
   return {
-    action = function(_, ctx) require("trouble.sources.hunks").move(ctx, into) end,
-    desc = ("Move the hunk or file to `%s`"):format(into),
+    action = function(view)
+      require("trouble.sources.hunks").move(view:selection(), into)
+    end,
+    desc = ("Move the selected hunks or files to `%s`"):format(into),
+    -- Trouble hands the modes to `vim.keymap.set`, which takes a list.
+    mode = { "n", "x" } --[[@as string]],
   }
 end
 
