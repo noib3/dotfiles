@@ -92,3 +92,53 @@ test("a pull request of a bookmark that isn't pushed is an error", function()
   wait_for(function(on_done) nvim_jj.open_pull_request(bufnr, h.row(bufnr, "two"), on_done) end)
   h.eq(h.messages, { "error: Push feature to origin first" })
 end)
+
+--- Returns the code actions on a line of a log buffer.
+---@param bufnr integer
+---@param line integer
+---@return lsp.CodeAction[]
+local code_actions = function(bufnr, line)
+  local client = assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
+  local response = client:request_sync("textDocument/codeAction", {
+    textDocument = { uri = vim.uri.from_buf(bufnr) },
+    range = {
+      start = { line = line - 1, character = 0 },
+      ["end"] = { line = line - 1, character = 0 },
+    },
+    context = { diagnostics = {} },
+  }, 2000, bufnr)
+  return response and response.result or {}
+end
+
+test("opening a pull request is a code action of a change with a bookmark", function()
+  local root = h.repo({ "one", "two" }, 1)
+  h.run(root, { "jj", "bookmark", "create", "--quiet", "feature", "-r", "@-" })
+  h.run(root, { "jj", "git", "push", "--quiet", "--bookmark", "feature" })
+  h.run(root, {
+    "jj",
+    "git",
+    "remote",
+    "set-url",
+    "origin",
+    "https://github.com/o/r.git",
+  })
+  local bufnr = h.open(root)
+  h.wait(
+    function() return #vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" }) > 0 end,
+    "the language server is attached"
+  )
+
+  h.eq(code_actions(bufnr, 1), {})
+  local actions = code_actions(bufnr, h.row(bufnr, "two"))
+  h.eq(vim.tbl_map(function(action) return action.title end, actions), {
+    "Open a pull request",
+  })
+
+  os.remove(gh_args)
+  local client = assert(vim.lsp.get_clients({ bufnr = bufnr, name = "nvim-jj" })[1])
+  client:exec_cmd(assert(assert(actions[1]).command), { bufnr = bufnr })
+  h.wait(
+    function() return vim.uv.fs_stat(gh_args) ~= nil end,
+    "the pull request is opened"
+  )
+end)

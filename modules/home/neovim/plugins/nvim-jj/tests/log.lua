@@ -235,21 +235,32 @@ test("a change opened above several merges them", function()
   h.eq(parents, { "three", "two" })
 end)
 
-test("code's backticks are concealed", function()
+test("code's backticks are concealed unless the cursor is in the code", function()
   local root = h.repo({ "add `foo` and `bar`" })
-  h.open(root)
+  local bufnr = h.open(root)
   local win = vim.api.nvim_get_current_win()
   vim.wo[win].conceallevel = 2
-  vim.wo[win].concealcursor = "n"
-  vim.api.nvim_win_set_cursor(win, { 2, 6 })
-  vim.cmd.redraw()
+  vim.wo[win].concealcursor = "ni"
 
-  local row = vim.fn.screenpos(win, 2, 1).row
-  local chars = {}
-  for col = 1, vim.api.nvim_win_get_width(win) do
-    chars[#chars + 1] = vim.fn.screenstring(row, col)
+  ---@param col integer
+  ---@return string
+  local text_at = function(col)
+    vim.api.nvim_win_set_cursor(win, { 2, col })
+    vim.api.nvim_exec_autocmds("CursorMoved", { buffer = bufnr })
+    vim.cmd.redraw()
+    local row = vim.fn.screenpos(win, 2, 1).row
+    local chars = {}
+    for screen_col = 1, vim.api.nvim_win_get_width(win) do
+      chars[#chars + 1] = vim.fn.screenstring(row, screen_col)
+    end
+    return vim.trim(table.concat(chars)):match("add.*$") or ""
   end
-  h.eq(vim.trim(table.concat(chars)):match("add.*$"), "add foo and bar")
+
+  h.eq(text_at(0), "add foo and bar")
+  h.eq(text_at(6), "add `foo` and bar")
+  h.eq(text_at(4), "add `foo` and bar")
+  h.eq(text_at(15), "add foo and `bar`")
+  h.eq(text_at(11), "add foo and bar")
 end)
 
 test("a change opened on a branch above one takes none of its children", function()

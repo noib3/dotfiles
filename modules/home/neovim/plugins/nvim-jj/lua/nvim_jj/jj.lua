@@ -618,9 +618,11 @@ end
 ---@param root string
 ---@param name string
 ---@param rev string
+---@param backwards boolean Whether the revision can be off the bookmark's descendants.
 ---@param on_done fun(err?: string)
-M.set_bookmark = function(root, name, rev, on_done)
+M.set_bookmark = function(root, name, rev, backwards, on_done)
   local args = { "bookmark", "set", name, "--revision", rev }
+  if backwards then args[#args + 1] = "--allow-backwards" end
   run(root, args, on_success(on_done))
 end
 

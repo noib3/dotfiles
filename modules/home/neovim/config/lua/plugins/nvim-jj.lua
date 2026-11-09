@@ -199,25 +199,11 @@ vim.api.nvim_create_autocmd("FileType", {
       function() jj.edit_bookmark(bufnr, vim.fn.line(".")) end,
       "Create, rename or delete the change's bookmark"
     )
-    map({ "n", "x" }, "U", function()
-      local first, last = selected_lines()
-      jj.push(bufnr, first, last)
-    end, "Push the selected changes")
-
-    local actions = {
-      {
-        label = "Open a pull request",
-        run = function(line) jj.open_pull_request(bufnr, line) end,
-      },
-    }
-    map("n", "ga", function()
-      local line = vim.fn.line(".")
-      vim.ui.select(actions, {
-        prompt = "Action",
-        format_item = function(action) return action.label end,
-      }, function(action)
-        if action then action.run(line) end
-      end)
-    end, "Pick an action on the change")
+    for _, branch in ipairs({ false, true }) do
+      map({ "n", "x" }, (branch and "g" or "") .. "U", function()
+        local first, last = selected_lines()
+        jj.push(bufnr, first, last, branch)
+      end, ("Push the selected changes%s"):format(branch and " on a new branch" or ""))
+    end
   end,
 })

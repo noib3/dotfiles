@@ -551,6 +551,106 @@ local watch = function(bufnr, log)
   end
 end
 
+--- The commands of the code actions on the changes of the log buffers.
+local commands = {
+  open_pull_request = "nvim-jj.openPullRequest",
+}
+
+--- Returns the log buffer of a URI.
+---@param uri string
+---@return integer?
+local buffer_of_uri = function(uri)
+  for bufnr in pairs(logs) do
+    if vim.uri.from_buf(bufnr) == uri then return bufnr end
+  end
+end
+
+--- Returns the code actions on the change on a line of a log buffer.
+---@param bufnr integer
+---@param line integer The 1-based line.
+---@return lsp.CodeAction[]
+local code_actions = function(bufnr, line)
+  local log = logs[bufnr]
+  local row = log and log.rows[line]
+  if not row then return {} end
+
+  ---@type lsp.CodeAction[]
+  local actions = {}
+  if #row.change.local_bookmarks > 0 then
+    local title = "Open a pull request"
+    actions[#actions + 1] = {
+      title = title,
+      command = {
+        title = title,
+        command = commands.open_pull_request,
+        arguments = { bufnr, line },
+      },
+    }
+  end
+  return actions
+end
+
+--- Returns the in-process language server of the log buffers, which serves
+--- the code actions on their changes.
+---@param dispatchers vim.lsp.rpc.Dispatchers
+---@return vim.lsp.rpc.Client
+local server = function(dispatchers)
+  local closing, request_id = false, 0
+
+  ---@param method string
+  ---@param params table
+  ---@return any result
+  ---@return lsp.ResponseError? err
+  local handle = function(method, params)
+    if method == "initialize" then
+      return {
+        capabilities = {
+          codeActionProvider = true,
+          executeCommandProvider = { commands = vim.tbl_values(commands) },
+          textDocumentSync = 0,
+        },
+        serverInfo = { name = "nvim-jj" },
+      }
+    elseif method == "shutdown" then
+      return vim.NIL
+    elseif method == "textDocument/codeAction" then
+      local bufnr = buffer_of_uri(params.textDocument.uri)
+      return bufnr and code_actions(bufnr, params.range.start.line + 1) or {}
+    elseif method == "workspace/executeCommand" then
+      local args = params.arguments or {}
+      if params.command == commands.open_pull_request then
+        M.open_pull_request(args[1], args[2])
+      end
+      return vim.NIL
+    end
+    return nil, { code = -32601, message = "Method not found: " .. method }
+  end
+
+  local client = {
+    request = function(method, params, callback, notify_reply_callback)
+      request_id = request_id + 1
+      local id = request_id
+      vim.schedule(function()
+        local result, err = handle(method, params)
+        callback(err, result)
+        if notify_reply_callback then notify_reply_callback(id) end
+      end)
+      return true, id
+    end,
+    notify = function(method)
+      if method == "exit" then
+        closing = true
+        dispatchers.on_exit(0, 0)
+      end
+      return true
+    end,
+    is_closing = function() return closing end,
+    terminate = function() closing = true end,
+  }
+  -- The client's private fields are the ones of a process it talks to.
+  return client --[[@as vim.lsp.rpc.Client]]
+end
+
 --- Draws the log of the workspace a buffer is named after, with the cursor
 --- on the working-copy commit.
 ---@param bufnr integer
@@ -572,6 +672,10 @@ local load = function(bufnr)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].filetype = filetype
+  vim.lsp.start(
+    { name = "nvim-jj", cmd = server, root_dir = log.root },
+    { bufnr = bufnr }
+  )
 
   render(bufnr, true, function()
     local line = working_copy_row(log)
@@ -1497,15 +1601,19 @@ M.edit_bookmark = function(bufnr, line, on_done)
 end
 
 --- Pushes the changes on the given lines of a log buffer. The topmost one's
---- bookmark is pushed if it has one, or else the remote bookmark they're on
---- top of is moved to it. The changes that are already pushed are skipped
---- with a warning, and each of their ancestors that isn't selected has to be
---- pushed already.
+--- bookmark is pushed if it has one, or else the remote bookmark the changes
+--- are on top of is moved to it. On a new branch, or without a remote
+--- bookmark below them, the bookmark is prompted for, by default the `push-`
+--- one jj would name after the change, and an existing bookmark is only moved
+--- once confirmed. The changes that are already pushed are skipped with a
+--- warning, and each of their ancestors that isn't selected has to be pushed
+--- already.
 ---@param bufnr integer
 ---@param first integer The first line, 1-based.
 ---@param last integer The last line, inclusive.
+---@param branch boolean Whether to push the changes on a new branch.
 ---@param on_done? fun(err?: string)
-M.push = function(bufnr, first, last, on_done)
+M.push = function(bufnr, first, last, branch, on_done)
   local log = logs[bufnr]
   if not log then return end
   local root, remote = log.root, config.remote
@@ -1546,8 +1654,9 @@ M.push = function(bufnr, first, last, on_done)
 
   ---@param name string
   ---@param head nvim_jj.Change
-  local push = function(name, head)
-    jj.set_bookmark(root, name, head.id, function(set_err)
+  ---@param backwards? boolean Whether the bookmark can move off its descendants.
+  local push = function(name, head, backwards)
+    jj.set_bookmark(root, name, head.id, backwards == true, function(set_err)
       if set_err then return finish(set_err) end
       push_bookmark(name, head)
     end)
@@ -1555,19 +1664,79 @@ M.push = function(bufnr, first, last, on_done)
 
   ---@param bookmark nvim_jj.RemoteBookmark
   ---@param head nvim_jj.Change
-  local track_and_push = function(bookmark, head)
-    if bookmark.tracked then return push(bookmark.name, head) end
+  ---@param backwards? boolean
+  local track_and_push = function(bookmark, head, backwards)
+    if bookmark.tracked then return push(bookmark.name, head, backwards) end
     jj.track(root, bookmark.name, remote, function(track_err)
       if track_err then return finish(track_err) end
-      push(bookmark.name, head)
+      push(bookmark.name, head, backwards)
+    end)
+  end
+
+  --- Moves an existing bookmark to a change and pushes it, once confirmed.
+  ---@param name string
+  ---@param head nvim_jj.Change
+  ---@param holders nvim_jj.Change[] The changes the bookmark is on, locally or on the remote.
+  local confirm_move = function(name, head, holders)
+    local move = "Move it"
+    vim.ui.select({ move, "Cancel" }, {
+      prompt = ("%s is already on %s"):format(
+        name,
+        table.concat(vim.tbl_map(label, holders), ", ")
+      ),
+    }, function(choice)
+      if choice ~= move then return finish() end
+      local remote_rev = ("remote_bookmarks(exact:%s, remote=exact:%s)"):format(
+        jj.quote(name),
+        jj.quote(remote)
+      )
+      jj.remote_bookmarks(root, remote_rev, remote, function(err, remotes)
+        if err or not remotes then return finish(err) end
+        local tracked = not remotes[1] or remotes[1].tracked
+        track_and_push({ name = name, tracked = tracked }, head, true)
+      end)
+    end)
+  end
+
+  --- Prompts for the bookmark of a change, by default the `push-` one jj
+  --- would name after it, and pushes it as a new branch. An existing bookmark
+  --- is only moved once confirmed.
+  ---@param head nvim_jj.Change
+  local prompt = function(head)
+    vim.ui.input({
+      prompt = "Bookmark: ",
+      default = "push-" .. head.id:sub(1, 12),
+    }, function(input)
+      local name = vim.trim(input or "")
+      if name == "" then return finish() end
+
+      local quoted = jj.quote(name)
+      local existing = ("bookmarks(exact:%s) | remote_bookmarks(exact:%s, remote=exact:%s)"):format(
+        quoted,
+        quoted,
+        jj.quote(remote)
+      )
+      jj.changes(root, existing, function(err, holders)
+        if err or not holders then return finish(err) end
+        if #holders == 0 then
+          return jj.create_bookmark(root, name, head.id, function(create_err)
+            if create_err then return finish(create_err) end
+            push_bookmark(name, head)
+          end)
+        end
+        if #holders == 1 and holders[1].id == head.id then
+          return push_bookmark(name, head)
+        end
+        confirm_move(name, head, holders)
+      end)
     end)
   end
 
   ---@param head nvim_jj.Change
   local push_head = function(head)
     local own = head.local_bookmarks
-    if #own == 1 then return push_bookmark(own[1], head) end
-    if #own > 1 then
+    if not branch and #own == 1 then return push_bookmark(own[1], head) end
+    if not branch and #own > 1 then
       return vim.ui.select(own, { prompt = "Bookmark to push" }, function(name)
         if name then
           push_bookmark(name, head)
@@ -1580,11 +1749,7 @@ M.push = function(bufnr, first, last, on_done)
     local base = ("heads(::%s & %s)"):format(head.id, pushed)
     jj.remote_bookmarks(root, base, remote, function(base_err, bookmarks)
       if base_err or not bookmarks then return finish(base_err) end
-      if #bookmarks == 0 then
-        return finish(
-          ("%s isn't on top of a bookmark of %s"):format(label(head), remote)
-        )
-      end
+      if branch or #bookmarks == 0 then return prompt(head) end
       if #bookmarks == 1 then return track_and_push(bookmarks[1], head) end
       vim.ui.select(bookmarks, {
         prompt = "Bookmark to push to",
@@ -1972,28 +2137,69 @@ local code_spans = function(text)
   return spans
 end
 
---- Highlights the code in a line of a log buffer, and conceals its
---- backticks.
+--- Returns the index of the code span a window's cursor is in, if any. The
+--- span's backticks count as in it.
+---@param win integer
+---@param bufnr integer
+---@return integer? row The cursor's 0-based line.
+---@return integer? index
+local cursor_span = function(win, bufnr)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(win))
+  local text = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1] or ""
+  for index, span in ipairs(code_spans(text)) do
+    if col >= span[1] and col <= span[2] then return row - 1, index end
+  end
+  return row - 1, nil
+end
+
+--- Highlights the code in a line of a log buffer drawn in a window, and
+--- conceals its backticks, except the ones around the window's cursor.
+---@param win integer
 ---@param bufnr integer
 ---@param row integer The 0-based line.
-local draw_code = function(bufnr, row)
+local draw_code = function(win, bufnr, row)
   local text = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ""
-  for _, span in ipairs(code_spans(text)) do
+  local cursor_row, cursor_index = cursor_span(win, bufnr)
+  for index, span in ipairs(code_spans(text)) do
     local open, close = span[1], span[2]
     vim.api.nvim_buf_set_extmark(bufnr, code_namespace, row, open + 1, {
       end_col = close,
       hl_group = "JjCode",
       ephemeral = true,
     })
+    local revealed = row == cursor_row and index == cursor_index
     for _, col in ipairs({ open, close }) do
       vim.api.nvim_buf_set_extmark(bufnr, code_namespace, row, col, {
         end_col = col + 1,
         hl_group = "JjCodeDelimiter",
-        conceal = "",
+        conceal = not revealed and "" or nil,
         ephemeral = true,
       })
     end
   end
+end
+
+--- The code span each window's cursor was last in, as its 0-based line and
+--- index, keyed by window.
+---@type table<integer, [integer, integer?]?>
+local cursor_spans = {}
+
+--- Redraws the lines of a window whose code spans revealed by the cursor
+--- changed since the cursor last moved.
+---@param win integer
+---@param bufnr integer
+local redraw_cursor_spans = function(win, bufnr)
+  local row, index = cursor_span(win, bufnr)
+  local previous = cursor_spans[win]
+  cursor_spans[win] = { assert(row), index }
+  if previous and previous[1] == row and previous[2] == index then return end
+  ---@param line integer
+  local redraw = function(line)
+    vim.api.nvim__redraw({ win = win, range = { line, line + 1 }, flush = false })
+  end
+  local previous_row = previous and previous[1]
+  if previous_row then redraw(previous_row) end
+  if index then redraw(assert(row)) end
 end
 
 ---@param opts? { gh?: string, height?: integer, lookahead?: integer, remote?: string, revset?: string }
@@ -2006,7 +2212,7 @@ M.setup = function(opts)
 
   vim.api.nvim_set_decoration_provider(code_namespace, {
     on_win = function(_, _, bufnr) return logs[bufnr] ~= nil end,
-    on_line = function(_, _, bufnr, row) draw_code(bufnr, row) end,
+    on_line = function(_, win, bufnr, row) draw_code(win, bufnr, row) end,
   })
 
   vim.api.nvim_create_autocmd("ColorScheme", {
@@ -2048,6 +2254,21 @@ M.setup = function(opts)
       end,
     }
   )
+
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    group = group,
+    pattern = pattern,
+    desc = "Reveals the backticks of the code the cursor is in",
+    callback = function(ev)
+      redraw_cursor_spans(vim.api.nvim_get_current_win(), ev.buf)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("WinClosed", {
+    group = group,
+    desc = "Forgets the code span the closed window's cursor was in",
+    callback = function(ev) cursor_spans[tonumber(ev.match) or -1] = nil end,
+  })
 
   vim.api.nvim_create_autocmd("WinScrolled", {
     group = group,
