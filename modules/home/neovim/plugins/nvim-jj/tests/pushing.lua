@@ -206,12 +206,72 @@ test(
     push(bufnr, "dos")
     h.eq(
       prompt(),
-      "feature@origin has changed since it was pushed, and pushing overwrites it"
+      "feature@origin isn't below the change, so pushing overwrites it"
     )
     h.eq(remote_main(root, "feature"), { "two", "one" })
 
     answer_select("Overwrite it")
     push(bufnr, "dos")
     h.eq(remote_main(root, "feature"), { "dos", "one" })
+  end
+)
+
+test(
+  "abandoning a pushed change and pushing the one below moves its bookmark back",
+  function()
+    local root = h.repo({ "one", "two" }, 1)
+    h.run(
+      root,
+      { "jj", "bookmark", "create", "--quiet", "feature", "-r", "@-" }
+    )
+    h.run(root, { "jj", "describe", "--quiet", "-m", "oops" })
+    h.run(root, { "jj", "bookmark", "set", "--quiet", "feature", "-r", "@" })
+    h.run(root, { "jj", "git", "push", "--quiet", "--bookmark", "feature" })
+    local bufnr = h.open(root)
+
+    local line = h.row(bufnr, "oops")
+    nvim_jj.cut(bufnr, line, line)
+    vim.cmd.write()
+    h.wait(
+      function()
+        return #h.query(root, 'description(exact:"oops\\n")', "change_id") == 0
+      end,
+      "the change is abandoned"
+    )
+    h.settle()
+
+    answer_select("Overwrite it")
+    push(bufnr, "two")
+    h.eq(h.status(bufnr, "two"), "done: Pushed to feature@origin")
+    h.eq(remote_main(root, "feature"), { "two", "one" })
+  end
+)
+
+test(
+  "pushing above an abandoned pushed change moves its bookmark there",
+  function()
+    local root = h.repo({ "one", "two" }, 1)
+    h.run(root, { "jj", "describe", "--quiet", "-m", "oops" })
+    h.run(root, { "jj", "bookmark", "create", "--quiet", "feature", "-r", "@" })
+    h.run(root, { "jj", "git", "push", "--quiet", "--bookmark", "feature" })
+    h.run(root, { "jj", "new", "--quiet", "-m", "next" })
+    local bufnr = h.open(root)
+
+    local line = h.row(bufnr, "oops")
+    nvim_jj.cut(bufnr, line, line)
+    vim.cmd.write()
+    h.wait(
+      function()
+        return #h.query(root, 'description(exact:"oops\\n")', "change_id") == 0
+      end,
+      "the change is abandoned"
+    )
+    h.settle()
+
+    answer_select("Overwrite it")
+    push(bufnr, "next")
+    h.eq(prompted, nil)
+    h.eq(h.status(bufnr, "next"), "done: Pushed to feature@origin")
+    h.eq(remote_main(root, "feature"), { "next", "two", "one" })
   end
 )

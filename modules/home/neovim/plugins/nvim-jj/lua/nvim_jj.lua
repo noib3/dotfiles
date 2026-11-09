@@ -1906,7 +1906,6 @@ M.push = function(bufnr, first, last, branch, on_done)
       " | "
     )
   )
-  local unpushed = ("(%s ~ %s)"):format(selection, pushed)
 
   ---@param name string
   ---@return string
@@ -1944,7 +1943,7 @@ M.push = function(bufnr, first, last, branch, on_done)
       if #changes == 0 then return send(name, head) end
       local overwrite = "Overwrite it"
       vim.ui.select({ overwrite, "Cancel" }, {
-        prompt = ("%s@%s has changed since it was pushed, and pushing overwrites it"):format(
+        prompt = ("%s@%s isn't below the change, so pushing overwrites it"):format(
           name,
           remote
         ),
@@ -2034,6 +2033,25 @@ M.push = function(bufnr, first, last, branch, on_done)
     end)
   end
 
+  --- Moves one of the bookmarks below a change to it and pushes it, or else
+  --- prompts for a new one.
+  ---@param head nvim_jj.Change
+  ---@param bookmarks nvim_jj.RemoteBookmark[]
+  local push_to = function(head, bookmarks)
+    if branch or #bookmarks == 0 then return prompt(head) end
+    if #bookmarks == 1 then return track_and_push(bookmarks[1], head) end
+    vim.ui.select(bookmarks, {
+      prompt = "Bookmark to push to",
+      format_item = function(bookmark) return bookmark.name end,
+    }, function(bookmark)
+      if bookmark then
+        track_and_push(bookmark, head)
+      else
+        finish()
+      end
+    end)
+  end
+
   ---@param head nvim_jj.Change
   local push_head = function(head)
     shown = head.id
@@ -2049,30 +2067,61 @@ M.push = function(bufnr, first, last, branch, on_done)
       end)
     end
 
-    local base = ("heads(::%s & %s)"):format(head.id, pushed)
-    jj.remote_bookmarks(root, base, remote, function(base_err, bookmarks)
-      if base_err or not bookmarks then return finish(base_err) end
-      if branch or #bookmarks == 0 then return prompt(head) end
-      if #bookmarks == 1 then return track_and_push(bookmarks[1], head) end
-      vim.ui.select(bookmarks, {
-        prompt = "Bookmark to push to",
-        format_item = function(bookmark) return bookmark.name end,
-      }, function(bookmark)
-        if bookmark then
-          track_and_push(bookmark, head)
-        else
-          finish()
+    -- The closest pushed change below is on a remote bookmark, or on a
+    -- local one, e.g. after the change above it was abandoned.
+    local base = ("heads(::%s & (%s | bookmarks()))"):format(head.id, pushed)
+    jj.changes(root, base, function(base_err, bases)
+      if base_err or not bases then return finish(base_err) end
+      jj.remote_bookmarks(root, base, remote, function(remote_err, remotes)
+        if remote_err or not remotes then return finish(remote_err) end
+        ---@type nvim_jj.RemoteBookmark[]
+        local bookmarks = vim.deepcopy(remotes)
+        local names = vim.tbl_map(
+          function(bookmark) return bookmark.name end,
+          remotes
+        )
+        for _, change in ipairs(bases) do
+          for _, name in ipairs(change.local_bookmarks) do
+            if not vim.list_contains(names, name) then
+              names[#names + 1] = name
+              bookmarks[#bookmarks + 1] = { name = name, tracked = true }
+            end
+          end
         end
+        push_to(head, bookmarks)
       end)
     end)
   end
 
-  jj.changes(root, selection .. " & " .. pushed, function(pushed_err, already)
-    if pushed_err or not already then return finish(pushed_err) end
+  jj.changes(root, selection .. " & " .. pushed, function(pushed_err, below)
+    if pushed_err or not below then return finish(pushed_err) end
+    -- A change with a bookmark whose pushed version is elsewhere, which jj
+    -- marks with a `*`, still has its bookmark to push.
+    local already = vim.tbl_filter(function(change)
+      return not vim
+        .iter(change.bookmarks)
+        :any(function(bookmark) return vim.endswith(bookmark, "*") end)
+    end, below)
     for _, change in ipairs(already) do
       set_status(bufnr, change.id, "warning", "Already pushed")
     end
     if #already == #selected then return finish() end
+
+    ---@type table<string, true?>
+    local skipped = {}
+    for _, change in ipairs(already) do
+      skipped[change.id] = true
+    end
+    local unpushed = ("(%s)"):format(
+      table.concat(
+        vim
+          .iter(selected)
+          :filter(function(change) return not skipped[change.id] end)
+          :map(function(change) return change.id end)
+          :totable(),
+        " | "
+      )
+    )
 
     local missing = ("::%s ~ %s ~ %s ~ root()"):format(
       unpushed,
@@ -2793,31 +2842,28 @@ M.setup = function(opts)
     callback = function(ev) save(ev.buf) end,
   })
 
-  vim.api.nvim_create_autocmd(
-    {
-      "TextChanged",
-      "TextChangedI",
-      "CursorMovedI",
-      "InsertEnter",
-      "InsertLeave",
-    },
-    {
-      group = group,
-      pattern = pattern,
-      desc = "Redraws the decorations of the jj log's edited lines",
-      callback = function(ev)
-        local log = logs[ev.buf]
-        if ev.event == "InsertEnter" then
-          inserting = ev.buf
-          if log then unpad(ev.buf, log) end
-        elseif ev.event == "InsertLeave" then
-          inserting = nil
-          if log then repad(ev.buf, log) end
-        end
-        if log then redraw_edited(ev.buf, log) end
-      end,
-    }
-  )
+  vim.api.nvim_create_autocmd({
+    "TextChanged",
+    "TextChangedI",
+    "CursorMovedI",
+    "InsertEnter",
+    "InsertLeave",
+  }, {
+    group = group,
+    pattern = pattern,
+    desc = "Redraws the decorations of the jj log's edited lines",
+    callback = function(ev)
+      local log = logs[ev.buf]
+      if ev.event == "InsertEnter" then
+        inserting = ev.buf
+        if log then unpad(ev.buf, log) end
+      elseif ev.event == "InsertLeave" then
+        inserting = nil
+        if log then repad(ev.buf, log) end
+      end
+      if log then redraw_edited(ev.buf, log) end
+    end,
+  })
 
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     group = group,

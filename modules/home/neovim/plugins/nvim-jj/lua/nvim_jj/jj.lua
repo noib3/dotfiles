@@ -569,12 +569,13 @@ M.remote_url = function(root, remote, on_done)
   end)
 end
 
---- Abandons revisions. Their children become children of their parents.
+--- Abandons revisions. Their children become children of their parents, and
+--- so do their bookmarks.
 ---@param root string
 ---@param revs string[]
 ---@param on_done fun(err?: string)
 M.abandon = function(root, revs, on_done)
-  local args = { "abandon", "--" }
+  local args = { "abandon", "--retain-bookmarks", "--" }
   vim.list_extend(args, revs)
   run(root, args, on_success(on_done))
 end

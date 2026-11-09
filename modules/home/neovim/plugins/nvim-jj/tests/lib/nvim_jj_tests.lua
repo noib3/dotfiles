@@ -215,14 +215,11 @@ M.screen = function(bufnr)
   local lines = {}
   for row, text in ipairs(texts) do
     local decoration = decorations[row]
-    local parts = vim.tbl_filter(
-      function(part) return part ~= "" end,
-      {
-        vim.trim(decoration.before),
-        vim.trim(text),
-        vim.trim(decoration.after),
-      }
-    )
+    local parts = vim.tbl_filter(function(part) return part ~= "" end, {
+      vim.trim(decoration.before),
+      vim.trim(text),
+      vim.trim(decoration.after),
+    })
     lines[#lines + 1] = table.concat(parts, " ")
     vim.list_extend(lines, decoration.below)
   end

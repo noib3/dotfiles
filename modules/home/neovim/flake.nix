@@ -240,10 +240,9 @@
           nvim = self.packages.${pkgs.stdenv.system}.default;
           emmylua_check = pkgs.lib.getExe' pkgs.emmylua-check "emmylua_check";
 
-          # The configuration's settings, with the `lua` directories of the
-          # plugins in this repo as the workspace roots, and only the other
-          # plugins as libraries. Otherwise the plugins in this repo would be
-          # both, and EmmyLua would see each of their classes twice.
+          # `plugins/.emmyrc.json`, with the third-party plugins' Lua as the
+          # library instead of `$NVIM_PLUGINS_LUA`, which also has copies of
+          # this repo's plugins.
           pluginsConfig =
             let
               config = builtins.fromJSON (builtins.readFile ./plugins/.emmyrc.json);
