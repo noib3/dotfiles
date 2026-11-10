@@ -44,6 +44,15 @@ end
 ---@return string
 M.quote = function(text) return ('"%s"'):format(text:gsub('[\\"]', "\\%0")) end
 
+--- Returns the error of rewriting an immutable change.
+---@param label string The change's short ID and subject.
+---@return string
+M.immutable_error = function(label)
+  return ("%s is immutable: jj doesn't rewrite the trunk, tags, untracked remote bookmarks, or what's below them"):format(
+    label
+  )
+end
+
 --- Returns the root of the jj workspace containing the given path.
 ---@param path string
 ---@return string?
@@ -93,7 +102,7 @@ end
 
 ---@class nvim_jj.Detail
 ---@field kind "timestamp"|"authors"
----@field text string The committer's timestamp with its UTC offset, or the author and co-authors.
+---@field text string The author's timestamp with its UTC offset, or the author and co-authors.
 
 ---@class nvim_jj.LogLine
 ---@field graph string The text drawn by jj's graph, including the node of a change.
@@ -141,7 +150,7 @@ end
 --- the description's trailers. The root has none.
 local details_template = ("if(!root, %s)"):format(table.concat({
   ('"%st"'):format(details_start_escape),
-  'committer.timestamp().format("%Y-%m-%d %H:%M:%S %:z")',
+  'author.timestamp().format("%Y-%m-%d %H:%M:%S %:z")',
   ('"\\n%sa"'):format(details_start_escape),
   'if(author.name(), author.name() ++ " <" ++ author.email() ++ ">", author.email())',
   [[trailers.filter(|t| t.key().lower() == "co-authored-by").map(|t| ", " ++ t.value()).join("")]],
@@ -151,18 +160,27 @@ local details_template = ("if(!root, %s)"):format(table.concat({
 ---@type table<string, "timestamp"|"authors">
 local detail_kinds = { t = "timestamp", a = "authors" }
 
---- Replaces the `+HH:MM` offset at the end of a timestamp with `UTC+H`, or
---- `UTC+H:MM` for an offset with minutes, and a zero offset with `UTC`.
----@param timestamp string
+--- Returns a `+HH:MM` UTC offset as `UTC+H`, or `UTC+H:MM` for one with
+--- minutes, and a zero one as `UTC`.
+---@param offset string
 ---@return string
-local with_utc_offset = function(timestamp)
-  local time, sign, hours, minutes =
-    timestamp:match("^(.-) ([+-])(%d%d):(%d%d)$")
-  if not time then return timestamp end
-  if hours == "00" and minutes == "00" then return time .. " UTC" end
-  local offset = tostring(tonumber(hours))
-  if minutes ~= "00" then offset = offset .. ":" .. minutes end
-  return ("%s UTC%s%s"):format(time, sign, offset)
+local utc_offset = function(offset)
+  local sign, hours, minutes = offset:match("^([+-])(%d%d):(%d%d)$")
+  if not sign then return offset end
+  if hours == "00" and minutes == "00" then return "UTC" end
+  local text = tostring(tonumber(hours))
+  if minutes ~= "00" then text = text .. ":" .. minutes end
+  return "UTC" .. sign .. text
+end
+
+--- Replaces the `+HH:MM` offset at the end of a timestamp with its
+--- `utc_offset`.
+---@param text string
+---@return string
+local with_utc_offset = function(text)
+  local time, offset = text:match("^(.-) (%S+)$")
+  if not time or not offset then return text end
+  return ("%s %s"):format(time, utc_offset(offset))
 end
 
 ---@param text string
@@ -368,6 +386,73 @@ M.parents = function(root, revset, on_done)
       parents[table.remove(ids, 1)] = ids
     end
     on_done(nil, parents)
+  end)
+end
+
+---@class nvim_jj.Details
+---@field id string The full change ID.
+---@field prefix string The shortest prefix identifying the change.
+---@field rest string The rest of the change ID's first 8 characters.
+---@field commit_id string The commit ID's first 12 characters.
+---@field bookmarks string[] The bookmarks, marked as jj marks them when they differ from their remotes.
+---@field author string The author's name and email.
+---@field timestamp string The author's timestamp with its UTC offset.
+---@field immutable boolean
+---@field description string
+
+--- Returns the details of a change, without snapshotting the working copy.
+---@param root string
+---@param rev string
+---@param on_done fun(err?: string, details?: nvim_jj.Details)
+M.details = function(root, rev, on_done)
+  local fields = {
+    "change_id",
+    "change_id.shortest(8).prefix()",
+    "change_id.shortest(8).rest()",
+    "commit_id.short(12)",
+    'bookmarks.join(" ")',
+    'if(author.name(), author.name() ++ " <" ++ author.email() ++ ">", author.email())',
+    'author.timestamp().format("%Y-%m-%d %H:%M:%S %:z")',
+    'if(immutable, "1")',
+    "description",
+  }
+  local args = {
+    "--ignore-working-copy",
+    "log",
+    "--no-graph",
+    "--revisions",
+    rev,
+    "--template",
+    table.concat(fields, (' ++ "%s" ++ '):format(field_separator_escape)),
+  }
+
+  run(root, args, function(result)
+    if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
+    local f = vim.split(result.stdout or "", field_separator, { plain = true })
+    on_done(nil, {
+      id = f[1] or "",
+      prefix = f[2] or "",
+      rest = f[3] or "",
+      commit_id = f[4] or "",
+      bookmarks = vim.split(f[5] or "", " ", { trimempty = true }),
+      author = f[6] or "",
+      timestamp = with_utc_offset(f[7] or ""),
+      immutable = f[8] == "1",
+      description = table.concat(vim.list_slice(f, 9), field_separator),
+    })
+  end)
+end
+
+--- Returns a change's diff against its parents, in git's format with three
+--- lines of context, after snapshotting the working copy.
+---@param root string
+---@param rev string
+---@param on_done fun(err?: string, diff?: string)
+M.diff = function(root, rev, on_done)
+  local args = { "diff", "--git", "--context", "3", "--revisions", rev }
+  run(root, args, function(result)
+    if result.code ~= 0 then return on_done(vim.trim(result.stderr or "")) end
+    on_done(nil, result.stdout or "")
   end)
 end
 

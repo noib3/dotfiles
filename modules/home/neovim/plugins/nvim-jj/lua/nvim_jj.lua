@@ -1,3 +1,4 @@
+local change = require("nvim_jj.change")
 local github = require("nvim_jj.github")
 local jj = require("nvim_jj.jj")
 
@@ -55,6 +56,7 @@ local config = {
 ---@field copied table<string, true?> The IDs of the copied changes.
 ---@field unpadded? integer The line whose pad was emptied for insert mode.
 ---@field statuses table<string, nvim_jj.Status?> The statuses of the operations on changes, keyed by change ID.
+---@field views integer[] The buffers of the changes viewed in splits next to the log.
 ---@field github_repo? string The `owner/name` of the remote's GitHub repo, if it's on GitHub.
 ---@field pull_requests table<string, nvim_jj.PullRequest?> The open pull requests of the remote's GitHub repo, keyed by their bookmark.
 ---@field pull_requests_version integer The number of changes to the pull requests made since the log was created.
@@ -153,11 +155,7 @@ end
 --- Returns the error of rewriting an immutable change.
 ---@param change nvim_jj.Change
 ---@return string
-local immutable = function(change)
-  return ("%s is immutable: jj doesn't rewrite the trunk, tags, untracked remote bookmarks, or what's below them"):format(
-    label(change)
-  )
-end
+local immutable = function(change) return jj.immutable_error(label(change)) end
 
 --- Returns the virtual lines drawn below a row. The details of a cut or
 --- copied change are highlighted like its line, across the screen.
@@ -690,6 +688,18 @@ local release = function(bufnr)
   end
   logs[bufnr] = nil
   update_spinner()
+
+  -- The changes viewed next to the log close with it, unless their
+  -- descriptions have unsaved edits.
+  vim.schedule(function()
+    for _, view in ipairs(log.views) do
+      if vim.api.nvim_buf_is_valid(view) and not vim.bo[view].modified then
+        for _, win in ipairs(vim.fn.win_findbuf(view)) do
+          pcall(vim.api.nvim_win_close, win, false)
+        end
+      end
+    end
+  end)
 end
 
 --- Starts redrawing a log buffer after each of its repo's jj operations. A
@@ -796,6 +806,7 @@ local server = function(dispatchers)
     if method == "initialize" then
       return {
         capabilities = {
+          hoverProvider = true,
           codeActionProvider = true,
           executeCommandProvider = { commands = vim.tbl_values(commands) },
           textDocumentSync = 0,
@@ -819,14 +830,46 @@ local server = function(dispatchers)
     return nil, { code = -32601, message = "Method not found: " .. method }
   end
 
+  --- Replies to a hover request with the summary of the change on its line.
+  ---@param params table
+  ---@param respond fun(err?: lsp.ResponseError, result: any)
+  local hover = function(params, respond)
+    local bufnr = buffer_of_uri(params.textDocument.uri)
+    local log = bufnr and logs[bufnr]
+    local row = log and log.rows[params.position.line + 1]
+    if not log or not row then return respond(nil, vim.NIL) end
+    change.recap(log.root, row.change.id, function(err, recap)
+      if err or not recap then return respond(nil, vim.NIL) end
+      respond(nil, {
+        contents = {
+          kind = "plaintext",
+          value = table.concat(recap.lines, "\n"),
+        },
+      })
+      -- Neovim shows the reply's text in a window it records in the log
+      -- buffer, which then gets the view's highlights.
+      ---@type integer?
+      local win = vim.b[bufnr].lsp_floating_preview
+      if win and vim.api.nvim_win_is_valid(win) then
+        change.decorate(vim.api.nvim_win_get_buf(win), win, recap)
+      end
+    end)
+  end
+
   local client = {
     request = function(method, params, callback, notify_reply_callback)
       request_id = request_id + 1
       local id = request_id
-      vim.schedule(function()
-        local result, err = handle(method, params)
+      ---@param err? lsp.ResponseError
+      ---@param result any
+      local respond = function(err, result)
         callback(err, result)
         if notify_reply_callback then notify_reply_callback(id) end
+      end
+      vim.schedule(function()
+        if method == "textDocument/hover" then return hover(params, respond) end
+        local result, err = handle(method, params)
+        respond(err, result)
       end)
       return true, id
     end,
@@ -891,6 +934,7 @@ local load = function(bufnr)
       cut = {},
       copied = {},
       statuses = {},
+      views = {},
       pull_requests = {},
       pull_requests_version = 0,
       on_drawn = {},
@@ -912,6 +956,24 @@ local load = function(bufnr)
   end
   for _, keys in ipairs({ "J", "gJ" }) do
     vim.keymap.set({ "n", "x" }, keys, "<Nop>", { buffer = bufnr })
+  end
+
+  -- `<Tab><Tab>` views the change instead of the log, and `<Tab>` followed by
+  -- an arrow views it in a split in that direction.
+  for keys, where in pairs({
+    ["<Tab><Tab>"] = "here",
+    ["<Tab><Up>"] = "above",
+    ["<Tab><Down>"] = "below",
+    ["<Tab><Left>"] = "left",
+    ["<Tab><Right>"] = "right",
+  }) do
+    vim.keymap.set("n", keys, function()
+      M.open_change(
+        bufnr,
+        vim.fn.line("."),
+        where --[[@as "here"|"above"|"below"|"left"|"right"]]
+      )
+    end, { buffer = bufnr, desc = "View the change" })
   end
 
   vim.lsp.start(
@@ -2381,11 +2443,76 @@ local title_of_branch = function(name)
   return (title:gsub("^%l", string.upper))
 end
 
---- Edits a pull request's title and description in a buffer taking over a
---- log buffer's window, whose first line is the title and the rest the
---- description. Writing the buffer and then quitting it confirms them, and
---- quitting it without writing it aborts. The log buffer is shown again in
---- the window afterwards.
+--- Shows a buffer that's wiped once hidden in a log buffer's window, instead
+--- of the log. Quitting it shows the log in the window again, and if the
+--- buffer goes away otherwise, the log opens again in a split. The log stays
+--- loaded meanwhile.
+---@param bufnr integer The log buffer.
+---@param buf integer
+---@param on_closed? fun() Called once the buffer is wiped and the log is shown again.
+---@return integer win
+local show_instead_of_log = function(bufnr, buf, on_closed)
+  local log = assert(logs[bufnr])
+  local win = vim.fn.bufwinid(bufnr)
+  if win == -1 then win = vim.api.nvim_get_current_win() end
+  local group = vim.api.nvim_create_augroup(
+    "nvim-jj-instead-of-log-" .. buf,
+    { clear = true }
+  )
+
+  -- Quitting the buffer's window would close the log's split, so the log
+  -- takes the window's place first. If the quit is refused, e.g. for unsaved
+  -- changes, the log's window goes away again.
+  vim.api.nvim_create_autocmd("QuitPre", {
+    group = group,
+    buffer = buf,
+    callback = function()
+      local quitting = vim.api.nvim_get_current_win()
+      if vim.api.nvim_win_get_buf(quitting) ~= buf then return end
+      without_autocmds(function() vim.cmd("split") end)
+      local replacement = vim.api.nvim_get_current_win()
+      vim.api.nvim_win_set_buf(replacement, bufnr)
+      vim.schedule(function()
+        if not vim.api.nvim_win_is_valid(quitting) then return end
+        if not vim.api.nvim_win_is_valid(replacement) then return end
+        without_autocmds(
+          function() vim.api.nvim_win_close(replacement, true) end
+        )
+        vim.api.nvim_set_current_win(quitting)
+      end)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufWipeout", {
+    group = group,
+    buffer = buf,
+    callback = function()
+      vim.api.nvim_del_augroup_by_id(group)
+      -- The log is wiped once hidden again right away, so closing its window
+      -- before the rest runs doesn't leave it hidden.
+      if vim.api.nvim_buf_is_valid(bufnr) then
+        vim.bo[bufnr].bufhidden = "wipe"
+      end
+      vim.schedule(function()
+        if
+          vim.api.nvim_buf_is_valid(bufnr) and vim.fn.bufwinid(bufnr) == -1
+        then
+          M.toggle(log.root)
+        end
+        if on_closed then on_closed() end
+      end)
+    end,
+  })
+
+  vim.bo[bufnr].bufhidden = "hide"
+  vim.api.nvim_win_set_buf(win, buf)
+  return win
+end
+
+--- Edits a pull request's title and description in a buffer shown instead of
+--- a log buffer, whose first line is the title and the rest the description.
+--- Writing the buffer and then quitting it confirms them, and quitting it
+--- without writing it aborts.
 ---@param bufnr integer The log buffer.
 ---@param name string The pull request's bookmark.
 ---@param lines string[]
@@ -2393,9 +2520,6 @@ end
 ---@param on_abort fun()
 local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
   local log = assert(logs[bufnr])
-  local win = vim.fn.bufwinid(bufnr)
-  if win == -1 then win = vim.api.nvim_get_current_win() end
-
   local editor = vim.api.nvim_create_buf(false, false)
   without_autocmds(
     function()
@@ -2427,11 +2551,7 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
 
   ---@type string[]?
   local saved
-  local group =
-    vim.api.nvim_create_augroup("nvim-jj-editor-" .. editor, { clear = true })
-
   vim.api.nvim_create_autocmd("BufWriteCmd", {
-    group = group,
     buffer = editor,
     callback = function()
       saved = vim.api.nvim_buf_get_lines(editor, 0, -1, false)
@@ -2439,53 +2559,46 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
     end,
   })
 
-  -- Quitting the editor's window would close the log's split, so the log
-  -- takes the window's place first. If the quit is refused, e.g. for unsaved
-  -- changes, the log's window goes away again.
-  vim.api.nvim_create_autocmd("QuitPre", {
-    group = group,
-    buffer = editor,
-    callback = function()
-      local quitting = vim.api.nvim_get_current_win()
-      if vim.api.nvim_win_get_buf(quitting) ~= editor then return end
-      without_autocmds(function() vim.cmd("split") end)
-      local replacement = vim.api.nvim_get_current_win()
-      vim.api.nvim_win_set_buf(replacement, bufnr)
-      vim.schedule(function()
-        if not vim.api.nvim_win_is_valid(quitting) then return end
-        if not vim.api.nvim_win_is_valid(replacement) then return end
-        without_autocmds(
-          function() vim.api.nvim_win_close(replacement, true) end
-        )
-        vim.api.nvim_set_current_win(quitting)
-      end)
-    end,
-  })
-
-  vim.api.nvim_create_autocmd("BufWipeout", {
-    group = group,
-    buffer = editor,
-    callback = function()
-      vim.api.nvim_del_augroup_by_id(group)
-      vim.schedule(function()
-        if vim.api.nvim_buf_is_valid(bufnr) then
-          vim.bo[bufnr].bufhidden = "wipe"
-          if vim.fn.bufwinid(bufnr) == -1 then M.toggle(log.root) end
-        end
-        if not saved then return on_abort() end
-        local title = vim.trim(saved[1] or "")
-        local body = vim.trim(table.concat(vim.list_slice(saved, 2), "\n"))
-        if title == "" then return on_abort() end
-        on_confirm(title, body)
-      end)
-    end,
-  })
-
-  -- The log stays loaded while the editor shows instead of it.
-  vim.bo[bufnr].bufhidden = "hide"
-  vim.api.nvim_win_set_buf(win, editor)
+  local win = show_instead_of_log(bufnr, editor, function()
+    if not saved then return on_abort() end
+    local title = vim.trim(saved[1] or "")
+    local body = vim.trim(table.concat(vim.list_slice(saved, 2), "\n"))
+    if title == "" then return on_abort() end
+    on_confirm(title, body)
+  end)
   vim.wo[win][0].wrap = true
   vim.wo[win][0].conceallevel = 0
+end
+
+--- Opens a view of the change on a line of a log buffer: instead of the log,
+--- or in a split above, below, left or right of its window.
+---@param bufnr integer
+---@param line integer The 1-based line.
+---@param where "here"|"above"|"below"|"left"|"right"
+M.open_change = function(bufnr, line, where)
+  local log = logs[bufnr]
+  if not log then return end
+  local err, changes = changes_between(bufnr, log, line, line)
+  if err or not changes then return notify(err or "") end
+  local view = change.buffer(log.root, assert(changes[1]).id)
+
+  ---@type integer
+  local win
+  if where == "here" then
+    win = show_instead_of_log(bufnr, view)
+  else
+    local command = ({
+      above = "aboveleft split",
+      below = "belowright split",
+      left = "aboveleft vsplit",
+      right = "belowright vsplit",
+    })[where]
+    vim.cmd(command)
+    win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(win, view)
+    table.insert(log.views, view)
+  end
+  change.set_window_options(win)
 end
 
 --- Opens a pull request of the bookmark of the change on a line of a log
@@ -2714,6 +2827,7 @@ end
 --- Sets the default colors of the log buffers. The details and the IDs use
 --- the colors of comments and identifiers without their other attributes.
 local set_highlights = function()
+  change.set_highlights()
   local comment = foreground("Comment")
 
   ---@type table<string, vim.api.keyset.highlight>
@@ -2746,15 +2860,7 @@ end
 
 --- Returns the spans of a subject in backticks, as the 0-based columns of
 --- their opening and closing backticks.
----@param text string
----@return [integer, integer][]
-local code_spans = function(text)
-  local spans = {}
-  for open, close in text:gmatch("()`[^`]*()`") do
-    spans[#spans + 1] = { open - 1, close - 1 }
-  end
-  return spans
-end
+local code_spans = change.code_spans
 
 --- Returns the index of the code span a window's cursor is in, if any. The
 --- span's backticks count as in it.
@@ -2834,8 +2940,13 @@ M.setup = function(opts)
   local pattern = scheme .. "*"
 
   vim.api.nvim_set_decoration_provider(code_namespace, {
-    on_win = function(_, _, bufnr) return logs[bufnr] ~= nil end,
-    on_line = function(_, win, bufnr, row) draw_code(win, bufnr, row) end,
+    on_win = function(_, _, bufnr)
+      return logs[bufnr] ~= nil or change.is_view(bufnr)
+    end,
+    -- A change's view only has code in its subject.
+    on_line = function(_, win, bufnr, row)
+      if row == 0 or logs[bufnr] then draw_code(win, bufnr, row) end
+    end,
   })
 
   vim.api.nvim_create_autocmd("ColorScheme", {
@@ -2891,7 +3002,7 @@ M.setup = function(opts)
 
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     group = group,
-    pattern = pattern,
+    pattern = { pattern, change.scheme .. "*" },
     desc = "Reveals the backticks of the code the cursor is in",
     callback = function(ev)
       redraw_cursor_spans(vim.api.nvim_get_current_win(), ev.buf)

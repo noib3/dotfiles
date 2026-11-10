@@ -156,6 +156,55 @@ local overrides = {
   },
 }
 
+--- The highlight groups of nvim-hunks and nvim-jj drawing diffs, keyed by
+--- their shared color.
+local diff_groups = {
+  add = { "HunksAdd", "JjDiffAdd", "JjCopy" },
+  add_text = { "HunksAddText", "JjDiffAddText" },
+  add_nr = { "HunksAddNr", "JjDiffAddNr" },
+  delete = { "HunksDelete", "JjDiffDelete", "JjCut" },
+  delete_text = { "HunksDeleteText", "JjDiffDeleteText" },
+  delete_nr = { "HunksDeleteNr", "JjDiffDeleteNr" },
+  added_count = { "HunksAddedCount", "JjAddedCount" },
+  deleted_count = { "HunksDeletedCount", "JjDeletedCount" },
+  modified_count = { "HunksModifiedCount" },
+  renamed_count = { "HunksRenamedCount" },
+  added_files = { "HunksAddedFiles", "JjAddedFiles" },
+  deleted_files = { "HunksDeletedFiles", "JjDeletedFiles" },
+  modified_files = { "HunksModifiedFiles", "JjModifiedFiles" },
+  renamed_files = { "HunksRenamedFiles", "JjRenamedFiles" },
+}
+
+--- The colors of diffs' lines, changed text, line numbers and files. Added
+--- and deleted lines are GitHub's green and red over the background.
+---@type table<"dark"|"light", table<string, vim.api.keyset.highlight>>
+local diff_colors = {
+  dark = {
+    add = { bg = "#293a2c" },
+    add_text = { bg = "#2a5833" },
+    add_nr = { bg = "#2a4c30", fg = "#7c6f64" },
+    delete = { bg = "#472e2d" },
+    delete_text = { bg = "#7b3835" },
+    delete_nr = { bg = "#663432", fg = "#7c6f64" },
+    added_files = { fg = "#acc141" },
+    deleted_files = { fg = "#f6463c" },
+    modified_files = { fg = "#e59f31" },
+    renamed_files = { fg = "#5cb6a2" },
+  },
+  light = {
+    add = { bg = "#d4d9a5" },
+    add_text = { bg = "#a3c888" },
+    add_nr = { bg = "#b7cf94", fg = "#c3ac8a" },
+    delete = { bg = "#f2cda6" },
+    delete_text = { bg = "#f4a98a" },
+    delete_nr = { bg = "#f3b795", fg = "#c3ac8a" },
+    added_files = { fg = "#869927" },
+    deleted_files = { fg = "#c75858" },
+    modified_files = { fg = "#d78200" },
+    renamed_files = { fg = "#3e899b" },
+  },
+}
+
 local gruvbox = require("gruvbox")
 
 ---@return GruvboxConfig
@@ -164,24 +213,32 @@ local config = function()
   local overrides = is_dark and overrides.dark or overrides.light
   local palette = vim.tbl_extend("force", gruvbox.palette, overrides.palette)
 
-  return {
-    palette_overrides = overrides.palette,
-    overrides = vim.tbl_extend("force", overrides.hl_groups, {
-      -- Numbers of added and deleted lines, and the colors of modified and
-      -- renamed files, in nvim-hunks' diffs.
-      HunksAddedCount = {
+  local diff =
+    vim.tbl_extend("force", is_dark and diff_colors.dark or diff_colors.light, {
+      added_count = {
         fg = is_dark and palette.bright_green or palette.faded_green,
       },
-      HunksDeletedCount = {
+      deleted_count = {
         fg = is_dark and palette.bright_red or palette.faded_red,
       },
-      HunksModifiedCount = {
+      modified_count = {
         fg = is_dark and palette.bright_yellow or palette.faded_yellow,
       },
-      HunksRenamedCount = {
+      renamed_count = {
         fg = is_dark and palette.bright_blue or palette.faded_blue,
       },
-    }),
+    })
+
+  local hl_groups = vim.deepcopy(overrides.hl_groups)
+  for color, groups in pairs(diff_groups) do
+    for _, group in ipairs(groups) do
+      hl_groups[group] = diff[color]
+    end
+  end
+
+  return {
+    palette_overrides = overrides.palette,
+    overrides = hl_groups,
     terminal_colors = false,
   }
 end

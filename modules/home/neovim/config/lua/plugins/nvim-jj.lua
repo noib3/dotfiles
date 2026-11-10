@@ -2,14 +2,6 @@ local jj = require("nvim_jj")
 
 jj.setup()
 
--- Cut and copied changes look like the deleted and added lines of hunks.
-local link_held = function()
-  vim.api.nvim_set_hl(0, "JjCut", { link = "HunksDelete" })
-  vim.api.nvim_set_hl(0, "JjCopy", { link = "HunksAdd" })
-end
-link_held()
-vim.api.nvim_create_autocmd("ColorScheme", { callback = link_held })
-
 --- Sets the options of a window showing a jj log. The backticks of code
 --- stay hidden on the cursor's line in normal and insert mode.
 ---@param win integer

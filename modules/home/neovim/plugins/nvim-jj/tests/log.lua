@@ -342,10 +342,8 @@ local details_of = function(bufnr, line)
   return texts
 end
 
-test("the date shows the commit's UTC offset", function()
+test("the date shows the UTC offset it was written with", function()
   local root = h.repo({ "z", "p", "m" })
-  -- Describing a change rewrites its descendants with the same timestamp, so
-  -- the oldest goes first.
   for _, change in ipairs({
     { "z", "zero", "+00:00" },
     { "p", "plus", "+05:30" },
@@ -353,14 +351,13 @@ test("the date shows the commit's UTC offset", function()
   }) do
     h.run(root, {
       "jj",
-      "describe",
+      "metaedit",
       "--quiet",
-      "--config",
-      ("debug.commit-timestamp=2001-02-03T04:05:06%s"):format(change[3]),
-      "-r",
-      ('description(exact:"%s\\n")'):format(change[1]),
+      "--author-timestamp",
+      "2001-02-03T04:05:06" .. change[3],
       "-m",
       change[2],
+      ('description(exact:"%s\\n")'):format(change[1]),
     })
   end
   local bufnr = h.open(root)
