@@ -16,6 +16,9 @@ local zindex = 10
 --- its text and highlight groups.
 ---@field borders nvim_threads.Chunk[]
 ---@field history integer The number of lines above the composer.
+--- The source window's `curswant` when the cursor moved into the float, and
+--- the float's right after.
+---@field curswants? [integer, integer]
 
 ---@type table<integer, nvim_threads.Float?>
 local floats = {}
@@ -183,6 +186,21 @@ M.close = function(win)
   })
 end
 
+--- Moves a window's cursor to a screen column of a line, or to the line's
+--- last character before it, and makes it the column the cursor keeps when
+--- moving between lines. Unlike `|`, it leaves `v:count` alone.
+---@param win integer
+---@param line integer
+---@param virtcol integer The 1-based screen column.
+M.set_cursor = function(win, line, virtcol)
+  local col = vim.fn.virtcol2col(win, line, virtcol)
+  vim.api.nvim_win_set_cursor(win, { line, math.max(col - 1, 0) })
+  vim.api.nvim_win_call(
+    win,
+    function() vim.fn.winrestview({ curswant = virtcol - 1 }) end
+  )
+end
+
 --- Moves the cursor into a float, and closes the float when the cursor
 --- leaves it.
 ---@param win integer
@@ -196,8 +214,7 @@ M.enter = function(win, position)
   if position then
     local line_count =
       vim.api.nvim_buf_line_count(vim.api.nvim_win_get_buf(win))
-    vim.api.nvim_win_set_cursor(win, { math.min(position.line, line_count), 0 })
-    vim.cmd(("normal! %d|"):format(position.virtcol))
+    M.set_cursor(win, math.min(position.line, line_count), position.virtcol)
   end
 
   vim.api.nvim_create_autocmd("WinLeave", {

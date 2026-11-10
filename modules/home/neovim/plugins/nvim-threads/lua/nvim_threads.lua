@@ -852,7 +852,7 @@ end
 --- into it.
 ---@param bufnr integer
 ---@param thread nvim_threads.Thread
----@param opts { line: nvim_threads.FloatLine, virtcol?: integer, insert?: boolean, source_win?: integer }
+---@param opts { line: nvim_threads.FloatLine, curswant?: integer, insert?: boolean, source_win?: integer } The `curswant` is the source window's.
 local open_float = function(bufnr, thread, opts)
   local source_win = opts.source_win or window_of(bufnr)
   if not source_win then return end
@@ -969,7 +969,15 @@ local open_float = function(bufnr, thread, opts)
   local line = opts.line == "first" and 1
     or opts.line == "last" and line_count
     or line_count
-  float.enter(win, { line = line, virtcol = opts.virtcol or 1 })
+  -- The float's text starts after its 'statuscolumn', so the cursor keeps
+  -- its screen column.
+  local curswant = opts.curswant or 0
+  local border_width = vim.api.nvim_strwidth(render.border)
+  float.enter(
+    win,
+    { line = line, virtcol = math.max(curswant - border_width, 0) + 1 }
+  )
+  current.curswants = { curswant, vim.fn.winsaveview().curswant }
   update_modifiable(win)
   if opts.insert then vim.cmd("startinsert!") end
 end
@@ -1009,6 +1017,19 @@ local current_thread = function()
   return thread_of(current.source_buf, current.thread_id), current, win
 end
 
+--- Returns the source window's `curswant` at the screen column of the
+--- cursor of the current float. A cursor that didn't move sideways in the
+--- float returns to the source window's column, which can be left of the
+--- float's text.
+---@param current nvim_threads.Float
+---@return integer
+local source_curswant = function(current)
+  local curswant = vim.fn.winsaveview().curswant
+  local curswants = current.curswants
+  if curswants and curswant == curswants[2] then return curswants[1] end
+  return curswant + vim.api.nvim_strwidth(render.border)
+end
+
 --- Moves the cursor from a float to its source window, on the line before
 --- or after the thread's virtual lines.
 ---@param win integer
@@ -1018,16 +1039,16 @@ local leave_float = function(win, current, line)
   if not vim.api.nvim_win_is_valid(current.source_win) then
     return float.close(win)
   end
-  local virtcol = vim.fn.winsaveview().curswant + 1
+  local virtcol = source_curswant(current) + 1
   vim.cmd(
     ("noautocmd call nvim_set_current_win(%d)"):format(current.source_win)
   )
   local line_count = vim.api.nvim_buf_line_count(current.source_buf)
-  vim.api.nvim_win_set_cursor(
+  float.set_cursor(
     current.source_win,
-    { math.max(math.min(line, line_count), 1), 0 }
+    math.max(math.min(line, line_count), 1),
+    virtcol
   )
-  vim.cmd(("normal! %d|"):format(virtcol))
   float.close(win)
 end
 
@@ -1462,8 +1483,10 @@ end
 --- a float.
 ---@return boolean
 M.toggle = function()
-  local thread, current = current_thread()
+  local thread, current, win = current_thread()
   if not thread or not current then return false end
+  -- The header is the first line either way, and keeps its length.
+  local cursor = vim.api.nvim_win_get_cursor(win)
   local view = view_of(thread.id)
   view.expanded = not view.expanded
   if view.expanded then
@@ -1472,7 +1495,7 @@ M.toggle = function()
     view.draft = nil
   end
   draw(current.source_buf, thread, true)
-  vim.api.nvim_win_set_cursor(0, { 1, 0 })
+  vim.api.nvim_win_set_cursor(win, { 1, cursor[1] == 1 and cursor[2] or 0 })
   return true
 end
 
@@ -1681,7 +1704,7 @@ M.step = function(direction, keys)
       return true
     end
 
-    local virtcol = vim.fn.winsaveview().curswant + 1
+    local curswant = source_curswant(current)
     local siblings = threads_after(current.source_buf, current.row)
     for index, thread in ipairs(siblings) do
       local next_thread = thread.id == current.thread_id
@@ -1689,7 +1712,7 @@ M.step = function(direction, keys)
       if next_thread then
         open_float(current.source_buf, next_thread, {
           line = direction > 0 and "first" or "last",
-          virtcol = virtcol,
+          curswant = curswant,
           source_win = current.source_win,
         })
         return true
@@ -1712,7 +1735,7 @@ M.step = function(direction, keys)
 
   open_float(bufnr, thread, {
     line = direction > 0 and "first" or "last",
-    virtcol = vim.fn.winsaveview().curswant + 1,
+    curswant = vim.fn.winsaveview().curswant,
     source_win = win,
   })
   return true

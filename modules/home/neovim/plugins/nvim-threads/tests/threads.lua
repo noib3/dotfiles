@@ -171,6 +171,45 @@ test("stepping moves into and out of a thread's float", function()
   h.eq(threads.step(1, "j"), false, "there's no thread below the first line")
 end)
 
+test("the cursor keeps its screen column through a thread's float", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local curswant = function() return vim.fn.winsaveview().curswant end
+
+  vim.api.nvim_win_set_cursor(0, { 3, 4 })
+  h.eq(threads.step(1, "j"), true)
+  -- The float's text starts after its three cells of borders.
+  h.eq(curswant(), 1)
+  h.eq(threads.step(-1, "k"), true)
+  h.eq(vim.api.nvim_get_current_buf(), bufnr)
+  h.eq(vim.api.nvim_win_get_cursor(0), { 3, 4 })
+
+  -- A column left of the float's text comes back unchanged.
+  vim.api.nvim_win_set_cursor(0, { 3, 1 })
+  h.eq(threads.step(1, "j"), true)
+  h.eq(curswant(), 0)
+  h.eq(threads.step(-1, "k"), true)
+  h.eq(vim.api.nvim_win_get_cursor(0), { 3, 1 })
+
+  -- Moving sideways in the float moves the column in the file.
+  h.eq(threads.step(1, "j"), true)
+  vim.cmd("normal! l")
+  h.eq(threads.step(-1, "k"), true)
+  h.eq(vim.api.nvim_win_get_cursor(0), { 3, 4 })
+end)
+
+test("expanding and collapsing a thread keeps the cursor's column", function()
+  vim.api.nvim_win_set_cursor(0, { 3, 0 })
+  h.eq(threads.step(1, "j"), true)
+  -- On the title, after the chevron's three bytes and a space.
+  vim.api.nvim_win_set_cursor(0, { 1, 6 })
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  h.eq(threads.activate(), true)
+  h.eq(vim.api.nvim_win_get_cursor(0), cursor, "expanding")
+  h.eq(threads.activate(), true)
+  h.eq(vim.api.nvim_win_get_cursor(0), cursor, "collapsing")
+  h.leave()
+end)
+
 test(
   "a thread collapses when the cursor leaves it, keeping its draft",
   function()
