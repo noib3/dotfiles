@@ -32,7 +32,10 @@
           "**/nvim_hunks/**",
           "**/trouble/sources/hunks.lua",
           "**/nvim_jj.lua",
-          "**/nvim_jj/**"
+          "**/nvim_jj/**",
+          "**/nvim_threads.lua",
+          "**/nvim_threads/**",
+          "**/trouble/sources/threads.lua"
         ]
       }
     ],
@@ -43,7 +46,9 @@
       "./nvim-hunks/lua",
       "./nvim-hunks/tests/lib",
       "./nvim-jj/lua",
-      "./nvim-jj/tests/lib"
+      "./nvim-jj/tests/lib",
+      "./nvim-threads/lua",
+      "./nvim-threads/tests/lib"
     ]
   }
 }

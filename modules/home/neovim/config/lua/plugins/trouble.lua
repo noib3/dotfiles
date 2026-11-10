@@ -27,6 +27,15 @@ vim.keymap.set("n", "<D-d>", function()
   trouble.toggle({ focus = true, mode = "hunks", cwd = vim.fn.getcwd() })
 end)
 
+vim.keymap.set("n", "<D-k>", function()
+  ---@diagnostic disable-next-line: undefined-field
+  trouble.toggle({
+    focus = true,
+    mode = "threads_waiting_on_me",
+    cwd = vim.fn.getcwd(),
+  })
+end)
+
 -- trouble previews and jumps to items in a "main" window, which it never picks
 -- among terminals. Without one, it'd use the list's own window. This falls
 -- back to the first window that isn't a float or a trouble window.
@@ -75,6 +84,13 @@ local fold_or_jump = {
 
 ---@diagnostic disable-next-line: undefined-field
 trouble.setup({
+  -- The chevrons of folds are the ones of nvim-jj's files.
+  icons = {
+    indent = {
+      fold_open = "▾ ",
+      fold_closed = "▸ ",
+    },
+  },
   modes = {
     call_sites = {
       mode = "lsp_references",

@@ -67,6 +67,10 @@ local overrides = {
       -- Incline.
       InclineNormal = { fg = "#ddc7a1", bg = "#3a3735" },
       InclineNormalNC = { fg = "#928374", bg = "#3a3735" },
+
+      -- Threads.
+      ThreadsNormal = { fg = "#d4be98", bg = "#32302f" },
+      ThreadsChevron = { fg = "#ddc7a1" },
     },
   },
   light = {
@@ -152,6 +156,10 @@ local overrides = {
       -- Incline.
       InclineNormal = { fg = "#50504a", bg = "#dac9a5" },
       InclineNormalNC = { fg = "#8b8b81", bg = "#dac9a5" },
+
+      -- Threads.
+      ThreadsNormal = { fg = "#42423c", bg = "#e6d5ae" },
+      ThreadsChevron = { fg = "#42423c" },
     },
   },
 }

@@ -11,6 +11,7 @@ local attach_event = "NvimHunksAttach"
 local changed_event = "NvimHunksChanged"
 local detach_event = "NvimHunksDetach"
 local files_changed_event = "NvimHunksFilesChanged"
+local moved_event = "NvimHunksMoved"
 
 --- The delay between a change to a buffer and the diff it triggers.
 local buffer_debounce_ms = 100
@@ -47,7 +48,7 @@ local config = {
 ---@field hunks nvim_hunks.Hunk[]
 ---@field old_path? string The file's path in the base if it was renamed since.
 ---@field path string The file's path relative to the repo's root.
----@field repo nvim_hunks.Repo
+---@field repo? nvim_hunks.Repo Unset for a buffer diffed against a fixed text.
 ---@field request integer The number of base loads started for the buffer.
 ---@field syntax? nvim_hunks.Syntax The syntax of the base lines.
 ---@field syntax_filetype? string The filetype the syntax was computed for.
@@ -68,6 +69,10 @@ local turned_off = {}
 
 ---@type table<integer, nvim_hunks.Buffer?>
 local buffers = {}
+
+--- The buffers diffed against a fixed text instead of their file's base.
+---@type table<integer, true?>
+local fixed = {}
 
 ---@type table<string, nvim_hunks.Repo?>
 local repos = {}
@@ -243,7 +248,7 @@ end
 ---@param bufnr integer
 local load_base = function(bufnr)
   local state = buffers[bufnr]
-  if not state then return end
+  if not state or not state.repo then return end
 
   state.request = state.request + 1
   local request = state.request
@@ -373,8 +378,9 @@ local detach = function(bufnr)
   if not state then return end
 
   buffers[bufnr] = nil
+  fixed[bufnr] = nil
   if state.timer then state.timer:close() end
-  release_repo(state.repo)
+  if state.repo then release_repo(state.repo) end
   for _, win in ipairs(float.of_buffer(bufnr)) do
     float.close(win)
   end
@@ -478,6 +484,42 @@ M.toggle = function(bufnr)
   end
 end
 
+--- Shows the diff of a buffer against a fixed text instead of its file's
+--- base, e.g. the text that edits suggested for it were applied to. Moving
+--- its hunks reverts them to that text.
+---@param bufnr integer
+---@param base_lines string[]
+M.attach_base = function(bufnr, base_lines)
+  if not is_library_loaded() then return end
+  if buffers[bufnr] then detach(bufnr) end
+
+  ---@type nvim_hunks.Buffer
+  local state = {
+    hunks = {},
+    path = vim.api.nvim_buf_get_name(bufnr),
+    request = 0,
+  }
+  buffers[bufnr] = state
+  fixed[bufnr] = true
+
+  local on_change = function()
+    if buffers[bufnr] ~= state then return true end
+    schedule_update(bufnr, state)
+  end
+  vim.api.nvim_buf_attach(bufnr, false, {
+    on_lines = on_change,
+    on_reload = on_change,
+    on_detach = function()
+      vim.schedule(function()
+        if buffers[bufnr] == state then detach(bufnr) end
+      end)
+    end,
+  })
+
+  fire(attach_event, { buf = bufnr, float = false })
+  set_base(bufnr, state, base_lines, true)
+end
+
 --- Shows the diffs of the buffers of all files in jj workspaces, or stops
 --- doing so. Afterwards, only the buffers whose diffs were turned on
 --- individually keep showing them.
@@ -490,7 +532,9 @@ M.show_all = function(show)
   turned_off = {}
 
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    if should_show(bufnr) then
+    if fixed[bufnr] then
+      -- A buffer diffed against a fixed text keeps its diff.
+    elseif should_show(bufnr) then
       attach(bufnr)
     else
       detach(bufnr)
@@ -812,6 +856,14 @@ local move_lines = function(file, selected_old, selected_new, into, on_moved)
         function(squash_err)
           vim.schedule(function()
             if squash_err then return notify_error(squash_err) end
+            local moved_lines = vim.tbl_keys(selected_new)
+            table.sort(moved_lines)
+            fire(moved_event, {
+              root = file.root,
+              path = file.path,
+              into = target,
+              lines = moved_lines,
+            })
             if on_moved then on_moved() end
             -- Moving changes into a descendant takes them out of the files
             -- on disk.
@@ -1162,6 +1214,9 @@ M.move_many = function(files, selections, into)
           jj.squash_paths(root, target, group.paths, function(squash_err)
             vim.schedule(function()
               if squash_err then return notify_error(squash_err) end
+              for _, path in ipairs(group.paths) do
+                fire(moved_event, { root = root, path = path, into = target })
+              end
               reload_files(root, group.paths)
               on_done()
             end)
@@ -1351,12 +1406,69 @@ M.step = function(direction, keys)
   })
 end
 
+--- Reverts the selected lines of a buffer's hunks to its base, replacing
+--- only the lines that change.
+---@param bufnr integer
+---@param state nvim_hunks.Buffer
+---@param selected_old table<integer, true?>
+---@param selected_new table<integer, true?>
+local revert = function(bufnr, state, selected_old, selected_new)
+  ---@type table<integer, true?>, table<integer, true?>
+  local kept_old, kept_new = {}, {}
+  for _, hunk in ipairs(state.hunks) do
+    for line = hunk.old_start, hunk.old_start + hunk.old_count - 1 do
+      if not selected_old[line] then kept_old[line] = true end
+    end
+    for line = hunk.new_start, hunk.new_start + hunk.new_count - 1 do
+      if not selected_new[line] then kept_new[line] = true end
+    end
+  end
+
+  local current = buffer_lines(bufnr)
+  local lines = apply(
+    assert(state.base_lines),
+    current,
+    state.hunks,
+    kept_old,
+    kept_new,
+    state.base_eol ~= false,
+    vim.bo[bufnr].eol
+  )
+
+  -- The lines before and after the first and last ones that change keep
+  -- their marks.
+  local prefix = 0
+  while
+    prefix < #current
+    and prefix < #lines
+    and current[prefix + 1] == lines[prefix + 1]
+  do
+    prefix = prefix + 1
+  end
+  local suffix = 0
+  while
+    suffix < #current - prefix
+    and suffix < #lines - prefix
+    and current[#current - suffix] == lines[#lines - suffix]
+  do
+    suffix = suffix + 1
+  end
+  vim.api.nvim_buf_set_lines(
+    bufnr,
+    prefix,
+    #current - suffix,
+    false,
+    vim.list_slice(lines, prefix + 1, #lines - suffix)
+  )
+end
+
 --- Moves changes from the working-copy commit into another revision: the
 --- lines selected in visual mode, or else the whole hunk under the cursor.
---- In a float, the selected lines are deleted ones. Returns false without
---- doing anything if the buffer's diff isn't shown or, outside of visual mode
---- and floats, if the cursor isn't on a hunk.
----@param into string A revset, e.g. `@-`. When it resolves to several revisions, one is picked with `vim.ui.select`.
+--- In a float, the selected lines are deleted ones. In a buffer diffed
+--- against a fixed text, the changes are reverted to it instead. Returns
+--- false without doing anything if the buffer's diff isn't shown or, outside
+--- of visual mode and floats, if the cursor isn't on a hunk.
+---@param into string A revset, e.g. `@-`. When it resolves to several revisions, one is picked with `vim.ui.select`. Unused in a buffer diffed against a fixed text.
 ---@return boolean
 M.move = function(into)
   local mode = vim.fn.mode()
@@ -1425,6 +1537,12 @@ M.move = function(into)
     select_hunk(hunk)
   end
 
+  if fixed[bufnr] then
+    revert(bufnr, state, selected_old, selected_new)
+    if current_float then float.close(win) end
+    return true
+  end
+
   if vim.bo[bufnr].modified then
     notify_error("Save the buffer first")
     return true
@@ -1432,7 +1550,7 @@ M.move = function(into)
 
   move_lines(
     {
-      root = state.repo.root,
+      root = assert(state.repo).root,
       path = state.path,
       old_path = state.old_path,
       status = state.old_path and "renamed" or "modified",
