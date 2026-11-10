@@ -104,6 +104,18 @@
         text = builtins.readFile ./yo.sh;
       };
 
+      yt = pkgs.writeShellApplication {
+        name = "yt";
+        runtimeInputs = with pkgs; [
+          ffmpeg
+          (python3.withPackages (ps: [
+            ps.dnspython
+            ps.yt-dlp
+          ]))
+        ];
+        text = ''exec python3 ${./yt.py} "$@"'';
+      };
+
       nw = pkgs.writeShellApplication {
         name = "nw";
         runtimeInputs = [ pkgs.coreutils ]; # Adds GNU's date.
