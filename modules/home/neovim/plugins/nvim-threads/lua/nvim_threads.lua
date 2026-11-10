@@ -358,13 +358,15 @@ local fill = function(win, rows, full)
   filling[buf] = true
   vim.bo[buf].modifiable = true
   if full then
+    -- Only an expanded thread shows its composer, which holds its draft.
     local view = view_of(current.thread_id)
+    local draft = #composer > 0 and view.draft or {}
     vim.api.nvim_buf_set_lines(
       buf,
       0,
       -1,
       false,
-      vim.list_extend(texts, vim.deepcopy(view.draft or {}))
+      vim.list_extend(texts, vim.deepcopy(draft))
     )
   else
     vim.api.nvim_buf_set_lines(buf, 0, current.history, false, texts)

@@ -127,13 +127,13 @@ test("the list opens on the hunk the cursor is in", function()
     vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(list), 0, -1, false)
   )
   h.eq(rows, {
-    " # #  docs/ 1a (+1)",
+    " # #  docs/",
     "   └╴#  new.md +1 (new file)",
-    " # #  modules/a/ 1m (+2 -2)",
+    " # #  modules/a/",
     "   └╴#  x.txt +2 -2",
     "     ├╴L2 +1 -1",
     "     └╴L30 +1 -1",
-    " # #  src/ 1r",
+    " # #  src/",
     "   └╴#  ren.txt → ren.txt",
     "   #  old.txt -2 (deleted)",
     " # #  root.txt +1 -1",
@@ -288,7 +288,7 @@ test("folded directories stay folded when the list opens again", function()
     function() return list_win() ~= nil and #rows() > 1 end,
     "the list opens again"
   )
-  h.eq(vim.tbl_contains(rows(), " # #  src/ 1r"), true, vim.inspect(rows()))
+  h.eq(vim.tbl_contains(rows(), " # #  src/"), true, vim.inspect(rows()))
   h.eq(
     vim.tbl_contains(rows(), "   └╴#  ren.txt → ren.txt"),
     false,

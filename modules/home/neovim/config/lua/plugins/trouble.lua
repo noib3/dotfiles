@@ -84,7 +84,6 @@ local fold_or_jump = {
 
 ---@diagnostic disable-next-line: undefined-field
 trouble.setup({
-  -- The chevrons of folds are the ones of nvim-jj's files.
   icons = {
     indent = {
       fold_open = "▾ ",

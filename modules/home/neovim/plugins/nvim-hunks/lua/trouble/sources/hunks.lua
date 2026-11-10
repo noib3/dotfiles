@@ -272,7 +272,6 @@ M.config = {
       end
       return { text = directory, hl = "TroubleDirectory" }
     end,
-    hunks_directory_summary = function(ctx) return summary(files_of(ctx.node)) end,
     hunks_row = function(ctx)
       ---@type nvim_hunks.trouble.Entry
       local entry = ctx.item.item
@@ -330,7 +329,7 @@ M.config = {
       groups = {
         {
           "directory",
-          format = "{directory_icon} {hunks_directory}{hunks_directory_summary}",
+          format = "{directory_icon} {hunks_directory}",
         },
       },
       sort = {},

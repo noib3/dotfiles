@@ -224,6 +224,15 @@ test(
     h.eq(vim.api.nvim_get_current_buf(), bufnr)
     h.eq(h.virt_lines(bufnr)[4], { "  ▸ Why THREE (4 messages, draft)" })
 
+    -- The collapsed thread's float only has its header, which the cursor
+    -- leaves with a single step.
+    h.eq(threads.step(1, "j"), true)
+    h.eq(vim.api.nvim_buf_line_count(0), 1)
+    h.eq(threads.step(1, "j"), true)
+    h.eq(vim.api.nvim_get_current_buf(), bufnr)
+    h.eq(vim.api.nvim_win_get_cursor(0)[1], 5)
+    vim.api.nvim_win_set_cursor(0, { 4, 0 })
+
     h.eq(threads.step(1, "j"), true)
     h.eq(threads.activate(), true)
     local last = vim.api.nvim_buf_line_count(0)

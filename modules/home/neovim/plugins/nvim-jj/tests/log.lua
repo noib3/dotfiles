@@ -452,3 +452,64 @@ test(
     h.eq(vim.o.backspace:find("eol") ~= nil, true)
   end
 )
+
+test("the log opens for the workspace of the window a float is on", function()
+  local root = h.repo({ "one" })
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if win ~= vim.api.nvim_get_current_win() then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+  -- The working directory is outside of the workspace.
+  vim.cmd.cd(assert(vim.uv.os_tmpdir()))
+  vim.cmd.edit(vim.fs.joinpath(root, "f1"))
+  local file_win = vim.api.nvim_get_current_win()
+  local float_win =
+    vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), true, {
+      relative = "win",
+      win = file_win,
+      row = 0,
+      col = 0,
+      width = 10,
+      height = 1,
+    })
+
+  local log_win = assert(nvim_jj.toggle(), "the log opens")
+  h.eq(
+    vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(log_win)),
+    "jj://" .. root
+  )
+  vim.api.nvim_win_close(log_win, true)
+  if vim.api.nvim_win_is_valid(float_win) then
+    vim.api.nvim_win_close(float_win, true)
+  end
+end)
+
+test("the log opens for the workspace of the previous window", function()
+  local root = h.repo({ "one" })
+  vim.cmd.cd(assert(vim.uv.os_tmpdir()))
+  vim.cmd.edit(vim.fs.joinpath(root, "f1"))
+  vim.cmd("botright new")
+  vim.bo.buftype = "nofile"
+
+  local log_win = assert(nvim_jj.toggle(), "the log opens")
+  h.eq(
+    vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(log_win)),
+    "jj://" .. root
+  )
+end)
+
+test("the log opens for the workspace of a buffer's directory", function()
+  local root = h.repo({ "one" })
+  vim.cmd.cd(assert(vim.uv.os_tmpdir()))
+  -- Like a terminal following its shell's directory.
+  vim.cmd.enew()
+  vim.bo.buftype = "nofile"
+  vim.cmd.bcd({ args = { root } })
+
+  local log_win = assert(nvim_jj.toggle(), "the log opens")
+  h.eq(
+    vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(log_win)),
+    "jj://" .. root
+  )
+end)

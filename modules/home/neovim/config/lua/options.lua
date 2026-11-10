@@ -1,6 +1,22 @@
--- Automatically set the cwd to the one containing the currently focused
--- buffer.
-vim.o.autochdir = true
+-- Each file's buffer has the file's directory as its working directory.
+-- Unlike 'autochdir', it leaves the buffer-local directories of terminals
+-- alone, which 'autochdir' replaces with the directory in the terminal's
+-- name whenever a window opens.
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile", "BufFilePost" }, {
+  group = vim.api.nvim_create_augroup("noib3/file-directory", { clear = true }),
+  desc = "Sets the buffer's working directory to its file's",
+  callback = function(ev)
+    if vim.bo[ev.buf].buftype ~= "" then return end
+    local name = vim.api.nvim_buf_get_name(ev.buf)
+    if name == "" or name:match("^%a[%w+.-]*://") then return end
+    local dir = vim.fs.dirname(vim.fs.abspath(name))
+    if vim.fn.isdirectory(dir) == 0 then return end
+    vim.api.nvim_buf_call(
+      ev.buf,
+      function() vim.cmd.bcd({ args = { dir } }) end
+    )
+  end,
+})
 
 vim.o.background = "dark"
 

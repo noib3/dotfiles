@@ -141,6 +141,13 @@ in
           set -gx SHELL (status fish-path)
         end
 
+        # Reports the working directory to the terminal with OSC 7 whenever
+        # it changes, including from a key binding like fuzzy-cd's, where
+        # fish's own report doesn't happen. Neovim's terminals follow it.
+        function __report_pwd --on-variable PWD
+          printf '\e]7;file://%s\a' (string escape --style=url -- $PWD)
+        end
+
         function __repair_stale_pwd --on-event fish_prompt
           if test -n "$PWD"; and not test -d "$PWD"
             set -l physical_pwd (command pwd -P 2> /dev/null)
