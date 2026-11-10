@@ -14,20 +14,7 @@ local set_keymaps = function(buf, is_float)
     vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc })
   end
 
-  for keys, direction in pairs({
-    j = 1,
-    k = -1,
-    ["<Down>"] = 1,
-    ["<Up>"] = -1,
-  }) do
-    local motion = keys:match("^<") and "g" .. keys or keys
-    map(
-      "n",
-      keys,
-      function() hunks.step(direction, motion) end,
-      "Move by lines, stepping through deleted lines"
-    )
-  end
+  require("utils.motion").set_step_keymaps(buf)
 
   -- Off a hunk, the keys keep their built-in meaning.
   local move_or_fallback = function(into, keys)
@@ -81,8 +68,14 @@ vim.api.nvim_create_autocmd("User", {
   callback = function(ev)
     local buf = ev.data.buf
     if not vim.api.nvim_buf_is_valid(buf) then return end
+    -- The keys moving by lines still step through the buffer's threads.
+    local has_threads = require("nvim_threads").is_attached(buf)
     for _, mode_keys in ipairs({
-      { "n", { "j", "k", "<Down>", "<Up>", "]]", "[[", "-", "+" } },
+      {
+        "n",
+        has_threads and { "]]", "[[", "-", "+" }
+          or { "j", "k", "<Down>", "<Up>", "]]", "[[", "-", "+" },
+      },
       { "x", { "-", "+" } },
     }) do
       for _, keys in ipairs(mode_keys[2]) do

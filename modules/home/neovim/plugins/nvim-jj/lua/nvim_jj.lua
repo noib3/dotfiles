@@ -1535,16 +1535,39 @@ local changes_between = function(bufnr, log, first, last)
   return nil, changes
 end
 
+--- Returns the root of the jj workspace of a window: its log's, or its file's.
+--- A float placed on a window belongs to that window's workspace, and other
+--- windows to the one of their working directory, which can be their
+--- buffer's, like a terminal's.
+---@type fun(win: integer): string?
+local window_root
+window_root = function(win)
+  local bufnr = vim.api.nvim_win_get_buf(win)
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  if vim.startswith(name, scheme) then return name:sub(#scheme + 1) end
+  if vim.bo[bufnr].buftype == "" and name ~= "" then return jj.root(name) end
+
+  local config = vim.api.nvim_win_get_config(win)
+  local anchor = config.relative == "win" and config.win
+  if anchor and anchor ~= win and vim.api.nvim_win_is_valid(anchor) then
+    return window_root(anchor)
+  end
+  -- `getcwd()` with a window never reports a buffer-local directory.
+  return jj.root(vim.api.nvim_win_call(win, vim.fn.getcwd))
+end
+
 --- Returns the root of the jj workspace containing the given path, or else
---- the current file's, or else the working directory's.
+--- the current window's, or else the previous window's, e.g. when the
+--- current one is a list opened from it.
 ---@param path? string
 ---@return string?
 local root_of = function(path)
   if path then return jj.root(path) end
-  local name = vim.api.nvim_buf_get_name(0)
-  if vim.startswith(name, scheme) then return name:sub(#scheme + 1) end
-  if vim.bo.buftype == "" and name ~= "" then return jj.root(name) end
-  return jj.root(vim.fn.getcwd())
+  local win = vim.api.nvim_get_current_win()
+  local root = window_root(win)
+  if root then return root end
+  local previous = vim.fn.win_getid(vim.fn.winnr("#"))
+  if previous ~= 0 and previous ~= win then return window_root(previous) end
 end
 
 --- Runs a function with all autocommands ignored.

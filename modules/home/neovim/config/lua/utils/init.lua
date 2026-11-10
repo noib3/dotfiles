@@ -4,4 +4,5 @@ return {
   highlights = require("utils.highlights"),
   lua = require("utils.lua"),
   math = require("utils.math"),
+  motion = require("utils.motion"),
 }

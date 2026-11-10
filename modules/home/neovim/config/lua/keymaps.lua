@@ -72,6 +72,16 @@ local close = function()
     return
   end
 
+  -- A terminal other than the base one goes away with its splits.
+  if
+    vim.bo.buftype == "terminal"
+    and current_buf ~= base_terminal
+    and #splits > 1
+  then
+    vim.api.nvim_buf_delete(current_buf, { force = true })
+    return
+  end
+
   local has_other_listed_file_buffer = #other_listed_bufs > 0
   local can_return_to_base_terminal = base_terminal
     and base_terminal ~= current_buf
@@ -150,20 +160,34 @@ end)
 keymap.set({ "n", "v" }, "<D-Up>", "<C-u>")
 keymap.set({ "n", "v" }, "<D-Down>", "<C-d>")
 
+--- Returns a function running a normal mode motion from insert mode, where
+--- the cursor can rest after the end of a line. Unlike `<C-o>`, the motion
+--- doesn't make the UI leave insert mode, which would flash its cursor shape.
+---@param keys string
+---@return fun()
+local insert_motion = function(keys)
+  return function()
+    local virtualedit = vim.o.virtualedit
+    vim.o.virtualedit = "onemore"
+    vim.cmd.normal({ args = { vim.keycode(keys) }, bang = true })
+    vim.o.virtualedit = virtualedit
+  end
+end
+
 -- Jump to the first non-whitepspace character in the displayed line.
 keymap.set({ "n", "v" }, "<D-Left>", "g^")
-keymap.set("i", "<D-Left>", "<C-o>g^")
+keymap.set("i", "<D-Left>", insert_motion("g^"))
 
 -- Jump to the end of the displayed line.
 keymap.set({ "n", "v" }, "<D-Right>", "g$")
-keymap.set("i", "<D-Right>", "<C-o>g$")
+keymap.set("i", "<D-Right>", insert_motion("g$"))
 
 -- Move between displayed lines instead of physical ones (i.e. take count of
 -- soft-wrapping).
 keymap.set({ "n", "v" }, "<Up>", "g<Up>", { noremap = true })
 keymap.set({ "n", "v" }, "<Down>", "g<Down>", { noremap = true })
-keymap.set("i", "<Up>", "<C-o>g<Up>", { noremap = true })
-keymap.set("i", "<Down>", "<C-o>g<Down>", { noremap = true })
+keymap.set("i", "<Up>", insert_motion("g<Up>"))
+keymap.set("i", "<Down>", insert_motion("g<Down>"))
 
 -- Open a new split window in the given direction.
 keymap.set("n", "s<Up>", open_split(direction.Up))
