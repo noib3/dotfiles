@@ -4,7 +4,7 @@ M.namespace = vim.api.nvim_create_namespace("nvim-threads")
 
 ---@alias nvim_threads.Chunk [string, (string|string[])?]
 
----@alias nvim_threads.RowKind "header"|"author"|"body"|"blank"|"suggestion"|"composer"
+---@alias nvim_threads.RowKind "header"|"author"|"body"|"blank"|"separator"|"suggestion"|"edit"|"diff"|"composer"
 
 --- A screen row of a thread. Its prefix is the border, which the float
 --- draws in its 'statuscolumn'.
@@ -13,7 +13,27 @@ M.namespace = vim.api.nvim_create_namespace("nvim-threads")
 ---@field prefix nvim_threads.Chunk[]
 ---@field chunks nvim_threads.Chunk[]
 ---@field comment? integer The index of the comment the row belongs to.
+---@field path? string The file of the suggested edits the row shows.
+---@field edit? integer The index of the suggested edit the row shows.
+---@field fill? string The group of the row's background past its text.
+---@field expanded? boolean Whether the suggested edit the row shows is expanded.
+---@field conceals? nvim_threads.Conceal[] The text the row hides, sorted.
+---@field elements? nvim_threads.Element[] The elements with hidden parts the row covers part of.
 ---@field placeholder? string The text drawn over an empty composer.
+
+--- A part of a Markdown element that's hidden unless the cursor is in the
+--- element, like the backticks of a code span.
+---@class nvim_threads.Conceal
+---@field from integer The 0-based byte column of the text hidden in its row.
+---@field to integer The exclusive end column.
+---@field text string What's shown instead.
+---@field element nvim_threads.Element
+
+--- A Markdown element with hidden parts, as the rows and byte ranges it
+--- covers.
+---@class nvim_threads.Element
+---@field parts { row: nvim_threads.Row, from: integer, to: integer }[]
+---@field range [integer, integer, integer, integer] Its 0-based range in its text.
 
 --- The state of a thread's display, which isn't saved.
 ---@class nvim_threads.View
@@ -25,6 +45,13 @@ M.namespace = vim.api.nvim_create_namespace("nvim-threads")
 --- the composer's first line and the byte column.
 ---@field insert_at? [integer, integer]
 ---@field frame string The spinner's current frame.
+--- Whether the suggested edits are expanded, keyed by the indices of their
+--- comment and of the edit, like `1:2`. Without a key, the edits still to
+--- apply are expanded, and the others collapsed.
+---@field expanded_edits table<string, boolean?>
+--- The files whose suggested edits are collapsed, keyed by the index of
+--- their comment and the file's path, like `1:f.txt`.
+---@field collapsed_files table<string, true?>
 
 --- The number of agents' colors, which participants cycle through in the
 --- order they joined the thread.
@@ -32,13 +59,35 @@ local author_colors = 4
 
 --- The border of a thread's rows, which is as wide as the float's
 --- 'statuscolumn'.
-local border = "▎  "
+local border = "▎ "
 
 M.border = border
 
+--- The border on the right of the rows of messages, mirroring the one on
+--- their left.
+local right_border = " 🮇"
+
+--- Returns the border on the right of a row, if it's a message's, with its
+--- left border's group.
+---@param row nvim_threads.Row
+---@return nvim_threads.Chunk?
+M.right_border = function(row)
+  if row.kind == "header" or row.kind == "separator" then return end
+  local left = row.prefix[1]
+  return { right_border, left and left[2] }
+end
+
+--- Returns whether a row is drawn on the threads' background, which only
+--- the title and the composer are. The other rows are on the window's.
+---@param row nvim_threads.Row
+---@return boolean
+M.is_shaded = function(row)
+  return row.kind == "header" or row.kind == "composer"
+end
+
 --- The icon of a thread waiting on me, from Nerd Fonts. It's drawn two cells
---- wide, which is one more than Neovim counts, so the space after it is
---- one cell narrower than after the spinner's frames.
+--- wide, which is one more than Neovim counts, so it covers the space after
+--- it, which follows the spinner's frames.
 local waiting_on_me_icon = "\u{f075}"
 
 M.waiting_on_me_icon = waiting_on_me_icon
@@ -69,8 +118,9 @@ M.set_highlights = function()
     ThreadsWaitingOnMe = "DiagnosticInfo",
     ThreadsOutdated = "DiagnosticWarn",
     ThreadsError = "DiagnosticError",
-    ThreadsSuggestion = "Added",
-    ThreadsAuthorMe = "Special",
+    ThreadsMention = "Special",
+    ThreadsSeparator = "WinSeparator",
+    ThreadsAuthorMe = "Directory",
     ThreadsAuthor1 = "DiagnosticHint",
     ThreadsAuthor2 = "DiagnosticOk",
     ThreadsAuthor3 = "Constant",
@@ -80,6 +130,17 @@ M.set_highlights = function()
   for name, link in pairs(links) do
     vim.api.nvim_set_hl(0, name, { link = link, default = true })
   end
+  -- The rows naming the files of suggested edits take the text's color.
+  vim.api.nvim_set_hl(0, "ThreadsSuggestion", { bold = true, default = true })
+end
+
+--- Returns the name of a participant's own highlight group, like
+--- `ThreadsAuthorClaude` for `claude`.
+---@param name string
+---@return string
+M.author_group = function(name)
+  local pascal = name:gsub("^%l", string.upper):gsub("[^%w]", "")
+  return "ThreadsAuthor" .. pascal
 end
 
 --- Returns the highlight group of an author's name and border.
@@ -88,6 +149,8 @@ end
 ---@return string
 local author_hl = function(thread, author)
   if author == "me" then return "ThreadsAuthorMe" end
+  local own = M.author_group(author)
+  if vim.fn.hlexists(own) == 1 then return own end
   local index = 1
   for i, name in ipairs(thread.participants) do
     if name == author then index = i end
@@ -106,14 +169,79 @@ local ago = function(time)
   return ("%dd"):format(math.floor(seconds / 86400))
 end
 
---- Returns the treesitter highlights of a markdown text, including those of
---- its inline elements and code blocks, by 1-based line.
+--- Returns the number of seconds until the duration since a Unix time, as
+--- `ago()` shows it, changes.
+---@param time integer
+---@return integer
+M.age_changes_in = function(time)
+  local seconds = os.time() - time
+  if seconds < 60 then return 60 - seconds end
+  if seconds < 3600 then return 60 - seconds % 60 end
+  if seconds < 86400 then return 3600 - seconds % 3600 end
+  return 86400 - seconds % 86400
+end
+
+---@type fun(text: string, lang: string): table<integer, [integer, integer, string][]>, nvim_threads.HiddenText[]
+local parse
+
+--- Returns the treesitter highlights of a text in a language, including
+--- those of the languages injected in it, by 1-based line.
 ---@param text string
+---@param lang string
 ---@return table<integer, [integer, integer, string][]>
-local syntax = function(text)
-  local syntax_by_line = {}
-  local ok, parser = pcall(vim.treesitter.get_string_parser, text, "markdown")
-  if not ok or not parser then return syntax_by_line end
+M.syntax = function(text, lang) return (parse(text, lang)) end
+
+--- The types of the Markdown nodes whose hidden parts are revealed
+--- together, when the cursor is in one of them.
+local elements = {
+  code_span = true,
+  emphasis = true,
+  strong_emphasis = true,
+  strikethrough = true,
+  inline_link = true,
+  full_reference_link = true,
+  collapsed_reference_link = true,
+  shortcut_link = true,
+  image = true,
+  fenced_code_block = true,
+}
+
+--- Returns the 0-based range of the element a hidden node is part of: its
+--- closest ancestor that's an element, or the node itself.
+---@param node TSNode
+---@return integer start_row
+---@return integer start_col
+---@return integer end_row
+---@return integer end_col
+local element_range = function(node)
+  local current = node:parent()
+  while current do
+    if elements[current:type()] then return current:range() end
+    current = current:parent()
+  end
+  return node:range()
+end
+
+---@class nvim_threads.HiddenText
+---@field line integer The 1-based line.
+---@field from integer The 0-based byte column.
+---@field to integer The exclusive end column.
+---@field text string What's shown instead.
+---@field element string The range of its element, as a key.
+---@field range [integer, integer, integer, integer] The element's 0-based range.
+
+--- Returns the treesitter highlights of a text in a language by 1-based
+--- line, and the text its queries conceal.
+---@param text string
+---@param lang string
+---@return table<integer, [integer, integer, string][]> highlights
+---@return nvim_threads.HiddenText[] hidden
+parse = function(text, lang)
+  local syntax_by_line, hidden = {}, {}
+  -- A closing code fence is only one when a newline follows it.
+  text = text .. "\n"
+  local ok, parser = pcall(vim.treesitter.get_string_parser, text, lang)
+  if not ok or not parser then return syntax_by_line, hidden end
   parser:parse(true)
 
   local seq = 0
@@ -125,6 +253,27 @@ local syntax = function(text)
     if not query then return end
     for id, node, metadata in query:iter_captures(tree:root(), text) do
       local name = query.captures[id]
+      local replacement = metadata.conceal
+        or (metadata[id] and metadata[id].conceal)
+      if replacement then
+        local range = vim.treesitter.get_range(node, text, metadata[id])
+        local start_row, start_col, _, end_row, end_col = unpack(range)
+        local element = { element_range(node) }
+        for row = start_row, end_row do
+          local from = row == start_row and start_col or 0
+          local to = row == end_row and end_col or math.huge
+          if to > from then
+            hidden[#hidden + 1] = {
+              line = row + 1,
+              from = from,
+              to = to,
+              text = row == start_row and replacement or "",
+              element = table.concat(element, ":"),
+              range = element,
+            }
+          end
+        end
+      end
       if
         name
         and not vim.startswith(name, "_")
@@ -163,7 +312,7 @@ local syntax = function(text)
       :map(function(capture) return { capture[1], capture[2], capture[3] } end)
       :totable()
   end
-  return syntax_by_line
+  return syntax_by_line, hidden
 end
 
 --- Returns the highlight group of each byte of a line, where a later capture
@@ -238,6 +387,23 @@ M.wrap = function(text, width)
   return ranges
 end
 
+--- Returns the 0-based byte ranges of the mentions of participants in a
+--- line, like `@claude`, the end being exclusive.
+---@param line string
+---@return [integer, integer][]
+M.mentions = function(line)
+  local ranges = {}
+  for start, stop in line:gmatch("()@[%w_.-]+()") do
+    local from = start --[[@as integer]]
+    local to = stop --[[@as integer]]
+    local before = from > 1 and line:sub(from - 1, from - 1) or ""
+    if not before:match("[%w_.-]") then
+      ranges[#ranges + 1] = { from - 1, to - 1 }
+    end
+  end
+  return ranges
+end
+
 --- Returns the rows of a markdown text wrapped within a width.
 ---@param text string
 ---@param width integer
@@ -249,16 +415,210 @@ end
 local text_rows = function(text, width, prefix, kind, comment, hl)
   text = text:gsub("\t", "    ")
   local rows = {}
-  local captures = syntax(text)
+  local captures, hidden = parse(text, "markdown")
+  ---@type table<string, nvim_threads.Element?>
+  local elements_by_key = {}
+  ---@param key string
+  ---@param range [integer, integer, integer, integer]
+  ---@return nvim_threads.Element
+  local element_of = function(key, range)
+    local element = elements_by_key[key]
+    if element then return element end
+    element = { parts = {}, range = range }
+    elements_by_key[key] = element
+    return element
+  end
   for line_index, line in ipairs(vim.split(text, "\n", { plain = true })) do
     local groups = groups_of(line, captures[line_index])
+    for _, mention in ipairs(M.mentions(line)) do
+      for col = mention[1] + 1, mention[2] do
+        groups[col] = "ThreadsMention"
+      end
+    end
     for _, range in ipairs(M.wrap(line, width)) do
-      rows[#rows + 1] = {
+      ---@type nvim_threads.Row
+      local row = {
         kind = kind,
         prefix = prefix,
         chunks = chunks_of(line, groups, range[1], range[2], hl),
         comment = comment,
       }
+      rows[#rows + 1] = row
+
+      for _, part in ipairs(hidden) do
+        if
+          part.line == line_index
+          and part.to > range[1]
+          and part.from < range[2]
+        then
+          row.conceals = row.conceals or {}
+          table.insert(row.conceals, {
+            from = math.max(part.from, range[1]) - range[1],
+            to = math.min(part.to, range[2]) - range[1],
+            text = part.from >= range[1] and part.text or "",
+            element = element_of(part.element, part.range),
+          })
+        end
+      end
+      -- The row's part of each element covering it.
+      for _, element in pairs(elements_by_key) do
+        local first_row, first_col, last_row, last_col = unpack(element.range)
+        local row_index = line_index - 1
+        if row_index >= first_row and row_index <= last_row then
+          local from = row_index == first_row and first_col or 0
+          local to = row_index == last_row and last_col or #line
+          from, to = math.max(from, range[1]), math.min(to, range[2])
+          if to >= from and (to > from or range[1] == range[2]) then
+            table.insert(
+              element.parts,
+              { row = row, from = from - range[1], to = to - range[1] }
+            )
+            row.elements = row.elements or {}
+            table.insert(row.elements, element)
+          end
+        end
+      end
+      if row.conceals then
+        table.sort(row.conceals, function(a, b) return a.from < b.from end)
+      end
+    end
+  end
+  return rows
+end
+
+--- The diffs of nvim-hunks, when it's installed.
+local ok_view, view = pcall(require, "nvim_hunks.view")
+
+--- The rows of the diffs drawn so far, by edit, with the width they were
+--- laid out in.
+---@type table<nvim_threads.EditDiff, { width: integer, rows: nvim_hunks.view.Row[] }?>
+local diff_cache = setmetatable({}, { __mode = "k" })
+
+--- Returns the rows of an edit's diff laid out within a width.
+---@param edit nvim_threads.EditDiff
+---@param path string
+---@param width integer
+---@return nvim_hunks.view.Row[]
+local diff_view_rows = function(edit, path, width)
+  if not ok_view then return {} end
+  local cached = diff_cache[edit]
+  if cached and cached.width == width then return cached.rows end
+  local rows = view.rows(edit.hunks, {
+    path = path,
+    old_lines = edit.old_lines,
+    new_lines = edit.new_lines,
+    width = width,
+  })
+  diff_cache[edit] = { width = width, rows = rows }
+  return rows
+end
+
+--- Returns the key of a comment's edit in a view's `expanded_edits`.
+---@param comment integer
+---@param edit integer
+---@return string
+M.edit_key = function(comment, edit) return comment .. ":" .. edit end
+
+--- Returns the key of a comment's file in a view's `collapsed_files`.
+---@param comment integer
+---@param path string
+---@return string
+M.file_key = function(comment, path) return comment .. ":" .. path end
+
+--- Returns the rows of the edits a comment suggests to a file: a row naming
+--- the file, then each edit's diff, wrapped within a width, with the lines'
+--- numbers and the number of unchanged lines between its hunks. The applied
+--- and rejected edits are a row each, unless they're expanded.
+---@param diff nvim_threads.FileDiff
+---@param view nvim_threads.View
+---@param width integer
+---@param prefix nvim_threads.Chunk[]
+---@param comment integer
+---@return nvim_threads.Row[]
+local diff_rows = function(diff, view, width, prefix, comment)
+  ---@type table<string, integer>
+  local counts = { applied = 0, rejected = 0 }
+  for _, edit in ipairs(diff.edits) do
+    if edit.state == "applied" or edit.state == "rejected" then
+      counts[edit.state] = (counts[edit.state] or 0) + 1
+    end
+  end
+  local collapsed = view.collapsed_files[M.file_key(comment, diff.path)] == true
+  ---@type nvim_threads.Chunk[]
+  local header = {
+    { collapsed and "▸ " or "▾ ", "ThreadsChevron" },
+    { ("✎ Suggested edits to %s"):format(diff.path), "ThreadsSuggestion" },
+  }
+  for _, state in ipairs({ "applied", "rejected" }) do
+    local count = counts[state] or 0
+    if count > 0 then
+      local text = count == #diff.edits and state
+        or ("%d %s"):format(count, state)
+      header[#header + 1] = { " · " .. text, "ThreadsMeta" }
+    end
+  end
+  ---@type nvim_threads.Row[]
+  local rows = {
+    {
+      kind = "suggestion",
+      prefix = prefix,
+      chunks = header,
+      comment = comment,
+      path = diff.path,
+    },
+  }
+  if collapsed then return rows end
+
+  ---@param chunks nvim_threads.Chunk[]
+  ---@param edit integer
+  ---@param expanded boolean
+  ---@param fill? string
+  ---@param kind? nvim_threads.RowKind
+  local add = function(chunks, edit, expanded, fill, kind)
+    rows[#rows + 1] = {
+      kind = kind or "diff",
+      prefix = prefix,
+      chunks = chunks,
+      comment = comment,
+      path = diff.path,
+      edit = edit,
+      expanded = expanded,
+      fill = fill,
+    }
+  end
+
+  for _, edit in ipairs(diff.edits) do
+    local resolved = edit.state == "applied" or edit.state == "rejected"
+    local expanded = view.expanded_edits[M.edit_key(comment, edit.index)]
+    if expanded == nil then expanded = not resolved end
+    do
+      ---@type table<string, string>
+      local texts = {
+        pending = "Edit",
+        applied = "Applied edit",
+        rejected = "Rejected edit",
+        outdated = "Outdated edit",
+      }
+      local text = texts[edit.state] or "Edit"
+      if edit.line then text = text .. (" at line %d"):format(edit.line) end
+      if edit.state == "outdated" then
+        text = text .. ", whose text isn't in the file anymore"
+      end
+      add({
+        { expanded and "▾ " or "▸ ", "ThreadsChevron" },
+        { text, "ThreadsMeta" },
+      }, edit.index, expanded, nil, "edit")
+    end
+
+    if expanded then
+      for _, row in ipairs(diff_view_rows(edit, diff.path, width)) do
+        add(
+          vim.list_extend(vim.list_extend({}, row.gutter), row.chunks),
+          edit.index,
+          expanded,
+          row.fill
+        )
+      end
     end
   end
   return rows
@@ -313,8 +673,8 @@ local header = function(thread, view)
   return {
     kind = "header",
     prefix = {
-      waiting and { view.frame .. "  ", "ThreadsWaitingOnAgent" }
-        or { waiting_on_me_icon .. "  ", "ThreadsWaitingOnMe" },
+      waiting and { view.frame .. " ", "ThreadsWaitingOnAgent" }
+        or { waiting_on_me_icon .. " ", "ThreadsWaitingOnMe" },
     },
     chunks = chunks,
   }
@@ -327,24 +687,43 @@ end
 ---@param thread nvim_threads.Thread
 ---@param view nvim_threads.View
 ---@param width integer The width of the window's text area.
+---@param diffs fun(comment: integer): nvim_threads.FileDiff[] Returns the diffs of the edits a comment suggests.
 ---@return nvim_threads.Row[]
-M.rows = function(thread, view, width)
+M.rows = function(thread, view, width, diffs)
   local rows = { header(thread, view) }
   if not view.expanded then return rows end
 
-  local body_width = width - vim.api.nvim_strwidth(border)
+  local body_width = width
+    - vim.api.nvim_strwidth(border)
+    - vim.api.nvim_strwidth(right_border)
+
+  -- A thin line separates each message from the previous one, from a cell
+  -- after the edge of the window to a cell before the other.
+  local separate = function()
+    if #rows == 1 then return end
+    local line = ("─"):rep(math.max(width - 2, 0))
+    local prefix_width = vim.api.nvim_strwidth(border)
+    rows[#rows + 1] = {
+      kind = "separator",
+      prefix = {
+        {
+          " " .. vim.fn.strcharpart(line, 0, prefix_width - 1),
+          "ThreadsSeparator",
+        },
+      },
+      chunks = {
+        { vim.fn.strcharpart(line, prefix_width - 1), "ThreadsSeparator" },
+        { " " },
+      },
+    }
+  end
 
   ---@param author string
   ---@param time? integer
   ---@param comment? integer
   local add_author = function(author, time, comment)
+    separate()
     local hl = author_hl(thread, author)
-    rows[#rows + 1] = {
-      kind = "blank",
-      prefix = { { border, hl } },
-      chunks = {},
-      comment = comment,
-    }
     rows[#rows + 1] = {
       kind = "author",
       prefix = { { border, hl } },
@@ -374,31 +753,11 @@ M.rows = function(thread, view, width)
       )
     )
     if comment.edits and #comment.edits > 0 then
-      local paths, seen = {}, {}
-      for _, edit in ipairs(comment.edits) do
-        if not seen[edit.path] then
-          seen[edit.path] = true
-          paths[#paths + 1] = edit.path
-        end
+      for _, diff in ipairs(diffs(index)) do
+        rows[#rows + 1] =
+          { kind = "blank", prefix = prefix, chunks = {}, comment = index }
+        vim.list_extend(rows, diff_rows(diff, view, body_width, prefix, index))
       end
-      local applied = comment.applied ~= nil
-      for _, path in ipairs(paths) do
-        if not (comment.applied and comment.applied[path]) then
-          applied = false
-        end
-      end
-      rows[#rows + 1] = {
-        kind = "suggestion",
-        prefix = prefix,
-        chunks = {
-          {
-            ("✎ Suggested edits to %s"):format(table.concat(paths, ", ")),
-            "ThreadsSuggestion",
-          },
-          applied and { " · applied", "ThreadsMeta" } or nil,
-        },
-        comment = index,
-      }
     end
   end
 
@@ -414,11 +773,7 @@ M.rows = function(thread, view, width)
   end
 
   if view.draft then
-    rows[#rows + 1] = {
-      kind = "blank",
-      prefix = { { border, "ThreadsAuthorMe" } },
-      chunks = {},
-    }
+    separate()
     local prefix = { { border, "ThreadsAuthorMe" } }
     local is_empty = #view.draft == 1 and view.draft[1] == ""
     for _, line in ipairs(view.draft) do
@@ -463,29 +818,73 @@ M.on_background = function(group)
   return name
 end
 
---- Returns the chunks of a row drawn as a virtual line over the threads'
---- background, padded to the width of the text area.
+--- Returns a row's chunks without the text it hides, which is replaced by
+--- what's shown instead.
+---@param row nvim_threads.Row
+---@return nvim_threads.Chunk[]
+local concealed_chunks = function(row)
+  if not row.conceals then return row.chunks end
+  local result, col = {}, 0
+  for _, chunk in ipairs(row.chunks) do
+    local text, hl = chunk[1], chunk[2]
+    local start, stop = col, col + #text
+    local kept = start
+    for _, conceal in ipairs(row.conceals) do
+      if conceal.to > start and conceal.from < stop then
+        local cut_from = math.max(conceal.from, start)
+        if cut_from > kept then
+          result[#result + 1] =
+            { text:sub(kept - start + 1, cut_from - start), hl }
+        end
+        if conceal.from >= start and conceal.text ~= "" then
+          result[#result + 1] = { conceal.text, hl }
+        end
+        kept = math.max(kept, math.min(conceal.to, stop))
+      end
+    end
+    if kept < stop then
+      result[#result + 1] = { text:sub(kept - start + 1), hl }
+    end
+    col = stop
+  end
+  return result
+end
+
+--- Returns the chunks of a row drawn as a virtual line, padded to the width
+--- of the text area and followed by its right border, if any. The row's
+--- hidden text is hidden, and the title and the composer are on the
+--- threads' background.
 ---@param row nvim_threads.Row
 ---@param width integer
 ---@return nvim_threads.Chunk[]
 M.virt_line = function(row, width)
-  local chunks = vim.list_extend(vim.deepcopy(row.prefix), row.chunks)
+  local chunks = vim.list_extend(
+    vim.deepcopy(row.prefix),
+    vim.deepcopy(concealed_chunks(row))
+  )
   if row.placeholder then
     chunks[#chunks + 1] = { row.placeholder, "ThreadsPlaceholder" }
   end
+  local right = M.right_border(row)
 
   local used = 0
   for _, chunk in ipairs(chunks) do
     used = used + vim.api.nvim_strwidth(chunk[1])
-    local hl = chunk[2]
-    if type(hl) == "table" then
-      chunk[2] = vim.list_extend({ "ThreadsNormal" }, hl)
-    else
-      chunk[2] = hl and { "ThreadsNormal", hl } or "ThreadsNormal"
-    end
   end
-  if used < width then
-    chunks[#chunks + 1] = { (" "):rep(width - used), "ThreadsNormal" }
+  local room = width - (right and vim.api.nvim_strwidth(right[1]) or 0)
+  if used < room then
+    chunks[#chunks + 1] = { (" "):rep(room - used), row.fill }
+  end
+  if right then chunks[#chunks + 1] = vim.deepcopy(right) end
+
+  if M.is_shaded(row) then
+    for _, chunk in ipairs(chunks) do
+      local hl = chunk[2]
+      chunk[2] = vim.list_extend(
+        { "ThreadsNormal" },
+        type(hl) == "table" and hl or { hl }
+      )
+    end
   end
   return chunks
 end

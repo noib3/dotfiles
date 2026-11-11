@@ -312,3 +312,55 @@ test(
     h.eq(opened, "https://github.com/o/r/pull/7")
   end
 )
+
+test("a pull request's editor offers the actions on its title and description", function()
+  os.remove(gh_args)
+  local _, bufnr = github_repo({ "one", "two" })
+  ---@type table<string, nvim_jj.ActionContext?>
+  local contexts = {}
+  for title, target in pairs({ Title = "pr_title", Body = "pr_description" }) do
+    nvim_jj.register_action({
+      title = title,
+      available = function(ctx) return ctx.target == target end,
+      run = function(ctx) contexts[title] = ctx end,
+    })
+  end
+  local _, wait = start_pull_request(bufnr, "two")
+  local editor = vim.api.nvim_get_current_buf()
+  ---@type vim.lsp.Client?
+  local client
+  h.wait(function()
+    client = vim.lsp.get_clients({ bufnr = editor, name = "nvim-jj" })[1]
+    return client ~= nil
+  end, "the editor's language server attaches")
+  ---@param line integer
+  ---@return string[]
+  local titles_on = function(line)
+    local response = assert(client):request_sync("textDocument/codeAction", {
+      textDocument = { uri = vim.uri.from_buf(editor) },
+      range = {
+        start = { line = line - 1, character = 0 },
+        ["end"] = { line = line - 1, character = 0 },
+      },
+      context = { diagnostics = {} },
+    }, 2000, editor)
+    return vim.tbl_map(function(action) return action.title end, response and response.result or {})
+  end
+  h.eq(titles_on(1), { "Title" })
+  h.eq(titles_on(2), { "Body" })
+
+  nvim_jj.run_action(editor, 1, "Title")
+  local title = assert(contexts.Title)
+  h.eq(title.diff[1], "--from")
+  title.replace("A written title")
+  nvim_jj.run_action(editor, 2, "Body")
+  assert(contexts.Body).replace("A written\ndescription")
+  h.eq(
+    vim.api.nvim_buf_get_lines(editor, 0, -1, false),
+    { "A written title", "", "A written", "description" }
+  )
+  vim.cmd("quit!")
+  wait()
+  nvim_jj.unregister_action("Title")
+  nvim_jj.unregister_action("Body")
+end)

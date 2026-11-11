@@ -56,7 +56,7 @@ test("a remark is saved under the working-copy change", function()
   local lines = h.virt_lines(bufnr)[3]
   h.eq(
     lines,
-    { "  ▸ check this (1 message)" },
+    { " ▸ check this (1 message)" },
     "the collapsed thread follows the selection"
   )
   h.wait(
@@ -87,7 +87,7 @@ test("a mentioned participant's reply streams into the thread", function()
   h.eq(thread.title, "Why THREE")
   h.eq(threads.status(thread), "waiting on me")
 
-  h.eq(h.virt_lines(bufnr)[4], { "  ▸ Why THREE (2 messages)" })
+  h.eq(h.virt_lines(bufnr)[4], { " ▸ Why THREE (2 messages)" })
 
   local request = bot_requests[#bot_requests]
   h.eq(request.path, "f.txt")
@@ -177,8 +177,8 @@ test("the cursor keeps its screen column through a thread's float", function()
 
   vim.api.nvim_win_set_cursor(0, { 3, 4 })
   h.eq(threads.step(1, "j"), true)
-  -- The float's text starts after its three cells of borders.
-  h.eq(curswant(), 1)
+  -- The float's text starts after its two cells of borders.
+  h.eq(curswant(), 2)
   h.eq(threads.step(-1, "k"), true)
   h.eq(vim.api.nvim_get_current_buf(), bufnr)
   h.eq(vim.api.nvim_win_get_cursor(0), { 3, 4 })
@@ -194,7 +194,7 @@ test("the cursor keeps its screen column through a thread's float", function()
   h.eq(threads.step(1, "j"), true)
   vim.cmd("normal! l")
   h.eq(threads.step(-1, "k"), true)
-  h.eq(vim.api.nvim_win_get_cursor(0), { 3, 4 })
+  h.eq(vim.api.nvim_win_get_cursor(0), { 3, 3 })
 end)
 
 test("expanding and collapsing a thread keeps the cursor's column", function()
@@ -222,7 +222,7 @@ test(
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     h.eq(threads.step(-1, "k"), true)
     h.eq(vim.api.nvim_get_current_buf(), bufnr)
-    h.eq(h.virt_lines(bufnr)[4], { "  ▸ Why THREE (4 messages, draft)" })
+    h.eq(h.virt_lines(bufnr)[4], { " ▸ Why THREE (4 messages, draft)" })
 
     -- The collapsed thread's float only has its header, which the cursor
     -- leaves with a single step.
@@ -241,7 +241,7 @@ test(
     h.type({ "" })
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     h.eq(threads.step(-1, "k"), true)
-    h.eq(h.virt_lines(bufnr)[4], { "  ▸ Why THREE (4 messages)" })
+    h.eq(h.virt_lines(bufnr)[4], { " ▸ Why THREE (4 messages)" })
   end
 )
 
@@ -298,8 +298,8 @@ test("anchors follow edits made while the file was closed", function()
 
   local reopened = h.open(root, "f.txt")
   local virt_lines = h.virt_lines(reopened)
-  h.eq(virt_lines[4], { "  ▸ check this (1 message)" })
-  h.eq(virt_lines[5], { "  ▸ Why THREE (4 messages)" })
+  h.eq(virt_lines[4], { " ▸ check this (1 message)" })
+  h.eq(virt_lines[5], { " ▸ Why THREE (4 messages)" })
 end)
 
 test("threads move with the lines moved out of the working copy", function()
@@ -373,10 +373,21 @@ test("suggested edits are reviewed and applied", function()
   ---@type integer?
   local row
   for index, line in ipairs(vim.api.nvim_buf_get_lines(float_buf, 0, -1, false)) do
-    if line == "✎ Suggested edits to f.txt" then row = index end
+    if line == "▾ ✎ Suggested edits to f.txt" then row = index end
   end
-  vim.api.nvim_win_set_cursor(0, { assert(row), 0 })
-  h.eq(threads.activate(), true)
+  local titles = vim.tbl_map(
+    function(command) return command.title end,
+    threads.code_actions(float_buf, assert(row))
+  )
+  h.eq(
+    vim.tbl_contains(
+      titles,
+      "Review the edits in buffers that apply them when written"
+    ),
+    true,
+    vim.inspect(titles)
+  )
+  threads.review(thread, 2)
 
   h.eq(suggested ~= nil, true, "the suggestion's buffer was announced")
   ---@cast suggested -nil
@@ -395,7 +406,54 @@ test("suggested edits are reviewed and applied", function()
     h.text({ "zero", "one", "two", "three", "four", "five" })
   )
   h.wait(function()
-    local applied = assert(thread.comments[2]).applied
-    return applied ~= nil and applied["f.txt"] == true
+    local edits = assert(thread.comments[2]).edits or {}
+    return edits[1] ~= nil and edits[1].resolution == "applied"
   end, "the suggestion is marked as applied")
+end)
+
+test("registered actions are code actions in a thread's float", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  ---@type nvim_threads.ActionContext?
+  local got
+  threads.register_action({
+    title = "Everywhere",
+    run = function(ctx) got = ctx end,
+  })
+  threads.register_action({
+    title = "Nowhere",
+    available = function() return false end,
+    run = function() end,
+  })
+  local lines = vim.tbl_keys(h.virt_lines(bufnr))
+  table.sort(lines)
+  vim.api.nvim_win_set_cursor(0, { assert(lines[1]), 0 })
+  h.eq(threads.step(1, "j"), true)
+  local float_buf = vim.api.nvim_get_current_buf()
+  h.eq(vim.bo[float_buf].filetype, "nvim-threads")
+
+  local client =
+    assert(vim.lsp.get_clients({ bufnr = float_buf, name = "nvim-threads" })[1])
+  local response = client:request_sync("textDocument/codeAction", {
+    textDocument = { uri = vim.uri.from_buf(float_buf) },
+    range = {
+      start = { line = 0, character = 0 },
+      ["end"] = { line = 0, character = 0 },
+    },
+    context = { diagnostics = {} },
+  }, 2000, float_buf)
+  local code_actions = assert(response and response.result)
+  h.eq(
+    vim.tbl_map(function(action) return action.title end, code_actions),
+    { "Everywhere" }
+  )
+
+  client:exec_cmd(assert(code_actions[1].command), { bufnr = float_buf })
+  h.wait(function() return got ~= nil end, "the action runs")
+  local ctx = assert(got)
+  h.eq(ctx.root, root)
+  h.eq(ctx.path, "f.txt")
+  h.eq(type(ctx.thread.id), "string")
+  h.leave()
+  threads.unregister_action("Everywhere")
+  threads.unregister_action("Nowhere")
 end)

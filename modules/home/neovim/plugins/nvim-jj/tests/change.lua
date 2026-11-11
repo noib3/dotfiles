@@ -133,7 +133,7 @@ test("the change is viewed instead of the log until it's quit", function()
   local view = open(bufnr, "work", "here")
   h.eq(lines_of(view), {
     "work",
-    "4 files changed: 1 added, 1 deleted, 1 modified, 1 renamed",
+    "4 files changed: 1 added, 1 deleted, 1 modified, 1 renamed,",
     "gone.txt",
     "long.txt",
     "new.txt",
@@ -204,8 +204,8 @@ test(
       local details = assert(mark[4])
       return details.hl_group or ""
     end, marks)
-    h.eq(vim.list_contains(groups, "JjDiffAddText"), true, vim.inspect(groups))
-    h.eq(vim.list_contains(groups, "JjDiffAdd"), true, vim.inspect(groups))
+    h.eq(vim.list_contains(groups, "HunksAddText"), true, vim.inspect(groups))
+    h.eq(vim.list_contains(groups, "HunksAdd"), true, vim.inspect(groups))
 
     -- The indent before the gutter keeps the text's background.
     local inline = vim.iter(marks):find(
@@ -310,7 +310,7 @@ test(
     h.eq(vim.list_slice(lines, 5), {
       "test <test@example.com>",
       "",
-      "4 files changed: 1 added, 1 deleted, 1 modified, 1 renamed +3 -3",
+      "4 files changed: 1 added, 1 deleted, 1 modified, 1 renamed, +3 -3",
       "D gone.txt -1",
       "M long.txt +2 -2",
       "A new.txt +1",

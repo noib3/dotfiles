@@ -172,6 +172,27 @@ M.set_highlights = function(colors)
     default = true,
     fg = color_of("LineNr", "fg"),
   })
+
+  -- Like GitHub's, the diffs' context lines' numbers are on a background a
+  -- shade lighter than the text's, and the rows between their hunks on a
+  -- tint of the information color.
+  local foreground = color_of("Normal", "fg")
+    or (vim.o.background == "dark" and 0xffffff or 0x000000)
+  local info = color_of("DiagnosticInfo", "fg") or foreground
+  vim.api.nvim_set_hl(0, "HunksContextNr", {
+    bg = blend(foreground, background, 0.06),
+    default = true,
+    fg = color_of("LineNr", "fg"),
+  })
+  vim.api.nvim_set_hl(0, "HunksGap", {
+    bg = blend(info, background, 0.12),
+    default = true,
+    fg = color_of("Comment", "fg"),
+  })
+  vim.api.nvim_set_hl(0, "HunksGapNr", {
+    bg = blend(info, background, 0.25),
+    default = true,
+  })
 end
 
 ---@class nvim_hunks.Layout

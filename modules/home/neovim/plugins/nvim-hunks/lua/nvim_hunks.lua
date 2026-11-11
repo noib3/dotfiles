@@ -458,8 +458,11 @@ end
 ---@param bufnr? integer
 ---@return integer
 local resolve_buf = function(bufnr)
-  if not bufnr or bufnr == 0 then return vim.api.nvim_get_current_buf() end
-  return bufnr
+  if bufnr and bufnr ~= 0 then return bufnr end
+  -- A float of deleted lines stands for the buffer whose lines it displays.
+  local shown = float.get(vim.api.nvim_get_current_win())
+  if shown then return shown.buf end
+  return vim.api.nvim_get_current_buf()
 end
 
 --- Shows the diff of a buffer if it's hidden, or hides it if it's shown.

@@ -28,6 +28,7 @@ local anchor_namespace = vim.api.nvim_create_namespace("nvim-threads-anchors")
 local highlight_namespace =
   vim.api.nvim_create_namespace("nvim-threads-highlights")
 local float_namespace = vim.api.nvim_create_namespace("nvim-threads-float")
+local conceal_namespace = vim.api.nvim_create_namespace("nvim-threads-conceal")
 
 ---@class nvim_threads.Request
 ---@field thread nvim_threads.Thread A copy of the thread, whose last comment is the one to reply to.
@@ -35,6 +36,9 @@ local float_namespace = vim.api.nvim_create_namespace("nvim-threads-float")
 ---@field path string The thread's file, relative to the root.
 ---@field context string The thread's selection and its surroundings.
 ---@field prompt string The context, the earlier comments and the last one.
+--- How the last comment mentions the participant, like `claude` or one of
+--- its own mentions like `claude.docs`, if it does.
+---@field mention? string
 
 ---@class nvim_threads.Result
 ---@field body? string The reply, if it's not the text streamed in.
@@ -54,6 +58,28 @@ local float_namespace = vim.api.nvim_create_namespace("nvim-threads-float")
 --- Starts replying to a request, and returns a function cancelling the reply
 --- if it can be.
 ---@field send fun(request: nvim_threads.Request, reply: nvim_threads.Reply): (fun()?)
+--- Returns the participant's own mentions in a buffer's threads, which are
+--- its name, a dot and something telling them apart, like `claude.docs`.
+---@field mentions? fun(bufnr: integer): nvim_threads.Mention[]
+--- The default color of the participant's own highlight group, like
+--- `ThreadsAuthorClaude` for `claude`, as a `#rrggbb` hex string.
+---@field color? string
+
+---@class nvim_threads.ActionContext
+---@field thread nvim_threads.Thread A copy of the thread.
+---@field root string The root of the thread's jj workspace.
+---@field path string The thread's file, relative to the root.
+
+---@class nvim_threads.Action
+---@field title string
+--- Whether the action is offered on a thread. Without it, it's offered on all
+--- of them.
+---@field available? fun(ctx: nvim_threads.ActionContext): boolean
+---@field run fun(ctx: nvim_threads.ActionContext)
+
+---@class nvim_threads.Mention
+---@field name string
+---@field detail? string What the completion shows next to it.
 
 ---@class nvim_threads.Config
 --- Names a thread whose first comment mentions no participants.
@@ -97,6 +123,10 @@ local config = {
 ---@type table<string, nvim_threads.Participant?>
 local participants = {}
 
+--- The actions registered with `register_action()`, by title.
+---@type table<string, nvim_threads.Action?>
+local actions = {}
+
 ---@type table<string, nvim_threads.Repo?>
 local repos = {}
 
@@ -128,6 +158,14 @@ local spinner = { frame = 1 }
 --- The timers of the pending writes, by repo directory and change ID.
 ---@type table<string, { timer: uv.uv_timer_t, repo_dir: string, change_id: string }?>
 local saves = {}
+
+--- The timer redrawing the expanded threads when the age of one of their
+--- comments changes.
+---@type uv.uv_timer_t?
+local ages_timer
+
+---@type fun()
+local schedule_ages
 
 --- The floats' buffers whose lines are being set by the plugin.
 ---@type table<integer, true?>
@@ -176,6 +214,8 @@ local view_of = function(id)
     view = {
       expanded = false,
       pending = {},
+      expanded_edits = {},
+      collapsed_files = {},
       frame = config.spinner.frames[spinner.frame] or "",
     }
     views[id] = view
@@ -319,6 +359,58 @@ local participants_of = function(bufnr)
   return names
 end
 
+--- Returns the mentions completed after `@` in a float of a buffer: each
+--- participant's name, then its own mentions.
+---@param bufnr integer
+---@return nvim_threads.Mention[]
+local completions_of = function(bufnr)
+  local items = {}
+  for _, name in ipairs(participants_of(bufnr)) do
+    items[#items + 1] = { name = name, detail = "Participant" }
+    local participant = assert(participants[name])
+    if participant.mentions then
+      local ok, own = pcall(participant.mentions, bufnr)
+      if ok and type(own) == "table" then vim.list_extend(items, own) end
+    end
+  end
+  return items
+end
+
+--- Returns the context of an action on the thread of a float's buffer.
+---@param float_buf integer
+---@return nvim_threads.ActionContext?
+local action_context = function(float_buf)
+  local win = vim.fn.win_findbuf(float_buf)[1]
+  local shown = win and float.get(win)
+  local location = shown and locations[shown.thread_id]
+  if not location then return end
+  ---@type nvim_threads.ActionContext
+  return {
+    thread = vim.deepcopy(location.thread),
+    root = location.repo.root,
+    path = location.path,
+  }
+end
+
+--- The commands of the code actions in the threads' floats.
+local commands = {
+  apply_edits = "nvim-threads.applyEdits",
+  reject_edits = "nvim-threads.rejectEdits",
+  review_edits = "nvim-threads.reviewEdits",
+  run_action = "nvim-threads.runAction",
+}
+
+--- Returns the diffs of the edits a thread's comment suggests.
+---@param thread nvim_threads.Thread
+---@param index integer The comment's index.
+---@return nvim_threads.FileDiff[]
+local diffs_of = function(thread, index)
+  local location = locations[thread.id]
+  local comment = thread.comments[index]
+  if not location or not comment then return {} end
+  return suggestion.diffs(location.repo.root, comment)
+end
+
 --- Returns the float's buffer's rows above the composer, and those of the
 --- composer.
 ---@param rows nvim_threads.Row[]
@@ -341,6 +433,50 @@ local update_modifiable = function(win)
   local buf = vim.api.nvim_win_get_buf(win)
   local line = vim.api.nvim_win_get_cursor(win)[1]
   vim.bo[buf].modifiable = line > current.history
+end
+
+--- Hides the text a float's rows hide, except in the Markdown element under
+--- the float's cursor.
+---@param win integer
+local conceal = function(win)
+  local current = float.get(win)
+  if not current or not vim.api.nvim_win_is_valid(win) then return end
+  local buf = vim.api.nvim_win_get_buf(win)
+  local history = split_rows(drawn_rows[current.thread_id] or {})
+  local line, col = unpack(vim.api.nvim_win_get_cursor(win))
+  local cursor_row = history[line]
+
+  ---@type nvim_threads.Element?
+  local revealed
+  for _, element in ipairs(cursor_row and cursor_row.elements or {}) do
+    for _, part in ipairs(element.parts) do
+      if
+        part.row == cursor_row
+        and col >= part.from
+        and col <= math.max(part.from, part.to - 1)
+      then
+        revealed = element
+      end
+    end
+  end
+
+  vim.api.nvim_buf_clear_namespace(buf, conceal_namespace, 0, -1)
+  for index, row in ipairs(history) do
+    for _, hidden in ipairs(row.conceals or {}) do
+      if hidden.element ~= revealed then
+        vim.api.nvim_buf_set_extmark(
+          buf,
+          conceal_namespace,
+          index - 1,
+          hidden.from,
+          {
+            end_col = hidden.to,
+            conceal = hidden.text,
+          }
+        )
+      end
+    end
+  end
 end
 
 --- Sets the lines of a float's buffer to a thread's rows, and highlights
@@ -375,9 +511,49 @@ local fill = function(win, rows, full)
   current.history = #history
 
   vim.api.nvim_buf_clear_namespace(buf, float_namespace, 0, -1)
+  local text_width = vim.api.nvim_win_get_width(win)
+    - vim.api.nvim_strwidth(render.border)
+  ---@param line integer The 1-based line.
+  ---@param right? nvim_threads.Chunk The border on the line's right.
+  ---@param shaded boolean Whether the line is on the threads' background.
+  local frame = function(line, right, shaded)
+    if shaded then
+      vim.api.nvim_buf_set_extmark(buf, float_namespace, line - 1, 0, {
+        end_row = line,
+        end_col = 0,
+        hl_group = "ThreadsNormal",
+        hl_eol = true,
+        priority = vim.hl.priorities.user - 1,
+        strict = false,
+      })
+    end
+    if right then
+      vim.api.nvim_buf_set_extmark(buf, float_namespace, line - 1, 0, {
+        virt_text = {
+          { right[1], shaded and { "ThreadsNormal", right[2] } or right[2] },
+        },
+        virt_text_win_col = text_width - vim.api.nvim_strwidth(right[1]),
+      })
+    end
+  end
+
   current.borders = {}
   for index, row in ipairs(history) do
-    current.borders[index] = row.prefix[1] or { render.border }
+    local border = row.prefix[1] or { render.border }
+    local shaded = render.is_shaded(row)
+    current.borders[index] = { border[1], border[2], shaded }
+    frame(index, render.right_border(row), shaded)
+    if row.fill then
+      vim.api.nvim_buf_set_extmark(buf, float_namespace, index - 1, 0, {
+        end_row = index,
+        end_col = 0,
+        hl_group = row.fill,
+        hl_eol = true,
+        priority = vim.hl.priorities.user,
+        -- The buffer's last line has no next row to end on.
+        strict = false,
+      })
+    end
     local col = 0
     for _, chunk in ipairs(row.chunks) do
       local hl = chunk[2]
@@ -395,9 +571,27 @@ local fill = function(win, rows, full)
     end
   end
 
+  conceal(win)
+
   local line_count = vim.api.nvim_buf_line_count(buf)
-  for line = current.history + 1, line_count do
-    current.borders[line] = { render.border, "ThreadsAuthorMe" }
+  local composer_lines =
+    vim.api.nvim_buf_get_lines(buf, current.history, line_count, false)
+  ---@type nvim_threads.Row
+  local composer_row = {
+    kind = "composer",
+    prefix = { { render.border, "ThreadsAuthorMe" } },
+    chunks = {},
+  }
+  for offset, text in ipairs(composer_lines) do
+    local line = current.history + offset
+    current.borders[line] = { render.border, "ThreadsAuthorMe", true }
+    frame(line, render.right_border(composer_row), true)
+    for _, mention in ipairs(render.mentions(text)) do
+      vim.api.nvim_buf_set_extmark(buf, float_namespace, line - 1, mention[1], {
+        end_col = mention[2],
+        hl_group = "ThreadsMention",
+      })
+    end
   end
   local placeholder = composer[1] and composer[1].placeholder
   if placeholder and line_count == current.history + 1 then
@@ -406,6 +600,8 @@ local fill = function(win, rows, full)
       vim.api.nvim_buf_set_extmark(buf, float_namespace, current.history, 0, {
         virt_text = { { placeholder, "ThreadsPlaceholder" } },
         virt_text_pos = "overlay",
+        -- The composer's background shows through.
+        hl_mode = "combine",
       })
     end
   end
@@ -424,7 +620,13 @@ local draw = function(bufnr, thread, full_float)
 
   local view = view_of(thread.id)
   local width, gutter = layout_of(bufnr)
-  local rows = render.rows(thread, view, width)
+  local previous = drawn_rows[thread.id]
+  local rows = render.rows(
+    thread,
+    view,
+    width,
+    function(index) return diffs_of(thread, index) end
+  )
   drawn_rows[thread.id] = rows
 
   -- The virtual lines cover the columns left of the text, which would
@@ -454,6 +656,15 @@ local draw = function(bufnr, thread, full_float)
     fill(win, rows, full_float == true)
     float.place(win, #rows)
   end
+
+  -- Neovim doesn't redraw the rows of the buffer's windows that a float
+  -- uncovers when it shrinks with the virtual lines below it.
+  if previous and #previous ~= #rows then
+    for _, buf_win in ipairs(vim.fn.win_findbuf(bufnr)) do
+      vim.api.nvim__redraw({ win = buf_win, valid = false })
+    end
+  end
+  schedule_ages()
 end
 
 --- Redraws a thread wherever it's displayed.
@@ -462,6 +673,38 @@ local redraw = function(thread)
   for _, bufnr in ipairs(buffers_of(thread)) do
     draw(bufnr, thread)
   end
+end
+
+--- Redraws the expanded threads when the age of one of their comments
+--- changes next.
+schedule_ages = function()
+  ---@type integer?
+  local soonest
+  for id, location in pairs(locations) do
+    local view = views[id]
+    if view and view.expanded then
+      for _, comment in ipairs(location.thread.comments) do
+        local delay = render.age_changes_in(comment.time)
+        soonest = math.min(soonest or delay, delay)
+      end
+    end
+  end
+  if ages_timer then ages_timer:stop() end
+  if not soonest then return end
+
+  ages_timer = ages_timer or assert(uv.new_timer())
+  -- The margin keeps the timer from firing just before the second the age
+  -- changes in.
+  ages_timer:start(
+    soonest * 1000 + 100,
+    0,
+    vim.schedule_wrap(function()
+      for id, location in pairs(locations) do
+        local view = views[id]
+        if view and view.expanded then redraw(location.thread) end
+      end
+    end)
+  )
 end
 
 --- Starts animating the spinners of the replies in progress, or stops it
@@ -906,8 +1149,12 @@ local open_float = function(bufnr, thread, opts)
   })
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     buffer = buf,
-    desc = "Lets only the composer be edited",
-    callback = function() update_modifiable(vim.api.nvim_get_current_win()) end,
+    desc = "Lets only the composer be edited, and reveals the Markdown under the cursor",
+    callback = function()
+      local win = vim.api.nvim_get_current_win()
+      update_modifiable(win)
+      conceal(win)
+    end,
   })
   -- Deleting past the composer's edges would join its lines with the ones
   -- around it, so it does nothing there.
@@ -956,11 +1203,34 @@ local open_float = function(bufnr, thread, opts)
 
   vim.lsp.start({
     name = "nvim-threads",
-    cmd = server.server(function(float_buf)
-      local float_win = vim.fn.win_findbuf(float_buf)[1]
-      local shown = float_win and float.get(float_win)
-      return shown and participants_of(shown.source_buf) or {}
-    end),
+    cmd = server.server({
+      participants = function(float_buf)
+        local float_win = vim.fn.win_findbuf(float_buf)[1]
+        local shown = float_win and float.get(float_win)
+        return shown and completions_of(shown.source_buf) or {}
+      end,
+      code_actions = function(float_buf, line)
+        return M.code_actions(float_buf, line)
+      end,
+      execute = function(float_buf, command, arguments)
+        if command == commands.run_action then
+          M.run_action(float_buf, arguments[1])
+        else
+          local win = vim.fn.win_findbuf(float_buf)[1]
+          local shown = win and float.get(win)
+          local location = shown and locations[shown.thread_id]
+          if not location then return end
+          local resolve = command == commands.apply_edits and M.apply
+            or command == commands.reject_edits and M.reject
+          if resolve then
+            resolve(location.thread, arguments[1], arguments[2])
+          elseif command == commands.review_edits then
+            M.review(location.thread, arguments[1])
+          end
+        end
+      end,
+      commands = vim.tbl_values(commands),
+    }),
     root_dir = state.repo.root,
   }, { bufnr = buf })
 
@@ -1066,15 +1336,31 @@ local mentions = function(body, bufnr)
     available[name] = true
   end
   local known, unknown, seen = {}, {}, {}
-  for name in body:gmatch("@([%w_.-]+)") do
-    name = name:gsub("[.-]+$", "")
-    if name ~= "" and not seen[name] then
+  for mention in body:gmatch("@([%w_.-]+)") do
+    mention = mention:gsub("[.-]+$", "")
+    -- A participant's own mentions start with its name and a dot.
+    local name = mention:match("^([^.]+)%.") or mention
+    if mention ~= "" and not seen[name] then
       seen[name] = true
       table.insert(available[name] and known or unknown, name)
     end
   end
   return known, unknown
 end
+
+--- Returns how a comment mentions a participant, if it does.
+---@param body string
+---@param name string
+---@return string?
+local mention_of = function(body, name)
+  for mention in body:gmatch("@([%w_.-]+)") do
+    mention = mention:gsub("[.-]+$", "")
+    if mention == name or vim.startswith(mention, name .. ".") then
+      return mention
+    end
+  end
+end
+
 
 --- Returns the file of a thread, as the source of its context.
 ---@param thread nvim_threads.Thread
@@ -1230,8 +1516,11 @@ local request_replies = function(thread)
         end)
       end)
     end
+    local last = snapshot.comments[#snapshot.comments]
     for _, name in ipairs(names) do
-      start_reply(thread, name, request)
+      local own = vim.deepcopy(request)
+      own.mention = last and mention_of(last.body, name)
+      start_reply(thread, name, own)
     end
   end)
 end
@@ -1326,6 +1615,18 @@ M.status = function(thread)
   return "waiting on me"
 end
 
+--- Defines the default highlight groups of the participants with a color.
+local set_participant_highlights = function()
+  for name, participant in pairs(participants) do
+    if participant.color then
+      vim.api.nvim_set_hl(0, render.author_group(name), {
+        fg = tonumber(participant.color:sub(2), 16),
+        default = true,
+      })
+    end
+  end
+end
+
 --- Registers a participant that comments mention by its name, replacing the
 --- one of the same name.
 ---@param participant nvim_threads.Participant
@@ -1333,10 +1634,145 @@ M.register = function(participant)
   vim.validate("name", participant.name, "string")
   vim.validate("send", participant.send, "function")
   participants[participant.name] = participant
+  set_participant_highlights()
 end
 
 ---@param name string
 M.unregister = function(name) participants[name] = nil end
+
+--- Registers an action offered with the code actions in the threads' floats,
+--- replacing the one with the same title.
+---@param action nvim_threads.Action
+M.register_action = function(action)
+  vim.validate("title", action.title, "string")
+  vim.validate("run", action.run, "function")
+  actions[action.title] = action
+end
+
+---@param title string
+M.unregister_action = function(title) actions[title] = nil end
+
+--- Records the resolution of edits a thread's comment suggests.
+---@param thread nvim_threads.Thread
+---@param edits nvim_threads.Edit[]
+---@param resolution "applied"|"rejected"
+local resolve_edits = function(thread, edits, resolution)
+  for _, edit in ipairs(edits) do
+    edit.resolution = resolution
+  end
+  persist(thread)
+  redraw(thread)
+end
+
+--- Returns the pending edits a thread's comment suggests to a file, by
+--- index, or the one at an index if it's pending.
+---@param comment nvim_threads.Comment
+---@param path string
+---@param index? integer
+---@return integer[]
+local pending_edits = function(comment, path, index)
+  local indices = {}
+  for edit_index, edit in ipairs(comment.edits or {}) do
+    if
+      edit.path == path
+      and (not index or edit_index == index)
+      and not suggestion.resolution(comment, edit)
+    then
+      indices[#indices + 1] = edit_index
+    end
+  end
+  return indices
+end
+
+--- Returns the commands of the code actions resolving the pending edits a
+--- 1-based line of a float's buffer shows: the edit of a diff's line, or all
+--- of the file's on the row naming it.
+---@param float_buf integer
+---@param line integer
+---@return lsp.Command[]
+local edit_actions = function(float_buf, line)
+  local win = vim.fn.win_findbuf(float_buf)[1]
+  local shown = win and float.get(win)
+  local location = shown and locations[shown.thread_id]
+  local row = location
+    and split_rows(drawn_rows[location.thread.id] or {})[line]
+  if not location or not row or not row.comment or not row.path then
+    return {}
+  end
+  local comment = location.thread.comments[row.comment]
+  if not comment or #pending_edits(comment, row.path, row.edit) == 0 then
+    return {}
+  end
+
+  local target = { path = row.path, edit = row.edit }
+  local what = row.edit and "this edit" or ("the edits to %s"):format(row.path)
+  local result = {
+    {
+      title = "Apply " .. what,
+      command = commands.apply_edits,
+      arguments = { row.comment, target },
+    },
+    {
+      title = "Reject " .. what,
+      command = commands.reject_edits,
+      arguments = { row.comment, target },
+    },
+  }
+  if not row.edit then
+    result[#result + 1] = {
+      title = "Review the edits in buffers that apply them when written",
+      command = commands.review_edits,
+      arguments = { row.comment },
+    }
+  end
+  return result
+end
+
+--- Returns whether the cursor of the current float is on a pending edit a
+--- comment suggests, or on the row naming their file.
+---@return boolean
+M.is_on_edit = function()
+  local win = vim.api.nvim_get_current_win()
+  if not float.get(win) then return false end
+  local line = vim.api.nvim_win_get_cursor(win)[1]
+  return #edit_actions(vim.api.nvim_win_get_buf(win), line) > 0
+end
+
+--- Returns the commands of the code actions on a 1-based line of a float's
+--- buffer: resolving the pending edits it shows, then the registered actions
+--- available on the thread, by title.
+---@param float_buf integer
+---@param line integer
+---@return lsp.Command[]
+M.code_actions = function(float_buf, line)
+  local ctx = action_context(float_buf)
+  if not ctx then return {} end
+
+  local result = edit_actions(float_buf, line)
+  local titles = {}
+  for title, action in pairs(actions) do
+    if not action.available or action.available(ctx) then
+      titles[#titles + 1] = title
+    end
+  end
+  table.sort(titles)
+  for _, title in ipairs(titles) do
+    result[#result + 1] =
+      { title = title, command = commands.run_action, arguments = { title } }
+  end
+  return result
+end
+
+--- Runs a registered action on the thread of a float's buffer.
+---@param float_buf integer
+---@param title string
+M.run_action = function(float_buf, title)
+  local action = actions[title]
+  local ctx = action_context(float_buf)
+  if not action or not ctx then return end
+  local ok, err = pcall(action.run, ctx)
+  if not ok then notify_error(tostring(err)) end
+end
 
 --- Opens a new thread on the visual selection, or on the cursor's line,
 --- with its composer focused. Returns false without doing anything outside
@@ -1501,9 +1937,21 @@ M.toggle = function()
   return true
 end
 
+--- Collapses the current float's thread, if it's expanded, and moves the
+--- cursor to its title. Returns false outside of floats.
+---@return boolean
+M.collapse = function()
+  local thread, current, win = current_thread()
+  if not thread or not current then return false end
+  if view_of(thread.id).expanded then M.toggle() end
+  vim.api.nvim_win_set_cursor(win, { 1, 0 })
+  return true
+end
+
 --- Acts on the row under the cursor in a float: it expands or collapses the
---- thread on its header, reviews the suggested edits on a suggestion, and
---- sends the comment in the composer. Returns false elsewhere.
+--- thread on its header, the suggested edits to a file on the row naming
+--- it, and a suggested edit on its rows, and sends the comment in the
+--- composer. Returns false elsewhere.
 ---@return boolean
 M.activate = function()
   local thread, current = current_thread()
@@ -1514,8 +1962,29 @@ M.activate = function()
   local row = history[line]
   if not row then return false end
   if row.kind == "header" then return M.toggle() end
-  if row.kind == "suggestion" and row.comment then
-    M.review(thread, row.comment)
+  local view = view_of(thread.id)
+  if row.kind == "suggestion" and row.comment and row.path then
+    local key = render.file_key(row.comment, row.path)
+    view.collapsed_files[key] = not view.collapsed_files[key] or nil
+    draw(current.source_buf, thread)
+    return true
+  end
+  if row.comment and row.edit then
+    view.expanded_edits[render.edit_key(row.comment, row.edit)] =
+      not row.expanded
+    draw(current.source_buf, thread)
+    -- The cursor goes to the edit's title, which is where it was if the
+    -- edit was collapsed.
+    for index, other in ipairs(split_rows(drawn_rows[thread.id] or {})) do
+      if
+        other.kind == "edit"
+        and other.comment == row.comment
+        and other.edit == row.edit
+      then
+        vim.api.nvim_win_set_cursor(0, { index, 0 })
+        break
+      end
+    end
     return true
   end
   return false
@@ -1672,17 +2141,68 @@ M.review = function(thread, index)
     comment = index,
     edits = comment.edits,
     on_applied = function(path)
-      comment.applied = comment.applied or {}
-      comment.applied[path] = true
-      persist(thread)
-      redraw(thread)
+      local indices = pending_edits(comment, path)
+      resolve_edits(
+        thread,
+        vim.tbl_map(
+          function(edit_index) return assert((comment.edits or {})[edit_index]) end,
+          indices
+        ),
+        "applied"
+      )
     end,
   })
 end
 
+--- Applies the pending edits a thread's comment suggests to a file, or only
+--- one of them, to the file's buffer, which is saved if it had no unsaved
+--- changes.
+---@param thread nvim_threads.Thread
+---@param index integer The comment's index.
+---@param target { path: string, edit?: integer } The file, and the edit's index.
+M.apply = function(thread, index, target)
+  local comment = thread.comments[index]
+  local location = locations[thread.id]
+  if not comment or not location then return end
+  local indices = pending_edits(comment, target.path, target.edit)
+  if #indices == 0 then return end
+  local root = location.repo.root
+  local lines, err = suggestion.edited_lines(root, comment, indices)
+  if not lines then return notify_error(assert(err)) end
+  suggestion.write(vim.fs.joinpath(root, target.path), lines)
+  resolve_edits(
+    thread,
+    vim.tbl_map(
+      function(edit_index) return assert((comment.edits or {})[edit_index]) end,
+      indices
+    ),
+    "applied"
+  )
+end
+
+--- Rejects the pending edits a thread's comment suggests to a file, or only
+--- one of them.
+---@param thread nvim_threads.Thread
+---@param index integer The comment's index.
+---@param target { path: string, edit?: integer } The file, and the edit's index.
+M.reject = function(thread, index, target)
+  local comment = thread.comments[index]
+  if not comment then return end
+  local indices = pending_edits(comment, target.path, target.edit)
+  resolve_edits(
+    thread,
+    vim.tbl_map(
+      function(edit_index) return assert((comment.edits or {})[edit_index]) end,
+      indices
+    ),
+    "rejected"
+  )
+end
+
 --- Moves the cursor by `v:count1` lines by running the given keys, stepping
 --- into the float of the thread it would otherwise skip over, or out of the
---- current float when moving past its edge. Only single-line moves step
+--- current float when moving past its edge, except past the last line of an
+--- expanded thread. Only single-line moves step
 --- into or out of floats. Returns false without moving outside of floats
 --- when there's no thread to step into.
 ---@param direction 1|-1
@@ -1703,6 +2223,10 @@ M.step = function(direction, keys)
       or direction < 0 and line == 1
     if count > 1 or not at_edge then
       run()
+      return true
+    end
+    -- An expanded thread's float is only left upwards, from its title.
+    if direction > 0 and view_of(current.thread_id).expanded then
       return true
     end
 
@@ -1835,7 +2359,10 @@ M.setup = function(opts)
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = group,
     desc = "Sets the default highlight groups of threads",
-    callback = function() render.set_highlights() end,
+    callback = function()
+      render.set_highlights()
+      set_participant_highlights()
+    end,
   })
 
   vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {

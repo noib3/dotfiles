@@ -6,13 +6,14 @@ local uv = vim.uv
 ---@field path string The edited file's path relative to the workspace's root.
 ---@field old_text string The text replaced, which occurs exactly once in the file.
 ---@field new_text string
+---@field resolution? "applied"|"rejected" Whether the edit was applied or rejected.
 
 ---@class nvim_threads.Comment
 ---@field author string `me`, or a participant's name.
 ---@field body string
 ---@field time integer The Unix time the comment was made at.
 ---@field edits? nvim_threads.Edit[] The edits the comment suggests.
----@field applied? table<string, true> The paths whose suggested edits were applied.
+---@field applied? table<string, true> The paths whose suggested edits were all applied, in comments saved before the edits had resolutions.
 ---@field error? boolean Whether the body is a participant's error.
 
 --- A range in a file's lines, with 0-based rows and byte columns, whose end

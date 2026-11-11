@@ -30,6 +30,7 @@ in
     neovim = {
       includeConfig = false;
       palette = config.modules.colorschemes.palette;
+      enableClaudeCodeIntegration = config.modules.claude-code.enable;
     };
 
     xdg.configFile.nvim = {

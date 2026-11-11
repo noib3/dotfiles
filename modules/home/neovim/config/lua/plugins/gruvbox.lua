@@ -164,15 +164,13 @@ local overrides = {
   },
 }
 
---- The highlight groups of nvim-hunks and nvim-jj drawing diffs, keyed by
---- their shared color.
 local diff_groups = {
-  add = { "HunksAdd", "JjDiffAdd", "JjCopy" },
-  add_text = { "HunksAddText", "JjDiffAddText" },
-  add_nr = { "HunksAddNr", "JjDiffAddNr" },
-  delete = { "HunksDelete", "JjDiffDelete", "JjCut" },
-  delete_text = { "HunksDeleteText", "JjDiffDeleteText" },
-  delete_nr = { "HunksDeleteNr", "JjDiffDeleteNr" },
+  add = { "HunksAdd", "JjCopy" },
+  add_text = { "HunksAddText" },
+  add_nr = { "HunksAddNr" },
+  delete = { "HunksDelete", "JjCut" },
+  delete_text = { "HunksDeleteText" },
+  delete_nr = { "HunksDeleteNr" },
   added_count = { "HunksAddedCount", "JjAddedCount" },
   deleted_count = { "HunksDeletedCount", "JjDeletedCount" },
   modified_count = { "HunksModifiedCount" },

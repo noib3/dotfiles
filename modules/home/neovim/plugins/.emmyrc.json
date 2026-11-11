@@ -25,6 +25,8 @@
         "ignoreGlobs": [
           "**/plenary/busted.lua",
           "**/editable_term.lua",
+          "**/nvim_agents.lua",
+          "**/nvim_agents/**",
           "**/nvim_direnv.lua",
           "**/nvim_flatten.lua",
           "**/nvim_flatten/**",
@@ -41,6 +43,8 @@
     ],
     "workspaceRoots": [
       "./editable-term.lua/lua",
+      "./nvim-agents/lua",
+      "./nvim-agents/tests/lib",
       "./nvim-direnv/lua",
       "./nvim-flatten/lua",
       "./nvim-hunks/lua",

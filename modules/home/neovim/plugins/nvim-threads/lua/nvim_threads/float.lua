@@ -13,8 +13,9 @@ local zindex = 10
 ---@field offset integer The number of other threads' virtual lines before the thread's.
 ---@field source_scroll integer[] The source window's `topline`, `topfill` and `leftcol` when the float was placed.
 --- The borders of the float's lines, drawn by its 'statuscolumn', each as
---- its text and highlight groups.
----@field borders nvim_threads.Chunk[]
+--- its text, its highlight groups, and whether its line is on the threads'
+--- background.
+---@field borders [string, (string|string[])?, boolean?][]
 ---@field history integer The number of lines above the composer.
 --- The source window's `curswant` when the cursor moved into the float, and
 --- the float's right after.
@@ -129,20 +130,33 @@ M.open = function(buf, float, count)
     style = "minimal",
     zindex = zindex,
   })
+  -- The float looks like the window it covers. Only its title and its
+  -- composer are on the threads' background.
   vim.wo[win].winhighlight = table.concat({
-    "Normal:ThreadsNormal",
-    "NormalFloat:ThreadsNormal",
-    "EndOfBuffer:ThreadsNormal",
-    "LineNr:ThreadsNormal",
-    "CursorLineNr:ThreadsNormal",
+    "NormalFloat:Normal",
+    "EndOfBuffer:Normal",
+    "LineNr:Normal",
+    "CursorLineNr:Normal",
   }, ",")
   vim.wo[win].wrap = true
   vim.wo[win].linebreak = true
   vim.wo[win].breakindent = false
   vim.wo[win].list = false
+  -- The Markdown the threads hide stays hidden on the cursor's line, except
+  -- for the element under the cursor, which the plugin reveals.
+  vim.wo[win].conceallevel = 2
+  vim.wo[win].concealcursor = "nvic"
   vim.wo[win].statuscolumn =
     "%!v:lua.require'nvim_threads.float'.statuscolumn()"
   vim.wo[win].statusline = "%!v:lua.require'nvim_threads.float'.statusline()"
+
+  -- The float works in its source window's directory, which may be the
+  -- directory of the window's buffer.
+  local dir = vim.api.nvim_win_call(float.source_win, vim.fn.getcwd)
+  vim.api.nvim_win_call(
+    win,
+    function() vim.cmd("noautocmd lcd " .. vim.fn.fnameescape(dir)) end
+  )
 
   float.source_scroll = scroll_of(float.source_win)
   floats[win] = float
@@ -170,6 +184,15 @@ M.place = function(win, count)
     width = info.width - info.textoff,
     height = height,
   })
+  -- A float scrolled down past rows that were since removed scrolls back up,
+  -- so its lines still fill it.
+  vim.api.nvim_win_call(win, function()
+    local line_count = vim.api.nvim_buf_line_count(0)
+    local last_topline = math.max(line_count - height + 1, 1)
+    if vim.fn.line("w0") > last_topline then
+      vim.fn.winrestview({ topline = last_topline })
+    end
+  end)
   float.source_scroll = scroll_of(float.source_win)
 end
 
@@ -235,6 +258,9 @@ M.statuscolumn = function()
   if not border then return render.border end
   local hl = border[2]
   if type(hl) == "table" then hl = hl[#hl] end
+  if not border[3] then
+    return hl and ("%%#%s#%s%%*"):format(hl, border[1]) or border[1]
+  end
   return ("%%#%s#%s%%*"):format(
     render.on_background(hl or "ThreadsNormal"),
     border[1]

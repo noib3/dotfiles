@@ -143,7 +143,7 @@ M.open = function(root, path)
 end
 
 --- Returns the text of the virtual lines of a buffer's threads, by the
---- 1-based line they follow.
+--- 1-based line they follow, without their right borders.
 ---@param bufnr integer
 ---@return table<integer, string[]>
 M.virt_lines = function(bufnr)
@@ -158,9 +158,11 @@ M.virt_lines = function(bufnr)
     if details.virt_lines then
       local lines = result[mark[2] + 1] or {}
       for _, chunks in ipairs(details.virt_lines) do
-        lines[#lines + 1] = vim.trim(
+        local text = vim.trim(
           table.concat(vim.tbl_map(function(chunk) return chunk[1] end, chunks))
         )
+        -- The right border of a message's rows follows their padding.
+        lines[#lines + 1] = vim.trim((text:gsub("🮇$", "")))
       end
       result[mark[2] + 1] = lines
     end

@@ -27,7 +27,7 @@ test("a thread's virtual lines don't take the gutter of their line", function()
   vim.cmd.redraw()
 
   -- Rows 1 to 3 are the first two lines and the thread's collapsed line.
-  h.eq(vim.fn.screenstring(3, 8), "▸", "the thread follows the second line")
+  h.eq(vim.fn.screenstring(3, 7), "▸", "the thread follows the second line")
   local changed = vim.fn.screenattr(2, 1)
   local plain = vim.fn.screenattr(1, 1)
   h.eq(changed ~= plain, true, "the changed line's number is highlighted")

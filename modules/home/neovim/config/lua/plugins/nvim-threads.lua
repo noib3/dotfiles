@@ -40,11 +40,18 @@ local set_float_keymaps = function(buf)
   )
   -- Like in a terminal, the keys entering insert mode go back to the
   -- composer.
-  for _, keys in ipairs({ "i", "a", "I", "A", "o", "O" }) do
+  for _, keys in ipairs({ "i", "a", "I", "o", "O" }) do
     map("n", keys, function()
       if not threads.insert_in_composer() then fallback(keys) end
     end, "Insert in the composer")
   end
+  map("n", "A", function()
+    if threads.is_on_edit() then return vim.lsp.buf.code_action() end
+    if not threads.insert_in_composer() then fallback("A") end
+  end, "Apply or reject the suggested edit, or insert in the composer")
+  map("n", "q", function()
+    if not threads.collapse() then fallback("q") end
+  end, "Collapse the thread")
   map("n", "dd", function()
     if not threads.delete() then fallback("dd") end
   end, "Delete the thread")

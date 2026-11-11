@@ -218,6 +218,14 @@ M.open = function(source_win, buf, hunk, old_lines, syntax, line_count)
     function() vim.fn.winrestview({ topline = first_line, lnum = first_line }) end
   )
 
+  -- The float works in its source window's directory, which may be the
+  -- directory of the window's buffer.
+  local dir = vim.api.nvim_win_call(source_win, vim.fn.getcwd)
+  vim.api.nvim_win_call(
+    win,
+    function() vim.cmd("noautocmd lcd " .. vim.fn.fnameescape(dir)) end
+  )
+
   floats[win] = {
     buf = buf,
     hunk = hunk,

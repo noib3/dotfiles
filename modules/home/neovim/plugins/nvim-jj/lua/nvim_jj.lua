@@ -733,37 +733,250 @@ end
 local commands = {
   open_pull_request = "nvim-jj.openPullRequest",
   browse = "nvim-jj.browse",
+  run_action = "nvim-jj.runAction",
 }
 
---- Returns the log buffer of a URI.
+---@alias nvim_jj.ActionTarget "subject"|"description"|"pr_title"|"pr_description"
+
+---@class nvim_jj.ActionContext
+---@field root string The root of the jj workspace.
+--- The text the action writes: a change's subject, in the log or on the first
+--- line of the change's view, the rest of its description, in the view, or a
+--- pull request's title or description, in its editor.
+---@field target nvim_jj.ActionTarget
+---@field diff string[] The arguments of `jj diff` showing the changes the text is about.
+---@field before string The revset of the changes before them.
+---@field text string The text as it is.
+---@field immutable boolean Whether the changes are immutable.
+---@field empty boolean Whether the changes are empty.
+--- Draws the action's progress, after the change in the log, or else at the
+--- end of the text's line.
+---@field set_status fun(kind: nvim_jj.StatusKind, text: string)
+--- Replaces the text with an unsaved edit.
+---@field replace fun(text: string)
+
+---@class nvim_jj.Action
+---@field title string
+--- Whether the action is offered on a text. Without it, it's offered on all
+--- of them.
+---@field available? fun(ctx: nvim_jj.ActionContext): boolean
+---@field run fun(ctx: nvim_jj.ActionContext)
+
+--- The actions registered with `register_action()`, by title.
+---@type table<string, nvim_jj.Action?>
+local actions = {}
+
+--- The pull requests being edited, by the buffers editing them, with the
+--- revsets of the changes they start after and end at.
+---@type table<integer, { root: string, from: string, to: string }?>
+local pull_request_editors = {}
+
+local line_status_namespace =
+  vim.api.nvim_create_namespace("nvim-jj-line-status")
+
+--- Returns the function drawing an action's progress at the end of a line of
+--- a buffer. A finished action's status is cleared after a while.
+---@param bufnr integer
+---@param row integer The 0-based row.
+---@return fun(kind: nvim_jj.StatusKind, text: string)
+local line_status = function(bufnr, row)
+  ---@type integer?
+  local id
+  ---@type uv.uv_timer_t?
+  local timer
+  return function(kind, text)
+    if not vim.api.nvim_buf_is_valid(bufnr) then return end
+    if timer and not timer:is_closing() then timer:close() end
+    id = vim.api.nvim_buf_set_extmark(bufnr, line_status_namespace, row, 0, {
+      id = id,
+      virt_text = {
+        {
+          "  " .. single_line(text),
+          "JjStatus" .. kind:sub(1, 1):upper() .. kind:sub(2),
+        },
+      },
+      virt_text_pos = "eol",
+      strict = false,
+    })
+    if kind == "busy" then return end
+    local done = assert(uv.new_timer())
+    timer = done
+    done:start(
+      status_durations_ms[kind],
+      0,
+      vim.schedule_wrap(function()
+        if not done:is_closing() then done:close() end
+        if timer == done and id and vim.api.nvim_buf_is_valid(bufnr) then
+          vim.api.nvim_buf_del_extmark(bufnr, line_status_namespace, id)
+          id = nil
+        end
+      end)
+    )
+  end
+end
+
+--- Returns the first line of a text, trimmed.
+---@param text string
+---@return string
+local first_line = function(text)
+  return vim.split(vim.trim(text), "\n", { plain = true })[1] or ""
+end
+
+--- Returns the context of an action on a line of a buffer: on a change's
+--- subject in a log buffer, on a change's view, or on a pull request's
+--- editor.
+---@param bufnr integer
+---@param line integer The 1-based line.
+---@return nvim_jj.ActionContext?
+local action_context = function(bufnr, line)
+  local log = logs[bufnr]
+  if log then
+    local row = log.rows[line]
+    if not row then return end
+    local id = row.change.id
+    ---@type nvim_jj.ActionContext
+    return {
+      root = log.root,
+      target = "subject",
+      diff = { "-r", id },
+      before = ("::%s- & ~empty()"):format(id),
+      text = row.change.subject,
+      immutable = row.change.immutable,
+      empty = row.change.empty,
+      set_status = function(kind, text) set_status(bufnr, id, kind, text) end,
+      replace = function(subject)
+        -- The change's row may have moved since the action started.
+        local current = logs[bufnr]
+        local at = current and row_of(current, id)
+        if not current or not at or not is_intact(bufnr, current) then
+          return set_status(bufnr, id, "failed", "The log's lines were moved")
+        end
+        local old = vim.api.nvim_buf_get_lines(bufnr, at - 1, at, false)[1]
+          or ""
+        -- Setting the line's text keeps the extmarks of its decorations.
+        vim.api.nvim_buf_set_text(
+          bufnr,
+          at - 1,
+          0,
+          at - 1,
+          #old,
+          { first_line(subject) }
+        )
+        redraw_edited(bufnr, current)
+      end,
+    }
+  end
+
+  local info = change.info(bufnr)
+  if info then
+    if line > info.summary then return end
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, info.summary, false)
+    ---@type nvim_jj.ActionTarget
+    local target = line == 1 and "subject" or "description"
+    ---@type nvim_jj.ActionContext
+    return {
+      root = info.root,
+      target = target,
+      diff = { "-r", info.id },
+      before = ("::%s- & ~empty()"):format(info.id),
+      text = target == "subject" and (lines[1] or "")
+        or vim.trim(table.concat(vim.list_slice(lines, 2), "\n")),
+      immutable = info.immutable,
+      empty = info.empty,
+      set_status = line_status(bufnr, line - 1),
+      replace = function(text)
+        local current = change.info(bufnr) or info
+        local edited =
+          vim.api.nvim_buf_get_lines(bufnr, 0, current.summary, false)
+        local subject = target == "subject" and first_line(text)
+          or edited[1]
+          or ""
+        local body = target == "description" and vim.trim(text)
+          or vim.trim(table.concat(vim.list_slice(edited, 2), "\n"))
+        change.edit_description(
+          bufnr,
+          body == "" and subject or subject .. "\n\n" .. body
+        )
+      end,
+    }
+  end
+
+  local pull_request = pull_request_editors[bufnr]
+  if pull_request then
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    ---@type nvim_jj.ActionTarget
+    local target = line == 1 and "pr_title" or "pr_description"
+    ---@type nvim_jj.ActionContext
+    return {
+      root = pull_request.root,
+      target = target,
+      diff = { "--from", pull_request.from, "--to", pull_request.to },
+      before = ("::(%s) & ~empty()"):format(pull_request.from),
+      text = target == "pr_title" and (lines[1] or "")
+        or vim.trim(table.concat(vim.list_slice(lines, 2), "\n")),
+      immutable = false,
+      empty = false,
+      set_status = line_status(bufnr, line - 1),
+      replace = function(text)
+        if target == "pr_title" then
+          vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { first_line(text) })
+        else
+          local body = vim.split(vim.trim(text), "\n", { plain = true })
+          vim.api.nvim_buf_set_lines(
+            bufnr,
+            1,
+            -1,
+            false,
+            vim.list_extend({ "" }, body)
+          )
+        end
+      end,
+    }
+  end
+end
+
+--- Returns the buffer of a URI.
 ---@param uri string
 ---@return integer?
 local buffer_of_uri = function(uri)
-  for bufnr in pairs(logs) do
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if vim.uri.from_buf(bufnr) == uri then return bufnr end
   end
 end
 
---- Returns the code actions on the change on a line of a log buffer.
+--- Returns the code actions on a line of a buffer: the registered actions
+--- available on its text, then, on a change in a log buffer, GitHub's.
 ---@param bufnr integer
 ---@param line integer The 1-based line.
 ---@return lsp.CodeAction[]
 local code_actions = function(bufnr, line)
-  local log = logs[bufnr]
-  local row = log and log.rows[line]
-  if not log or not row or not log.github_repo then return {} end
+  local ctx = action_context(bufnr, line)
+  if not ctx then return {} end
 
   ---@type lsp.CodeAction[]
-  local actions = {}
+  local result = {}
   ---@param title string
   ---@param command string
   ---@param arguments any[]
   local add = function(title, command, arguments)
-    actions[#actions + 1] = {
+    result[#result + 1] = {
       title = title,
       command = { title = title, command = command, arguments = arguments },
     }
   end
+
+  local titles = vim.tbl_keys(actions)
+  table.sort(titles)
+  for _, title in ipairs(titles) do
+    local action = assert(actions[title])
+    if not action.available or action.available(ctx) then
+      add(title, commands.run_action, { bufnr, line, title })
+    end
+  end
+
+  local log = logs[bufnr]
+  local row = log and log.rows[line]
+  if not log or not row or not log.github_repo then return result end
 
   local without_pull_request = false
   for _, name in ipairs(row.change.local_bookmarks) do
@@ -788,7 +1001,7 @@ local code_actions = function(bufnr, line)
       { bufnr, line }
     )
   end
-  return actions
+  return result
 end
 
 --- Returns the in-process language server of the log buffers, which serves
@@ -824,6 +1037,8 @@ local server = function(dispatchers)
         M.open_pull_request(args[1], args[2])
       elseif params.command == commands.browse then
         vim.ui.open(args[1])
+      elseif params.command == commands.run_action then
+        M.run_action(args[1], args[2], args[3])
       end
       return vim.NIL
     end
@@ -885,6 +1100,17 @@ local server = function(dispatchers)
   }
   -- The client's private fields are the ones of a process it talks to.
   return client --[[@as vim.lsp.rpc.Client]]
+end
+
+--- Attaches the in-process language server to a buffer of a workspace, for
+--- the code actions on its lines.
+---@param bufnr integer
+---@param root string
+local attach_server = function(bufnr, root)
+  vim.lsp.start(
+    { name = "nvim-jj", cmd = server, root_dir = root },
+    { bufnr = bufnr }
+  )
 end
 
 --- Reads the open pull requests of a log buffer's GitHub repo, and draws
@@ -976,10 +1202,7 @@ local load = function(bufnr)
     end, { buffer = bufnr, desc = "View the change" })
   end
 
-  vim.lsp.start(
-    { name = "nvim-jj", cmd = server, root_dir = log.root },
-    { bufnr = bufnr }
-  )
+  attach_server(bufnr, log.root)
 
   render(bufnr, true, function()
     local line = working_copy_row(log)
@@ -2538,10 +2761,11 @@ end
 --- without writing it aborts.
 ---@param bufnr integer The log buffer.
 ---@param name string The pull request's bookmark.
+---@param range { from: string, to: string } The revsets of the changes the pull request starts after and ends at.
 ---@param lines string[]
 ---@param on_confirm fun(title: string, body: string)
 ---@param on_abort fun()
-local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
+local edit_pull_request = function(bufnr, name, range, lines, on_confirm, on_abort)
   local log = assert(logs[bufnr])
   local editor = vim.api.nvim_create_buf(false, false)
   without_autocmds(
@@ -2558,6 +2782,14 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
   vim.bo[editor].swapfile = false
   vim.bo[editor].filetype = "markdown"
   vim.bo[editor].modified = false
+  pull_request_editors[editor] =
+    { root = log.root, from = range.from, to = range.to }
+  vim.api.nvim_create_autocmd("BufWipeout", {
+    buffer = editor,
+    desc = "Forgets the pull request the buffer edited",
+    callback = function() pull_request_editors[editor] = nil end,
+  })
+  attach_server(editor, log.root)
   vim.api.nvim_buf_set_extmark(editor, editor_namespace, 0, 0, {
     virt_lines = {
       {
@@ -2591,6 +2823,30 @@ local edit_pull_request = function(bufnr, name, lines, on_confirm, on_abort)
   end)
   vim.wo[win][0].wrap = true
   vim.wo[win][0].conceallevel = 0
+end
+
+--- Registers an action offered with the code actions on the log's changes,
+--- replacing the one with the same title.
+---@param action nvim_jj.Action
+M.register_action = function(action)
+  vim.validate("title", action.title, "string")
+  vim.validate("run", action.run, "function")
+  actions[action.title] = action
+end
+
+---@param title string
+M.unregister_action = function(title) actions[title] = nil end
+
+--- Runs a registered action on the change on a line of a log buffer.
+---@param bufnr integer
+---@param line integer The 1-based line.
+---@param title string
+M.run_action = function(bufnr, line, title)
+  local action = actions[title]
+  local ctx = action_context(bufnr, line)
+  if not action or not ctx then return end
+  local ok, err = pcall(action.run, ctx)
+  if not ok then ctx.set_status("failed", tostring(err)) end
 end
 
 --- Opens a view of the change on a line of a log buffer: instead of the log,
@@ -2693,11 +2949,11 @@ M.open_pull_request = function(bufnr, line, on_done)
   ---@param head string
   ---@param base string
   local edit = function(head, base)
-    local range = ("remote_bookmarks(exact:%s, remote=exact:%s)..%s"):format(
+    local from = ("remote_bookmarks(exact:%s, remote=exact:%s)"):format(
       jj.quote(base),
-      jj.quote(remote),
-      change.id
+      jj.quote(remote)
     )
+    local range = ("%s..%s"):format(from, change.id)
     jj.changes(root, range, function(range_err, stack)
       if range_err or not stack then return finish(range_err) end
       jj.description(root, change.id, function(desc_err, description)
@@ -2714,6 +2970,7 @@ M.open_pull_request = function(bufnr, line, on_done)
         edit_pull_request(
           bufnr,
           head,
+          { from = from, to = change.id },
           lines,
           function(confirmed_title, confirmed_body)
             create(head, base, confirmed_title, confirmed_body)
@@ -3020,6 +3277,16 @@ M.setup = function(opts)
         end
       end
       if log then redraw_edited(ev.buf, log) end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufWinEnter", {
+    group = group,
+    pattern = change.scheme .. "*",
+    desc = "Serves the code actions on the change's subject and description",
+    callback = function(ev)
+      local root = change.root(ev.buf)
+      if root then attach_server(ev.buf, root) end
     end,
   })
 

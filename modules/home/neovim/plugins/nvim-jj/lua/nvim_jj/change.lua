@@ -10,8 +10,6 @@ M.scheme = "jj-change://"
 
 local namespace = vim.api.nvim_create_namespace("nvim-jj-change")
 
-local syntax_namespace = vim.api.nvim_create_namespace("nvim-jj-change-syntax")
-
 --- The delay between a jj operation and the redraw of the views it triggers.
 local op_debounce_ms = 100
 
@@ -142,8 +140,9 @@ local line_counts = function(added, deleted)
 end
 
 --- Returns the chunks summarizing the files a change changed, like `3 files
---- changed: 1 added, 2 modified`, with each count in the highlight of its
---- status, and the chunks of its total of added and deleted lines.
+--- changed: 1 added, 2 modified,`, with each count in the highlight of its
+--- status, and the chunks of its total of added and deleted lines, like
+--- `+10 -2`.
 ---@param files nvim_jj.FileDiff[]
 ---@return nvim_jj.Chunk[] summary
 ---@return nvim_jj.Chunk[] totals
@@ -172,7 +171,10 @@ M.summarize = function(files)
         { ("%d %s"):format(count, status), statuses[status][2] }
     end
   end
-  return summary, line_counts(added, deleted)
+  local totals = line_counts(added, deleted)
+  -- The totals follow the summary after a space, like the end of its list.
+  if #totals > 0 then summary[#summary + 1] = { "," } end
+  return summary, totals
 end
 
 --- Returns the text of a file's row: its path, or its old and new paths if it
@@ -215,7 +217,7 @@ local details_lines = function(details)
 end
 
 --- Returns the text of chunks.
----@param chunks nvim_jj.Chunk[]
+---@param chunks [string, any][]
 ---@return string
 local text_of = function(chunks)
   return table.concat(vim.tbl_map(function(chunk) return chunk[1] end, chunks))
@@ -246,6 +248,7 @@ end
 ---@field expanded table<string, true?> The paths of the files whose hunks are shown.
 ---@field rows table<integer, nvim_jj.ViewRow?> The rows of the files and of their hunks' lines, keyed by their 0-based offset from the summary's row.
 ---@field summary integer The ID of the extmark on the summary's row, which follows the description.
+---@field on_drawn fun()[] The callbacks waiting for the first draw.
 ---@field timer? uv.uv_timer_t
 ---@field watcher? uv.uv_fs_event_t
 
@@ -263,6 +266,36 @@ local summary_row = function(bufnr, view)
   return mark[1] or 0
 end
 
+---@class nvim_jj.ViewInfo
+---@field root string The root of the jj workspace.
+---@field id string The change ID.
+---@field immutable boolean
+---@field empty boolean Whether the change has no files.
+---@field summary integer The 0-based row of the summary following the description.
+
+--- Returns the root of the jj workspace of a change's view.
+---@param bufnr integer
+---@return string?
+M.root = function(bufnr)
+  local view = views[bufnr]
+  return view and view.root
+end
+
+--- Returns what a change's view shows, once it's drawn.
+---@param bufnr integer
+---@return nvim_jj.ViewInfo?
+M.info = function(bufnr)
+  local view = views[bufnr]
+  if not view or not view.details then return end
+  return {
+    root = view.root,
+    id = view.id,
+    immutable = view.details.immutable,
+    empty = #view.files == 0,
+    summary = summary_row(bufnr, view),
+  }
+end
+
 --- Draws the placeholder of an empty subject.
 ---@param bufnr integer
 local draw_placeholder = function(bufnr)
@@ -278,72 +311,9 @@ local draw_placeholder = function(bufnr)
   })
 end
 
---- Highlights rows of a buffer with the treesitter highlights of a text made
---- of their lines, in the language of a file.
----@param bufnr integer
----@param path string The file's path.
----@param lines string[]
----@param rows (integer|false)[] The 0-based row of each line, or `false` for a line left alone.
-local highlight_syntax = function(bufnr, path, lines, rows)
-  local filetype = vim.filetype.match({ filename = path })
-  local lang = filetype and vim.treesitter.language.get_lang(filetype)
-  if not lang then return end
-  local text = table.concat(lines, "\n")
-  local ok, parser = pcall(vim.treesitter.get_string_parser, text, lang)
-  if not ok or not parser then return end
-  parser:parse(true)
-
-  parser:for_each_tree(function(tree, language_tree)
-    local tree_lang = language_tree:lang()
-    local query = vim.treesitter.query.get(tree_lang, "highlights")
-    if not query then return end
-    for id, node, metadata in query:iter_captures(tree:root(), text) do
-      local name = query.captures[id]
-      if
-        name
-        and not vim.startswith(name, "_")
-        and name ~= "spell"
-        and name ~= "nospell"
-      then
-        local priority = tonumber(
-          metadata.priority or (metadata[id] and metadata[id].priority)
-        ) or vim.hl.priorities.treesitter
-        local start_row, start_col, end_row, end_col = node:range()
-        for line = start_row, end_row do
-          local row = rows[line + 1]
-          local length = #(lines[line + 1] or "")
-          local from = line == start_row and start_col or 0
-          local to = line == end_row and math.min(end_col, length) or length
-          if row and from < to then
-            vim.api.nvim_buf_set_extmark(bufnr, syntax_namespace, row, from, {
-              end_col = to,
-              hl_group = ("@%s.%s"):format(name, tree_lang),
-              priority = math.floor(priority),
-            })
-          end
-        end
-      end
-    end
-  end)
-end
-
---- The word-level diff of nvim-hunks, when it's installed.
-local ok_word_diff, word_diff = pcall(require, "nvim_hunks.diff")
-
---- Returns the ranges of the text that changed between old and new lines,
---- or none if nvim-hunks' diff isn't loaded.
----@param old_lines string[]
----@param new_lines string[]
----@return { old: { line: integer, start_col: integer, end_col: integer }[], new: { line: integer, start_col: integer, end_col: integer }[] }
-local changed_words = function(old_lines, new_lines)
-  local ranges = { old = {}, new = {} }
-  if not ok_word_diff or not word_diff.is_loaded() then return ranges end
-  for _, hunk in ipairs(word_diff.compute(old_lines, new_lines)) do
-    vim.list_extend(ranges.old, hunk.old_changes)
-    vim.list_extend(ranges.new, hunk.new_changes)
-  end
-  return ranges
-end
+--- The diffs of nvim-hunks, when it's installed. Without it, the files'
+--- hunks aren't shown.
+local ok_view, diff_view = pcall(require, "nvim_hunks.view")
 
 --- Returns the extmark options drawing chunks as a line's highlights, from a
 --- column on.
@@ -377,8 +347,6 @@ local draw_files = function(bufnr, view)
   local marks = {}
   ---@type table<integer, nvim_jj.ViewRow?>
   local rows = {}
-  ---@type { path: string, lines: string[], rows: (integer|false)[] }[]
-  local syntax = {}
 
   ---@type nvim_jj.Chunk[][]
   local header = { { { ("─"):rep(vim.o.columns), "JjSeparator" } } }
@@ -405,7 +373,7 @@ local draw_files = function(bufnr, view)
     local row = #lines
     lines[#lines + 1] = file_text(file)
     rows[row] = { file = file }
-    local expandable = #file.hunks > 0
+    local expandable = ok_view and #file.hunks > 0
     local expanded = expandable and view.expanded[file.path]
     local status = statuses[file.status]
     marks[#marks + 1] = {
@@ -432,129 +400,86 @@ local draw_files = function(bufnr, view)
     }
 
     if expanded then
-      local width = 1
-      for _, hunk in ipairs(file.hunks) do
-        for _, line in ipairs(hunk.lines) do
-          width =
-            math.max(width, #tostring(line.old or 0), #tostring(line.new or 0))
-        end
-      end
-      local blank = (" "):rep(width)
-      local gutter_width = 2 * width + 3
-      local new_lines, new_rows, old_lines, old_rows = {}, {}, {}, {}
-
-      ---@type integer?
-      local next_old
-      for _, hunk in ipairs(file.hunks) do
-        local hidden = hunk.old_start - (next_old or 1)
-        next_old = hunk.old_start + hunk.old_count
-        local hunk_old, hunk_new, hunk_old_rows, hunk_new_rows = {}, {}, {}, {}
-
-        for index, line in ipairs(hunk.lines) do
+      local hunks = vim.tbl_map(
+        function(hunk) return hunk.lines end,
+        file.hunks
+      )
+      ---@type nvim_hunks.view.Row?
+      local gap
+      for _, diff_row in ipairs(diff_view.rows(hunks, { path = file.path })) do
+        if diff_row.kind == "gap" then
+          gap = diff_row
+        else
           local line_row = #lines
-          lines[#lines + 1] = line.text
-          rows[line_row] = { file = file, hunk = hunk, first = index == 1 }
-          local old = line.old and ("%" .. width .. "d"):format(line.old)
-            or blank
-          local new = line.new and ("%" .. width .. "d"):format(line.new)
-            or blank
-          local number_hl = line.kind == "+" and "JjDiffAddNr"
-            or line.kind == "-" and "JjDiffDeleteNr"
-            or "JjDiffContextNr"
-          local line_hl = line.kind == "+" and "JjDiffAdd"
-            or line.kind == "-" and "JjDiffDelete"
-            or nil
+          lines[#lines + 1] = text_of(diff_row.chunks)
+          rows[line_row] = {
+            file = file,
+            hunk = file.hunks[diff_row.hunk],
+            first = diff_row.first,
+          }
           ---@type vim.api.keyset.set_extmark
           local opts = {
             -- The indent aligning the gutter with the file's name is on the
             -- text's background, not the line's.
-            virt_text = {
-              { "  ", "JjDiffIndent" },
-              { (" %s %s "):format(old, new), number_hl },
-              { (" %s "):format(line.kind), line_hl },
-            },
+            virt_text = vim.list_extend(
+              { { "  ", "JjDiffIndent" } },
+              diff_row.gutter
+            ),
             virt_text_pos = "inline",
             hl_mode = "combine",
             right_gravity = false,
           }
           -- A `line_hl_group` would be drawn over the changed words'
           -- highlights, so the line's background is a range ending past the
-          -- end of the line.
-          if line_hl then
+          -- end of the line, under them.
+          if diff_row.fill then
             marks[#marks + 1] = {
               row = line_row,
               end_row = line_row + 1,
               opts = {
                 end_col = 0,
-                hl_group = line_hl,
+                hl_group = diff_row.fill,
                 hl_eol = true,
+                priority = vim.hl.priorities.user,
                 -- The buffer's last line has no next row to end on.
                 strict = false,
               },
             }
           end
-          if index == 1 and hidden > 0 then
-            local text = (" %d unchanged line%s"):format(
-              hidden,
-              hidden == 1 and "" or "s"
-            )
+          if gap then
+            local gap_text = text_of(gap.chunks)
+            local gutter_width = vim.api.nvim_strwidth(text_of(gap.gutter))
+            local padding =
+              math.max(vim.o.columns - gutter_width - 2 - #gap_text, 0)
             opts.virt_lines = {
-              {
-                { "  " },
-                { (" "):rep(gutter_width), "JjDiffGapNr" },
-                {
-                  text
-                    .. (" "):rep(
-                      math.max(vim.o.columns - gutter_width - 2 - #text, 0)
-                    ),
-                  "JjDiffGap",
-                },
-              },
+              vim.list_extend(vim.list_extend({ { "  " } }, gap.gutter), {
+                { gap_text .. (" "):rep(padding), gap.fill },
+              }),
             }
             opts.virt_lines_above = true
+            gap = nil
           end
           marks[#marks + 1] = { row = line_row, opts = opts }
 
-          if line.kind ~= "-" then
-            new_lines[#new_lines + 1] = line.text
-            new_rows[#new_rows + 1] = line_row
-            hunk_new[#hunk_new + 1] = line.text
-            hunk_new_rows[#hunk_new_rows + 1] = line_row
-          end
-          if line.kind ~= "+" then
-            old_lines[#old_lines + 1] = line.text
-            old_rows[#old_rows + 1] = line.kind == "-" and line_row or false
-            hunk_old[#hunk_old + 1] = line.text
-            hunk_old_rows[#hunk_old_rows + 1] = line_row
-          end
-        end
-
-        local words = changed_words(hunk_old, hunk_new)
-        for side, hl_group in pairs({
-          old = "JjDiffDeleteText",
-          new = "JjDiffAddText",
-        }) do
-          local side_rows = side == "old" and hunk_old_rows or hunk_new_rows
-          for _, range in ipairs(words[side]) do
-            local row_of_range = side_rows[range.line]
-            if row_of_range then
+          local col = 0
+          for _, chunk in ipairs(diff_row.chunks) do
+            local hl = chunk[2]
+            local groups = type(hl) == "table" and hl or { hl }
+            for priority, group in ipairs(groups) do
               marks[#marks + 1] = {
-                row = row_of_range,
-                col = range.start_col,
+                row = line_row,
+                col = col,
                 opts = {
-                  end_col = range.end_col,
-                  hl_group = hl_group,
-                  priority = 4200,
+                  end_col = col + #chunk[1],
+                  hl_group = group,
+                  priority = vim.hl.priorities.user + priority,
                 },
               }
             end
+            col = col + #chunk[1]
           end
         end
       end
-      syntax[#syntax + 1] =
-        { path = file.path, lines = new_lines, rows = new_rows }
-      syntax[#syntax + 1] =
-        { path = file.path, lines = old_lines, rows = old_rows }
     end
   end
 
@@ -567,7 +492,6 @@ local draw_files = function(bufnr, view)
   vim.bo[bufnr].modified = modified
 
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-  vim.api.nvim_buf_clear_namespace(bufnr, syntax_namespace, 0, -1)
   view.summary = vim.api.nvim_buf_set_extmark(bufnr, namespace, first, 0, {})
   for _, mark in ipairs(marks) do
     if mark.end_row then mark.opts.end_row = first + mark.end_row end
@@ -578,14 +502,6 @@ local draw_files = function(bufnr, view)
       mark.col or 0,
       mark.opts
     )
-  end
-  for _, file in ipairs(syntax) do
-    ---@type (integer|false)[]
-    local shifted = {}
-    for index, row in ipairs(file.rows) do
-      shifted[index] = row and first + row
-    end
-    highlight_syntax(bufnr, file.path, file.lines, shifted)
   end
   view.rows = rows
 end
@@ -649,6 +565,11 @@ local load = function(bufnr, on_done)
           { math.min(cursor[1], count), cursor[2] }
         )
       end
+      local on_drawn = view.on_drawn
+      view.on_drawn = {}
+      for _, callback in ipairs(on_drawn) do
+        callback()
+      end
       if on_done then on_done() end
     end)
   end)
@@ -672,7 +593,7 @@ M.toggle_file = function(bufnr, line)
   local view = views[bufnr]
   if not view then return end
   local row = row_at(bufnr, view, line)
-  if not row or #row.file.hunks == 0 then return end
+  if not row or not ok_view or #row.file.hunks == 0 then return end
   local path = row.file.path
   view.expanded[path] = not view.expanded[path] or nil
   draw_files(bufnr, view)
@@ -763,8 +684,15 @@ M.buffer = function(root, id)
   vim.bo[bufnr].filetype = "jjchange"
 
   ---@type nvim_jj.View
-  local view =
-    { root = root, id = id, files = {}, expanded = {}, rows = {}, summary = 0 }
+  local view = {
+    root = root,
+    id = id,
+    files = {},
+    expanded = {},
+    rows = {},
+    summary = 0,
+    on_drawn = {},
+  }
   views[bufnr] = view
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { "" })
   view.summary = vim.api.nvim_buf_set_extmark(bufnr, namespace, 0, 0, {})
@@ -847,6 +775,25 @@ M.buffer = function(root, id)
 
   load(bufnr)
   return bufnr
+end
+
+--- Replaces the description of a view with an unsaved edit, once the view is
+--- drawn, which writing the buffer saves like any other edit.
+---@param bufnr integer
+---@param description string
+M.edit_description = function(bufnr, description)
+  local view = views[bufnr]
+  if not view then return end
+  local edit = function()
+    if views[bufnr] ~= view or not vim.api.nvim_buf_is_valid(bufnr) then
+      return
+    end
+    local lines = vim.split(vim.trim(description), "\n", { plain = true })
+    vim.api.nvim_buf_set_lines(bufnr, 0, summary_row(bufnr, view), false, lines)
+    draw_placeholder(bufnr)
+  end
+  if view.details then return edit() end
+  table.insert(view.on_drawn, edit)
 end
 
 --- Sets the options of a window showing a change. The backticks of the
@@ -981,43 +928,9 @@ M.decorate = function(bufnr, win, recap)
   )
 end
 
---- Returns the color of a highlight group's attribute, following its links.
----@param name string
----@param attr "fg"|"bg"
----@return integer?
-local color_of = function(name, attr)
-  return vim.api.nvim_get_hl(0, { name = name, link = false })[attr]
-end
-
---- Returns a color blended into another one by some amount.
----@param color integer
----@param base integer
----@param alpha number The amount of the color, from 0 to 1.
----@return integer
-local blend = function(color, base, alpha)
-  local mixed = 0
-  for _, shift in ipairs({ 16, 8, 0 }) do
-    local channel = bit.band(bit.rshift(color, shift), 0xff)
-    local base_channel = bit.band(bit.rshift(base, shift), 0xff)
-    mixed = mixed
-      + bit.lshift(
-        math.floor(channel * alpha + base_channel * (1 - alpha) + 0.5),
-        shift
-      )
-  end
-  return mixed
-end
-
---- Sets the default colors of the views. The context lines' numbers are on
---- a background a shade lighter than the text's, and the rows between hunks
---- on a tint of the information color, like GitHub's.
+--- Sets the default colors of the views. Their diffs take nvim-hunks'
+--- colors.
 M.set_highlights = function()
-  local background = color_of("Normal", "bg")
-    or (vim.o.background == "dark" and 0x000000 or 0xffffff)
-  local foreground = color_of("Normal", "fg")
-    or (vim.o.background == "dark" and 0xffffff or 0x000000)
-  local info = color_of("DiagnosticInfo", "fg") or foreground
-
   ---@type table<string, vim.api.keyset.highlight>
   local highlights = {
     JjAddedCount = { link = "Added" },
@@ -1025,21 +938,6 @@ M.set_highlights = function()
     JjChevron = { link = "NonText" },
     JjDeletedCount = { link = "Removed" },
     JjDeletedFiles = { link = "Removed" },
-    JjDiffAdd = { link = "DiffAdd" },
-    JjDiffAddNr = { link = "DiffAdd" },
-    JjDiffAddText = { link = "DiffText" },
-    JjDiffContextNr = {
-      bg = blend(foreground, background, 0.06),
-      fg = color_of("LineNr", "fg"),
-    },
-    JjDiffDelete = { link = "DiffDelete" },
-    JjDiffDeleteNr = { link = "DiffDelete" },
-    JjDiffDeleteText = { link = "DiffText" },
-    JjDiffGap = {
-      bg = blend(info, background, 0.12),
-      fg = color_of("Comment", "fg"),
-    },
-    JjDiffGapNr = { bg = blend(info, background, 0.25) },
     JjDiffIndent = { link = "Normal" },
     JjModifiedFiles = { link = "Changed" },
     JjRenamedFiles = { link = "Special" },
