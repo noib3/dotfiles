@@ -50,6 +50,8 @@
         text = builtins.readFile ./fuzzy-ripgrep.sh;
       };
 
+      list-dirs = import ./list-dirs.nix { inherit config pkgs; };
+
       list-files = import ./list-files.nix { inherit config pkgs; };
 
       pc = pkgs.writeShellApplication {

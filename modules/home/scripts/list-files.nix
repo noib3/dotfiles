@@ -21,6 +21,7 @@ pkgs.writeShellApplication {
 
   runtimeEnv = {
     DOCS_DIR = config.lib.mine.documentsDir;
+    HOME_ROOTS = config.modules.scripts.list-dirs.homeRoots;
     OLD_DIRS_COL = hex.toANSI palette.normal.blue;
     NEW_DIRS_COL =
       let

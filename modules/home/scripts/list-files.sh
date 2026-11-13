@@ -79,6 +79,22 @@ emit_files() {
     emit_frecent_files
   fi
 
+  # The home directory is only scanned under its roots.
+  if [ "$DIR_PATH" = "$HOME" ]; then
+    local search_paths=()
+
+    for root in "${HOME_ROOTS[@]}"; do
+      if [ -d "$root" ]; then
+        search_paths+=("--search-path=${root#"$HOME"/}")
+      fi
+    done
+
+    [ ${#search_paths[@]} -gt 0 ] || return 0
+
+    fd --base-directory="$HOME" --hidden --type=f --color=always "${search_paths[@]}"
+    return
+  fi
+
   fd --base-directory="$DIR_PATH" --hidden --strip-cwd-prefix --type=f --color=always
 
   # If the documents directory is a symlink, scan it explicitly since fd doesn't

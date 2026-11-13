@@ -8,10 +8,7 @@
 with lib;
 let
   cfg = config.modules.fzf;
-  inherit (config.lib.mine) hex;
   colors = import ./colors.nix { inherit config; };
-  col-dirs = hex.toANSI colors.directories;
-  col-grayed-out-dirs = hex.toANSI colors.grayed-out-directories;
 in
 {
   options.modules.fzf = {
@@ -51,31 +48,7 @@ in
       ];
 
       changeDirWidget = {
-        command =
-          let
-            fzf-alt-c = pkgs.writeShellApplication {
-              name = "fzf-alt-c";
-              runtimeInputs = with pkgs; [
-                config.modules.scripts.frecency
-                config.programs.fd.package
-                gawk
-                gnused
-              ];
-              runtimeEnv = {
-                COL_DIRS = col-dirs;
-                COL_GRAYED_OUT_DIRS = col-grayed-out-dirs;
-                ROOTS = [
-                  "${config.home.homeDirectory}/Desktop"
-                  "${config.home.homeDirectory}/Dev"
-                  "${config.home.homeDirectory}/Downloads"
-                  config.lib.mine.documentsDir
-                  config.xdg.configHome
-                ];
-              };
-              text = builtins.readFile ./fzf-alt-c.sh;
-            };
-          in
-          "${lib.getExe fzf-alt-c}";
+        command = "${lib.getExe config.modules.scripts.list-dirs} --frecent-first $HOME";
 
         options = [
           "--prompt='Cd> '"
