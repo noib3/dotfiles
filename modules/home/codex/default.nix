@@ -164,15 +164,6 @@ in
               supports_websockets = true;
             };
           })
-          (lib.mkIf config.modules.cli-proxy-api.enable {
-            cli-proxy-api = {
-              active = false;
-              name = "CLIProxyAPI";
-              base_url = "${config.modules.cli-proxy-api.endpoint}/v1";
-              experimental_bearer_token = config.modules.cli-proxy-api.apiKey;
-              wire_api = "responses";
-            };
-          })
         ];
 
         xdg.configFile."codex/config.toml" = {

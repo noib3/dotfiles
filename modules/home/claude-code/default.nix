@@ -31,10 +31,6 @@ in
         enabledPlugins."cloudflare@cloudflare" = true;
         env = {
           CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
-        }
-        // lib.optionalAttrs config.modules.cli-proxy-api.enable {
-          ANTHROPIC_BASE_URL = config.modules.cli-proxy-api.endpoint;
-          ANTHROPIC_AUTH_TOKEN = config.modules.cli-proxy-api.apiKey;
         };
         permissions = {
           defaultMode = "acceptEdits";
