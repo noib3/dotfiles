@@ -622,11 +622,11 @@
         "zig-overlay": "zig-overlay"
       },
       "locked": {
-        "lastModified": 1794559296,
-        "narHash": "sha256-qmYQJdahQ6ZFVDxFgL3ByJbzOjKEJ9FpaBin8CCSYCw=",
+        "lastModified": 1794561497,
+        "narHash": "sha256-GumPzW69R0KlKHPtDY3vt2yt2FjboanxLOthyro4FmM=",
         "owner": "noib3",
         "repo": "nvim-config",
-        "rev": "031fe9002f7e9f3110b131c232a118398c7a4618",
+        "rev": "01d4b75f3db08a9f502e2e866cb3489ec93669c1",
         "type": "github"
       },
       "original": {

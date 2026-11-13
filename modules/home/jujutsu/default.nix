@@ -46,8 +46,9 @@ in
 
         git = {
           executable-path = lib.getExe pkgs.git;
-          sign-on-push = true;
         };
+
+        revsets.git-sign-on-push = "~signed() & mine()";
 
         ui = {
           default-command = "log";
